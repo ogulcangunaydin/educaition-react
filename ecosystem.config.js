@@ -1,4 +1,9 @@
 module.exports = {
+  apps: [{
+    name: 'educaition-react',
+    script: 'npm',
+    args: 'npm start --port 8000',
+  }],
   deploy: {
     production: {
       user: 'ec2-user',
@@ -6,7 +11,8 @@ module.exports = {
       key: '~/.ssh/educaition-key-pair.pem',
       ref: 'origin/main',
       repo: 'git@github.com:ogulcangunaydin/educaition-react.git',
-      path: '/home/ec2-user/educaition-react/'
+      path: '/home/ec2-user/educaition-react/',
+      'post-deploy': ''
     }
   }
 }
