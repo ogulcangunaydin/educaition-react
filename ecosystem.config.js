@@ -1,8 +1,7 @@
 module.exports = {
   apps: [{
     name: 'educaition-react',
-    script: 'npm',
-    args: 'npm start --port 8000',
+    script: './src/index.js'
   }],
   deploy: {
     production: {
@@ -11,8 +10,8 @@ module.exports = {
       key: '~/.ssh/educaition-key-pair.pem',
       ref: 'origin/main',
       repo: 'git@github.com:ogulcangunaydin/educaition-react.git',
-      path: '/home/ec2-user/educaition-react/',
-      'post-deploy': ''
+      path: '/home/ec2-user/educaition-react',
+      'post-deploy': 'npm install && pm2 startOrRestart ecosystem.config.js',
     }
   }
 }
