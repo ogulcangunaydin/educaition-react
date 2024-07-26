@@ -105,6 +105,10 @@ const PersonalityTest = () => {
     }
   };
 
+  const handleSkip = () => {
+    navigate(`/tacticpreparation/${roomId}`, { state: { playerId: playerId } });
+  };
+
   return (
     <>
       <Header title={"Personality Test"} />
@@ -181,6 +185,9 @@ const PersonalityTest = () => {
                   </Button>
                 )
               )}
+              <Button variant="contained" onClick={handleSkip}>
+                Skip to Tactic Preparation
+              </Button>
             </CardActions>
           </Card>
         )}
