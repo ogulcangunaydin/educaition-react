@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import bigFiveTestQuestions from './BigFiveTest.txt';
 import Header from '../../components/Header';
 import { CenteredContainer } from '../../styles/CommonStyles';
-import { Grid, Typography, Card, CardContent, CardActions, RadioGroup, FormControlLabel, Radio, Button, TextField, Box } from '@mui/material';
+import { useTheme, useMediaQuery, Grid, Typography, Card, CardContent, CardActions, RadioGroup, FormControlLabel, Radio, Button, TextField, Box } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 
 
@@ -18,6 +18,9 @@ const PersonalityTest = () => {
 
   const { roomId } = useParams();
   const navigate = useNavigate();
+
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchQuestions = async () => {
@@ -38,6 +41,11 @@ const PersonalityTest = () => {
     const newAnswers = [...answers];
     newAnswers[index] = value;
     setAnswers(newAnswers);
+
+    // Automatically move to the next question if not the last question
+    if (index < questions.length - 1) {
+      setCurrentQuestionIndex(index + 1);
+    }
   };
 
   const handleNext = () => {
@@ -122,16 +130,16 @@ const PersonalityTest = () => {
         ) : (
           <Card>
             <CardContent>
-              <Box display="flex" justifyContent="center" marginBottom={"20px"}>
-                <Typography variant="h5" component="h2">
+              <Box display="flex" justifyContent="center" marginBottom={isSmallScreen ? "10px" : "20px"}>
+                <Typography variant={isSmallScreen ? "h6" : "h5"} component="h2">
                   {questions[currentQuestionIndex]}
                 </Typography>
               </Box>
-              <Grid container alignItems="center" spacing={2}>
-                <Grid item xs={2}>
-                  <Typography>Completely Disagree</Typography>
+              <Grid container alignItems="center" spacing={isSmallScreen ? 1 : 2}>
+                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-start' }}> {/* Adjust for small screens */}
+                  <Typography align="left">Completely Disagree</Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={12} sm={8}>
                   <Box display="flex" justifyContent="center">
                     <RadioGroup
                       row
@@ -139,7 +147,7 @@ const PersonalityTest = () => {
                       name={`question-${currentQuestionIndex}`}
                       value={answers[currentQuestionIndex] || ''}
                       onChange={(event) => handleOptionChange(currentQuestionIndex, event.target.value)}
-                      style={{ justifyContent: "center", display: "flex", flexWrap: "wrap" }} // Added styles to center the options
+                      style={{ justifyContent: "center", display: "flex", flexWrap: "wrap" }}
                     >
                       {[1, 2, 3, 4, 5].map((option) => (
                         <FormControlLabel key={option} value={option.toString()} control={<Radio />} label={option.toString()} />
@@ -147,8 +155,8 @@ const PersonalityTest = () => {
                     </RadioGroup>
                   </Box>
                 </Grid>
-                <Grid item xs={2}>
-                  <Typography>Completely Agree</Typography>
+                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-end' }}> {/* Adjust for small screens */}
+                  <Typography align="right">Completely Agree</Typography>
                 </Grid>
               </Grid>
             </CardContent>

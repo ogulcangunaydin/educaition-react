@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Card, CardContent, Typography, Button, CircularProgress, Grid } from '@mui/material';
+import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, CircularProgress, Grid } from '@mui/material';
 import { CenteredContainer } from '../styles/CommonStyles';
 import '../styles/Playground.css';
 import fetchWithAuth from '../utils/fetchWithAuth';
@@ -15,6 +15,10 @@ const Playground = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [blurText, setBlurText] = useState(true);
+
+  const theme = useTheme();
+  // Use theme.breakpoints.down('sm') to check for small screen size
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchParticipantsAndTactics = async () => {
@@ -165,7 +169,7 @@ const Playground = () => {
                 <>
                   <Grid container spacing={2}> {/* Adjust spacing as needed */}
                     {participants.map((participant) => (
-                      <Grid item xs={6} > {/* Adjust grid item sizes as needed */}
+                      <Grid item xs={isSmallScreen ? 12 : 6} > {/* Adjust grid item sizes as needed */}
                         <Card key={participant.id} className="participant-card">
                           <CardContent>
                             <div className="name-section">
