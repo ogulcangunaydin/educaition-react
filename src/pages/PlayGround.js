@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, CircularProgress, Grid } from '@mui/material';
+import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, TextField, MenuItem, Modal, Grid, Menu } from '@mui/material';
 import { CenteredContainer } from '../styles/CommonStyles';
 import '../styles/Playground.css';
 import fetchWithAuth from '../utils/fetchWithAuth';
@@ -11,10 +11,13 @@ const Playground = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const [participants, setParticipants] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const [showQR, setShowQR] = useState(false);
   const [blurText, setBlurText] = useState(true);
+  const [showModal, setShowModal] = useState(false); // For modal visibility
+  const [sessionName, setSessionName] = useState(''); // For storing input name
+  const [sessions, setSessions] = useState([]); // For storing session data
+  const [anchorEl, setAnchorEl] = useState(null); // State for menu anchor
 
   const theme = useTheme();
   // Use theme.breakpoints.down('sm') to check for small screen size
@@ -23,7 +26,7 @@ const Playground = () => {
   useEffect(() => {
     const fetchParticipantsAndTactics = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${roomId}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/room/${roomId}`, {
           method: 'GET'
         });
         if (!response.ok) {
@@ -32,15 +35,17 @@ const Playground = () => {
         const data = await response.json();
         setParticipants(data);
 
-        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
-          }
-        });
+        const authResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`);
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
+
+          const sessionsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/sessions`);
+          if (!sessionsResponse.ok) {
+            throw new Error('Failed to fetch sessions');
+          }
+          const sessionsData = await sessionsResponse.json();
+          setSessions(sessionsData); // Assuming you have a state setter for sessions
         }
       } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
@@ -48,29 +53,42 @@ const Playground = () => {
     };
 
     fetchParticipantsAndTactics();
-  }, []);
+  }, [roomId]); // Added roomId as a dependency
 
-  const handleStartGame = async () => {
-    setLoading(true); // Start loading
+  const handleStartGame = () => {
+    setShowModal(true); // Show modal instead of starting game directly
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
     try {
-      const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/ready`, {
+      const formBody = new FormData();
+      formBody.append('name', sessionName);
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/ready`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('access_token')}`,
+        },
         method: 'POST',
+        body: formBody,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to start the game');
+        throw new Error('Failed to create session');
       }
 
       const data = await response.json();
-
-      navigate(`/leaderboard/${roomId}`, { state: { data: data, participants: participants, roomId: roomId } });
+      setSessions([...sessions, data]); // Add the new session to the sessions array
+      setShowModal(false); // Close the modal
     } catch (error) {
-      // Handle network errors
-      console.error('Error starting the game:', error);
+      console.error('Error creating session:', error);
       alert('An error occurred. Please try again.');
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleSessionChange = (sessionId) => {
+    navigate(`/leaderboard/${sessionId}`, { state: { roomId } });
   };
 
   const handleShowQR = () => {
@@ -90,13 +108,21 @@ const Playground = () => {
 
   const toggleBlur = () => setBlurText(!blurText);
 
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <Header title={`Playground for Room ${roomId}`}>
         <Button // Step 3: Add the new Button for toggling blur
             variant="contained"
             onClick={toggleBlur}
-            disabled={!isUserAuthenticated || loading} // Disabled for unauthorized users
+            disabled={!isUserAuthenticated} // Disabled for unauthorized users
             style={{ marginRight: '10px' }}
           >
             Toggle Blur
@@ -105,7 +131,7 @@ const Playground = () => {
           variant="contained"
           color="primary" // You can choose a different color to distinguish this button
           onClick={redirectToGameRoom}
-          disabled={!isUserAuthenticated || loading}
+          disabled={!isUserAuthenticated}
           style={{
             marginRight: '10px',
           }}
@@ -118,87 +144,119 @@ const Playground = () => {
             style={{
               marginRight: '10px',
             }}
-            disabled={loading}
           >
           Display QR Code
         </Button>
-        <Button variant="contained" color="secondary" onClick={handleStartGame} disabled={!isUserAuthenticated || loading}>
+        <Button variant="contained" color="secondary" onClick={handleStartGame} disabled={!isUserAuthenticated}>
           Start Game
         </Button>
-      </Header>
-      {loading ? (
-        <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <CircularProgress />
-        </div>
-      ) : (
-        <>
-          {showQR && (
-            <div
-              id="qr-backdrop"
-              onClick={handleCloseQR}
-              style={{
-                position: 'fixed',
-                top: 0,
-                left: 0,
-                width: '100%',
-                height: '100%',
-                background: 'rgba(0, 0, 0, 0.5)',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                backdropFilter: 'blur(8px)',
-              }}
-            >
-              <div onClick={(e) => e.stopPropagation()}>
-                <QRCodeCanvas
-                  value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}
-                  size={256}
-                  level={"H"}
-                  includeMargin={true}
-                />
-                <Typography variant="h6" style={{ color: 'white' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}</Typography>
-              </div>
-            </div>
-          )}
-          <div style={{ marginTop: '64px' }}>
-              {participants.length === 0 ? (
-                <CenteredContainer>
-                  <Typography variant="h6">No participants have joined yet</Typography>
-                </CenteredContainer>
-              ) : (
-                <>
-                  <Grid container spacing={2}> {/* Adjust spacing as needed */}
-                    {participants.map((participant) => (
-                      <Grid item xs={isSmallScreen ? 12 : 6} > {/* Adjust grid item sizes as needed */}
-                        <Card key={participant.id} className="participant-card">
-                          <CardContent>
-                            <div className="name-section">
-                              {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
-                            </div>
-                            <div className="character-traits">
-                              <Typography variant="body1">Extroversion: {participant.extroversion !== null ? participant.extroversion.toFixed(2) : 'NA'}</Typography>
-                              <Typography variant="body1">Agreeableness: {participant.agreeableness !== null ? participant.agreeableness.toFixed(2) : 'NA'}</Typography>
-                              <Typography variant="body1">Conscientiousness: {participant.conscientiousness !== null ? participant.conscientiousness.toFixed(2) : 'NA'}</Typography>
-                              <Typography variant="body1">Negative Emotionality: {participant.negative_emotionality !== null ? participant.negative_emotionality.toFixed(2) : 'NA'}</Typography>
-                              <Typography variant="body1">Open-mindedness: {participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : 'NA'}</Typography>
-                            </div>
-                            <Typography variant="body2" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
-                              {participant.player_tactic}
-                            </Typography>
-                            {/* Display player_code as a code snippet */}
-                            <Typography component="pre" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
-                              {participant.player_code}
-                            </Typography>
-                          </CardContent>
-                        </Card>
-                      </Grid>
-                    ))}
-                  </Grid>
-                </>
-              )}
-            </div>
+        {sessions.length > 0 && (
+          <>
+          <Button
+            aria-controls="session-menu"
+            aria-haspopup="true"
+            onClick={handleOpenMenu}
+            variant="contained"
+            color="primary"
+            style={{ marginLeft: '10px' }}
+          >
+            Select Session
+          </Button>
+          <Menu
+            id="session-menu"
+            anchorEl={anchorEl}
+            keepMounted
+            open={Boolean(anchorEl)}
+            onClose={handleCloseMenu}
+            style={{ marginLeft: '20px', marginTop: '10px' }}
+          >
+            {sessions.map((session) => (
+              <MenuItem key={session.id} onClick={() => handleSessionChange(session.id)}>
+                {session.name}
+              </MenuItem>
+            ))}
+          </Menu>
         </>
-      )}
+        )}
+      </Header>
+      <>
+        {showQR && (
+          <div
+            id="qr-backdrop"
+            onClick={handleCloseQR}
+            className='qrContainer'
+          >
+            <div onClick={(e) => e.stopPropagation()}>
+              <QRCodeCanvas
+                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}
+                size={256}
+                level={"H"}
+                includeMargin={true}
+              />
+              <Typography variant="h6" style={{ color: 'white' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}</Typography>
+            </div>
+          </div>
+        )}
+        <div style={{ marginTop: '64px' }}>
+            {participants.length === 0 ? (
+              <CenteredContainer>
+                <Typography variant="h6">No participants have joined yet</Typography>
+              </CenteredContainer>
+            ) : (
+              <>
+                <Grid container spacing={2}>
+                  {participants.map((participant) => (
+                    <Grid item xs={isSmallScreen ? 12 : 6} key={participant.id}>
+                      <Card className="participant-card">
+                        <CardContent>
+                          <div className="name-section">
+                            {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
+                          </div>
+                          <div className="character-traits">
+                            <Typography variant="body1">Extroversion: {participant.extroversion !== null ? participant.extroversion.toFixed(2) : 'NA'}</Typography>
+                            <Typography variant="body1">Agreeableness: {participant.agreeableness !== null ? participant.agreeableness.toFixed(2) : 'NA'}</Typography>
+                            <Typography variant="body1">Conscientiousness: {participant.conscientiousness !== null ? participant.conscientiousness.toFixed(2) : 'NA'}</Typography>
+                            <Typography variant="body1">Negative Emotionality: {participant.negative_emotionality !== null ? participant.negative_emotionality.toFixed(2) : 'NA'}</Typography>
+                            <Typography variant="body1">Open-mindedness: {participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : 'NA'}</Typography>
+                          </div>
+                          <Typography variant="body2" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
+                            {participant.player_tactic}
+                          </Typography>
+                          {/* Display player_code as a code snippet */}
+                          <Typography component="pre" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
+                            {participant.player_code}
+                          </Typography>
+                        </CardContent>
+                      </Card>
+                    </Grid>
+                  ))}
+                </Grid>
+              </>
+            )}
+          </div>
+      </>
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        aria-labelledby="simple-modal-title"
+        aria-describedby="simple-modal-description"
+        className='sessionModal'
+      >
+        <div className='modalContainer'>
+          <form onSubmit={handleSubmit} className='modalForm'>
+            <TextField
+              label="Session Name"
+              value={sessionName}
+              onChange={(e) => setSessionName(e.target.value)}
+              required
+              style={{ marginBottom: '10px', width: '100%' }} // Ensure TextField takes full width
+            />
+            <Button type="submit" variant="contained" color="primary">
+              Create Session
+            </Button>
+          </form>
+        </div>
+      </Modal>
     </>
   );
 };

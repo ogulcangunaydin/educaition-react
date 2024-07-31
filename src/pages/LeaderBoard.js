@@ -1,16 +1,51 @@
-import React from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Button, Grid } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Button, Grid, LinearProgress } from '@mui/material';
 import Header from '../components/Header';
 import '../styles/Playground.css';
+import fetchWithAuth from '../utils/fetchWithAuth';
 
 const Leaderboard = () => {
+  const { sessionId } = useParams();
   const location = useLocation();
-  const navigate = useNavigate();
-  const scores = location.state.data.leaderboard;
-  const matrix = location.state.data.matrix;
-  const participants = location.state.participants;
   const roomId = location.state.roomId;
+  const navigate = useNavigate();
+  const [scores, setScores] = useState({});
+  const [matrix, setMatrix] = useState({});
+  const [participants, setParticipants] = useState([]);
+  const [sessionName, setSessionName] = useState('');
+  const [sessionStatus, setSessionStatus] = useState(''); // New state for session status
+  let player_ids = [];
+
+  useEffect(() => {
+    const fetchSessionData = async () => {
+      try {
+        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/sessions/${sessionId}`);
+        if (!response.ok) {
+          throw new Error('Session data could not be fetched');
+        }
+        const data = await response.json();
+        setSessionName(data.name);
+        setSessionStatus(data.status);
+        player_ids = data.player_ids;
+
+        if (data.status === 'finished') {
+          setScores(data.results.leaderboard);
+          setMatrix(data.results.matrix);
+          const participantsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${player_ids}`);
+          if (!participantsResponse.ok) {
+            throw new Error('Failed to fetch participants');
+          }
+          const participantsData = await participantsResponse.json();
+          setParticipants(participantsData);
+        }
+      } catch (error) {
+        console.error('Failed to fetch session data:', error);
+      }
+    };
+
+    fetchSessionData();
+  }, [sessionId]); // Dependency array with sessionId to refetch if it changes
 
   const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const playerNames = Object.keys(matrix);
@@ -19,14 +54,35 @@ const Leaderboard = () => {
     navigate(`/playground/${roomId}`);
   };
 
+  // Conditional rendering based on session status
+  if (sessionStatus !== "finished") {
+    return (
+      <>
+        <Header title={`${sessionName} Session Results`}>
+          <Button onClick={handleBackToPlayground} variant="contained" color="primary">
+            Back to Playground
+          </Button>
+        </Header>
+        <Container style={{ marginTop: '200px', textAlign: 'center' }}>
+          <LinearProgress
+            variant="determinate"
+            value={Number(sessionStatus)} // Convert sessionStatus to a number and set as value
+            style={{ marginBottom: '20px' }}
+          />
+          <Typography variant="h5">Game is not finished yet, please wait and check this page regularly.</Typography>
+        </Container>
+      </>
+    );
+  }
+
   return (
     <>
-      <Header title={"Leaderboard"}>
+      <Header title={`${sessionName} Session Results`}>
         <Button onClick={handleBackToPlayground} variant="contained" color="primary">
           Back to Playground
         </Button>
       </Header>
-      <Container style={{ marginTop: '64px' }}>
+      <Container style={{ marginTop: '100px' }}>
         <TableContainer component={Paper}>
           <Table aria-label="leaderboard table">
             <TableHead>
