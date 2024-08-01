@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { List, ListItemButton, ListItemText, Modal, Box, TextField, Typography, Button } from '@mui/material';
+import { List, ListItemButton, ListItemText, Modal, Box, TextField, Typography, Button, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import fetchWithAuth from '../utils/fetchWithAuth';
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from '../styles/CommonStyles';
@@ -11,6 +11,7 @@ function GameRooms() {
   const [rooms, setRooms] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [roomName, setRoomName] = useState('');
+  const [loading, setLoading] = useState(true); // Initialize loading state
 
   const navigate = useNavigate();
 
@@ -27,13 +28,15 @@ function GameRooms() {
   
         const data = await response.json();
         setRooms(data); // Update the rooms state with the fetched rooms
+        setLoading(false);
       } catch (error) {
         console.error('Failed to fetch rooms:', error);
+        setLoading(false);
       }
     };
 
     fetchRooms();
-  }, [setRooms]);
+  }, []);
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
@@ -103,25 +106,31 @@ function GameRooms() {
     <>
       <Header title="Game Rooms" />
       <CenteredContainer>
-        <List>
-          {rooms ? rooms.map((room, index) => (
-            <Box key={room.id} sx={{ display: 'flex', alignItems: 'center' }}>
-              <ListItemButton component="a" onClick={() => handleRedirect(room)}>
-                <ListItemText primary={room.name ? room.name : `Room-${index + 1}`} />
-              </ListItemButton>
-              <Button 
-                onClick={() => handleDeleteRoom(room.id)} 
-                variant="contained" 
-                color="secondary" 
-                size="small"
-                sx={{ ml: 3 }}
-              >
-                <DeleteIcon fontSize="small"/> 
-              </Button>
-            </Box>
-          )) : <ListItemButton><ListItemText primary="No rooms available" /></ListItemButton>}
-        </List>
-        <Button onClick={handleOpenModal} variant="contained" color="primary">Create Room</Button>
+        {loading ? (
+            <CircularProgress /> // Display a loading indicator while loading
+          ) : (
+            <>
+            <List>
+              {rooms ? rooms.map((room, index) => (
+                <Box key={room.id} sx={{ display: 'flex', alignItems: 'center' }}>
+                  <ListItemButton component="a" onClick={() => handleRedirect(room)}>
+                    <ListItemText primary={room.name ? room.name : `Room-${index + 1}`} />
+                  </ListItemButton>
+                  <Button 
+                    onClick={() => handleDeleteRoom(room.id)} 
+                    variant="contained" 
+                    color="secondary" 
+                    size="small"
+                    sx={{ ml: 3 }}
+                  >
+                    <DeleteIcon fontSize="small"/> 
+                  </Button>
+                </Box>
+              )) : <ListItemButton><ListItemText primary="No rooms available" /></ListItemButton>}
+            </List>
+            <Button onClick={handleOpenModal} variant="contained" color="primary">Create Room</Button>
+            </>
+          )}
         <Modal
           open={openModal}
           onClose={handleCloseModal}
