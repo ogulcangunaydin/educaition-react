@@ -5,11 +5,14 @@ import fetchWithAuth from '../utils/fetchWithAuth';
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from '../styles/CommonStyles';
 import Header from '../components/Header';
 import validator from 'validator';
+import { useNavigate } from 'react-router-dom';
 
 function GameRooms() {
   const [rooms, setRooms] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [roomName, setRoomName] = useState('');
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -92,6 +95,10 @@ function GameRooms() {
     }
   };
 
+  const handleRedirect = (room) => {
+    navigate(`/playground/${room.id}`, { state: { roomName: room.name } });
+  };
+
   return (
     <>
       <Header title="Game Rooms" />
@@ -99,7 +106,7 @@ function GameRooms() {
         <List>
           {rooms ? rooms.map((room, index) => (
             <Box key={room.id} sx={{ display: 'flex', alignItems: 'center' }}>
-              <ListItemButton component="a" href={`/playground/${room.id}`}>
+              <ListItemButton component="a" onClick={handleRedirect(room)}>
                 <ListItemText primary={room.name ? room.name : `Room-${index + 1}`} />
               </ListItemButton>
               <Button 

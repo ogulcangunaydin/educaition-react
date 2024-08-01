@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, TextField, MenuItem, Modal, Grid, Menu } from '@mui/material';
 import { CenteredContainer } from '../styles/CommonStyles';
 import '../styles/Playground.css';
@@ -22,6 +22,9 @@ const Playground = () => {
   const theme = useTheme();
   // Use theme.breakpoints.down('sm') to check for small screen size
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const location = useLocation();
+  const roomName = location.state.roomName;
 
   useEffect(() => {
     const fetchParticipantsAndTactics = async () => {
@@ -81,6 +84,8 @@ const Playground = () => {
       const data = await response.json();
       setSessions([...sessions, data]); // Add the new session to the sessions array
       setShowModal(false); // Close the modal
+
+      navigate(`/leaderboard/${data.id}`, { state: { roomId } });
     } catch (error) {
       console.error('Error creating session:', error);
       alert('An error occurred. Please try again.');
@@ -118,7 +123,7 @@ const Playground = () => {
 
   return (
     <>
-      <Header title={`Playground for Room ${roomId}`}>
+      <Header title={`Playground for Room ${roomName || roomId}`}>
         <Button // Step 3: Add the new Button for toggling blur
             variant="contained"
             onClick={toggleBlur}

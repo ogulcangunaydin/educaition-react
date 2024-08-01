@@ -62,10 +62,8 @@ const PersonalityTest = () => {
 
     try {
       const createPlayerForm = new FormData();
-      const sanitized_name = validator.escape(name);
-      const cleaned_name = sanitized_name.replace(/\s+/g, '').replace(/[^a-zA-Z0-9]/g, '');
 
-      createPlayerForm.append('player_name', cleaned_name);
+      createPlayerForm.append('player_name', name);
       createPlayerForm.append('room_id', roomId);
 
       const createPlayerResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/players`, {
