@@ -9,6 +9,7 @@ const Leaderboard = () => {
   const { sessionId } = useParams();
   const location = useLocation();
   const roomId = location.state.roomId;
+  const roomName = location.state.roomName;
   const navigate = useNavigate();
   const [scores, setScores] = useState({});
   const [matrix, setMatrix] = useState({});
@@ -51,7 +52,7 @@ const Leaderboard = () => {
   const playerNames = Object.keys(matrix);
 
   const handleBackToPlayground = () => {
-    navigate(`/playground/${roomId}`);
+    navigate(`/playground/${roomId}`, { state: { roomName: roomName } });
   };
 
   // Conditional rendering based on session status

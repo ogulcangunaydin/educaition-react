@@ -85,7 +85,7 @@ const Playground = () => {
       setSessions([...sessions, data]); // Add the new session to the sessions array
       setShowModal(false); // Close the modal
 
-      navigate(`/leaderboard/${data.id}`, { state: { roomId } });
+      navigate(`/leaderboard/${data.id}`, { state: { roomId: roomId, roomName: roomName } });
     } catch (error) {
       console.error('Error creating session:', error);
       alert('An error occurred. Please try again.');
