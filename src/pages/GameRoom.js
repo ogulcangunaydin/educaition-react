@@ -106,7 +106,7 @@ function GameRooms() {
         <List>
           {rooms ? rooms.map((room, index) => (
             <Box key={room.id} sx={{ display: 'flex', alignItems: 'center' }}>
-              <ListItemButton component="a" onClick={handleRedirect(room)}>
+              <ListItemButton component="a" onClick={() => handleRedirect(room)}>
                 <ListItemText primary={room.name ? room.name : `Room-${index + 1}`} />
               </ListItemButton>
               <Button 
