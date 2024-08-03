@@ -24,7 +24,7 @@ const Playground = () => {
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const location = useLocation();
-  const roomName = location.state.roomName;
+  const roomName = location.state?.roomName || "";
 
   useEffect(() => {
     const fetchParticipantsAndTactics = async () => {

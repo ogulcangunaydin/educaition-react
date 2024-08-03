@@ -1,11 +1,11 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-import Playground from './pages/PlayGround';
-import Login from './pages/Login';
-import GameRooms from './pages/GameRoom';
-import TacticPreparation from './pages/TacticPreparation';
-import Leaderboard from './pages/LeaderBoard';
-import PersonalityTest from './pages/PersonalityTest/PersonalityTest';
+import Playground from './pages/playGround';
+import Login from './pages/login';
+import GameRooms from './pages/gameRoom';
+import TacticPreparation from './pages/tacticPreparation';
+import Leaderboard from './pages/leaderBoard';
+import PersonalityTest from './pages/PersonalityTest/personalityTest';
 
 function App() {
   const accessToken = localStorage.getItem('access_token');
