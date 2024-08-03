@@ -160,11 +160,14 @@ const Playground = () => {
   return (
     <>
       <Header title={`Playground for Room ${roomName || roomId}`}>
+        <Typography variant="h6" style={{ marginRight: '20px', marginLeft: 'auto' }}>
+          Participants: {participants.length}
+        </Typography>
         <Button // Step 3: Add the new Button for toggling blur
             variant="contained"
             onClick={toggleBlur}
             disabled={!isUserAuthenticated} // Disabled for unauthorized users
-            style={{ marginRight: '10px' }}
+            style={{ marginRight: '20px' }}
           >
             Toggle Blur
         </Button>
@@ -174,7 +177,7 @@ const Playground = () => {
           onClick={redirectToGameRoom}
           disabled={!isUserAuthenticated}
           style={{
-            marginRight: '10px',
+            marginRight: '20px',
           }}
         >
           Go to GameRoom
@@ -183,7 +186,7 @@ const Playground = () => {
             variant="contained"
             onClick={handleShowQR}
             style={{
-              marginRight: '10px',
+              marginRight: '20px',
             }}
           >
           Display QR Code
