@@ -68,7 +68,13 @@ const Playground = () => {
         const data = await response.json();
         setParticipants(data);
 
-        const authResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`);
+        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`,
+          {
+            headers: {
+              "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+            }
+          }
+        );
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
@@ -245,33 +251,37 @@ const Playground = () => {
                       <Card className="participant-card">
                         <CardContent>
                           <div className="name-section">
-                            <div style={{flex: 5}}></div>
+                            <div style={{flex: isUserAuthenticated ? 5 : 3}}></div>
                             <Typography variant="body1" style={{flex: 1}}>
                               {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
                             </Typography>
                             <div style={{flex: 3}}></div>
-                            <Button variant="contained" color="secondary" onClick={() => handleClickOpen(participant.id)} style={{ flex: 2 }}>Delete Player</Button>
-                            <Dialog
-                              open={openDialogParticipantId === participant.id} // Dialog is open only for the selected participant
-                              onClose={handleClose}
-                              aria-labelledby="alert-dialog-title"
-                              aria-describedby="alert-dialog-description"
-                            >
-                              <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
-                              <DialogContent>
-                                <DialogContentText id="alert-dialog-description">
-                                  Are you sure you want to delete {participant.player_name} player?
-                                </DialogContentText>
-                              </DialogContent>
-                              <DialogActions>
-                                <Button onClick={handleClose} color="primary">
-                                  Cancel
-                                </Button>
-                                <Button onClick={handleDelete} color="primary" autoFocus>
-                                  Confirm
-                                </Button>
-                              </DialogActions>
-                            </Dialog>
+                            {isUserAuthenticated && !showQR && (
+                              <>
+                                <Button variant="contained" color="secondary" onClick={() => handleClickOpen(participant.id)} style={{ flex: 2 }}>Delete Player</Button>
+                                <Dialog
+                                  open={openDialogParticipantId === participant.id} // Dialog is open only for the selected participant
+                                  onClose={handleClose}
+                                  aria-labelledby="alert-dialog-title"
+                                  aria-describedby="alert-dialog-description"
+                                >
+                                  <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+                                  <DialogContent>
+                                    <DialogContentText id="alert-dialog-description">
+                                      Are you sure you want to delete {participant.player_name} player?
+                                    </DialogContentText>
+                                  </DialogContent>
+                                  <DialogActions>
+                                    <Button onClick={handleClose} color="primary">
+                                      Cancel
+                                    </Button>
+                                    <Button onClick={handleDelete} color="primary" autoFocus>
+                                      Confirm
+                                    </Button>
+                                  </DialogActions>
+                                </Dialog>
+                              </>
+                            )}
                           </div>
                           <div className="character-traits">
                             <Typography variant="body1">Extroversion: {participant.extroversion !== null ? participant.extroversion.toFixed(2) : 'NA'}</Typography>
