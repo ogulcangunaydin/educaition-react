@@ -26,6 +26,9 @@
   font-weight: bold; /* Makes the text bolder */
   border-top-left-radius: 10px; /* Smooths the top-left edge */
   border-top-right-radius: 10px; /* Smooths the top-right edge */
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .button-container {

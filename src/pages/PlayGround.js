@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, TextField, MenuItem, Modal, Grid, Menu } from '@mui/material';
+import { useTheme, useMediaQuery, Card, CardContent, Typography, Button, TextField, MenuItem, Modal, Grid, Menu, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { CenteredContainer } from '../styles/CommonStyles';
 import '../styles/Playground.css';
 import fetchWithAuth from '../utils/fetchWithAuth';
@@ -25,6 +25,36 @@ const Playground = () => {
 
   const location = useLocation();
   const roomName = location.state?.roomName || "";
+
+  const [openDialogParticipantId, setOpenDialogParticipantId] = useState(null);
+
+  const handleClickOpen = (participantId) => {
+    setOpenDialogParticipantId(participantId); // Set the ID of the participant whose dialog should be open
+  };
+
+  const handleClose = () => {
+    setOpenDialogParticipantId(null); // Reset the dialog open state
+  };
+
+  const handleDelete = async () => {
+    // Close the dialog
+    handleClose();
+    const participantId = openDialogParticipantId; // Use the ID of the participant to delete
+    try {
+      const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${participantId}`, {
+        method: 'POST',
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+  
+      // Update the rooms state by filtering out the deleted room
+      setParticipants(participants.filter(participant => participant.id !== participantId));
+    } catch (error) {
+      console.error('Failed to delete room:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchParticipantsAndTactics = async () => {
@@ -215,7 +245,33 @@ const Playground = () => {
                       <Card className="participant-card">
                         <CardContent>
                           <div className="name-section">
-                            {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
+                            <div style={{flex: 5}}></div>
+                            <Typography variant="body1" style={{flex: 1}}>
+                              {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
+                            </Typography>
+                            <div style={{flex: 3}}></div>
+                            <Button variant="contained" color="secondary" onClick={() => handleClickOpen(participant.id)} style={{ flex: 2 }}>Delete Player</Button>
+                            <Dialog
+                              open={openDialogParticipantId === participant.id} // Dialog is open only for the selected participant
+                              onClose={handleClose}
+                              aria-labelledby="alert-dialog-title"
+                              aria-describedby="alert-dialog-description"
+                            >
+                              <DialogTitle id="alert-dialog-title">{"Confirm Delete"}</DialogTitle>
+                              <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                  Are you sure you want to delete {participant.player_name} player?
+                                </DialogContentText>
+                              </DialogContent>
+                              <DialogActions>
+                                <Button onClick={handleClose} color="primary">
+                                  Cancel
+                                </Button>
+                                <Button onClick={handleDelete} color="primary" autoFocus>
+                                  Confirm
+                                </Button>
+                              </DialogActions>
+                            </Dialog>
                           </div>
                           <div className="character-traits">
                             <Typography variant="body1">Extroversion: {participant.extroversion !== null ? participant.extroversion.toFixed(2) : 'NA'}</Typography>
