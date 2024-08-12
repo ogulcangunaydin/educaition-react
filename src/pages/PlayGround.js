@@ -5,6 +5,7 @@ import { CenteredContainer } from '../styles/CommonStyles';
 import '../styles/Playground.css';
 import fetchWithAuth from '../utils/fetchWithAuth';
 import Header from '../components/Header';
+import ParticipantDetailCard from '../components/ParticipantDetailCard';
 import { QRCodeCanvas } from 'qrcode.react';
 
 const Playground = () => {
@@ -255,7 +256,7 @@ const Playground = () => {
                         <CardContent>
                           <div className="name-section">
                             <div style={{flex: isUserAuthenticated ? 5 : 3}}></div>
-                            <Typography variant="body1" style={{flex: 1}}>
+                            <Typography variant="h6" style={{flex: 1}}>
                               {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
                             </Typography>
                             <div style={{flex: 3}}></div>
@@ -293,13 +294,7 @@ const Playground = () => {
                             <Typography variant="body1">Negative Emotionality: {participant.negative_emotionality !== null ? participant.negative_emotionality.toFixed(2) : 'NA'}</Typography>
                             <Typography variant="body1">Open-mindedness: {participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : 'NA'}</Typography>
                           </div>
-                          <Typography variant="body2" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
-                            {participant.player_tactic}
-                          </Typography>
-                          {/* Display player_code as a code snippet */}
-                          <Typography component="pre" className={isUserAuthenticated && !blurText ? "" : "blurred-text"}>
-                            {participant.player_code}
-                          </Typography>
+                          <ParticipantDetailCard participant={participant} isUserAuthenticated={isUserAuthenticated} blurText={blurText} />
                         </CardContent>
                       </Card>
                     </Grid>

@@ -4,6 +4,7 @@ import { Container, Typography, Table, TableBody, TableCell, TableContainer, Tab
 import Header from '../components/Header';
 import '../styles/Playground.css';
 import fetchWithAuth from '../utils/fetchWithAuth';
+import ParticipantDetailCard from '../components/ParticipantDetailCard';
 
 const Leaderboard = () => {
   const { sessionId } = useParams();
@@ -31,7 +32,12 @@ const Leaderboard = () => {
         player_ids = data.player_ids;
 
         if (data.status === 'finished') {
-          setScores(data.results.leaderboard);
+          const leaderboardArray = Object.entries(data.results.leaderboard).map(([player, { score, short_tactic }]) => ({
+            player,
+            score,
+            short_tactic
+          }));
+          setScores(leaderboardArray);
           setMatrix(data.results.matrix);
           const participantsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${player_ids}`);
           if (!participantsResponse.ok) {
@@ -89,16 +95,20 @@ const Leaderboard = () => {
             <TableHead>
               <TableRow>
                 <TableCell>Player Name</TableCell>
+                <TableCell>Player Tactic Summary</TableCell>
                 <TableCell align="right">Score</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-              {sortedScores.map(([player, score], index) => (
+              {scores.map((item, index) => (
                 <TableRow key={index}>
                   <TableCell component="th" scope="row">
-                    {player}
+                    {item.player}
                   </TableCell>
-                  <TableCell align="right">{score}</TableCell>
+                  <TableCell>
+                    {item.short_tactic || 'N/A'}
+                  </TableCell>
+                  <TableCell align="right">{item.score}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
@@ -143,13 +153,7 @@ const Leaderboard = () => {
                       <Typography variant="body1">Negative Emotionality: {participant.negative_emotionality !== null ? participant.negative_emotionality.toFixed(2) : 'NA'}</Typography>
                       <Typography variant="body1">Open-mindedness: {participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : 'NA'}</Typography>
                     </div>
-                    <Typography variant="body2">
-                      {participant.player_tactic}
-                    </Typography>
-                    {/* Display player_code as a code snippet */}
-                    <Typography component="pre">
-                      {participant.player_code}
-                    </Typography>
+                    <ParticipantDetailCard participant={participant} isUserAuthenticated={true} blurText={false} />
                   </CardContent>
                 </Card>
               </Grid>
