@@ -2,23 +2,21 @@ import React, { useState, useEffect } from 'react';
 import bigFiveTestQuestions from './BigFiveTest.txt';
 import Header from '../../components/Header';
 import { CenteredContainer } from '../../styles/CommonStyles';
-import { useTheme, useMediaQuery, Grid, Typography, Card, CardContent, CardActions, RadioGroup, FormControlLabel, Radio, Button, TextField, Box } from '@mui/material';
+import { useTheme, useMediaQuery, Grid, Typography, Card, CardContent, CardActions, RadioGroup, FormControlLabel, Radio, Button, TextField, Box, CircularProgress } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-
 
 const PersonalityTest = () => {
   const [name, setName] = useState('');
   const [nameError, setNameError] = useState('');
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
-  const [playerId, setPlayerId] = useState(null); // Updated to use useState
-  const [isPlayerInfoSaved, setIsPlayerInfoSaved] = useState(false); // New state variable
+  const [playerId, setPlayerId] = useState(null);
+  const { type, id } = useParams(); // Get type and id from params
+  const [isPlayerInfoSaved, setIsPlayerInfoSaved] = useState(type === 'participant'); // Set isPlayerInfoSaved to true if type is participant
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const validator = require('validator');
+  const [loading, setLoading] = useState(false); // Loading state for form submission
 
-  const { roomId } = useParams();
   const navigate = useNavigate();
-
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
@@ -42,7 +40,6 @@ const PersonalityTest = () => {
     newAnswers[index] = value;
     setAnswers(newAnswers);
 
-    // Automatically move to the next question if not the last question
     if (index < questions.length - 1) {
       setCurrentQuestionIndex(index + 1);
     }
@@ -64,7 +61,7 @@ const PersonalityTest = () => {
       const createPlayerForm = new FormData();
 
       createPlayerForm.append('player_name', name);
-      createPlayerForm.append('room_id', roomId);
+      createPlayerForm.append('room_id', id);
 
       const createPlayerResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/players`, {
         method: 'POST',
@@ -75,8 +72,8 @@ const PersonalityTest = () => {
       }
 
       const data = await createPlayerResponse.json();
-      setPlayerId(data.id); // Update playerId state
-      setIsPlayerInfoSaved(true); // Set flag to true as player info is now saved
+      setPlayerId(data.id);
+      setIsPlayerInfoSaved(true);
     } catch (error) {
       if (error.message.includes('Player Name')) {
         setNameError(error.message);
@@ -85,26 +82,41 @@ const PersonalityTest = () => {
   };
 
   const handleSubmit = async () => {
+    setLoading(true); // Set loading to true when submission starts
     try {
       console.log('Submitting answers:', JSON.stringify(answers));
       const formBody = new FormData();
       formBody.append('answers', JSON.stringify(answers));
 
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/personality`, {
+      let endpoint;
+      if (type === 'room') {
+        endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/personality`;
+      } else if (type === 'participant') {
+        endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${id}/personality`;
+      }
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         body: formBody
       });
       if (!response.ok) {
         throw new Error('Failed to save survey.');
       }
-      navigate(`/tacticpreparation/${roomId}`, { state: { playerId: playerId } });
+
+      if (type === 'room') {
+        navigate(`/tacticpreparation/${id}`, { state: { playerId: playerId } });
+      } else if (type === 'participant') {
+        navigate(`/dissonanceTest/${id}`);
+      }
     } catch (error) {
       console.error('Failed to save survey: ' + error.message);
+    } finally {
+      setLoading(false); // Set loading to false when submission ends
     }
   };
 
   const handleSkip = () => {
-    navigate(`/tacticpreparation/${roomId}`, { state: { playerId: playerId } });
+    navigate(`/tacticpreparation/${id}`, { state: { playerId: playerId } });
   };
 
   return (
@@ -138,7 +150,7 @@ const PersonalityTest = () => {
                 </Typography>
               </Box>
               <Grid container alignItems="center" spacing={isSmallScreen ? 1 : 2}>
-                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-start' }}> {/* Adjust for small screens */}
+                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-start' }}>
                   <Typography align="left">Completely Disagree</Typography>
                 </Grid>
                 <Grid item xs={12} sm={8}>
@@ -157,7 +169,7 @@ const PersonalityTest = () => {
                     </RadioGroup>
                   </Box>
                 </Grid>
-                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-end' }}> {/* Adjust for small screens */}
+                <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <Typography align="right">Completely Agree</Typography>
                 </Grid>
               </Grid>
@@ -168,12 +180,12 @@ const PersonalityTest = () => {
                   Back
                 </Button>
               ) : (
-                <div style={{ flex: 1 }}></div> // Spacer element
+                <div style={{ flex: 1 }}></div>
               )}
               {currentQuestionIndex === questions.length - 1 ? (
                 answers[currentQuestionIndex] && (
-                  <Button variant="contained" color="primary" onClick={handleSubmit}>
-                    Submit
+                  <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
+                    {loading ? <CircularProgress size={24} /> : 'Submit'}
                   </Button>
                 )
               ) : (
@@ -183,9 +195,11 @@ const PersonalityTest = () => {
                   </Button>
                 )
               )}
-              <Button variant="contained" onClick={handleSkip}>
-                Skip to Tactic Preparation
-              </Button>
+              {type === 'room' && (
+                <Button variant="contained" onClick={handleSkip}>
+                  Skip to Tactic Preparation
+                </Button>
+              )}
             </CardActions>
           </Card>
         )}

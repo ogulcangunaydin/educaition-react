@@ -17,7 +17,6 @@ const Leaderboard = () => {
   const [participants, setParticipants] = useState([]);
   const [sessionName, setSessionName] = useState('');
   const [sessionStatus, setSessionStatus] = useState(''); // New state for session status
-  let player_ids = [];
 
   useEffect(() => {
     const fetchSessionData = async () => {
@@ -29,7 +28,6 @@ const Leaderboard = () => {
         const data = await response.json();
         setSessionName(data.name);
         setSessionStatus(data.status);
-        player_ids = data.player_ids;
 
         if (data.status === 'finished') {
           const leaderboardArray = Object.entries(data.results.leaderboard).map(([player, { score, short_tactic }]) => ({
@@ -39,7 +37,7 @@ const Leaderboard = () => {
           }));
           setScores(leaderboardArray);
           setMatrix(data.results.matrix);
-          const participantsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${player_ids}`);
+          const participantsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${data.player_ids}`);
           if (!participantsResponse.ok) {
             throw new Error('Failed to fetch participants');
           }
@@ -54,7 +52,7 @@ const Leaderboard = () => {
     fetchSessionData();
   }, [sessionId]); // Dependency array with sessionId to refetch if it changes
 
-  const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+  // const sortedScores = Object.entries(scores).sort((a, b) => b[1] - a[1]);
   const playerNames = Object.keys(matrix);
 
   const handleBackToPlayground = () => {

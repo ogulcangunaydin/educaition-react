@@ -233,12 +233,12 @@ const Playground = () => {
           >
             <div onClick={(e) => e.stopPropagation()}>
               <QRCodeCanvas
-                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}
+                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/room/${roomId}`}
                 size={256}
                 level={"H"}
                 includeMargin={true}
               />
-              <Typography variant="h6" style={{ color: 'white' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/${roomId}`}</Typography>
+              <Typography variant="h6" style={{ color: 'white' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/room/${roomId}`}</Typography>
             </div>
           </div>
         )}

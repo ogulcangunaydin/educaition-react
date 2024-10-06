@@ -7,12 +7,11 @@ import Header from '../components/Header';
 import validator from 'validator';
 import { useNavigate } from 'react-router-dom';
 
-function GameRooms() {
+function GameRoom() {
   const [rooms, setRooms] = useState([]);
   const [openModal, setOpenModal] = useState(false);
   const [roomName, setRoomName] = useState('');
   const [loading, setLoading] = useState(true); // Initialize loading state
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -102,9 +101,21 @@ function GameRooms() {
     navigate(`/playground/${room.id}`, { state: { roomName: room.name } });
   };
 
+  const handleBackToDashboard = () => {
+    navigate('/dashboard'); // Navigate back to the Dashboard page
+  };
+
   return (
     <>
-      <Header title="Game Rooms" />
+      <Header title="Game Rooms">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleBackToDashboard}
+        >
+          Back to Dashboard
+        </Button>
+      </Header>
       <CenteredContainer>
         {loading ? (
             <CircularProgress /> // Display a loading indicator while loading
@@ -160,6 +171,6 @@ function GameRooms() {
       </CenteredContainer>
     </>
   );
-};
+}
 
-export default GameRooms;
+export default GameRoom;

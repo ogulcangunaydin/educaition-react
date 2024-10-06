@@ -1,4 +1,4 @@
-import { Button } from '@mui/material';
+import { Button, TableContainer as MuiTableContainer} from '@mui/material';
 import { styled } from '@mui/system';
 
 export const CenteredContainer = styled('div')({
@@ -24,3 +24,9 @@ export const RoomCreationModalStyle = {
   boxShadow: 24,
   p: 4,
 };
+
+export const StyledTableContainer = styled(MuiTableContainer)({
+  marginTop: '80px',
+  maxHeight: '70vh', // Adjust the height as needed
+  overflowY: 'auto',
+});

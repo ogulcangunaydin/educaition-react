@@ -44,7 +44,7 @@ function Login() {
 
       const data = await response.json();
       localStorage.setItem('access_token', data.access_token);
-      navigate('/rooms');
+      navigate('/dashboard');
     } catch (error) {
       alert('Login failed: ' + error.message);
     }
