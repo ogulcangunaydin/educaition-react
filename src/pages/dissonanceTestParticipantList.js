@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Button } from '@mui/material';
+import { useMediaQuery, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, CircularProgress, Button, useTheme, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import { StyledTableContainer } from '../styles/CommonStyles';
@@ -11,6 +11,8 @@ const DissonanceTestParticipantList = () => {
   const [loading, setLoading] = useState(true); // Initialize loading state
   const [showQR, setShowQR] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchParticipants = async () => {
@@ -57,7 +59,9 @@ const DissonanceTestParticipantList = () => {
           variant="contained"
           onClick={handleShowQR}
           style={{
-            marginRight: '20px',
+            marginRight: isSmallScreen ? '0' : '20px',
+            marginBottom: isSmallScreen ? '10px' : '0',
+            width: isSmallScreen ? '100%' : 'auto',
           }}
         >
           Display QR Code
@@ -69,15 +73,27 @@ const DissonanceTestParticipantList = () => {
             id="qr-backdrop"
             onClick={handleCloseQR}
             className='qrContainer'
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'rgba(0, 0, 0, 0.8)',
+              zIndex: 1000,
+            }}
           >
-            <div onClick={(e) => e.stopPropagation()}>
+            <div onClick={(e) => e.stopPropagation()} style={{ textAlign: 'center' }}>
               <QRCodeCanvas
                 value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest`}
-                size={256}
+                size={isSmallScreen ? 200 : 256}
                 level={"H"}
                 includeMargin={true}
               />
-              <Typography variant="h6" style={{ color: 'white' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest`}</Typography>
+              <Typography variant="h6" style={{ color: 'white', marginTop: '10px' }}>{`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest`}</Typography>
             </div>
           </div>
         )}
@@ -85,7 +101,7 @@ const DissonanceTestParticipantList = () => {
           {loading ? (
             <CircularProgress /> // Display a loading indicator while loading
           ) : (
-            <TableContainer component={Paper}>
+            <TableContainer component={Paper} style={{ overflowX: 'auto' }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -118,6 +134,9 @@ const DissonanceTestParticipantList = () => {
                           variant="contained"
                           color="primary"
                           onClick={() => handleViewResults(participant.id)}
+                          style={{
+                            width: isSmallScreen ? '100%' : 'auto',
+                          }}
                         >
                           View Results
                         </Button>

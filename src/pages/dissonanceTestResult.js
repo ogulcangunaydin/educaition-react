@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Box, CircularProgress, Button } from '@mui/material';
+import { Typography, Box, CircularProgress, Button, useMediaQuery, useTheme } from '@mui/material';
 import { Radar } from 'react-chartjs-2';
 import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
 import ReactMarkdown from 'react-markdown';
 import Header from '../components/Header';
 import { CenteredContainer } from '../styles/CommonStyles';
-import fetchWithAuth from '../utils/fetchWithAuth';
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -16,6 +15,8 @@ const DissonanceTestResult = () => {
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     const fetchParticipant = async () => {
@@ -95,11 +96,36 @@ const DissonanceTestResult = () => {
       r: {
         beginAtZero: true,
         max: 100,
+        ticks: {
+          stepSize: 20,
+          backdropColor: 'transparent', // Remove the background color of the scale labels
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.1)', // Adjust the grid line color
+        },
+        angleLines: {
+          color: 'rgba(0, 0, 0, 0.1)', // Adjust the angle line color
+        },
         pointLabels: {
           font: {
-            size: 16, // Adjust the font size of the labels
+            size: isSmallScreen ? 12 : 16, // Adjust the font size of the labels based on screen size
           },
         },
+      },
+    },
+    layout: {
+      padding: {
+        top: 20,
+        bottom: 20,
+      },
+    },
+    plugins: {
+      legend: {
+        display: true,
+        position: 'top',
+      },
+      tooltip: {
+        enabled: true,
       },
     },
   };
@@ -107,16 +133,26 @@ const DissonanceTestResult = () => {
   return (
     <>
       <Header title="Kişilik Testi Sonuçları">
-      {isUserAuthenticated && (
-        <Button variant="contained"
-          color="secondary" onClick={() => navigate('/dissonanceTestParticipantList')}>Participant List</Button>
-      )}
+        {isUserAuthenticated && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate('/dissonanceTestParticipantList')}
+            style={{
+              marginRight: isSmallScreen ? '0' : '20px',
+              marginBottom: isSmallScreen ? '10px' : '0',
+              width: isSmallScreen ? '100%' : 'auto',
+            }}
+          >
+            Participant List
+          </Button>
+        )}
       </Header>
       <CenteredContainer>
-        <Box width="100%" maxWidth="600px">
+        <Box width="100%" maxWidth={isSmallScreen ? '100%' : '600px'} mt={isSmallScreen ? '800px' : '0px'}>
           <Radar data={data} options={options} />
         </Box>
-        <Box mt={4} ml={2} mr={2}>
+        <Box mt={4} ml={isSmallScreen ? 1 : 2} mr={isSmallScreen ? 1 : 2}>
           <Typography variant="h6">Meslek Tavsiyeleri</Typography>
           <Box mt={2}>
             <ReactMarkdown>{participant.job_recommendation}</ReactMarkdown>

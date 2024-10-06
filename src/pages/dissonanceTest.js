@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, CircularProgress, Box } from '@mui/material';
+import { Typography, TextField, Button, RadioGroup, FormControlLabel, Radio, CircularProgress, Box, useMediaQuery, useTheme } from '@mui/material';
 import { SentimentVeryDissatisfied, SentimentDissatisfied, SentimentNeutral, SentimentSatisfied, SentimentVerySatisfied } from '@mui/icons-material';
 import Header from '../components/Header';
 import { CenteredContainer } from '../styles/CommonStyles';
@@ -25,6 +25,8 @@ const DissonanceTest = () => {
 
   const navigate = useNavigate();
   const { participantId } = useParams();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   useEffect(() => {
     if (participantId) {
@@ -234,9 +236,9 @@ const DissonanceTest = () => {
 
           {step === 3 && (
             <>
-              <img src={taxiImage} alt="Taxi" style={{ width: '500px', height: '500px', marginBottom: '20px' }} />
+              <img src={taxiImage} alt="Taxi" style={{ width: isSmallScreen ? '100%' : '500px', height: 'auto', marginBottom: '20px' }} />
               <Typography variant="h6">{variableQuestion}</Typography>
-              <RadioGroup row value={variableAnswer} onChange={(e) => setVariableAnswer(e.target.value)}>
+              <RadioGroup row={isSmallScreen ? false : true} value={variableAnswer} onChange={(e) => setVariableAnswer(e.target.value)}>
                 {[...Array(10).keys()].map((num) => (
                   <FormControlLabel key={num + 1} value={(num + 1).toString()} control={<Radio />} label={num + 1} />
                 ))}
@@ -267,9 +269,9 @@ const DissonanceTest = () => {
             <>
               {showFakeError ? (
                 <>
-                  <img src={taxiImage} alt="Taxi" style={{ width: '500px', height: '500px', marginBottom: '20px' }} />
+                  <img src={taxiImage} alt="Taxi" style={{ width: isSmallScreen ? '100%' : '500px', height: 'auto', marginBottom: '20px' }} />
                   <Typography variant="h6">{variableQuestion}</Typography>
-                  <RadioGroup row value={variableAnswer} onChange={(e) => setVariableAnswer(e.target.value)}>
+                  <RadioGroup row={isSmallScreen ? false : true} value={variableAnswer} onChange={(e) => setVariableAnswer(e.target.value)}>
                     {[...Array(10).keys()].map((num) => (
                       <FormControlLabel key={num + 1} value={(num + 1).toString()} control={<Radio />} label={num + 1} />
                     ))}
