@@ -22,7 +22,6 @@ const DissonanceTest = () => {
   const [loading, setLoading] = useState(false);
   const [participant, setParticipant] = useState(null);
   const [showFakeError, setShowFakeError] = useState(false);
-  const [showFinalMessage, setShowFinalMessage] = useState(false);
 
   const navigate = useNavigate();
   const { participantId } = useParams();
@@ -59,7 +58,7 @@ const DissonanceTest = () => {
       // Automatically transition to step 5 after 5 seconds
       const timer = setTimeout(() => {
         setStep(5);
-      }, 5000);
+      }, 10000);
 
       return () => clearTimeout(timer);
     }
@@ -133,7 +132,6 @@ const DissonanceTest = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      setShowFinalMessage(true);
       setStep(6);
     } catch (error) {
       console.error('Error updating participant:', error);
@@ -160,7 +158,7 @@ const DissonanceTest = () => {
         <form onSubmit={handleSubmit}>
           {step === 1 && (
             <>
-              <Typography variant="h6">How are you feeling today?</Typography>
+              <Typography variant="h6">Kendinizi bugün nasıl hissediyorsunuz?</Typography>
               <RadioGroup row value={sentiment} onChange={(e) => setSentiment(e.target.value)}>
                 {[...Array(10).keys()].map((num) => (
                   <FormControlLabel
@@ -173,7 +171,7 @@ const DissonanceTest = () => {
               </RadioGroup>
               <Box mt={2}>
                 <Button variant="contained" color="primary" onClick={handleNext} disabled={!sentiment}>
-                  Next
+                  Sonraki
                 </Button>
               </Box>
             </>
@@ -181,7 +179,7 @@ const DissonanceTest = () => {
 
           {step === 2 && (
             <>
-              <Typography variant="h6">Your email address:</Typography>
+              <Typography variant="h6">Email adresiniz:</Typography>
               <TextField
                 fullWidth
                 type="email"
@@ -189,7 +187,7 @@ const DissonanceTest = () => {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              <Typography variant="h6">Your age:</Typography>
+              <Typography variant="h6">Yaşınız:</Typography>
               <TextField
                 fullWidth
                 type="number"
@@ -198,21 +196,21 @@ const DissonanceTest = () => {
                 inputProps={{ min: 0 }}
               />
 
-              <Typography variant="h6">Your gender:</Typography>
+              <Typography variant="h6">Cinsiyetiniz:</Typography>
               <TextField
                 fullWidth
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
               />
 
-              <Typography variant="h6">Your education:</Typography>
+              <Typography variant="h6">Eğitim durumunuz:</Typography>
               <TextField
                 fullWidth
                 value={education}
                 onChange={(e) => setEducation(e.target.value)}
               />
 
-              <Typography variant="h6">Your income (₺):</Typography>
+              <Typography variant="h6">Geliriniz (₺):</Typography>
               <TextField
                 fullWidth
                 type="number"
@@ -228,7 +226,7 @@ const DissonanceTest = () => {
                   onClick={handleNext}
                   disabled={!email || !age || !education || !income}
                 >
-                  Next
+                  Sonraki
                 </Button>
               </Box>
             </>
@@ -253,9 +251,15 @@ const DissonanceTest = () => {
 
           {step === 4 && participant && (
             <>
-              <Typography variant="h6">Thank you for your participation!</Typography>
-              <Typography variant="body1">Random average result: 8.02 (102 votes)</Typography>
-              <Typography variant="body1">Your answers are being submitted, please wait...</Typography>
+              <Box textAlign="center" mt={4}>
+                <Typography variant="h6">Katılımınız için teşekkür ederiz!</Typography>
+                <Box mt={2} mb={2}>
+                  <Typography variant="h4" color="primary" style={{ fontWeight: 'bold' }}>
+                    Cevap ortalaması: {variableQuestion === TAXI_COMFORT_QUESTION ? '8.02 (102 oy)' : '3.8 (102 oy)'}
+                  </Typography>
+                </Box>
+                <Typography variant="body1">Cevaplarınız kaydediliyor lütfen bekleyiniz...</Typography>
+              </Box>
             </>
           )}
 
@@ -263,6 +267,7 @@ const DissonanceTest = () => {
             <>
               {showFakeError ? (
                 <>
+                  <img src={taxiImage} alt="Taxi" style={{ width: '500px', height: '500px', marginBottom: '20px' }} />
                   <Typography variant="h6">{variableQuestion}</Typography>
                   <RadioGroup row value={variableAnswer} onChange={(e) => setVariableAnswer(e.target.value)}>
                     {[...Array(10).keys()].map((num) => (
@@ -276,20 +281,26 @@ const DissonanceTest = () => {
                   </Box>
                 </>
               ) : (
-                <><Typography variant="h6" color="error">HTTP Error 504: Gateway Timeout</Typography>
-                  <Typography variant="body2" color="error">The server was unable to complete your request within the allotted time.</Typography>
-                  <Typography variant="body2" color="error">Timestamp: {new Date().toLocaleString()}</Typography>
-                  <Typography variant="body2" color="error">Request ID: {Math.random().toString(36)}</Typography></>
+                <>
+                  <Box mb={2}>
+                    <Typography variant="h6" color="error">HTTP Error 504: Gateway Timeout</Typography>
+                    <Typography variant="body2" color="error">Timestamp: {new Date().toLocaleString()}</Typography>
+                    <Typography variant="body2" color="error">Request ID: {Math.random().toString(36)}</Typography>
+                  </Box>
+                  <Box mt={4}>
+                    <Typography variant="h5" color="textPrimary">Server ilk sorunuzun cevabını kaydedemedi. Tekrar cevaplandırabilir misiniz?</Typography>
+                  </Box>
+                </>
               )}
             </>
           )}
 
           {step === 6 && (
             <>
-              <Typography variant="h6">Your answers are submitted correctly.</Typography>
+              <Typography variant="h6">Cevaplarınız doğru şekilde kaydedildi.</Typography>
               <Box mt={2}>
                 <Button variant="contained" color="primary" onClick={() => navigate(`/dissonanceTestResult/${participantId}`)}>
-                  Please click for personality test results
+                  Kişilik testi sonuçlarınızı görmek için tıklayınız
                 </Button>
               </Box>
             </>

@@ -15,11 +15,12 @@ const DissonanceTestResult = () => {
   const navigate = useNavigate();
   const [participant, setParticipant] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
 
   useEffect(() => {
     const fetchParticipant = async () => {
       try {
-        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`, {
+        const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`, {
           method: 'GET',
         });
         if (!response.ok) {
@@ -34,7 +35,24 @@ const DissonanceTestResult = () => {
       }
     };
 
+    const checkAuth = async () => {
+      try {
+        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+          }
+        });
+
+        if (authResponse.ok) {
+          setIsUserAuthenticated(true);
+        }
+      } catch (error) {
+        console.error('Error checking authentication:', error);
+      }
+    };
+
     fetchParticipant();
+    checkAuth();
   }, [participantId]);
 
   if (loading) {
@@ -54,10 +72,10 @@ const DissonanceTestResult = () => {
   }
 
   const data = {
-    labels: ['Extroversion', 'Agreeableness', 'Conscientiousness', 'Negative Emotionality', 'Open-Mindedness'],
+    labels: ['Dışadönüklük', 'Uyumluluk', 'Sorumluluk', 'Olumsuz Duygusallık', 'Açık Fikirlilik'],
     datasets: [
       {
-        label: 'Personality Traits',
+        label: 'Kişilik Özellikleri',
         data: [
           participant.extroversion,
           participant.agreeableness,
@@ -76,19 +94,29 @@ const DissonanceTestResult = () => {
     scales: {
       r: {
         beginAtZero: true,
-        max: 10,
+        max: 100,
+        pointLabels: {
+          font: {
+            size: 16, // Adjust the font size of the labels
+          },
+        },
       },
     },
   };
 
   return (
     <>
-      <Header title="Personality Test Results" />
+      <Header title="Kişilik Testi Sonuçları">
+      {isUserAuthenticated && (
+        <Button variant="contained"
+          color="secondary" onClick={() => navigate('/dissonanceTestParticipantList')}>Participant List</Button>
+      )}
+      </Header>
       <CenteredContainer>
         <Box width="100%" maxWidth="600px">
           <Radar data={data} options={options} />
         </Box>
-        <Box mt={4}>
+        <Box mt={4} ml={2} mr={2}>
           <Typography variant="h6">Meslek Tavsiyeleri</Typography>
           <Box mt={2}>
             <ReactMarkdown>{participant.job_recommendation}</ReactMarkdown>

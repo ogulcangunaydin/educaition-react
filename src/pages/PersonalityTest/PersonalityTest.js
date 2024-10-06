@@ -84,7 +84,6 @@ const PersonalityTest = () => {
   const handleSubmit = async () => {
     setLoading(true); // Set loading to true when submission starts
     try {
-      console.log('Submitting answers:', JSON.stringify(answers));
       const formBody = new FormData();
       formBody.append('answers', JSON.stringify(answers));
 
@@ -151,7 +150,7 @@ const PersonalityTest = () => {
               </Box>
               <Grid container alignItems="center" spacing={isSmallScreen ? 1 : 2}>
                 <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-start' }}>
-                  <Typography align="left">Completely Disagree</Typography>
+                  <Typography align="left">Tamamen Katılmıyorum</Typography>
                 </Grid>
                 <Grid item xs={12} sm={8}>
                   <Box display="flex" justifyContent="center">
@@ -170,14 +169,14 @@ const PersonalityTest = () => {
                   </Box>
                 </Grid>
                 <Grid item xs={12} sm={2} style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <Typography align="right">Completely Agree</Typography>
+                  <Typography align="right">Tamamen Katılıyorum</Typography>
                 </Grid>
               </Grid>
             </CardContent>
             <CardActions style={{ justifyContent: 'space-between' }}>
               {currentQuestionIndex > 0 ? (
                 <Button variant="contained" onClick={handleBack}>
-                  Back
+                  Geri
                 </Button>
               ) : (
                 <div style={{ flex: 1 }}></div>
@@ -185,13 +184,13 @@ const PersonalityTest = () => {
               {currentQuestionIndex === questions.length - 1 ? (
                 answers[currentQuestionIndex] && (
                   <Button variant="contained" color="primary" onClick={handleSubmit} disabled={loading}>
-                    {loading ? <CircularProgress size={24} /> : 'Submit'}
+                    {loading ? <CircularProgress size={24} /> : 'Kaydet'}
                   </Button>
                 )
               ) : (
                 answers[currentQuestionIndex] && (
                   <Button variant="contained" color="primary" onClick={handleNext}>
-                    Next
+                    Sonraki
                   </Button>
                 )
               )}
