@@ -105,7 +105,7 @@ const PersonalityTest = () => {
       if (type === 'room') {
         navigate(`/tacticpreparation/${id}`, { state: { playerId: playerId } });
       } else if (type === 'participant') {
-        navigate(`/dissonanceTest/${id}`);
+        navigate(`/dissonanceTestResult/${id}`);
       }
     } catch (error) {
       console.error('Failed to save survey: ' + error.message);
