@@ -1,13 +1,35 @@
-import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Typography, Box, CircularProgress, Button, useMediaQuery, useTheme } from '@mui/material';
-import { Radar } from 'react-chartjs-2';
-import { Chart as ChartJS, RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend } from 'chart.js';
-import ReactMarkdown from 'react-markdown';
-import Header from '../components/Header';
-import { CenteredContainer } from '../styles/CommonStyles';
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import {
+  Typography,
+  Box,
+  CircularProgress,
+  Button,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import { Radar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import ReactMarkdown from "react-markdown";
+import Header from "../components/Header";
+import { CenteredContainer } from "../styles/CommonStyles";
 
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend
+);
 
 const DissonanceTestResult = () => {
   const { participantId } = useParams();
@@ -16,14 +38,17 @@ const DissonanceTestResult = () => {
   const [loading, setLoading] = useState(true);
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
   const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   useEffect(() => {
     const fetchParticipant = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`, {
-          method: 'GET',
-        });
+        const response = await fetch(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`,
+          {
+            method: "GET",
+          }
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -31,24 +56,27 @@ const DissonanceTestResult = () => {
         setParticipant(data);
         setLoading(false);
       } catch (error) {
-        console.error('Error fetching participant:', error);
+        console.error("Error fetching participant:", error);
         setLoading(false);
       }
     };
 
     const checkAuth = async () => {
       try {
-        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
-          headers: {
-            "Authorization": `Bearer ${localStorage.getItem('access_token')}`
+        const authResponse = await fetch(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/auth`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            },
           }
-        });
+        );
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
         }
       } catch (error) {
-        console.error('Error checking authentication:', error);
+        console.error("Error checking authentication:", error);
       }
     };
 
@@ -67,16 +95,24 @@ const DissonanceTestResult = () => {
   if (!participant) {
     return (
       <CenteredContainer>
-        <Typography variant="h6" color="error">Error loading participant data.</Typography>
+        <Typography variant="h6" color="error">
+          Error loading participant data.
+        </Typography>
       </CenteredContainer>
     );
   }
 
   const data = {
-    labels: ['Dışadönüklük', 'Uyumluluk', 'Sorumluluk', 'Olumsuz Duygusallık', 'Açık Fikirlilik'],
+    labels: [
+      "Dışadönüklük",
+      "Uyumluluk",
+      "Sorumluluk",
+      "Olumsuz Duygusallık",
+      "Açık Fikirlilik",
+    ],
     datasets: [
       {
-        label: 'Kişilik Özellikleri',
+        label: "Kişilik Özellikleri",
         data: [
           participant.extroversion,
           participant.agreeableness,
@@ -84,8 +120,8 @@ const DissonanceTestResult = () => {
           participant.negative_emotionality,
           participant.open_mindedness,
         ],
-        backgroundColor: 'rgba(34, 202, 236, 0.2)',
-        borderColor: 'rgba(34, 202, 236, 1)',
+        backgroundColor: "rgba(34, 202, 236, 0.2)",
+        borderColor: "rgba(34, 202, 236, 1)",
         borderWidth: 2,
       },
     ],
@@ -98,13 +134,13 @@ const DissonanceTestResult = () => {
         max: 100,
         ticks: {
           stepSize: 20,
-          backdropColor: 'transparent', // Remove the background color of the scale labels
+          backdropColor: "transparent", // Remove the background color of the scale labels
         },
         grid: {
-          color: 'rgba(0, 0, 0, 0.1)', // Adjust the grid line color
+          color: "rgba(0, 0, 0, 0.1)", // Adjust the grid line color
         },
         angleLines: {
-          color: 'rgba(0, 0, 0, 0.1)', // Adjust the angle line color
+          color: "rgba(0, 0, 0, 0.1)", // Adjust the angle line color
         },
         pointLabels: {
           font: {
@@ -122,7 +158,7 @@ const DissonanceTestResult = () => {
     plugins: {
       legend: {
         display: true,
-        position: 'top',
+        position: "top",
       },
       tooltip: {
         enabled: true,
@@ -131,17 +167,17 @@ const DissonanceTestResult = () => {
   };
 
   return (
-    <>
+    <Box display="flex" flexDirection="column">
       <Header title="Kişilik Testi Sonuçları">
         {isUserAuthenticated && (
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate('/dissonanceTestParticipantList')}
+            onClick={() => navigate("/dissonanceTestParticipantList")}
             style={{
-              marginRight: isSmallScreen ? '0' : '20px',
-              marginBottom: isSmallScreen ? '10px' : '0',
-              width: isSmallScreen ? '100%' : 'auto',
+              marginRight: isSmallScreen ? "0" : "20px",
+              marginBottom: isSmallScreen ? "10px" : "0",
+              width: isSmallScreen ? "100%" : "auto",
             }}
           >
             Participant List
@@ -149,7 +185,11 @@ const DissonanceTestResult = () => {
         )}
       </Header>
       <CenteredContainer>
-        <Box width="100%" maxWidth={isSmallScreen ? '100%' : '600px'} mt={isSmallScreen ? '800px' : '0px'}>
+        <Box
+          width="100%"
+          maxWidth={isSmallScreen ? "100%" : "600px"}
+          mt={isSmallScreen ? "2200px" : "750px"}
+        >
           <Radar data={data} options={options} />
         </Box>
         <Box mt={4} ml={isSmallScreen ? 1 : 2} mr={isSmallScreen ? 1 : 2}>
@@ -158,8 +198,16 @@ const DissonanceTestResult = () => {
             <ReactMarkdown>{participant.job_recommendation}</ReactMarkdown>
           </Box>
         </Box>
+        <Box mt={4} ml={isSmallScreen ? 1 : 2} mr={isSmallScreen ? 1 : 2}>
+          <Typography variant="h6">
+            Burç Kişilik Testi Uyumluluk Analizi
+          </Typography>
+          <Box mt={2}>
+            <ReactMarkdown>{participant.compatibility_analysis}</ReactMarkdown>
+          </Box>
+        </Box>
       </CenteredContainer>
-    </>
+    </Box>
   );
 };
 

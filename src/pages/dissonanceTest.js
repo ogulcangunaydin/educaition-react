@@ -11,6 +11,10 @@ import {
   useMediaQuery,
   useTheme,
   Slider,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import {
   SentimentVeryDissatisfied,
@@ -22,7 +26,8 @@ import {
 import Header from "../components/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
 import taxiImage from "../assets/taxi.png";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import careerImage from "../assets/career.jpeg";
 
 const DissonanceTest = () => {
   const TAXI_COMFORT_QUESTION =
@@ -30,12 +35,43 @@ const DissonanceTest = () => {
   const TAXI_FARES_QUESTION =
     "Sizce İstanbul’da aldığınız taksi hizmetinin kalitesi ile ücret dengesi ne ölçüde uyumlu?";
 
+  const educationOptions = [
+    "lise mezunu",
+    "lise öğrencisi",
+    "üniversite öğrencisi",
+    "üniversite mezunu",
+    "y.lisans öğrencisi ve üzeri",
+  ];
+
+  const starSignOptions = [
+    "Koç",
+    "Boğa",
+    "İkizler",
+    "Yengeç",
+    "Aslan",
+    "Başak",
+    "Terazi",
+    "Akrep",
+    "Yay",
+    "Oğlak",
+    "Kova",
+    "Balık",
+  ];
+
+  const { currentUserId } = useParams();
+
   const [step, setStep] = useState(1);
   const [sentiment, setSentiment] = useState("");
   const [email, setEmail] = useState("");
   const [gender, setGender] = useState("");
   const [age, setAge] = useState("");
   const [education, setEducation] = useState("");
+  const [workload, setWorkload] = useState(5);
+  const [careerStart, setCareerStart] = useState(5);
+  const [flexibility, setFlexibility] = useState(5);
+  const [starSign, setStarSign] = useState("");
+  const [risingSign, setRisingSign] = useState("");
+
   const [loading, setLoading] = useState(false);
   const [participant, setParticipant] = useState(null);
   const [showFakeError, setShowFakeError] = useState(false);
@@ -96,14 +132,14 @@ const DissonanceTest = () => {
   const comfortMarks = [
     {
       value: parseFloat(comfortQuestionAverage),
-      label: `Ortalama: ${comfortQuestionAverage}`,
+      label: `Ort: ${comfortQuestionAverage}`,
     },
   ];
 
   const fareMarks = [
     {
       value: parseFloat(fareQuestionAverage),
-      label: `Ortalama: ${fareQuestionAverage}`,
+      label: `Ort: ${fareQuestionAverage}`,
     },
   ];
 
@@ -119,6 +155,12 @@ const DissonanceTest = () => {
         sentiment: parseInt(sentiment, 10),
         comfort_question_first_answer: parseInt(comfortQuestionFirstAnswer, 10),
         fare_question_first_answer: parseInt(fareQuestionFirstAnswer, 10),
+        user_id: parseInt(currentUserId, 10),
+        workload: parseInt(workload, 10),
+        career_start: parseInt(careerStart, 10),
+        flexibility: parseInt(flexibility, 10),
+        star_sign: starSign,
+        rising_sign: risingSign,
       };
 
       const response = await fetch(
@@ -221,6 +263,25 @@ const DissonanceTest = () => {
           <form onSubmit={handleSubmit} style={{ padding: "20px" }}>
             {step === 1 && (
               <>
+                <Box textAlign="center" mb={4}>
+                  <img
+                    src={careerImage}
+                    alt="Career"
+                    style={{
+                      width: "100%",
+                      maxWidth: "500px",
+                      height: "auto",
+                      marginBottom: "20px",
+                    }}
+                  />
+                  <Typography variant="h6" gutterBottom>
+                    Kariyer yolculuğunuz için eğlenceli bir keşfe çıkın!
+                    Yaşınız, kişilik özellikleriniz ve burcunuzdan yola çıkarak,
+                    size en uygun meslekler üzerine beyin fırtınası yapacak,
+                    keyifli bir plan oluşturacağız! Unutmayın, sonuçlar ilham
+                    verici ancak iddialı değil!
+                  </Typography>
+                </Box>
                 <Typography variant="h6">
                   Kendinizi bugün nasıl hissediyorsunuz?
                 </Typography>
@@ -257,7 +318,7 @@ const DissonanceTest = () => {
             )}
 
             {step === 2 && (
-              <>
+              <Box mt={30}>
                 <Typography variant="h6">Email adresiniz:</Typography>
                 <TextField
                   fullWidth
@@ -283,10 +344,105 @@ const DissonanceTest = () => {
                 />
 
                 <Typography variant="h6">Eğitim durumunuz:</Typography>
-                <TextField
-                  fullWidth
-                  value={education}
-                  onChange={(e) => setEducation(e.target.value)}
+                <FormControl fullWidth>
+                  <InputLabel id="education-label">Eğitim Durumu</InputLabel>
+                  <Select
+                    labelId="education-label"
+                    value={education}
+                    onChange={(e) => setEducation(e.target.value)}
+                    label="Eğitim Durumu"
+                  >
+                    {educationOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="h6">Burcunuz:</Typography>
+                <FormControl fullWidth>
+                  <InputLabel id="star-sign-label">Burç</InputLabel>
+                  <Select
+                    labelId="star-sign-label"
+                    value={starSign}
+                    onChange={(e) => setStarSign(e.target.value)}
+                    label="Burç"
+                  >
+                    {starSignOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="h6">Yükselen Burcunuz:</Typography>
+                <FormControl fullWidth>
+                  <InputLabel id="rising-sign-label">Yükselen Burç</InputLabel>
+                  <Select
+                    labelId="rising-sign-label"
+                    value={risingSign}
+                    onChange={(e) => setRisingSign(e.target.value)}
+                    label="Yükselen Burç"
+                  >
+                    {starSignOptions.map((option) => (
+                      <MenuItem key={option} value={option}>
+                        {option}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+
+                <Typography variant="h6" gutterBottom>
+                  Çalışma:
+                </Typography>
+                <Slider
+                  value={workload}
+                  onChange={(e, newValue) => setWorkload(newValue)}
+                  aria-labelledby="workload-slider"
+                  valueLabelDisplay="auto"
+                  step={1}
+                  marks={[
+                    { value: 1, label: "Rahat" },
+                    { value: 10, label: "Yoğun" },
+                  ]}
+                  min={1}
+                  max={10}
+                />
+
+                <Typography variant="h6" gutterBottom>
+                  Kariyer başlangıcı:
+                </Typography>
+                <Slider
+                  value={careerStart}
+                  onChange={(e, newValue) => setCareerStart(newValue)}
+                  aria-labelledby="career-start-slider"
+                  valueLabelDisplay="auto"
+                  step={1}
+                  marks={[
+                    { value: 1, label: "Kolay" },
+                    { value: 10, label: "Zor" },
+                  ]}
+                  min={1}
+                  max={10}
+                />
+
+                <Typography variant="h6" gutterBottom>
+                  İş Esnekliği:
+                </Typography>
+                <Slider
+                  value={flexibility}
+                  onChange={(e, newValue) => setFlexibility(newValue)}
+                  aria-labelledby="flexibility-slider"
+                  valueLabelDisplay="auto"
+                  step={1}
+                  marks={[
+                    { value: 1, label: "Katı" },
+                    { value: 10, label: "Esnek" },
+                  ]}
+                  min={1}
+                  max={10}
                 />
 
                 <Box mt={2}>
@@ -299,7 +455,7 @@ const DissonanceTest = () => {
                     Sonraki
                   </Button>
                 </Box>
-              </>
+              </Box>
             )}
 
             {step === 3 && (
@@ -408,6 +564,15 @@ const DissonanceTest = () => {
                     <Typography variant="h6">
                       {TAXI_COMFORT_QUESTION}
                     </Typography>
+                    <Box textAlign="center" mb={2}>
+                      <Typography
+                        variant="h5"
+                        color="primary"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        Ortalama: {comfortQuestionAverage} (102 oy)
+                      </Typography>
+                    </Box>
                     <Slider
                       value={comfortQuestionSecondAnswer}
                       onChange={(e, newValue) =>
@@ -425,6 +590,15 @@ const DissonanceTest = () => {
                       }}
                     />
                     <Typography variant="h6">{TAXI_FARES_QUESTION}</Typography>
+                    <Box textAlign="center" mb={2}>
+                      <Typography
+                        variant="h5"
+                        color="primary"
+                        style={{ fontWeight: "bold" }}
+                      >
+                        Ortalama: {fareQuestionAverage} (102 oy)
+                      </Typography>
+                    </Box>
                     <Slider
                       value={fareQuestionSecondAnswer}
                       onChange={(e, newValue) =>

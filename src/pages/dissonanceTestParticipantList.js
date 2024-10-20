@@ -28,6 +28,8 @@ const DissonanceTestParticipantList = () => {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
+  const currentUserId = localStorage.getItem("current_user_id");
+
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
@@ -77,9 +79,21 @@ const DissonanceTestParticipantList = () => {
       "Education",
       "Sentiment",
       "Comfort Question First Answer",
-      "Comfort Question Second Answer",
       "Fare Question First Answer",
+      "Comfort Question Second Answer",
       "Fare Question Second Answer",
+      "Extroversion",
+      "Agreeableness",
+      "Conscientiousness",
+      "Negative Emotionality",
+      "Open Mindedness",
+      "Created At",
+      "Workload",
+      "Career Start",
+      "Flexibility",
+      "Star Sign",
+      "Rising Sign",
+      "Personality Test Answers",
     ];
 
     const rows = participants.map((participant) => [
@@ -89,24 +103,38 @@ const DissonanceTestParticipantList = () => {
       participant.education,
       participant.sentiment,
       participant.comfort_question_first_answer,
-      participant.comfort_question_second_answer,
       participant.fare_question_first_answer,
+      participant.comfort_question_second_answer,
       participant.fare_question_second_answer,
+      participant.extroversion.toFixed(2),
+      participant.agreeableness.toFixed(2),
+      participant.conscientiousness.toFixed(2),
+      participant.negative_emotionality.toFixed(2),
+      participant.open_mindedness.toFixed(2),
+      participant.created_at,
+      participant.workload,
+      participant.career_start,
+      participant.flexibility,
+      participant.star_sign,
+      participant.rising_sign,
+      `"${JSON.stringify(participant.personality_test_answers).replace(
+        /"/g,
+        '""'
+      )}"`,
     ]);
 
     let csvContent =
-      "data:text/csv;charset=utf-8," +
-      headers.join(",") +
-      "\n" +
-      rows.map((e) => e.join(",")).join("\n");
+      headers.join(",") + "\n" + rows.map((e) => e.join(",")).join("\n");
 
-    const encodedUri = encodeURI(csvContent);
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
-    link.setAttribute("href", encodedUri);
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
     link.setAttribute("download", "dissonance_test_participants.csv");
     document.body.appendChild(link); // Required for FF
 
     link.click();
+    document.body.removeChild(link); // Clean up
   };
 
   return (
@@ -167,7 +195,7 @@ const DissonanceTestParticipantList = () => {
               style={{ textAlign: "center" }}
             >
               <QRCodeCanvas
-                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest`}
+                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}
                 size={isSmallScreen ? 200 : 256}
                 level={"H"}
                 includeMargin={true}
@@ -175,7 +203,7 @@ const DissonanceTestParticipantList = () => {
               <Typography
                 variant="h6"
                 style={{ color: "white", marginTop: "10px" }}
-              >{`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest`}</Typography>
+              >{`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}</Typography>
             </div>
           </div>
         )}
@@ -196,9 +224,21 @@ const DissonanceTestParticipantList = () => {
                     <TableCell>Education</TableCell>
                     <TableCell>Sentiment</TableCell>
                     <TableCell>Comfort Question First Answer</TableCell>
-                    <TableCell>Comfort Question Second Answer</TableCell>
                     <TableCell>Fare Question First Answer</TableCell>
+                    <TableCell>Comfort Question Second Answer</TableCell>
                     <TableCell>Fare Question Second Answer</TableCell>
+                    <TableCell>Extroversion</TableCell>
+                    <TableCell>Agreeableness</TableCell>
+                    <TableCell>Conscientiousness</TableCell>
+                    <TableCell>Negative Emotionality</TableCell>
+                    <TableCell>Open Mindedness</TableCell>
+                    <TableCell>Created At</TableCell>
+                    <TableCell>Workload</TableCell>
+                    <TableCell>Career Start</TableCell>
+                    <TableCell>Flexibility</TableCell>
+                    <TableCell>Star Sign</TableCell>
+                    <TableCell>Rising Sign</TableCell>
+                    <TableCell>Personality Test Answers</TableCell>
                     <TableCell>Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -214,13 +254,41 @@ const DissonanceTestParticipantList = () => {
                         {participant.comfort_question_first_answer}
                       </TableCell>
                       <TableCell>
-                        {participant.comfort_question_second_answer}
-                      </TableCell>
-                      <TableCell>
                         {participant.fare_question_first_answer}
                       </TableCell>
                       <TableCell>
+                        {participant.comfort_question_second_answer}
+                      </TableCell>
+                      <TableCell>
                         {participant.fare_question_second_answer}
+                      </TableCell>
+                      <TableCell>
+                        {participant.extroversion.toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {participant.agreeableness.toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {participant.conscientiousness.toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {participant.negative_emotionality.toFixed(2)}
+                      </TableCell>
+                      <TableCell>
+                        {participant.open_mindedness.toFixed(2)}
+                      </TableCell>
+                      <TableCell>{participant.created_at}</TableCell>
+                      <TableCell>{participant.workload}</TableCell>
+                      <TableCell>{participant.career_start}</TableCell>
+                      <TableCell>{participant.flexibility}</TableCell>
+                      <TableCell>{participant.star_sign}</TableCell>
+                      <TableCell>{participant.rising_sign}</TableCell>
+                      <TableCell>
+                        {JSON.stringify(
+                          participant.personality_test_answers,
+                          null,
+                          2
+                        ).slice(0, 20) + "..."}
                       </TableCell>
                       <TableCell>
                         <Button
