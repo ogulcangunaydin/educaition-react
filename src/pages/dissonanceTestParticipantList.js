@@ -71,6 +71,10 @@ const DissonanceTestParticipantList = () => {
     navigate(`/dissonanceTestResult/${participantId}`);
   };
 
+  const handleBackToDashboard = () => {
+    navigate("/dashboard");
+  };
+
   const exportToCSV = () => {
     const headers = [
       "Email",
@@ -146,6 +150,18 @@ const DissonanceTestParticipantList = () => {
           alignItems={isSmallScreen ? "stretch" : "center"}
           justifyContent={isSmallScreen ? "center" : "flex-start"}
         >
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleBackToDashboard}
+            style={{
+              marginRight: isSmallScreen ? "0" : "20px",
+              marginBottom: isSmallScreen ? "10px" : "0",
+              width: isSmallScreen ? "100%" : "auto",
+            }}
+          >
+            Back to Dashboard
+          </Button>
           <Button
             variant="contained"
             color="secondary"
@@ -263,19 +279,29 @@ const DissonanceTestParticipantList = () => {
                         {participant.fare_question_second_answer}
                       </TableCell>
                       <TableCell>
-                        {participant.extroversion.toFixed(2)}
+                        {participant.extroversion !== null
+                          ? participant.extroversion.toFixed(2)
+                          : "N/A"}
                       </TableCell>
                       <TableCell>
-                        {participant.agreeableness.toFixed(2)}
+                        {participant.agreeableness !== null
+                          ? participant.agreeableness.toFixed(2)
+                          : "N/A"}
                       </TableCell>
                       <TableCell>
-                        {participant.conscientiousness.toFixed(2)}
+                        {participant.conscientiousness !== null
+                          ? participant.conscientiousness.toFixed(2)
+                          : "N/A"}
                       </TableCell>
                       <TableCell>
-                        {participant.negative_emotionality.toFixed(2)}
+                        {participant.negative_emotionality !== null
+                          ? participant.negative_emotionality.toFixed(2)
+                          : "N/A"}
                       </TableCell>
                       <TableCell>
-                        {participant.open_mindedness.toFixed(2)}
+                        {participant.open_mindedness !== null
+                          ? participant.open_mindedness.toFixed(2)
+                          : "N/A"}
                       </TableCell>
                       <TableCell>{participant.created_at}</TableCell>
                       <TableCell>{participant.workload}</TableCell>
@@ -284,11 +310,13 @@ const DissonanceTestParticipantList = () => {
                       <TableCell>{participant.star_sign}</TableCell>
                       <TableCell>{participant.rising_sign}</TableCell>
                       <TableCell>
-                        {JSON.stringify(
-                          participant.personality_test_answers,
-                          null,
-                          2
-                        ).slice(0, 20) + "..."}
+                        {participant.personality_test_answers !== null
+                          ? JSON.stringify(
+                              participant.personality_test_answers,
+                              null,
+                              2
+                            ).slice(0, 20) + "..."
+                          : "N/A"}
                       </TableCell>
                       <TableCell>
                         <Button

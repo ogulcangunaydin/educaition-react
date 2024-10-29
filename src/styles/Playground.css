@@ -40,7 +40,7 @@
 
 .character-traits {
   text-align: center;
-  background-color: aqua;
+  background-color: #98FF98; /* Mint Green */
   margin-bottom: 10px;
 }
 
@@ -80,4 +80,5 @@
   justify-content: center;
   align-items: center;
   backdrop-filter: blur(8px);
+  z-index: 1000; /* Ensure it stays on top */
 }
