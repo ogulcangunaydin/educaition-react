@@ -1,0 +1,12 @@
+{
+  "login": "Login",
+  "dashboard": "Dashboard",
+  "rooms": "Rooms",
+  "playground": "Playground",
+  "tacticPreparation": "Tactic Preparation",
+  "leaderboard": "Leaderboard",
+  "personalityTest": "Personality Test",
+  "dissonanceTestParticipantList": "Dissonance Test Participant List",
+  "dissonanceTest": "Dissonance Test",
+  "dissonanceTestResult": "Dissonance Test Result"
+}

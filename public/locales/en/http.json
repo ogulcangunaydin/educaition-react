@@ -1,0 +1,31 @@
+{
+  "http": {
+    "message": {
+      "changePassword": {
+        "400": "Incorrect password.",
+        "404": "User not found",
+        "409": "Incorrect password."
+      },
+      "common": {
+        "error": "Something went wrong.",
+        "success": "Success"
+      },
+      "login": {
+        "200": "Login success.",
+        "400": "Incorrect username or password.",
+        "403": "User is locked. You can contact your system administrator.",
+        "404": "Incorrect username or password.",
+        "409": "Incorrect username or password."
+      },
+      "profile": {
+        "200": "Your profile settings have been saved."
+      }
+    },
+    "title": {
+      "common": {
+        "error": "Error",
+        "success": "Success"
+      }
+    }
+  }
+}

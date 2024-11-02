@@ -1,0 +1,31 @@
+{
+  "http": {
+    "message": {
+      "changePassword": {
+        "400": "Yanlış şifre.",
+        "404": "Kullanıcı bulunamadı.",
+        "409": "Yanlış şifre."
+      },
+      "common": {
+        "error": "Bir şeyler ters gitti.",
+        "success": "Başarılı"
+      },
+      "login": {
+        "200": "Giriş başarılı.",
+        "400": "Yanlış kullanıcı adı veya şifre.",
+        "403": "Kullanıcı kilitli. Sistem yöneticinizle iletişime geçebilirsiniz.",
+        "404": "Yanlış kullanıcı adı veya şifre.",
+        "409": "Yanlış kullanıcı adı veya şifre."
+      },
+      "profile": {
+        "200": "Profil ayarlarınız kaydedildi."
+      }
+    },
+    "title": {
+      "common": {
+        "error": "Hata",
+        "success": "Başarılı"
+      }
+    }
+  }
+}

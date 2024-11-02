@@ -1,0 +1,12 @@
+{
+  "login": "Giriş",
+  "dashboard": "Kontrol Paneli",
+  "rooms": "Odalar",
+  "playground": "Oyun Alanı",
+  "tacticPreparation": "Taktik Hazırlığı",
+  "leaderboard": "Lider Tablosu",
+  "personalityTest": "Kişilik Testi",
+  "dissonanceTestParticipantList": "Uyumsuzluk Testi Katılımcı Listesi",
+  "dissonanceTest": "Uyumsuzluk Testi",
+  "dissonanceTestResult": "Uyumsuzluk Testi Sonucu"
+}

@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "ESNext", // Use the latest ECMAScript version
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "jsx": "react-jsx", // Use the new JSX transform
+    "tsBuildInfoFile": "./node_modules/.cache/.tsbuildinfo",
+    "baseUrl": "./",
+    "paths": {
+      "@educaition-react/ui/*": ["src/educaition-react-ui/src/*"],
+      "@educaition-react/theme": ["src/educaition-react-theme/src"]
+    },
+    "allowJs": true, // Allow JavaScript files
+    "resolveJsonModule": true, // Enable resolving JSON modules
+    "isolatedModules": true, // Enable isolated modules
+    "noEmit": true, // Do not emit output files
+    "incremental": true, // Enable incremental compilation
+    "types": ["node", "react", "react-dom", "redux-persist"]
+  },
+  "include": ["src"]
+}
