@@ -77,13 +77,11 @@ const DissonanceTest = () => {
   const [showFakeError, setShowFakeError] = useState(false);
 
   const [comfortQuestionFirstAnswer, setComfortQuestionFirstAnswer] =
-    useState(5);
+    useState(0);
   const [comfortQuestionSecondAnswer, setComfortQuestionSecondAnswer] =
-    useState(comfortQuestionFirstAnswer);
-  const [fareQuestionFirstAnswer, setFareQuestionFirstAnswer] = useState(5);
-  const [fareQuestionSecondAnswer, setFareQuestionSecondAnswer] = useState(
-    fareQuestionFirstAnswer
-  );
+    useState(0);
+  const [fareQuestionFirstAnswer, setFareQuestionFirstAnswer] = useState(0);
+  const [fareQuestionSecondAnswer, setFareQuestionSecondAnswer] = useState(0);
 
   const [comfortQuestionAverage, setComfortQuestionAverage] = useState("");
   const [fareQuestionAverage, setFareQuestionAverage] = useState("");
@@ -123,11 +121,6 @@ const DissonanceTest = () => {
       return () => clearTimeout(timer);
     }
   }, [step]);
-
-  useEffect(() => {
-    setComfortQuestionSecondAnswer(comfortQuestionFirstAnswer);
-    setFareQuestionSecondAnswer(fareQuestionFirstAnswer);
-  }, [comfortQuestionFirstAnswer, fareQuestionFirstAnswer]);
 
   const comfortMarks = [
     {
@@ -479,7 +472,7 @@ const DissonanceTest = () => {
                   valueLabelDisplay="auto"
                   step={1}
                   marks
-                  min={0}
+                  min={1}
                   max={10}
                 />
                 <Typography variant="h6">{TAXI_FARES_QUESTION}</Typography>
@@ -492,7 +485,7 @@ const DissonanceTest = () => {
                   valueLabelDisplay="auto"
                   step={1}
                   marks
-                  min={0}
+                  min={1}
                   max={10}
                 />
                 <Box mt={2}>
@@ -582,7 +575,7 @@ const DissonanceTest = () => {
                       valueLabelDisplay="auto"
                       step={1}
                       marks={comfortMarks}
-                      min={0}
+                      min={1}
                       max={10}
                       style={{
                         width: isSmallScreen ? "80%" : "100%",
@@ -608,7 +601,7 @@ const DissonanceTest = () => {
                       valueLabelDisplay="auto"
                       step={1}
                       marks={fareMarks}
-                      min={0}
+                      min={1}
                       max={10}
                       style={{
                         width: isSmallScreen ? "80%" : "100%",

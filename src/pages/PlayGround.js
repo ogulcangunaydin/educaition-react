@@ -38,6 +38,9 @@ const Playground = () => {
   const [sessionName, setSessionName] = useState(""); // For storing input name
   const [sessions, setSessions] = useState([]); // For storing session data
   const [anchorEl, setAnchorEl] = useState(null); // State for menu anchor
+  const [openDialogParticipantId, setOpenDialogParticipantId] = useState(null);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const theme = useTheme();
   // Use theme.breakpoints.down('sm') to check for small screen size
@@ -45,8 +48,6 @@ const Playground = () => {
 
   const location = useLocation();
   const roomName = location.state?.roomName || "";
-
-  const [openDialogParticipantId, setOpenDialogParticipantId] = useState(null);
 
   const handleClickOpen = (participantId) => {
     setOpenDialogParticipantId(participantId); // Set the ID of the participant whose dialog should be open
@@ -130,7 +131,7 @@ const Playground = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     try {
       const formBody = new FormData();
@@ -148,19 +149,45 @@ const Playground = () => {
       );
 
       if (!response.ok) {
-        throw new Error("Failed to create session");
+        const errorData = await response.json();
+        if (errorData.detail === "All players are not ready") {
+          setErrorMessage(errorData.detail);
+          setShowErrorModal(true);
+        } else {
+          throw new Error(errorData.detail || "Failed to create session");
+        }
+      } else {
+        const data = await response.json();
+        setSessions([...sessions, data]); // Add the new session to the sessions array
+        setShowModal(false); // Close the modal
+
+        navigate(`/leaderboard/${data.id}`, {
+          state: { roomId: roomId, roomName: roomName },
+        });
       }
-
-      const data = await response.json();
-      setSessions([...sessions, data]); // Add the new session to the sessions array
-      setShowModal(false); // Close the modal
-
-      navigate(`/leaderboard/${data.id}`, {
-        state: { roomId: roomId, roomName: roomName },
-      });
     } catch (error) {
       console.error("Error creating session:", error);
-      alert("An error occurred. Please try again.");
+      alert(`An error occurred: ${error.message}`);
+    }
+  };
+
+  const handleDeleteNotReadyPlayers = async () => {
+    try {
+      const notReadyPlayers = participants.filter(
+        (player) => !player.player_tactic
+      );
+      for (const player of notReadyPlayers) {
+        await fetchWithAuth(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${player.id}`,
+          {
+            method: "POST",
+          }
+        );
+      }
+      setShowErrorModal(false);
+      handleSubmit(); // Call handleSubmit again to start the game
+    } catch (error) {
+      console.error("Error deleting not ready players:", error);
     }
   };
 
@@ -494,6 +521,31 @@ const Playground = () => {
           </form>
         </div>
       </Modal>
+      <Dialog
+        open={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            {errorMessage}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowErrorModal(false)} color="primary">
+            Cancel
+          </Button>
+          <Button
+            onClick={handleDeleteNotReadyPlayers}
+            color="primary"
+            autoFocus
+          >
+            Delete Not Ready Players and Start Game
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

@@ -75,6 +75,13 @@ const DissonanceTestParticipantList = () => {
     navigate("/dashboard");
   };
 
+  const formatPersonalityTestAnswers = (answers) => {
+    if (!answers || answers.length === 0) {
+      return "N/A";
+    }
+    return `"${JSON.stringify(answers).replace(/"/g, '""')}"`;
+  };
+
   const exportToCSV = () => {
     const headers = [
       "Email",
@@ -110,21 +117,28 @@ const DissonanceTestParticipantList = () => {
       participant.fare_question_first_answer,
       participant.comfort_question_second_answer,
       participant.fare_question_second_answer,
-      participant.extroversion.toFixed(2),
-      participant.agreeableness.toFixed(2),
-      participant.conscientiousness.toFixed(2),
-      participant.negative_emotionality.toFixed(2),
-      participant.open_mindedness.toFixed(2),
+      participant.extroversion !== null
+        ? participant.extroversion.toFixed(2)
+        : "N/A",
+      participant.agreeableness !== null
+        ? participant.agreeableness.toFixed(2)
+        : "N/A",
+      participant.conscientiousness !== null
+        ? participant.conscientiousness.toFixed(2)
+        : "N/A",
+      participant.negative_emotionality !== null
+        ? participant.negative_emotionality.toFixed(2)
+        : "N/A",
+      participant.open_mindedness !== null
+        ? participant.open_mindedness.toFixed(2)
+        : "N/A",
       participant.created_at,
       participant.workload,
       participant.career_start,
       participant.flexibility,
       participant.star_sign,
       participant.rising_sign,
-      `"${JSON.stringify(participant.personality_test_answers).replace(
-        /"/g,
-        '""'
-      )}"`,
+      formatPersonalityTestAnswers(participant.personality_test_answers),
     ]);
 
     let csvContent =

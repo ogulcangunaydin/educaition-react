@@ -1,10 +1,25 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { Container, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Card, CardContent, Button, Grid, LinearProgress } from '@mui/material';
-import Header from '../components/Header';
-import '../styles/Playground.css';
-import fetchWithAuth from '../utils/fetchWithAuth';
-import ParticipantDetailCard from '../components/ParticipantDetailCard';
+import React, { useEffect, useState } from "react";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {
+  Container,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Card,
+  CardContent,
+  Button,
+  Grid,
+  LinearProgress,
+} from "@mui/material";
+import Header from "../components/Header";
+import "../styles/Playground.css";
+import fetchWithAuth from "../utils/fetchWithAuth";
+import ParticipantDetailCard from "../components/ParticipantDetailCard";
 
 const Leaderboard = () => {
   const { sessionId } = useParams();
@@ -15,37 +30,60 @@ const Leaderboard = () => {
   const [scores, setScores] = useState({});
   const [matrix, setMatrix] = useState({});
   const [participants, setParticipants] = useState([]);
-  const [sessionName, setSessionName] = useState('');
-  const [sessionStatus, setSessionStatus] = useState(''); // New state for session status
+  const [sessionName, setSessionName] = useState("");
+  const [sessionStatus, setSessionStatus] = useState(""); // New state for session status
+
+  const isJsonString = (str) => {
+    try {
+      JSON.parse(str);
+    } catch (e) {
+      return false;
+    }
+    return true;
+  };
 
   useEffect(() => {
     const fetchSessionData = async () => {
       try {
-        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/sessions/${sessionId}`);
+        const response = await fetchWithAuth(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/sessions/${sessionId}`
+        );
         if (!response.ok) {
-          throw new Error('Session data could not be fetched');
+          throw new Error("Session data could not be fetched");
         }
         const data = await response.json();
         setSessionName(data.name);
         setSessionStatus(data.status);
 
-        if (data.status === 'finished') {
-          const leaderboardArray = Object.entries(data.results.leaderboard).map(([player, { score, short_tactic }]) => ({
+        if (data.status === "finished") {
+          // TODO: Old data is directly json so we need to check if it is string or not
+          const parsedResults =
+            typeof data.results === "string" && isJsonString(data.results)
+              ? JSON.parse(data.results)
+              : data.results;
+
+          const leaderboardArray = Object.entries(
+            parsedResults.leaderboard
+          ).map(([player, { score, short_tactic }]) => ({
             player,
             score,
-            short_tactic
+            short_tactic,
           }));
+
           setScores(leaderboardArray);
-          setMatrix(data.results.matrix);
-          const participantsResponse = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/players/${data.player_ids}`);
+          setMatrix(parsedResults.matrix);
+
+          const participantsResponse = await fetchWithAuth(
+            `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${data.player_ids}`
+          );
           if (!participantsResponse.ok) {
-            throw new Error('Failed to fetch participants');
+            throw new Error("Failed to fetch participants");
           }
           const participantsData = await participantsResponse.json();
           setParticipants(participantsData);
         }
       } catch (error) {
-        console.error('Failed to fetch session data:', error);
+        console.error("Failed to fetch session data:", error);
       }
     };
 
@@ -64,17 +102,23 @@ const Leaderboard = () => {
     return (
       <>
         <Header title={`${sessionName} Session Results`}>
-          <Button onClick={handleBackToPlayground} variant="contained" color="primary">
+          <Button
+            onClick={handleBackToPlayground}
+            variant="contained"
+            color="primary"
+          >
             Back to Playground
           </Button>
         </Header>
-        <Container style={{ marginTop: '200px', textAlign: 'center' }}>
+        <Container style={{ marginTop: "200px", textAlign: "center" }}>
           <LinearProgress
             variant="determinate"
             value={Number(sessionStatus)} // Convert sessionStatus to a number and set as value
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: "20px" }}
           />
-          <Typography variant="h5">Game is not finished yet, please wait and check this page regularly.</Typography>
+          <Typography variant="h5">
+            Game is not finished yet, please wait and check this page regularly.
+          </Typography>
         </Container>
       </>
     );
@@ -83,11 +127,15 @@ const Leaderboard = () => {
   return (
     <>
       <Header title={`${sessionName} Session Results`}>
-        <Button onClick={handleBackToPlayground} variant="contained" color="primary">
+        <Button
+          onClick={handleBackToPlayground}
+          variant="contained"
+          color="primary"
+        >
           Back to Playground
         </Button>
       </Header>
-      <Container style={{ marginTop: '100px' }}>
+      <Container style={{ marginTop: "100px" }}>
         <TableContainer component={Paper}>
           <Table aria-label="leaderboard table">
             <TableHead>
@@ -103,55 +151,95 @@ const Leaderboard = () => {
                   <TableCell component="th" scope="row">
                     {item.player}
                   </TableCell>
-                  <TableCell>
-                    {item.short_tactic || 'N/A'}
-                  </TableCell>
+                  <TableCell>{item.short_tactic || "N/A"}</TableCell>
                   <TableCell align="right">{item.score}</TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <Typography variant="h6" style={{ marginTop: '40px' }}>Game Results Matrix</Typography>
-        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <Typography variant="h6" style={{ marginTop: "40px" }}>
+          Game Results Matrix
+        </Typography>
+        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
           <Table aria-label="game results matrix">
             <TableHead>
               <TableRow>
                 <TableCell>Player \ Player</TableCell>
                 {playerNames.map((player) => (
-                  <TableCell key={player} align="right">{player}</TableCell>
+                  <TableCell key={player} align="right">
+                    {player}
+                  </TableCell>
                 ))}
               </TableRow>
             </TableHead>
             <TableBody>
               {playerNames.map((player) => (
                 <TableRow key={player}>
-                  <TableCell component="th" scope="row">{player}</TableCell>
+                  <TableCell component="th" scope="row">
+                    {player}
+                  </TableCell>
                   {playerNames.map((opponent) => (
-                    <TableCell key={opponent} align="right">{matrix[player][opponent] || 0}</TableCell>
+                    <TableCell key={opponent} align="right">
+                      {matrix[player][opponent] || 0}
+                    </TableCell>
                   ))}
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </TableContainer>
-        <TableContainer component={Paper} style={{ marginTop: '20px' }}>
-          <Grid container spacing={2}> {/* Adjust spacing as needed */}
+        <TableContainer component={Paper} style={{ marginTop: "20px" }}>
+          <Grid container spacing={2}>
+            {" "}
+            {/* Adjust spacing as needed */}
             {participants.map((participant) => (
-              <Grid item xs={6} > {/* Adjust grid item sizes as needed */}
+              <Grid item xs={6}>
+                {" "}
+                {/* Adjust grid item sizes as needed */}
                 <Card key={participant.id} className="participant-card">
                   <CardContent>
                     <div className="name-section">
-                      {participant.player_name.charAt(0).toUpperCase() + participant.player_name.slice(1)}
+                      {participant.player_name.charAt(0).toUpperCase() +
+                        participant.player_name.slice(1)}
                     </div>
                     <div className="character-traits">
-                      <Typography variant="body1">Extroversion: {participant.extroversion !== null ? participant.extroversion.toFixed(2) : 'NA'}</Typography>
-                      <Typography variant="body1">Agreeableness: {participant.agreeableness !== null ? participant.agreeableness.toFixed(2) : 'NA'}</Typography>
-                      <Typography variant="body1">Conscientiousness: {participant.conscientiousness !== null ? participant.conscientiousness.toFixed(2) : 'NA'}</Typography>
-                      <Typography variant="body1">Negative Emotionality: {participant.negative_emotionality !== null ? participant.negative_emotionality.toFixed(2) : 'NA'}</Typography>
-                      <Typography variant="body1">Open-mindedness: {participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : 'NA'}</Typography>
+                      <Typography variant="body1">
+                        Extroversion:{" "}
+                        {participant.extroversion !== null
+                          ? participant.extroversion.toFixed(2)
+                          : "NA"}
+                      </Typography>
+                      <Typography variant="body1">
+                        Agreeableness:{" "}
+                        {participant.agreeableness !== null
+                          ? participant.agreeableness.toFixed(2)
+                          : "NA"}
+                      </Typography>
+                      <Typography variant="body1">
+                        Conscientiousness:{" "}
+                        {participant.conscientiousness !== null
+                          ? participant.conscientiousness.toFixed(2)
+                          : "NA"}
+                      </Typography>
+                      <Typography variant="body1">
+                        Negative Emotionality:{" "}
+                        {participant.negative_emotionality !== null
+                          ? participant.negative_emotionality.toFixed(2)
+                          : "NA"}
+                      </Typography>
+                      <Typography variant="body1">
+                        Open-mindedness:{" "}
+                        {participant.open_mindedness !== null
+                          ? participant.open_mindedness.toFixed(2)
+                          : "NA"}
+                      </Typography>
                     </div>
-                    <ParticipantDetailCard participant={participant} isUserAuthenticated={true} blurText={false} />
+                    <ParticipantDetailCard
+                      participant={participant}
+                      isUserAuthenticated={true}
+                      blurText={false}
+                    />
                   </CardContent>
                 </Card>
               </Grid>
