@@ -1,0 +1,11 @@
+.modalFooter {
+  background-color: var(--mantine-color-light-2);
+  border-top: 1px solid var(--mantine-color-light-3);
+  padding: 20px 30px;
+  border-bottom-left-radius: var(--mantine-radius-sm);
+  border-bottom-right-radius: var(--mantine-radius-sm);
+}
+
+.cancelBtn {
+  border-color: var(--mantine-color-gray-0);
+}

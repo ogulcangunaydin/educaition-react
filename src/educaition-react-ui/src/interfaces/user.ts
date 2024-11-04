@@ -4,6 +4,7 @@ export interface User {
   password: string;
   token: string;
   language: string;
+  theme: string;
   email?: string;
   avatar?: string;
 }

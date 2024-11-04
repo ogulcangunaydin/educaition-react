@@ -4,15 +4,20 @@ import { MantineProvider, ColorSchemeScript } from '@mantine/core';
 import { DatesProvider, DatesProviderSettings } from '@mantine/dates';
 import { ModalsProvider } from '@mantine/modals';
 import { Notifications } from '@mantine/notifications';
-import { Provider as ReduxProvider } from 'react-redux';
+import { Provider as ReduxProvider, useSelector } from 'react-redux';
 import { PersistGate } from 'redux-persist/integration/react';
 import { useTranslation } from 'react-i18next';
 import { IntlProvider } from 'react-intl';
-import { store, persistor } from './store'; // Import your Redux store and persistor
-import { initializeI18n, DEFAULT_LANG } from './i18n'; // Adjusted path
 
-const MantineProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+import { EDUCAITION_LIGHT_THEME, EDUCAITION_DARK_THEME, NOTIFICATION_CONTAINER_MAX_WIDTH } from '@educaition-react/theme';
+import { store, persistor, RootState } from '@educaition-react/ui/store';
+import { initializeI18n, DEFAULT_LANG } from '@educaition-react/ui/i18n';
+import { TimeConstant } from '@educaition-react/ui/constants';
+import { ModalCancel } from '@educaition-react/ui/components';
+
+function MantineProviders({ children }: React.PropsWithChildren) {
   const { i18n } = useTranslation();
+  const theme = useSelector((state: RootState) => state.theme.theme);
 
   const datesProviderSettings: DatesProviderSettings = useMemo(
     () => ({
@@ -24,19 +29,30 @@ const MantineProviders: React.FC<{ children: React.ReactNode }> = ({ children })
   return (
     <>
       <ColorSchemeScript defaultColorScheme="light" />
-      <MantineProvider defaultColorScheme="light" withCssVariables>
-        <ModalsProvider>
+      <MantineProvider theme={theme === 'light' ? EDUCAITION_LIGHT_THEME : EDUCAITION_DARK_THEME} withCssVariables>
+        <ModalsProvider
+          modalProps={{
+            centered: true,
+          }}
+          modals={{
+            cancel: ModalCancel,
+          }}
+        >
           <DatesProvider settings={datesProviderSettings}>
-            <Notifications position="top-right" />
+            <Notifications
+              position="top-right"
+              containerWidth={NOTIFICATION_CONTAINER_MAX_WIDTH}
+              autoClose={TimeConstant.NOTIFICATION_AUTO_CLOSE_DURATION}
+            />
             {children}
           </DatesProvider>
         </ModalsProvider>
       </MantineProvider>
     </>
   );
-};
+}
 
-const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+function Providers({ children }: React.PropsWithChildren) {
   const { i18n } = useTranslation();
 
   return (
@@ -46,7 +62,7 @@ const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       </IntlProvider>
     </MantineProviders>
   );
-};
+}
 
 const ReduxProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (

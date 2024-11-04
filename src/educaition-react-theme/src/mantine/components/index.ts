@@ -1,1 +1,2 @@
-export * from './Notification/Notification.config';
+export * from './Notification';
+export * from './Button';

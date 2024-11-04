@@ -1,0 +1,59 @@
+.root {
+  --button-height-xs: 30px;
+  --button-height-sm: 36px;
+  --button-height-md: 42px;
+  --button-height-lg: 50px;
+  --button-height-xl: 60px;
+
+  --button-height-compact-xs: 24px;
+  --button-height-compact-sm: 26px;
+  --button-height-compact-md: 30px;
+  --button-height-compact-lg: 34px;
+  --button-height-compact-xl: 40px;
+
+  --button-padding-x-xs: 14px;
+  --button-padding-x-sm: 14px;
+  --button-padding-x-md: 14px;
+  --button-padding-x-lg: 14px;
+  --button-padding-x-xl: 14px;
+
+  --button-padding-x-compact-xs: 10px;
+  --button-padding-x-compact-sm: 10px;
+  --button-padding-x-compact-md: 10px;
+  --button-padding-x-compact-lg: 10px;
+  --button-padding-x-compact-xl: 10px;
+
+  font-weight: 500;
+  padding-top: 0;
+  padding-bottom: 0;
+
+  &.save {
+    background-color: var(--mantine-color-green-6);
+    color: var(--mantine-color-white);
+    border-color: var(--mantine-color-green-6);
+
+    &:hover {
+      background-color: var(--mantine-color-green-7);
+    }
+  }
+
+  &.cancel {
+    background-color: var(--mantine-color-gray-6);
+    color: var(--mantine-color-white);
+    border-color: var(--mantine-color-gray-6);
+
+    &:hover {
+      background-color: var(--mantine-color-gray-7);
+    }
+  }
+
+  &.delete {
+    background-color: var(--mantine-color-red-6);
+    color: var(--mantine-color-white);
+    border-color: var(--mantine-color-red-6);
+
+    &:hover {
+      background-color: var(--mantine-color-red-7);
+    }
+  }
+}
