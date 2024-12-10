@@ -197,6 +197,8 @@ const DissonanceTest = () => {
               10
             ),
             fare_question_second_answer: parseInt(fareQuestionSecondAnswer, 10),
+            comfort_question_displayed_average: parseFloat(comfortQuestionAverage, 10),
+            fare_question_displayed_average: parseFloat(fareQuestionAverage, 10),
           }),
         }
       );

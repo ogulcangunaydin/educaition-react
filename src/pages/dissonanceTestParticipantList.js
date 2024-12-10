@@ -114,8 +114,14 @@ const DissonanceTestParticipantList = () => {
       participant.education,
       participant.sentiment,
       participant.comfort_question_first_answer,
-      participant.fare_question_first_answer,
+      participant.comfort_question_displayed_average !== null
+        ? participant.comfort_question_displayed_average.toFixed(2)
+        : "N/A",
       participant.comfort_question_second_answer,
+      participant.fare_question_first_answer,
+      participant.fare_question_displayed_average !== null
+        ? participant.fare_question_displayed_average.toFixed(2)
+        : "N/A",
       participant.fare_question_second_answer,
       participant.extroversion !== null
         ? participant.extroversion.toFixed(2)
@@ -254,8 +260,10 @@ const DissonanceTestParticipantList = () => {
                     <TableCell>Education</TableCell>
                     <TableCell>Sentiment</TableCell>
                     <TableCell>Comfort Question First Answer</TableCell>
-                    <TableCell>Fare Question First Answer</TableCell>
+                    <TableCell>Comfort Question Displayed Average</TableCell>
                     <TableCell>Comfort Question Second Answer</TableCell>
+                    <TableCell>Fare Question First Answer</TableCell>
+                    <TableCell>Fare Question Displayed Average</TableCell>
                     <TableCell>Fare Question Second Answer</TableCell>
                     <TableCell>Extroversion</TableCell>
                     <TableCell>Agreeableness</TableCell>
@@ -284,10 +292,16 @@ const DissonanceTestParticipantList = () => {
                         {participant.comfort_question_first_answer}
                       </TableCell>
                       <TableCell>
-                        {participant.fare_question_first_answer}
+                        {participant.comfort_question_displayed_average}
                       </TableCell>
                       <TableCell>
                         {participant.comfort_question_second_answer}
+                      </TableCell>
+                      <TableCell>
+                        {participant.fare_question_first_answer}
+                      </TableCell>
+                      <TableCell>
+                        {participant.fare_question_displayed_average}
                       </TableCell>
                       <TableCell>
                         {participant.fare_question_second_answer}

@@ -5,12 +5,12 @@ import {
   Routes,
   Navigate,
 } from "react-router-dom";
-import Playground from "./pages/playGround";
-import Login from "./pages/login";
-import GameRoom from "./pages/gameRoom";
-import TacticPreparation from "./pages/tacticPreparation";
-import Leaderboard from "./pages/leaderBoard";
-import PersonalityTest from "./pages/PersonalityTest/personalityTest";
+import Playground from "./pages/PlayGround";
+import Login from "./pages/Login";
+import GameRoom from "./pages/GameRoom";
+import TacticPreparation from "./pages/TacticPreparation";
+import Leaderboard from "./pages/LeaderBoard";
+import PersonalityTest from "./pages/PersonalityTest/PersonalityTest";
 import Dashboard from "./pages/dashboard";
 import DissonanceTestParticipantList from "./pages/dissonanceTestParticipantList";
 import DissonanceTest from "./pages/dissonanceTest";
