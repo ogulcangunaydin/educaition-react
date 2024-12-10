@@ -1,8 +1,8 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 // import { DEFAULT_PERMISSIONS, transformPermissions } from '@educaition-react/ui/constants';
-import i18n, { SUPPORTED_LANGUAGES } from '@educaition-react/ui/i18n';
-import { User, AuthStateType } from '@educaition-react/ui/interfaces';
-import { AuthService } from '@educaition-react/ui/services';
+import i18n, { SUPPORTED_LANGUAGES } from "@educaition-react/ui/i18n";
+import { User, AuthStateType } from "@educaition-react/ui/interfaces";
+import { AuthService } from "@educaition-react/ui/services";
 
 function changeLanguageByUserLang(languageCode: string) {
   const userLanguage = languageCode.toLowerCase();
@@ -30,7 +30,7 @@ const initialState: AuthStateType = {
 };
 
 export const AuthState = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     logoutAction: (state) => {
@@ -38,21 +38,31 @@ export const AuthState = createSlice({
     },
   },
   extraReducers: (builder) => {
-    builder.addMatcher(AuthService.endpoints.login.matchFulfilled, (state, { payload }) => {
-      patchAuthentication(state, payload as User);
-    });
-    builder.addMatcher(AuthService.endpoints.changePassword.matchFulfilled, (state, { payload }) => {
-      patchAuthentication(state, payload as User);
-    });
-    builder.addMatcher(AuthService.endpoints.uploadProfilePicture.matchFulfilled, (state, { payload }) => {
-      state.user.avatar = payload.avatar;
-    });
-    builder.addMatcher(AuthService.endpoints.deleteProfilePicture.matchFulfilled, (state, { payload }) => {
-      state.user.avatar = payload.avatar;
-    });
+    builder.addMatcher(
+      AuthService.endpoints.login.matchFulfilled,
+      (state, { payload }) => {
+        patchAuthentication(state, payload as User);
+      },
+    );
+    builder.addMatcher(
+      AuthService.endpoints.changePassword.matchFulfilled,
+      (state, { payload }) => {
+        patchAuthentication(state, payload as User);
+      },
+    );
+    builder.addMatcher(
+      AuthService.endpoints.uploadProfilePicture.matchFulfilled,
+      (state, { payload }) => {
+        state.user.avatar_color = payload.avatar_color;
+      },
+    );
+    builder.addMatcher(
+      AuthService.endpoints.deleteProfilePicture.matchFulfilled,
+      (state, { payload }) => {
+        state.user.avatar_color = payload.avatar_color;
+      },
+    );
   },
 });
 
-export const {
-  logoutAction,
-} = AuthState.actions;
+export const { logoutAction } = AuthState.actions;

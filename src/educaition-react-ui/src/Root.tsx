@@ -1,19 +1,27 @@
-import React, { useEffect, useMemo } from 'react';
-import { createRoot } from 'react-dom/client';
-import { MantineProvider, ColorSchemeScript } from '@mantine/core';
-import { DatesProvider, DatesProviderSettings } from '@mantine/dates';
-import { ModalsProvider } from '@mantine/modals';
-import { Notifications } from '@mantine/notifications';
-import { Provider as ReduxProvider, useSelector } from 'react-redux';
-import { PersistGate } from 'redux-persist/integration/react';
-import { useTranslation } from 'react-i18next';
-import { IntlProvider } from 'react-intl';
+import React, { ComponentType, Suspense, useMemo } from "react";
+import { createRoot } from "react-dom/client";
+import { MantineProvider, ColorSchemeScript } from "@mantine/core";
+import { DatesProvider, DatesProviderSettings } from "@mantine/dates";
+import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
+import { Provider as ReduxProvider, useSelector } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { useTranslation } from "react-i18next";
+import { IntlProvider } from "react-intl";
 
-import { EDUCAITION_LIGHT_THEME, EDUCAITION_DARK_THEME, NOTIFICATION_CONTAINER_MAX_WIDTH } from '@educaition-react/theme';
-import { store, persistor, RootState } from '@educaition-react/ui/store';
-import { initializeI18n, DEFAULT_LANG } from '@educaition-react/ui/i18n';
-import { TimeConstant } from '@educaition-react/ui/constants';
-import { ModalCancel } from '@educaition-react/ui/components';
+import {
+  EDUCAITION_LIGHT_THEME,
+  EDUCAITION_DARK_THEME,
+  NOTIFICATION_CONTAINER_MAX_WIDTH,
+} from "@educaition-react/theme";
+import { store, persistor, RootState } from "@educaition-react/ui/store";
+import { initializeI18n, DEFAULT_LANG } from "@educaition-react/ui/i18n";
+import { TimeConstant } from "@educaition-react/ui/constants";
+import {
+  ModalCancel,
+  SplashScreen,
+  HttpNotificationEventManager,
+} from "@educaition-react/ui/components";
 
 function MantineProviders({ children }: React.PropsWithChildren) {
   const { i18n } = useTranslation();
@@ -29,7 +37,12 @@ function MantineProviders({ children }: React.PropsWithChildren) {
   return (
     <>
       <ColorSchemeScript defaultColorScheme="light" />
-      <MantineProvider theme={theme === 'light' ? EDUCAITION_LIGHT_THEME : EDUCAITION_DARK_THEME} withCssVariables>
+      <MantineProvider
+        theme={
+          theme === "light" ? EDUCAITION_LIGHT_THEME : EDUCAITION_DARK_THEME
+        }
+        withCssVariables={true}
+      >
         <ModalsProvider
           modalProps={{
             centered: true,
@@ -57,14 +70,20 @@ function Providers({ children }: React.PropsWithChildren) {
 
   return (
     <MantineProviders>
-      <IntlProvider locale={i18n.language} key={i18n.language} defaultLocale={DEFAULT_LANG}>
+      <IntlProvider
+        locale={i18n.language}
+        key={i18n.language}
+        defaultLocale={DEFAULT_LANG}
+      >
         {children}
       </IntlProvider>
     </MantineProviders>
   );
 }
 
-const ReduxProviders: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const ReduxProviders: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <ReduxProvider store={store}>
       <PersistGate persistor={persistor}>{children}</PersistGate>
@@ -72,29 +91,27 @@ const ReduxProviders: React.FC<{ children: React.ReactNode }> = ({ children }) =
   );
 };
 
-const Root: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  useEffect(() => {
-    initializeI18n();
-  }, []);
+async function render(EducaitionReactApplication: ComponentType) {
+  const container = document.getElementById("educaition-react");
+  if (!container) {
+    throw new Error("Failed to find the root element");
+  }
+  const root = createRoot(container);
 
-  return <>{children}</>;
-};
-
-export const render = (App: React.FC) => {
-  const container = document.getElementById('root');
-  const root = createRoot(container!); // Create a root.
+  await initializeI18n();
 
   root.render(
     <React.StrictMode>
       <ReduxProviders>
         <Providers>
-          <Root>
-            <App />
-          </Root>
+          <Suspense fallback={<SplashScreen />}>
+            <EducaitionReactApplication />
+            <HttpNotificationEventManager />
+          </Suspense>
         </Providers>
       </ReduxProviders>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
-};
+}
 
-export default Root;
+export default render;

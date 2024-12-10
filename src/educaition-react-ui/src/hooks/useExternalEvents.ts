@@ -1,4 +1,4 @@
-import { useLayoutEffect } from 'react';
+import { useLayoutEffect } from "react";
 
 function dispatchEvent<T>(type: string, detail?: T) {
   window.dispatchEvent(new CustomEvent(type, { detail }));
@@ -9,7 +9,9 @@ function createEventListenerKey(prefix: string, eventKey: string) {
   return `edc-${prefix}:${eventKey}`;
 }
 
-export function useExternalEvents<Handlers extends Record<string, (detail: any) => void>>(prefix: string) {
+export function useExternalEvents<
+  Handlers extends Record<string, (detail: any) => void>,
+>(prefix: string) {
   function _useExternalEvents(events: Handlers) {
     const handlers = Object.keys(events).reduce((acc, eventKey) => {
       const key = createEventListenerKey(prefix, eventKey);
@@ -33,7 +35,9 @@ export function useExternalEvents<Handlers extends Record<string, (detail: any) 
   function createEvent<EventKey extends keyof Handlers>(event: EventKey) {
     type Parameter = Parameters<Handlers[EventKey]>[0];
 
-    return (...payload: Parameter extends undefined ? [undefined?] : [Parameter]) => {
+    return (
+      ...payload: Parameter extends undefined ? [undefined?] : [Parameter]
+    ) => {
       const key = createEventListenerKey(prefix, String(event));
       dispatchEvent(key, payload[0]);
     };

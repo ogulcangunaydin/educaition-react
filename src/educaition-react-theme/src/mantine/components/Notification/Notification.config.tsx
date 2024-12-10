@@ -1,10 +1,19 @@
-import { faCheck, faExclamation, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { MantineColor, Notification } from '@mantine/core';
-// import { Bounce, Rotate } from 'react-awesome-reveal';
-import classes from './Notification.module.scss';
+import {
+  faCheck,
+  faExclamation,
+  faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { MantineColor, Notification } from "@mantine/core";
+// import { Bounce, Rotate } from "react-awesome-reveal";
+import classes from "./Notification.module.scss";
 
-export type NotificationType = 'additional' | 'error' | 'info' | 'success' | 'warning';
+export type NotificationType =
+  | "additional"
+  | "error"
+  | "info"
+  | "success"
+  | "warning";
 
 const NotificationIcons: Record<NotificationType, JSX.Element> = {
   additional: <FontAwesomeIcon icon={faCheck} />,
@@ -25,54 +34,64 @@ const NotificationColorsConfig: Record<
   }
 > = {
   additional: {
-    color: 'blue',
+    color: "blue",
     iconBackgroundColorShade: 1,
     iconColorShade: 9,
   },
   error: {
-    color: 'red',
+    color: "red",
     iconBackgroundColorShade: 4,
   },
   info: {
-    color: 'teal',
+    color: "teal",
     iconBackgroundColorShade: 5,
   },
   success: {
-    color: 'green',
+    color: "green",
     iconBackgroundColorShade: 5,
   },
   warning: {
-    color: 'yellow',
+    color: "yellow",
     iconBackgroundColorShade: 6,
   },
 };
 
-const NotificationColorToTypeMapping: Partial<Record<MantineColor, NotificationType>> = {
-  blue: 'additional',
-  green: 'success',
-  red: 'error',
-  teal: 'info',
-  yellow: 'warning',
+const NotificationColorToTypeMapping: Partial<
+  Record<MantineColor, NotificationType>
+> = {
+  blue: "additional",
+  green: "success",
+  red: "error",
+  teal: "info",
+  yellow: "warning",
 };
 
-const NotificationTypeToColorMapping: Record<NotificationType, MantineColor> = Object.entries(
-  NotificationColorToTypeMapping,
-).reduce((acc, [key, value]) => {
-  if (value) {
-    acc[value] = key as MantineColor;
-  }
-  return acc;
-}, {} as Record<NotificationType, MantineColor>);
+const NotificationTypeToColorMapping: Record<NotificationType, MantineColor> =
+  Object.entries(NotificationColorToTypeMapping).reduce(
+    (acc, [key, value]) => {
+      if (value) {
+        acc[value] = key as MantineColor;
+      }
+      return acc;
+    },
+    {} as Record<NotificationType, MantineColor>,
+  );
 
-export function getNotificationTypeFromColor(color: MantineColor): NotificationType {
-  return NotificationColorToTypeMapping[color] || 'info';
+export function getNotificationTypeFromColor(
+  color: MantineColor,
+): NotificationType {
+  return NotificationColorToTypeMapping[color] || "info";
 }
 
-export function getNotificationColorFromType(type: NotificationType): MantineColor {
+export function getNotificationColorFromType(
+  type: NotificationType,
+): MantineColor {
   return NotificationTypeToColorMapping[type];
 }
 
-export function getNotificationIconFromType(type: NotificationType): JSX.Element {
+export function getNotificationIconFromType(
+  type: NotificationType,
+): JSX.Element {
   return NotificationIcons[type];
 }
 
@@ -110,7 +129,7 @@ export const NotificationConfig = Notification.extend({
       },
       closeButton: {
         color: theme.colors[color][iconBackgroundColorShade],
-        '&:hover': {
+        "&:hover": {
           color: theme.colors[color][iconBackgroundColorShade + 2],
         },
       },

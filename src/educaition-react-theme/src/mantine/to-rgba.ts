@@ -12,10 +12,10 @@ function isHexColor(hex: string): boolean {
 }
 
 function hexToRgba(color: string): RGBA {
-  let hexString = color.replace('#', '');
+  let hexString = color.replace("#", "");
 
   if (hexString.length === 3) {
-    const shorthandHex = hexString.split('');
+    const shorthandHex = hexString.split("");
     hexString = [
       shorthandHex[0],
       shorthandHex[0],
@@ -23,7 +23,7 @@ function hexToRgba(color: string): RGBA {
       shorthandHex[1],
       shorthandHex[2],
       shorthandHex[2],
-    ].join('');
+    ].join("");
   }
 
   const parsed = parseInt(hexString, 16);
@@ -41,15 +41,16 @@ function hexToRgba(color: string): RGBA {
 
 function rgbStringToRgba(color: string): RGBA {
   const [r, g, b, a] = color
-    .replace(/[^0-9,.]/g, '')
-    .split(',')
+    .replace(/[^0-9,.]/g, "")
+    .split(",")
     .map(Number);
 
   return { r, g, b, a: a || 1 };
 }
 
 function hslStringToRgba(hslaString: string): RGBA {
-  const hslaRegex = /^hsla?\(\s*(\d+)\s*,\s*(\d+%)\s*,\s*(\d+%)\s*(,\s*(0?\.\d+|\d+(\.\d+)?))?\s*\)$/i;
+  const hslaRegex =
+    /^hsla?\(\s*(\d+)\s*,\s*(\d+%)\s*,\s*(\d+%)\s*(,\s*(0?\.\d+|\d+(\.\d+)?))?\s*\)$/i;
 
   const matches = hslaString.match(hslaRegex);
   if (!matches) {
@@ -114,11 +115,11 @@ export function toRgba(color: string): RGBA {
     return hexToRgba(color);
   }
 
-  if (color.startsWith('rgb')) {
+  if (color.startsWith("rgb")) {
     return rgbStringToRgba(color);
   }
 
-  if (color.startsWith('hsl')) {
+  if (color.startsWith("hsl")) {
     return hslStringToRgba(color);
   }
 

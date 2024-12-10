@@ -1,1 +1,1 @@
-export * from './Notification.config';
+export * from "./Notification.config";

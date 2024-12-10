@@ -1,1 +1,1 @@
-export * from './languages.state';
+export * from "./languages.state";

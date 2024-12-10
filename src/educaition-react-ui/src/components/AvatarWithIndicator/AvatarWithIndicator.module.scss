@@ -1,0 +1,10 @@
+.avatarWithIndicator {
+  display: flex;
+
+  :global {
+    .mantine-Indicator-indicator {
+      border: 3px solid var(--mantine-color-white);
+      bottom: 14%;
+    }
+  }
+}

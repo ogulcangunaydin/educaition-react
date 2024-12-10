@@ -1,20 +1,20 @@
 // src/store/theme/themeSlice.ts
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ThemeStateType } from '@educaition-react/ui/interfaces';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ThemeStateType } from "@educaition-react/ui/interfaces";
 
 const initialState: ThemeStateType = {
-  theme: 'light', // Default theme
+  theme: "light", // Default theme
 };
 
 export const ThemeState = createSlice({
-  name: 'theme',
+  name: "theme",
   initialState,
   reducers: {
-    setTheme(state, action: PayloadAction<'light' | 'dark'>) {
+    setTheme(state, action: PayloadAction<"light" | "dark">) {
       state.theme = action.payload;
     },
     toggleTheme(state) {
-      state.theme = state.theme === 'light' ? 'dark' : 'light';
+      state.theme = state.theme === "light" ? "dark" : "light";
     },
   },
 });

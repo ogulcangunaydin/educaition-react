@@ -1,4 +1,4 @@
-import { createListenerMiddleware } from '@reduxjs/toolkit';
+import { createListenerMiddleware } from "@reduxjs/toolkit";
 // import { refetchNotificationsAction } from '../actions';
 // import { changeSelectedAccountAction } from '../states';
 

@@ -6,8 +6,8 @@ export {}; // This is a module declaration file, so it needs content to be a mod
   Browser, window or package related typings.
 */
 
-declare module 'redux-persist-transform-filter' {
-  import { Transform } from 'redux-persist';
+declare module "redux-persist-transform-filter" {
+  import { Transform } from "redux-persist";
 
   /*
    * Fix the typings for 'redux-persist-transform-filter'
@@ -40,4 +40,4 @@ declare global {
 }
 
 // Example module declaration for image files
-declare module '*.png';
+declare module "*.png";

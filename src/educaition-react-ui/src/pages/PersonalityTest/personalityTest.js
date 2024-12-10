@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import bigFiveTestTRQuestions from "./BigFiveTestTR.txt";
 import bigFiveTestENQuestions from "./BigFiveTestEN.txt";
 import Header from "../../components/Header";
@@ -29,7 +29,7 @@ const PersonalityTest = () => {
   const [playerId, setPlayerId] = useState(null);
   const { type, id } = useParams(); // Get type and id from params
   const [isPlayerInfoSaved, setIsPlayerInfoSaved] = useState(
-    type === "participant"
+    type === "participant",
   ); // Set isPlayerInfoSaved to true if type is participant
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(false); // Loading state for form submission
@@ -93,11 +93,11 @@ const PersonalityTest = () => {
         {
           method: "POST",
           body: createPlayerForm,
-        }
+        },
       );
       if (!createPlayerResponse.ok) {
         throw new Error(
-          "Player Name is already taken. Please choose a different name."
+          "Player Name is already taken. Please choose a different name.",
         );
       }
 
@@ -162,7 +162,7 @@ const PersonalityTest = () => {
                 if (nameError) setNameError("");
               }}
               margin="normal"
-              fullWidth
+              fullWidth={true}
               error={!!nameError}
               helperText={nameError}
             />
@@ -186,12 +186,12 @@ const PersonalityTest = () => {
                 </Typography>
               </Box>
               <Grid
-                container
+                container={true}
                 alignItems="center"
                 spacing={isSmallScreen ? 1 : 2}
               >
                 <Grid
-                  item
+                  item={true}
                   xs={12}
                   sm={2}
                   style={{ display: "flex", justifyContent: "flex-start" }}
@@ -202,17 +202,17 @@ const PersonalityTest = () => {
                       : "Tamamen Katılmıyorum"}
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sm={8}>
+                <Grid item={true} xs={12} sm={8}>
                   <Box display="flex" justifyContent="center">
                     <RadioGroup
-                      row
+                      row={true}
                       aria-label={`question-${currentQuestionIndex}`}
                       name={`question-${currentQuestionIndex}`}
                       value={answers[currentQuestionIndex] || ""}
                       onChange={(event) =>
                         handleOptionChange(
                           currentQuestionIndex,
-                          event.target.value
+                          event.target.value,
                         )
                       }
                       style={{
@@ -233,7 +233,7 @@ const PersonalityTest = () => {
                   </Box>
                 </Grid>
                 <Grid
-                  item
+                  item={true}
                   xs={12}
                   sm={2}
                   style={{ display: "flex", justifyContent: "flex-end" }}

@@ -1,25 +1,27 @@
-import { combineReducers, configureStore, PayloadAction } from '@reduxjs/toolkit';
-import { setupListeners } from '@reduxjs/toolkit/query';
-import { persistReducer, persistStore } from 'redux-persist';
-import createFilter from 'redux-persist-transform-filter';
-import storage from 'redux-persist/lib/storage';
+import {
+  combineReducers,
+  configureStore,
+  PayloadAction,
+} from "@reduxjs/toolkit";
 
-import { AuthStateType } from '@educaition-react/ui/interfaces';
-import { AuthService } from '@educaition-react/ui/services';
-import { AuthState, LanguageState, ThemeState } from './states';
-import { StateResetAction } from './actions';
-import { ListenerMiddleware } from './middlewares';
+import { setupListeners } from "@reduxjs/toolkit/query";
+import { persistReducer, persistStore } from "redux-persist";
+import createFilter from "redux-persist-transform-filter";
+import storage from "redux-persist/lib/storage";
+
+import { AuthStateType } from "@educaition-react/ui/interfaces";
+import { AuthState, LanguageState, ThemeState } from "./states";
+import { AuthService } from "../services";
+import { StateResetAction } from "./actions";
+import { ListenerMiddleware } from "./middlewares";
 
 const STATES = {
   AuthState,
   LanguageState,
   ThemeState,
-}
+};
 
-const MIDDLEWARES = [
-  AuthService.middleware,
-];
-
+const MIDDLEWARES = [AuthService.middleware];
 
 const SERVICES = {
   [AuthService.reducerPath]: AuthService.reducer,
@@ -44,12 +46,12 @@ const FilteredAuthState = createFilter<
   AuthStateType,
   ReturnType<typeof COMBINED_REDUCERS>,
   ReturnType<typeof COMBINED_REDUCERS>
->(AuthState.name, ['token', 'id'] as (keyof AuthStateType)[]);
+>(AuthState.name, ["token", "id"] as (keyof AuthStateType)[]);
 
 // Configure persisted reducer
 const persistedReducer = persistReducer(
   {
-    key: 'educaition',
+    key: "educaition",
     version: 1,
     storage,
     whitelist: [AuthState.name],
@@ -82,7 +84,6 @@ export const store = configureStore({
     })
       .prepend(ListenerMiddleware.middleware)
       .concat(MIDDLEWARES),
-  // devTools: __DEV__, TODO: Implement when Vite
 });
 
 // Configure persistor

@@ -1,0 +1,85 @@
+@use "@scss/breakpoints" as bp;
+
+.layoutNavigationMenu {
+  @include bp.media-breakpoint-down(lg) {
+    display: none;
+  }
+}
+
+.layoutNavigationMenuBtn {
+  display: flex;
+  align-items: center;
+
+  &[data-expanded="true"],
+  &:hover {
+    .layoutNavigationMenuBtnIcon {
+      color: var(--mantine-color-blue-5);
+    }
+    :global {
+      .mantine-UnstyledButton-root {
+        color: var(--mantine-color-blue-5);
+      }
+    }
+  }
+}
+
+.layoutNavigationMenuBtnIcon {
+  margin-left: 10px;
+  margin-top: 2px;
+}
+
+.layoutNavigationMenuDropdown {
+  border: 0;
+  box-shadow: var(--mantine-elevation-light-6);
+  padding: 0;
+  border-radius: var(--mantine-radius-sm);
+
+  :global {
+    .mantine-Menu-arrow {
+      border: 0;
+      background-color: var(--mantine-color-dark-5);
+    }
+  }
+}
+
+.layoutNavigationMenuDropdownLinks {
+  background-color: var(--mantine-color-dark-5);
+  border-bottom-left-radius: var(--mantine-radius-sm);
+  border-top-left-radius: var(--mantine-radius-sm);
+  color: var(--mantine-color-white);
+  min-width: 250px;
+  padding-bottom: 20px;
+  padding-top: 20px;
+}
+
+.layoutNavigationMenuDropdownLinksChild {
+  display: none;
+  background-color: var(--mantine-color-dark-9);
+  padding-bottom: 20px;
+  padding-top: 20px;
+  width: 186px;
+
+  // TODO @yavuz, LayoutNavigationMarketingCarousel component i aktif edilince bu border-radius değerlerini sil
+  border-top-right-radius: var(--mantine-radius-sm);
+  border-bottom-right-radius: var(--mantine-radius-sm);
+}
+
+.layoutNavigationMenuDropdownLinksChildItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--mantine-color-dark-0);
+  padding: 9px 20px;
+  width: 100%;
+
+  &:global {
+    &.active,
+    &:hover {
+      color: var(--mantine-color-blue-5);
+    }
+  }
+}
+
+.layoutNavigationMenuDropdownLinksChildActive {
+  display: initial;
+}

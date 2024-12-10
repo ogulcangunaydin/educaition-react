@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   useMediaQuery,
   Table,
@@ -37,7 +37,7 @@ const DissonanceTestParticipantList = () => {
           `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants`,
           {
             method: "GET",
-          }
+          },
         );
 
         if (!response.ok) {
@@ -328,7 +328,7 @@ const DissonanceTestParticipantList = () => {
                           ? JSON.stringify(
                               participant.personality_test_answers,
                               null,
-                              2
+                              2,
                             ).slice(0, 20) + "..."
                           : "N/A"}
                       </TableCell>

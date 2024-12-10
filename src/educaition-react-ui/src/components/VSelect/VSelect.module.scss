@@ -1,0 +1,76 @@
+.optionsDropdown {
+  border-color: var(--mantine-color-gray-0);
+  padding: 10px;
+}
+
+.optionsDropdownOption {
+  align-items: center;
+  display: flex;
+  flex-direction: var(--_flex-direction, row);
+  gap: 8px;
+  padding: 10px;
+  min-height: 38px;
+
+  &:hover {
+    background-color: var(--mantine-color-light-3);
+  }
+
+  &[data-reverse] {
+    justify-content: space-between;
+  }
+}
+
+.optionGroupLabel {
+  color: var(--mantine-color-gray-5);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 400;
+  padding-bottom: 10px;
+  padding-left: 0;
+  padding-right: 0;
+  padding-top: 10px;
+
+  &:after {
+    background-color: var(--mantine-color-light-3);
+  }
+}
+
+.optionsSelectAllBtn {
+  font-weight: 400;
+
+  &:hover {
+    color: var(--mantine-color-blue-5);
+
+    .optionsSelectAllBtnIcon {
+      color: var(--mantine-color-blue-5);
+    }
+  }
+}
+
+.optionsSelectAllBtnSection {
+  margin-right: 5px;
+}
+
+.selectInput {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &:disabled {
+    color: var(--mantine-color-gray-0);
+    :global {
+      .mantine-InputPlaceholder-placeholder {
+        color: var(--mantine-color-gray-0);
+      }
+    }
+  }
+}
+
+.selectRoot {
+  :global {
+    .mantine-Select-input {
+      &[data-expanded="true"] {
+        border-color: var(--mantine-color-blue-5);
+      }
+    }
+  }
+}

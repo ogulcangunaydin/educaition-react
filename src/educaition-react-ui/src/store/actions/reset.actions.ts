@@ -1,3 +1,3 @@
-import { createAction } from '@reduxjs/toolkit';
+import { createAction } from "@reduxjs/toolkit";
 
-export const StateResetAction = createAction<string>('STATE__RESET');
+export const StateResetAction = createAction<string>("STATE__RESET");

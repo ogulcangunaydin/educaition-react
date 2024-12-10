@@ -4,8 +4,8 @@ import HttpBackend from "i18next-http-backend";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { SupportedLanguages } from "./interfaces";
 
-export const SUPPORTED_LANGUAGES: SupportedLanguages[] = ['en', 'tr'];
-export const DEFAULT_LANG = 'en';
+export const SUPPORTED_LANGUAGES: SupportedLanguages[] = ["en", "tr"];
+export const DEFAULT_LANG = "en";
 
 export async function initializeI18n() {
   await i18n
@@ -23,7 +23,7 @@ export async function initializeI18n() {
       backend: {
         loadPath: "/locales/{{lng}}/{{ns}}.json",
       },
-      supportedLngs: Object.keys(SUPPORTED_LANGUAGES),
+      supportedLngs: SUPPORTED_LANGUAGES,
     });
 }
 

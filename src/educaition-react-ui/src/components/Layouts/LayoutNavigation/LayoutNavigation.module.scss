@@ -1,0 +1,32 @@
+@use "@scss/breakpoints" as bp;
+
+.layoutNavigation {
+  gap: 35px;
+
+  @include bp.media-breakpoint-down(lg) {
+    gap: 20px;
+  }
+
+  @include bp.media-breakpoint-down(xs) {
+    gap: 15px;
+  }
+
+  &-logoLink {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.layoutNavigationLogo {
+  display: none;
+
+  @include bp.media-breakpoint-down(xxs) {
+    display: initial;
+  }
+}
+
+.layoutNavigationLogoExtended {
+  @include bp.media-breakpoint-down(xxs) {
+    display: none;
+  }
+}

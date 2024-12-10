@@ -1,0 +1,72 @@
+{
+  "confirmPassword": {
+    "label": "Confirm Password",
+    "placeholder": "Confirm your new password"
+  },
+  "currentPassword": {
+    "label": "Current Password",
+    "placeholder": "Enter your current password"
+  },
+  "dateFormat": {
+    "label": "Date Format"
+  },
+  "email": {
+    "label": "E-mail",
+    "placeholder": "Enter your e-mail address"
+  },
+  "name": {
+    "label": "Name Surname",
+    "placeholder": "Enter your name surname"
+  },
+  "newPassword": {
+    "label": "New Password",
+    "placeholder": "Enter your new password"
+  },
+  "password": {
+    "label": "Password",
+    "placeholder": "Enter your password"
+  },
+  "rules": {
+    "dateFormat": {
+      "required": "Please select your date format"
+    },
+    "email": {
+      "invalid": "Please provide valid e-mail",
+      "required": "Please enter your e-mail"
+    },
+    "generic": {
+      "invalid": "Please enter a valid value",
+      "max": "Please enter at most {{count}} characters",
+      "maxValue": "Please enter a value of {{value}} or less",
+      "min": "Please enter at least {{count}} characters",
+      "minDate": "Please select a date after {{date}}",
+      "minValue": "Please enter a value of {{value}} or greater",
+      "required": "This field is required"
+    },
+    "language": {
+      "required": "Please select your language"
+    },
+    "name": {
+      "required": "Please enter your name"
+    },
+    "nickname": {
+      "invalid": "Please enter a valid nickname",
+      "min": "Please enter at least 3 characters"
+    },
+    "password": {
+      "long": "The password is too long, it must be a maximum of {{count}} characters.",
+      "match": "Passwords must match.",
+      "regex": "Your password should contain at least one uppercase letter, one lowercase letter and a digit.",
+      "required": "Please enter your password",
+      "short": "Password is too short, needs to be at least {{count}} characters."
+    },
+    "url": {
+      "invalid": "Please enter a valid URL"
+    }
+  },
+  "welcomeText": {
+    "description": "You can use the fields below to send a short welcome message.",
+    "label": "Welcome Message",
+    "placeholder": "Enter your welcome message"
+  }
+}

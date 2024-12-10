@@ -1,12 +1,12 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { LanguageStateType } from '@educaition-react/ui/interfaces';
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { LanguageStateType } from "@educaition-react/ui/interfaces";
 
 const initialState: LanguageStateType = {
-  language: 'en',
+  language: "en",
 };
 
 export const LanguageState = createSlice({
-  name: 'language',
+  name: "language",
   initialState,
   reducers: {
     setLanguage(state, action: PayloadAction<string>) {

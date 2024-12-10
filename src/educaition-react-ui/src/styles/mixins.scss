@@ -1,0 +1,38 @@
+@use 'breakpoints' as bp;
+
+// To use mixins
+// @import '@scss/mixins';
+
+@mixin link-left-border-badge($onHover: false) {
+  &:before {
+    content: '';
+    position: absolute;
+    width: 3px;
+    height: 20px;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--mantine-color-blue-5);
+    border-top-right-radius: var(--mantine-radius-sm);
+    border-bottom-right-radius: var(--mantine-radius-sm);
+
+    @if $onHover {
+      display: none;
+    }
+  }
+
+  @if $onHover {
+    &[data-active='true'],
+    &:hover {
+      &:before {
+        display: initial;
+      }
+    }
+  }
+}
+
+@mixin ellipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

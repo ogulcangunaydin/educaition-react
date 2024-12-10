@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Typography,
@@ -28,7 +28,7 @@ ChartJS.register(
   LineElement,
   Filler,
   Tooltip,
-  Legend
+  Legend,
 );
 
 const DissonanceTestResult = () => {
@@ -47,7 +47,7 @@ const DissonanceTestResult = () => {
           `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`,
           {
             method: "GET",
-          }
+          },
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -69,7 +69,7 @@ const DissonanceTestResult = () => {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          }
+          },
         );
 
         if (authResponse.ok) {

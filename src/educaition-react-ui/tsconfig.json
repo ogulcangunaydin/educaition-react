@@ -7,5 +7,5 @@
       "@educaition-react/theme": ["../educaition-react-theme/src"]
     }
   },
-  "include": ["./src"],
+  "include": ["./src"]
 }

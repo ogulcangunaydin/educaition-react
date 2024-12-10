@@ -1,2 +1,2 @@
-export * from './mantine';
-export * from './theme.config';
+export * from "./mantine";
+export * from "./theme.config";

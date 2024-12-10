@@ -1,0 +1,55 @@
+@use "sass:map";
+@use "sass:math";
+
+$breakpoints: (
+  xxs: math.div(320px, 16px) * 1em,
+  xs: math.div(576px, 16px) * 1em,
+  sm: math.div(992px, 16px) * 1em,
+  md: math.div(1200px, 16px) * 1em,
+  lg: math.div(1366px, 16px) * 1em,
+  xl: math.div(1600px, 16px) * 1em,
+  xxl: math.div(1920px, 16px) * 1em,
+);
+
+@mixin media-breakpoint-up($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map.get($breakpoints, $breakpoint);
+
+    @media (min-width: $breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+
+@mixin media-breakpoint-down($breakpoint) {
+  @if map.has-key($breakpoints, $breakpoint) {
+    $breakpoint-value: map.get($breakpoints, $breakpoint);
+
+    @media (max-width: $breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @warn 'Invalid breakpoint: #{$breakpoint}.';
+  }
+}
+
+@mixin media-breakpoint-between($lower, $upper) {
+  @if map.has-key($breakpoints, $lower) and map.has-key($breakpoints, $upper) {
+    $lower-breakpoint: map.get($breakpoints, $lower);
+    $upper-breakpoint: map.get($breakpoints, $upper);
+
+    $upper-breakpoint-value: math.div($upper-breakpoint - 1px, 16px) * 1em;
+    @media (min-width: $lower-breakpoint) and (max-width: $upper-breakpoint-value) {
+      @content;
+    }
+  } @else {
+    @if not map.has-key($breakpoints, $lower) {
+      @warn 'Your lower breakpoint was invalid: #{$lower}.';
+    }
+    @if not map.has-key($breakpoints, $upper) {
+      @warn 'Your upper breakpoint was invalid: #{$upper}.';
+    }
+  }
+}

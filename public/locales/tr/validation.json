@@ -1,0 +1,72 @@
+{
+  "confirmPassword": {
+    "label": "Şifreyi Onayla",
+    "placeholder": "Yeni şifrenizi onaylayın"
+  },
+  "currentPassword": {
+    "label": "Mevcut Şifre",
+    "placeholder": "Mevcut şifrenizi girin"
+  },
+  "dateFormat": {
+    "label": "Tarih Formatı"
+  },
+  "email": {
+    "label": "E-posta",
+    "placeholder": "E-posta adresinizi girin"
+  },
+  "name": {
+    "label": "Ad Soyad",
+    "placeholder": "Adınızı ve soyadınızı girin"
+  },
+  "newPassword": {
+    "label": "Yeni Şifre",
+    "placeholder": "Yeni şifrenizi girin"
+  },
+  "password": {
+    "label": "Şifre",
+    "placeholder": "Şifrenizi girin"
+  },
+  "rules": {
+    "dateFormat": {
+      "required": "Lütfen tarih formatınızı seçin"
+    },
+    "email": {
+      "invalid": "Lütfen geçerli bir e-posta adresi girin",
+      "required": "Lütfen e-posta adresinizi girin"
+    },
+    "generic": {
+      "invalid": "Lütfen geçerli bir değer girin",
+      "max": "Lütfen en fazla {{count}} karakter girin",
+      "maxValue": "Lütfen {{value}} veya daha az bir değer girin",
+      "min": "Lütfen en az {{count}} karakter girin",
+      "minDate": "Lütfen {{date}} tarihinden sonra bir tarih seçin",
+      "minValue": "Lütfen {{value}} veya daha büyük bir değer girin",
+      "required": "Bu alan zorunludur"
+    },
+    "language": {
+      "required": "Lütfen dilinizi seçin"
+    },
+    "name": {
+      "required": "Lütfen adınızı girin"
+    },
+    "nickname": {
+      "invalid": "Lütfen geçerli bir takma ad girin",
+      "min": "Lütfen en az 3 karakter girin"
+    },
+    "password": {
+      "long": "Şifre çok uzun, en fazla {{count}} karakter olmalıdır.",
+      "match": "Şifreler eşleşmelidir.",
+      "regex": "Şifreniz en az bir büyük harf, bir küçük harf ve bir rakam içermelidir.",
+      "required": "Lütfen şifrenizi girin",
+      "short": "Şifre çok kısa, en az {{count}} karakter olmalıdır."
+    },
+    "url": {
+      "invalid": "Lütfen geçerli bir URL girin"
+    }
+  },
+  "welcomeText": {
+    "description": "Kısa bir karşılama mesajı göndermek için aşağıdaki alanları kullanabilirsiniz.",
+    "label": "Karşılama Mesajı",
+    "placeholder": "Karşılama mesajınızı girin"
+  }
+}

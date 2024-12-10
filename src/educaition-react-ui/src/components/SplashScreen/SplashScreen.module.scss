@@ -1,0 +1,11 @@
+.splashScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100dvh;
+
+  &-grow {
+    flex-grow: 1;
+    height: initial;
+  }
+}

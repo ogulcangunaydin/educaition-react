@@ -1,0 +1,21 @@
+@use "@scss/mixins" as mixins;
+
+.layoutNavigationLinkGroupItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: inherit;
+  padding-left: 20px;
+  padding-right: 20px;
+  height: 48px;
+  width: 100%;
+  position: relative;
+
+  @include mixins.link-left-border-badge(true);
+
+  &[data-active="true"],
+  &:hover {
+    background-color: var(--mantine-color-dark-9);
+    color: var(--mantine-color-blue-5);
+  }
+}

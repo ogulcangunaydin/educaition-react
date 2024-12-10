@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import {
   useTheme,
@@ -66,7 +66,7 @@ const Playground = () => {
         `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${participantId}`,
         {
           method: "POST",
-        }
+        },
       );
 
       if (!response.ok) {
@@ -75,7 +75,7 @@ const Playground = () => {
 
       // Update the rooms state by filtering out the deleted room
       setParticipants(
-        participants.filter((participant) => participant.id !== participantId)
+        participants.filter((participant) => participant.id !== participantId),
       );
     } catch (error) {
       console.error("Failed to delete room:", error);
@@ -89,7 +89,7 @@ const Playground = () => {
           `${process.env.REACT_APP_BACKEND_BASE_URL}/players/room/${roomId}`,
           {
             method: "GET",
-          }
+          },
         );
         if (!response.ok) {
           throw new Error("Network response was not ok");
@@ -103,14 +103,14 @@ const Playground = () => {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("access_token")}`,
             },
-          }
+          },
         );
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
 
           const sessionsResponse = await fetchWithAuth(
-            `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/sessions`
+            `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/sessions`,
           );
           if (!sessionsResponse.ok) {
             throw new Error("Failed to fetch sessions");
@@ -145,7 +145,7 @@ const Playground = () => {
           },
           method: "POST",
           body: formBody,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -174,14 +174,14 @@ const Playground = () => {
   const handleDeleteNotReadyPlayers = async () => {
     try {
       const notReadyPlayers = participants.filter(
-        (player) => !player.player_tactic
+        (player) => !player.player_tactic,
       );
       for (const player of notReadyPlayers) {
         await fetchWithAuth(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${player.id}`,
           {
             method: "POST",
-          }
+          },
         );
       }
       setShowErrorModal(false);
@@ -280,7 +280,7 @@ const Playground = () => {
             <Menu
               id="session-menu"
               anchorEl={anchorEl}
-              keepMounted
+              keepMounted={true}
               open={Boolean(anchorEl)}
               onClose={handleCloseMenu}
               style={{ marginLeft: "20px", marginTop: "10px" }}
@@ -323,7 +323,7 @@ const Playground = () => {
             </CenteredContainer>
           ) : (
             <>
-              <Grid container spacing={2}>
+              <Grid container={true} spacing={2}>
                 {participants.map((participant) => {
                   const radarData = {
                     labels: [
@@ -408,7 +408,11 @@ const Playground = () => {
                   ].every((value) => value !== null);
 
                   return (
-                    <Grid item xs={isSmallScreen ? 12 : 6} key={participant.id}>
+                    <Grid
+                      item={true}
+                      xs={isSmallScreen ? 12 : 6}
+                      key={participant.id}
+                    >
                       <Card className="participant-card">
                         <CardContent>
                           <div className="name-section">
@@ -459,7 +463,7 @@ const Playground = () => {
                                     <Button
                                       onClick={handleDelete}
                                       color="primary"
-                                      autoFocus
+                                      autoFocus={true}
                                     >
                                       Confirm
                                     </Button>
@@ -512,7 +516,7 @@ const Playground = () => {
               label="Session Name"
               value={sessionName}
               onChange={(e) => setSessionName(e.target.value)}
-              required
+              required={true}
               style={{ marginBottom: "10px", width: "100%" }} // Ensure TextField takes full width
             />
             <Button type="submit" variant="contained" color="primary">
@@ -540,7 +544,7 @@ const Playground = () => {
           <Button
             onClick={handleDeleteNotReadyPlayers}
             color="primary"
-            autoFocus
+            autoFocus={true}
           >
             Delete Not Ready Players and Start Game
           </Button>

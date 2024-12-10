@@ -1,7 +1,7 @@
-import { toRgba } from './to-rgba';
+import { toRgba } from "./to-rgba";
 
 export function lighten(color: string, alpha: number) {
-  if (color.startsWith('var(')) {
+  if (color.startsWith("var(")) {
     return color;
   }
 

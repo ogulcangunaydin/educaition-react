@@ -1,0 +1,74 @@
+@use "@scss/breakpoints" as bp;
+
+.pageLoginLayout {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 40px;
+
+  @include bp.media-breakpoint-down(sm) {
+    padding: 25px 15px;
+  }
+
+  &-content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    &-body {
+      display: flex;
+      justify-content: center;
+      flex-grow: 1;
+      padding-bottom: 20px;
+      padding-top: 20px;
+
+      @include bp.media-breakpoint-down(sm) {
+        justify-content: initial;
+      }
+    }
+
+    &-footer {
+      align-self: center;
+      padding-bottom: 25px;
+      padding-top: 25px;
+    }
+  }
+
+  &-bg {
+    background: url("../../../images/login/login-bg.jpg") no-repeat center
+      center fixed;
+    background-size: cover;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    z-index: -1;
+  }
+
+  &-support {
+    z-index: 201;
+
+    .languageBtn {
+      background-color: var(--mantine-color-light-4);
+
+      :global {
+        .mantine-Select-input {
+          background-color: transparent;
+          border-color: var(--mantine-color-gray-0);
+          color: var(--mantine-color-gray-6);
+          font-size: 20px;
+          height: 40px;
+          width: 82px;
+          padding-left: 14px;
+        }
+
+        .mantine-Select-rightSection {
+          .svg-inline--fa {
+            color: var(--mantine-color-gray-6);
+          }
+        }
+      }
+    }
+  }
+}

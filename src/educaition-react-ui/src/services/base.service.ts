@@ -1,14 +1,18 @@
-import { BaseQueryFn } from '@reduxjs/toolkit/query/react';
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { store } from '@educaition-react/ui/store';
-import { ENV } from '@educaition-react/ui/utils';
-import { AxiosRequestConfigExtended } from '@educaition-react/ui/interfaces';
-import { createHttpEvent } from '@educaition-react/ui/window-events';
+import { BaseQueryFn } from "@reduxjs/toolkit/query/react";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { store } from "@educaition-react/ui/store";
+import { ENV } from "@educaition-react/ui/utils";
+import { AxiosRequestConfigExtended } from "@educaition-react/ui/interfaces";
+import { createHttpEvent } from "@educaition-react/ui/window-events";
 
-const dispatchNotificationHttpEvent = createHttpEvent('dispatchHttpNotification');
+const dispatchNotificationHttpEvent = createHttpEvent(
+  "dispatchHttpNotification",
+);
 
 export const axiosBaseQuery =
-  (baseUrl = ENV.API_URL): BaseQueryFn<AxiosRequestConfigExtended, unknown, AxiosResponse> =>
+  (
+    baseUrl = ENV.API_URL,
+  ): BaseQueryFn<AxiosRequestConfigExtended, unknown, AxiosResponse> =>
   async ({ url, method, data, params, extraOptions }, { signal }) => {
     const { token } = store.getState().AuthState; // Adjust according to your state structure
 
@@ -20,7 +24,7 @@ export const axiosBaseQuery =
         params,
         signal,
         headers: {
-          Authorization: token ? `Bearer ${token}` : '',
+          Authorization: token ? `Bearer ${token}` : "",
         },
       });
 

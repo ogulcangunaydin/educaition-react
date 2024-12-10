@@ -1,0 +1,1 @@
+export { FirstCharString } from "./FirstCharString";

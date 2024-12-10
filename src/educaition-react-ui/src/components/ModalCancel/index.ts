@@ -1,1 +1,1 @@
-export * from './ModalCancel';
+export * from "./ModalCancel";

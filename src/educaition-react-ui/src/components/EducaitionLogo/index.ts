@@ -1,0 +1,1 @@
+export { EducaitionLogo } from "./EducaitionLogo";

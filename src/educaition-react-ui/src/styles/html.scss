@@ -9,7 +9,7 @@ body,
 body {
   color: var(--mantine-color-dark-5);
   font-size: 14px;
-  font-family: 'Poppins', sans-serif; // Use the Poppins font imported earlier
+  font-family: "Poppins", sans-serif; // Use the Poppins font imported earlier
   margin: 0;
   padding: 0;
   line-height: 1.6; // Improve readability with a comfortable line height
@@ -29,7 +29,9 @@ p {
 // Additional suggestions
 
 // Box-sizing: border-box for all elements
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -40,7 +42,8 @@ img {
 }
 
 // Set a default style for lists
-ul, ol {
+ul,
+ol {
   padding-left: 1.5em;
   margin: 0;
 }
@@ -53,7 +56,9 @@ button {
 }
 
 // Set a default style for form elements
-input, textarea, select {
+input,
+textarea,
+select {
   font-family: inherit;
   font-size: inherit;
   line-height: inherit;

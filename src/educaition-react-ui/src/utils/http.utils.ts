@@ -1,8 +1,11 @@
-import { HttpExtraOptions } from '@educaition-react/ui/interfaces';
-import { deepMerge } from './object.utils';
+import { HttpExtraOptions } from "@educaition-react/ui/interfaces";
+import { deepMerge } from "./object.utils";
 // import { __DEV__ } from './dev.utils';
 
-export function createHttpExtraOptions(options: HttpExtraOptions, override?: HttpExtraOptions): HttpExtraOptions {
+export function createHttpExtraOptions(
+  options: HttpExtraOptions,
+  override?: HttpExtraOptions,
+): HttpExtraOptions {
   return deepMerge<HttpExtraOptions>(options, override);
 }
 
