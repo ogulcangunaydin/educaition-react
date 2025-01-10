@@ -1,3 +1,5 @@
+import { Language } from "./language";
+
 export interface LanguageStateType {
-  language: string;
+  language: Language;
 }

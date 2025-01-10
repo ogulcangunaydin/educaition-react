@@ -7,6 +7,7 @@ import {
 } from "@educaition-react/ui/hooks";
 import React, { useMemo } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import { useLanguagesQuery } from "@educaition-react/ui/services";
 
 interface PublicRouteProps {
   component: LoadableComponent<any> | React.ComponentType;
@@ -33,7 +34,7 @@ export function PublicRoute({
   /*
    * Get languages from backend
    * */
-  // useLanguagesQuery();
+  useLanguagesQuery();
 
   if (shouldAuthenticate || auth || (requiredQueryParams && !queryParamValid)) {
     return <Navigate to={redirect} replace={true} />;

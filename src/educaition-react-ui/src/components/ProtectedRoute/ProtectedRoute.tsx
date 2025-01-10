@@ -8,7 +8,10 @@ import {
   useRouteQueryParamValidation,
   useCheckRole,
 } from "@educaition-react/ui/hooks";
-import { useLazyAuthenticateQuery } from "@educaition-react/ui/services";
+import {
+  useLanguagesQuery,
+  useLazyAuthenticateQuery,
+} from "@educaition-react/ui/services";
 import { logoutAction } from "@educaition-react/ui/store";
 import React, { useMemo, useRef } from "react";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
@@ -62,7 +65,7 @@ export function ProtectedRoute({
   /*
    * Get languages from backend
    * */
-  // useLanguagesQuery();
+  useLanguagesQuery();
 
   /*
    * Make connection to socket

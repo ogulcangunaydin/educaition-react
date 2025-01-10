@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -9,6 +10,7 @@ import {
   ElementProps,
   Input,
   InputBase,
+  OptionsData,
   SelectFactory,
   StylesApiProps,
   __BaseInputProps,
@@ -28,7 +30,6 @@ import { useTranslation } from "react-i18next";
 import classes from "./VSelect.module.scss";
 import { VSelectDefaultItem } from "./VSelectDefaultItem";
 import { VSelectOptionsDropdown } from "./VSelectOptionsDropdown";
-import { OptionsGroup } from "@educaition-react/ui/interfaces";
 
 export interface VSelectProps
   extends __BaseInputProps,
@@ -231,6 +232,8 @@ export function VSelect(_props: VSelectProps) {
     />
   );
 
+  const { type, pointer, ...rest } = others;
+
   return (
     <>
       <Combobox
@@ -263,6 +266,8 @@ export function VSelect(_props: VSelectProps) {
           <InputBase
             __staticSelector="Select"
             component={(searchable ? "input" : "button") as any}
+            type={searchable ? "text" : "button"}
+            pointer={!searchable}
             rightSection={
               allowDeselect && value
                 ? null
@@ -316,7 +321,7 @@ export function VSelect(_props: VSelectProps) {
             error={error}
             placeholder={placeholder}
             withAsterisk={withAsterisk}
-            {...others}
+            {...rest}
           >
             {placeholderContent()}
           </InputBase>
@@ -325,9 +330,7 @@ export function VSelect(_props: VSelectProps) {
         <VSelectOptionsDropdown
           hidden={readOnly || disabled}
           checkIconPosition={checkIconPosition}
-          data={sortedParsedData.filter(
-            (item): item is ComboboxItem | OptionsGroup => item !== undefined,
-          )}
+          data={sortedParsedData as OptionsData}
           filterOptions={searchable && selectedOption?.label !== search}
           itemComponent={ItemComponent}
           limit={limit}
@@ -336,7 +339,7 @@ export function VSelect(_props: VSelectProps) {
           onScrollToBottom={onScrollToBottom}
           search={search}
           value={_value}
-          withScrollArea={withScrollArea || false}
+          withScrollArea={withScrollArea as boolean}
           withCheckIcon={withCheckIcon}
         />
       </Combobox>

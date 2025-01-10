@@ -10,28 +10,28 @@ import createFilter from "redux-persist-transform-filter";
 import storage from "redux-persist/lib/storage";
 
 import { AuthStateType } from "@educaition-react/ui/interfaces";
-import { AuthState, LanguageState, ThemeState } from "./states";
-import { AuthService } from "../services";
+import { AuthState, LanguagesState, ThemeState } from "./states";
+import { AuthService, LanguagesService } from "../services";
 import { StateResetAction } from "./actions";
 import { ListenerMiddleware } from "./middlewares";
 
 const STATES = {
   AuthState,
-  LanguageState,
+  LanguagesState,
   ThemeState,
 };
 
-const MIDDLEWARES = [AuthService.middleware];
+const MIDDLEWARES = [AuthService.middleware, LanguagesService.middleware];
 
 const SERVICES = {
   [AuthService.reducerPath]: AuthService.reducer,
-  [LanguageState.reducerPath]: LanguageState.reducer,
+  [LanguagesService.reducerPath]: LanguagesService.reducer,
   [ThemeState.reducerPath]: ThemeState.reducer,
 };
 
 const REDUCERS = {
   AuthState: AuthState.reducer,
-  LanguageState: LanguageState.reducer,
+  LanguagesState: LanguagesState.reducer,
   ThemeState: ThemeState.reducer,
 };
 

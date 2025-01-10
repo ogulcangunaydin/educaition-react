@@ -1,4 +1,4 @@
-@use "@scss/breakpoints" as bp;
+@import '@scss/breakpoints';
 
 .pageLoginLayout {
   display: flex;
@@ -6,7 +6,7 @@
   height: 100%;
   padding: 40px;
 
-  @include bp.media-breakpoint-down(sm) {
+  @include media-breakpoint-down(sm) {
     padding: 25px 15px;
   }
 
@@ -22,7 +22,7 @@
       padding-bottom: 20px;
       padding-top: 20px;
 
-      @include bp.media-breakpoint-down(sm) {
+      @include media-breakpoint-down(sm) {
         justify-content: initial;
       }
     }
@@ -35,8 +35,7 @@
   }
 
   &-bg {
-    background: url("../../../images/login/login-bg.jpg") no-repeat center
-      center fixed;
+    background: url('../../../images/login/login-bg.jpg') no-repeat center center fixed;
     background-size: cover;
     position: fixed;
     top: 0;
@@ -46,15 +45,16 @@
     z-index: -1;
   }
 
-  &-support {
+  &-language {
     z-index: 201;
+    margin-top: auto;
+    margin-bottom: auto;
 
     .languageBtn {
       background-color: var(--mantine-color-light-4);
 
       :global {
         .mantine-Select-input {
-          background-color: transparent;
           border-color: var(--mantine-color-gray-0);
           color: var(--mantine-color-gray-6);
           font-size: 20px;

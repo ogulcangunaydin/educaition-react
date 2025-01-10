@@ -1,18 +1,25 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { LanguageStateType } from "@educaition-react/ui/interfaces";
+import { createSlice } from "@reduxjs/toolkit";
+import { Language } from "@educaition-react/ui/interfaces";
+import { LanguagesService } from "@educaition-react/ui/services";
 
-const initialState: LanguageStateType = {
-  language: "en",
+export interface LanguagesStateType {
+  languages: Language[];
+}
+
+const initialState: LanguagesStateType = {
+  languages: [],
 };
 
-export const LanguageState = createSlice({
-  name: "language",
+export const LanguagesState = createSlice({
+  name: "LanguagesState",
   initialState,
-  reducers: {
-    setLanguage(state, action: PayloadAction<string>) {
-      state.language = action.payload;
-    },
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addMatcher(
+      LanguagesService.endpoints.languages.matchFulfilled,
+      (state, { payload }) => {
+        state.languages = payload;
+      },
+    );
   },
 });
-
-export const { setLanguage } = LanguageState.actions;
