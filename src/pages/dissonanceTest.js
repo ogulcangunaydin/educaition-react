@@ -197,8 +197,14 @@ const DissonanceTest = () => {
               10
             ),
             fare_question_second_answer: parseInt(fareQuestionSecondAnswer, 10),
-            comfort_question_displayed_average: parseFloat(comfortQuestionAverage, 10),
-            fare_question_displayed_average: parseFloat(fareQuestionAverage, 10),
+            comfort_question_displayed_average: parseFloat(
+              comfortQuestionAverage,
+              10
+            ),
+            fare_question_displayed_average: parseFloat(
+              fareQuestionAverage,
+              10
+            ),
           }),
         }
       );
@@ -278,7 +284,7 @@ const DissonanceTest = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h6">
-                  Kendinizi bugün nasıl hissediyorsunuz?
+                  Sizce İstanbul'daki taksi sorunu ne kadar önemli?
                 </Typography>
                 <RadioGroup
                   row
@@ -390,7 +396,7 @@ const DissonanceTest = () => {
                 </FormControl>
 
                 <Typography variant="h6" gutterBottom>
-                  Çalışma:
+                  Beni motive edecek çalışma temposu:
                 </Typography>
                 <Slider
                   value={workload}
@@ -407,7 +413,7 @@ const DissonanceTest = () => {
                 />
 
                 <Typography variant="h6" gutterBottom>
-                  Kariyer başlangıcı:
+                  Kariyerim ilk başlarda nasıl olsun:
                 </Typography>
                 <Slider
                   value={careerStart}
@@ -424,7 +430,7 @@ const DissonanceTest = () => {
                 />
 
                 <Typography variant="h6" gutterBottom>
-                  İş Esnekliği:
+                  Seçeceğim mesleğimin esnekliği nasıl olsun:
                 </Typography>
                 <Slider
                   value={flexibility}
