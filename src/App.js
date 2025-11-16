@@ -15,6 +15,7 @@ import Dashboard from "./pages/dashboard";
 import DissonanceTestParticipantList from "./pages/dissonanceTestParticipantList";
 import DissonanceTest from "./pages/dissonanceTest";
 import DissonanceTestResult from "./pages/dissonanceTestResult";
+import UniversityComparison from "./pages/UniversityComparison";
 
 function App() {
   const accessToken = localStorage.getItem("access_token");
@@ -46,6 +47,10 @@ function App() {
         <Route
           path="/dissonanceTestResult/:participantId"
           element={<DissonanceTestResult />}
+        />
+        <Route
+          path="/university-comparison"
+          element={<UniversityComparison />}
         />
         <Route
           path="/"
