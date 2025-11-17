@@ -34,7 +34,7 @@ const UniversityComparison = () => {
   const [year, setYear] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [metric, setMetric] = useState("ranking");
-  const [buffer, setBuffer] = useState(10);
+  const [buffer, setBuffer] = useState(0);
   const [recordLimit, setRecordLimit] = useState(50);
 
   // State for computed data
