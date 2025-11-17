@@ -13,6 +13,7 @@ import YearSelector from "../components/UniversityComparison/YearSelector";
 import ProgramSelector from "../components/UniversityComparison/ProgramSelector";
 import MetricSelector from "../components/UniversityComparison/MetricSelector";
 import BufferSlider from "../components/UniversityComparison/BufferSlider";
+import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
@@ -34,6 +35,7 @@ const UniversityComparison = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [metric, setMetric] = useState("ranking");
   const [buffer, setBuffer] = useState(10);
+  const [recordLimit, setRecordLimit] = useState(50);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -101,16 +103,33 @@ const UniversityComparison = () => {
         metric,
         buffer
       );
-      setSimilarPrograms(similar);
+
+      // Ensure selected program is always included and first
+      const similarWithoutSelected = similar.filter(
+        (p) => p.yop_kodu !== selectedProgram.yop_kodu
+      );
+      const allPrograms = [selectedProgram, ...similarWithoutSelected];
+
+      setSimilarPrograms(allPrograms);
+
+      // Limit programs for chart based on recordLimit
+      // Always include the selected program as first, then limit the rest
+      const limitedForChart =
+        recordLimit >= 200
+          ? allPrograms
+          : [
+              selectedProgram,
+              ...similarWithoutSelected.slice(0, recordLimit - 1),
+            ];
 
       // Prepare chart data
-      const chart = prepareChartData(similar, year, metric);
+      const chart = prepareChartData(limitedForChart, year, metric);
       setChartData(chart);
     } else {
       setSimilarPrograms([]);
       setChartData(null);
     }
-  }, [selectedProgram, year, metric, buffer, allUniversitiesData]);
+  }, [selectedProgram, year, metric, buffer, recordLimit, allUniversitiesData]);
 
   // Handle year change
   const handleYearChange = (newYear) => {
@@ -130,6 +149,11 @@ const UniversityComparison = () => {
   // Handle buffer change
   const handleBufferChange = (newBuffer) => {
     setBuffer(newBuffer);
+  };
+
+  // Handle record limit change
+  const handleRecordLimitChange = (newLimit) => {
+    setRecordLimit(newLimit);
   };
 
   if (loading) {
@@ -186,9 +210,13 @@ const UniversityComparison = () => {
           <Typography variant="body2" paragraph>
             3. Karşılaştırma kriterini seçin (Başarı Sıralaması veya Puan)
           </Typography>
-          <Typography variant="body2">
+          <Typography variant="body2" paragraph>
             4. Buffer (tolerans) değerini ayarlayın - Bu değer, karşılaştırma
             aralığını ne kadar genişleteceğinizi belirler
+          </Typography>
+          <Typography variant="body2">
+            5. Grafikte gösterilecek üniversite sayısını ayarlayın (liste tüm
+            sonuçları gösterir)
           </Typography>
         </Paper>
 
@@ -221,6 +249,12 @@ const UniversityComparison = () => {
                 disabled={!selectedProgram}
               />
 
+              <RecordLimitSlider
+                value={recordLimit}
+                onChange={handleRecordLimitChange}
+                disabled={!selectedProgram}
+              />
+
               {selectedProgram && (
                 <Box
                   sx={{ mt: 3, p: 2, bgcolor: "info.light", borderRadius: 1 }}
@@ -235,22 +269,53 @@ const UniversityComparison = () => {
                     <strong>Puan Türü:</strong>{" "}
                     {selectedProgram.puan_type.toUpperCase()}
                   </Typography>
-                  <Typography variant="body2">
-                    <strong>Min Puan:</strong>{" "}
-                    {selectedProgram[`taban_${year}`]?.toFixed(2) || "-"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Max Puan:</strong>{" "}
-                    {selectedProgram[`tavan_${year}`]?.toFixed(2) || "-"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Min Sıralama:</strong>{" "}
-                    {selectedProgram[`tbs_${year}`]?.toFixed(0) || "-"}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Max Sıralama:</strong>{" "}
-                    {selectedProgram[`tavan_bs_${year}`]?.toFixed(0) || "-"}
-                  </Typography>
+                  {metric === "score" ? (
+                    <>
+                      <Typography variant="body2">
+                        <strong>Min Puan:</strong>{" "}
+                        {selectedProgram[`taban_${year}`]
+                          ? selectedProgram[`taban_${year}`].toLocaleString(
+                              "tr-TR",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Max Puan:</strong>{" "}
+                        {selectedProgram[`tavan_${year}`]
+                          ? selectedProgram[`tavan_${year}`].toLocaleString(
+                              "tr-TR",
+                              {
+                                minimumFractionDigits: 2,
+                                maximumFractionDigits: 2,
+                              }
+                            )
+                          : "-"}
+                      </Typography>
+                    </>
+                  ) : (
+                    <>
+                      <Typography variant="body2">
+                        <strong>Min Sıralama:</strong>{" "}
+                        {selectedProgram[`tbs_${year}`]
+                          ? Math.round(
+                              selectedProgram[`tbs_${year}`]
+                            ).toLocaleString("tr-TR")
+                          : "-"}
+                      </Typography>
+                      <Typography variant="body2">
+                        <strong>Max Sıralama:</strong>{" "}
+                        {selectedProgram[`tavan_bs_${year}`]
+                          ? Math.round(
+                              selectedProgram[`tavan_bs_${year}`]
+                            ).toLocaleString("tr-TR")
+                          : "-"}
+                      </Typography>
+                    </>
+                  )}
                 </Box>
               )}
             </Paper>
@@ -263,6 +328,7 @@ const UniversityComparison = () => {
               selectedProgram={selectedProgram}
               year={year}
               metric={metric}
+              totalPrograms={similarPrograms.length}
             />
 
             <DepartmentList

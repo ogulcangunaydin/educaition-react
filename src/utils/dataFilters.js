@@ -116,45 +116,57 @@ export const prepareChartData = (programs, year, metric) => {
     KKTC: "rgba(75, 192, 192, 0.6)", // Teal for TRNC universities
   };
 
-  Object.keys(grouped)
-    .sort()
-    .forEach((university) => {
-      const universityPrograms = grouped[university];
+  // Special color for Haliç University (highlighted)
+  const halicColor = "rgba(255, 193, 7, 0.8)"; // Bright orange/yellow
 
-      // Collect all min and max values for this university
-      const values = [];
-      universityPrograms.forEach((program) => {
-        const min = program[minColumn];
-        const max = program[maxColumn];
-        if (min !== null) values.push(min);
-        if (max !== null) values.push(max);
+  // Process Haliç first, then others sorted
+  const sortedUniversities = Object.keys(grouped).sort((a, b) => {
+    if (a === "HALİÇ ÜNİVERSİTESİ") return -1;
+    if (b === "HALİÇ ÜNİVERSİTESİ") return 1;
+    return a.localeCompare(b, "tr");
+  });
+
+  sortedUniversities.forEach((university) => {
+    const universityPrograms = grouped[university];
+
+    // Collect all min and max values for this university
+    const values = [];
+    universityPrograms.forEach((program) => {
+      const min = program[minColumn];
+      const max = program[maxColumn];
+      if (min !== null) values.push(min);
+      if (max !== null) values.push(max);
+    });
+
+    if (values.length > 0) {
+      // Sort values for box plot calculation
+      values.sort((a, b) => a - b);
+
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const q1 = values[Math.floor(values.length * 0.25)];
+      const median = values[Math.floor(values.length * 0.5)];
+      const q3 = values[Math.floor(values.length * 0.75)];
+
+      labels.push(university);
+      dataPoints.push({
+        min,
+        q1,
+        median,
+        q3,
+        max,
+        programs: universityPrograms,
       });
 
-      if (values.length > 0) {
-        // Sort values for box plot calculation
-        values.sort((a, b) => a - b);
-
-        const min = Math.min(...values);
-        const max = Math.max(...values);
-        const q1 = values[Math.floor(values.length * 0.25)];
-        const median = values[Math.floor(values.length * 0.5)];
-        const q3 = values[Math.floor(values.length * 0.75)];
-
-        labels.push(university);
-        dataPoints.push({
-          min,
-          q1,
-          median,
-          q3,
-          max,
-          programs: universityPrograms,
-        });
-
-        // Get color based on university type
+      // Use special color for Haliç University, otherwise use type-based color
+      if (university === "HALİÇ ÜNİVERSİTESİ") {
+        colors.push(halicColor);
+      } else {
         const universityType = universityPrograms[0].university_type;
         colors.push(colorMap[universityType] || "rgba(153, 102, 255, 0.6)");
       }
-    });
+    }
+  });
 
   return {
     labels,

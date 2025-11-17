@@ -20,7 +20,13 @@ ChartJS.register(
   Legend
 );
 
-const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
+const ComparisonChart = ({
+  chartData,
+  selectedProgram,
+  year,
+  metric,
+  totalPrograms,
+}) => {
   if (!chartData || !chartData.labels || chartData.labels.length === 0) {
     return (
       <Paper sx={{ p: 3, textAlign: "center", minHeight: 400 }}>
@@ -31,51 +37,27 @@ const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
     );
   }
 
-  // Prepare data for stacked bar chart to simulate box plot
+  // Prepare data for floating bar chart showing only min-max ranges
+  // Using floating bars: [min, max] creates a bar from min to max value
   const datasets = [
     {
-      label: "Minimum",
-      data: chartData.dataPoints.map((d) => d.min),
-      backgroundColor: chartData.colors.map((c) => c.replace("0.6", "0.3")),
-      borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
-      borderWidth: 1,
-    },
-    {
-      label: "Q1 - Min",
-      data: chartData.dataPoints.map((d) => d.q1 - d.min),
-      backgroundColor: chartData.colors.map((c) => c.replace("0.6", "0.5")),
-      borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
-      borderWidth: 1,
-    },
-    {
-      label: "Median - Q1",
-      data: chartData.dataPoints.map((d) => d.median - d.q1),
+      label: metric === "ranking" ? "Sıralama Aralığı" : "Puan Aralığı",
+      data: chartData.dataPoints.map((d) => [d.min, d.max]),
       backgroundColor: chartData.colors,
       borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
       borderWidth: 2,
-    },
-    {
-      label: "Q3 - Median",
-      data: chartData.dataPoints.map((d) => d.q3 - d.median),
-      backgroundColor: chartData.colors.map((c) => c.replace("0.6", "0.5")),
-      borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
-      borderWidth: 1,
-    },
-    {
-      label: "Maximum - Q3",
-      data: chartData.dataPoints.map((d) => d.max - d.q3),
-      backgroundColor: chartData.colors.map((c) => c.replace("0.6", "0.3")),
-      borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
-      borderWidth: 1,
+      borderSkipped: false,
     },
   ];
 
   const options = {
     responsive: true,
     maintainAspectRatio: false,
+    indexAxis: "x",
     plugins: {
       legend: {
-        display: false,
+        display: true,
+        position: "top",
       },
       title: {
         display: true,
@@ -93,12 +75,17 @@ const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
           },
           label: (context) => {
             const dataPoint = chartData.dataPoints[context.dataIndex];
+            const metricLabel = metric === "ranking" ? "Sıralama" : "Puan";
+            const formatValue = (val) =>
+              metric === "ranking"
+                ? Math.round(val).toLocaleString("tr-TR")
+                : val.toLocaleString("tr-TR", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  });
             return [
-              `Minimum: ${dataPoint.min.toFixed(2)}`,
-              `Q1: ${dataPoint.q1.toFixed(2)}`,
-              `Median: ${dataPoint.median.toFixed(2)}`,
-              `Q3: ${dataPoint.q3.toFixed(2)}`,
-              `Maximum: ${dataPoint.max.toFixed(2)}`,
+              `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
+              `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
               `Program Sayısı: ${dataPoint.programs.length}`,
             ];
           },
@@ -107,7 +94,6 @@ const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
     },
     scales: {
       x: {
-        stacked: true,
         ticks: {
           autoSkip: false,
           maxRotation: 90,
@@ -118,12 +104,11 @@ const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
         },
       },
       y: {
-        stacked: true,
         title: {
           display: true,
           text: metric === "ranking" ? "Başarı Sıralaması" : "Puan",
         },
-        reverse: metric === "ranking", // Reverse for ranking (lower is better)
+        beginAtZero: false,
       },
     },
   };
@@ -153,9 +138,26 @@ const ComparisonChart = ({ chartData, selectedProgram, year, metric }) => {
           <strong>Burs Türü:</strong> {selectedProgram?.scholarship}
         </Typography>
         <Typography variant="body2">
-          <strong>Toplam Eşleşen Program:</strong>{" "}
-          {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)}
+          <strong>Grafikte Gösterilen:</strong>{" "}
+          {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)}{" "}
+          program
         </Typography>
+        {totalPrograms &&
+          totalPrograms >
+            chartData.dataPoints.reduce(
+              (sum, d) => sum + d.programs.length,
+              0
+            ) && (
+            <Typography variant="body2" color="warning.main">
+              <strong>Toplam Eşleşen:</strong> {totalPrograms} program (Grafikte
+              ilk{" "}
+              {chartData.dataPoints.reduce(
+                (sum, d) => sum + d.programs.length,
+                0
+              )}{" "}
+              gösteriliyor)
+            </Typography>
+          )}
       </Box>
     </Paper>
   );

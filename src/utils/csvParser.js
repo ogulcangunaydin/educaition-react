@@ -4,7 +4,8 @@
  */
 
 /**
- * Parse Turkish formatted number string to JavaScript number
+ * Parse Turkish formatted score string to JavaScript number
+ * Scores are in quotes with comma as decimal separator
  * Converts "358,17297" to 358.17297
  */
 export const parseScore = (scoreStr) => {
@@ -16,9 +17,29 @@ export const parseScore = (scoreStr) => {
   ) {
     return null;
   }
-  // Remove quotes and convert comma to dot
+  // Remove quotes and convert comma to dot for decimal
   const cleaned = String(scoreStr).replace(/"/g, "").replace(",", ".");
   const parsed = parseFloat(cleaned);
+  return isNaN(parsed) ? null : parsed;
+};
+
+/**
+ * Parse Turkish formatted ranking string to JavaScript number
+ * Rankings use dot as thousand separator (no quotes)
+ * Converts "92.887" to 92887 and "1.383.482" to 1383482
+ */
+export const parseRanking = (rankingStr) => {
+  if (
+    !rankingStr ||
+    rankingStr === "" ||
+    rankingStr === "Dolmadı" ||
+    rankingStr === "0"
+  ) {
+    return null;
+  }
+  // Remove all dots (thousand separators)
+  const cleaned = String(rankingStr).replace(/\./g, "");
+  const parsed = parseInt(cleaned);
   return isNaN(parsed) ? null : parsed;
 };
 
@@ -31,10 +52,12 @@ export const parseCSVRow = (row) => {
   // Parse numeric fields for all years
   ["2022", "2023", "2024"].forEach((year) => {
     parsed[`kontenjan_${year}`] = parseScore(row[`kontenjan_${year}`]);
+    // Scores use comma as decimal separator
     parsed[`taban_${year}`] = parseScore(row[`taban_${year}`]);
     parsed[`tavan_${year}`] = parseScore(row[`tavan_${year}`]);
-    parsed[`tavan_bs_${year}`] = parseScore(row[`tavan_bs_${year}`]);
-    parsed[`tbs_${year}`] = parseScore(row[`tbs_${year}`]);
+    // Rankings use dot as thousand separator
+    parsed[`tavan_bs_${year}`] = parseRanking(row[`tavan_bs_${year}`]);
+    parsed[`tbs_${year}`] = parseRanking(row[`tbs_${year}`]);
     parsed[`yerlesen_${year}`] = parseScore(row[`yerlesen_${year}`]);
   });
 
