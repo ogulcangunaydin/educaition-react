@@ -203,15 +203,20 @@ export const prepareChartData = (programs, year, metric) => {
     })
     .filter((item) => item !== null);
 
-  // Sort: Haliç first, then by spread (smallest to largest)
+  // Sort: Haliç first, then by spread (largest to smallest)
   universitiesWithSpread.sort((a, b) => {
     if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
     if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
-    return a.spread - b.spread; // Sort by spread ascending (smallest first)
+    return b.spread - a.spread; // Sort by spread descending (largest first)
   });
 
+  // Filter out universities with zero spread for the chart (but keep them in programs list)
+  const universitiesForChart = universitiesWithSpread.filter(
+    (item) => item.spread > 0 || item.university === "HALİÇ ÜNİVERSİTESİ"
+  );
+
   // Build chart data
-  universitiesWithSpread.forEach(
+  universitiesForChart.forEach(
     ({ university, programs: universityPrograms, min, max, values }) => {
       const q1 = values[Math.floor(values.length * 0.25)];
       const median = values[Math.floor(values.length * 0.5)];
@@ -241,6 +246,7 @@ export const prepareChartData = (programs, year, metric) => {
     labels,
     dataPoints,
     colors,
+    sortedPrograms: universitiesWithSpread.flatMap((item) => item.programs), // All programs in chart order
   };
 };
 
