@@ -99,7 +99,29 @@ const ComparisonChart = ({
           maxRotation: 90,
           minRotation: 45,
           font: {
-            size: 10,
+            size: 9,
+          },
+          callback: function (value, index) {
+            const label = this.getLabelForValue(value);
+            // Split long labels into multiple lines (max 40 chars per line)
+            const maxCharsPerLine = 40;
+            if (label.length <= maxCharsPerLine) return label;
+
+            const words = label.split(" ");
+            const lines = [];
+            let currentLine = "";
+
+            words.forEach((word) => {
+              if ((currentLine + " " + word).length <= maxCharsPerLine) {
+                currentLine += (currentLine ? " " : "") + word;
+              } else {
+                if (currentLine) lines.push(currentLine);
+                currentLine = word;
+              }
+            });
+            if (currentLine) lines.push(currentLine);
+
+            return lines;
           },
         },
       },
@@ -140,7 +162,8 @@ const ComparisonChart = ({
         <Typography variant="body2">
           <strong>Grafikte Gösterilen:</strong>{" "}
           {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)}{" "}
-          program
+          program (Bir kişi alıp max ve min farkı 0 olan programlar
+          gösterilmemektedir)
         </Typography>
         {totalPrograms &&
           totalPrograms >

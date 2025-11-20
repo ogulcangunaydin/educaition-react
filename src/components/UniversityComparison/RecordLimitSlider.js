@@ -13,7 +13,7 @@ const RecordLimitSlider = ({ value, onChange, disabled = false }) => {
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography id="record-limit-slider" gutterBottom>
-        Grafikte Gösterilecek Üniversite Sayısı: {value >= 200 ? "Tümü" : value}
+        Grafikte Gösterilecek Departman Sayısı: {value >= 200 ? "Tümü" : value}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         En yakın sonuçları göstermek için üniversite sayısını sınırlayın

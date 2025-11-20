@@ -154,9 +154,6 @@ export const prepareChartData = (programs, year, metric) => {
   const minColumn = metric === "ranking" ? `tavan_bs_${year}` : `taban_${year}`;
   const maxColumn = metric === "ranking" ? `tbs_${year}` : `tavan_${year}`;
 
-  // Group by university
-  const grouped = groupProgramsByUniversity(programs);
-
   const labels = [];
   const dataPoints = [];
   const colors = [];
@@ -171,82 +168,71 @@ export const prepareChartData = (programs, year, metric) => {
   // Special color for Haliç University (highlighted)
   const halicColor = "rgba(255, 193, 7, 0.8)"; // Bright orange/yellow
 
-  // Calculate spread (range) for each university for sorting
-  const universitiesWithSpread = Object.keys(grouped)
-    .map((university) => {
-      const universityPrograms = grouped[university];
+  // Build department-level entries (one entry per program)
+  const departmentItems = programs
+    .map((program) => {
+      let min = program[minColumn];
+      let max = program[maxColumn];
 
-      // Collect all min and max values for this university
-      const values = [];
-      universityPrograms.forEach((program) => {
-        const min = program[minColumn];
-        const max = program[maxColumn];
-        if (min !== null) values.push(min);
-        if (max !== null) values.push(max);
-      });
+      if (min === null || max === null) return null;
 
-      if (values.length === 0) return null;
+      // Ensure min is actually smaller than max
+      if (min > max) {
+        [min, max] = [max, min];
+      }
 
-      values.sort((a, b) => a - b);
-      const min = Math.min(...values);
-      const max = Math.max(...values);
-      const spread = max - min; // Calculate spread (range)
+      const spread = max - min;
+      const label = `${program.university} - ${formatProgramName(program)}`;
 
       return {
-        university,
-        programs: universityPrograms,
+        program,
+        label,
+        university: program.university,
+        university_type: program.university_type,
         min,
         max,
         spread,
-        values,
       };
     })
     .filter((item) => item !== null);
 
   // Sort: Haliç first, then by spread (largest to smallest)
-  universitiesWithSpread.sort((a, b) => {
+  departmentItems.sort((a, b) => {
     if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
     if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
     return b.spread - a.spread; // Sort by spread descending (largest first)
   });
 
-  // Filter out universities with zero spread for the chart (but keep them in programs list)
-  const universitiesForChart = universitiesWithSpread.filter(
+  // Filter out departments with zero spread for the chart (but keep them in programs list)
+  const departmentsForChart = departmentItems.filter(
     (item) => item.spread > 0 || item.university === "HALİÇ ÜNİVERSİTESİ"
   );
 
   // Build chart data
-  universitiesForChart.forEach(
-    ({ university, programs: universityPrograms, min, max, values }) => {
-      const q1 = values[Math.floor(values.length * 0.25)];
-      const median = values[Math.floor(values.length * 0.5)];
-      const q3 = values[Math.floor(values.length * 0.75)];
+  departmentsForChart.forEach((item) => {
+    labels.push(item.label);
+    dataPoints.push({
+      min: item.min,
+      q1: item.min,
+      median: (item.min + item.max) / 2,
+      q3: item.max,
+      max: item.max,
+      programs: [item.program],
+    });
 
-      labels.push(university);
-      dataPoints.push({
-        min,
-        q1,
-        median,
-        q3,
-        max,
-        programs: universityPrograms,
-      });
-
-      // Use special color for Haliç University, otherwise use type-based color
-      if (university === "HALİÇ ÜNİVERSİTESİ") {
-        colors.push(halicColor);
-      } else {
-        const universityType = universityPrograms[0].university_type;
-        colors.push(colorMap[universityType] || "rgba(153, 102, 255, 0.6)");
-      }
+    // Use special color for Haliç University, otherwise use type-based color
+    if (item.university === "HALİÇ ÜNİVERSİTESİ") {
+      colors.push(halicColor);
+    } else {
+      colors.push(colorMap[item.university_type] || "rgba(153, 102, 255, 0.6)");
     }
-  );
+  });
 
   return {
     labels,
     dataPoints,
     colors,
-    sortedPrograms: universitiesWithSpread.flatMap((item) => item.programs), // All programs in chart order
+    sortedPrograms: departmentItems.map((item) => item.program), // All programs in chart order
   };
 };
 

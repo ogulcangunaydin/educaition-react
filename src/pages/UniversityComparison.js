@@ -35,7 +35,7 @@ const UniversityComparison = () => {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [metric, setMetric] = useState("ranking");
   const [buffer, setBuffer] = useState(0);
-  const [recordLimit, setRecordLimit] = useState(50);
+  const [recordLimit, setRecordLimit] = useState(10);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -112,19 +112,24 @@ const UniversityComparison = () => {
 
       setSimilarPrograms(allPrograms);
 
-      // Limit programs for chart based on recordLimit
-      // Always include the selected program as first, then limit the rest
-      const limitedForChart =
-        recordLimit >= 200
-          ? allPrograms
-          : [
-              selectedProgram,
-              ...similarWithoutSelected.slice(0, recordLimit - 1),
-            ];
-
-      // Prepare chart data
-      const chart = prepareChartData(limitedForChart, year, metric);
-      setChartData(chart);
+      // Prepare chart data (this handles sorting and filtering zero-spread)
+      const chart = prepareChartData(allPrograms, year, metric);
+      
+      // Apply record limit to the chart data (after zero-spread filtering)
+      if (chart && recordLimit < 200) {
+        const limitedLabels = chart.labels.slice(0, recordLimit);
+        const limitedDataPoints = chart.dataPoints.slice(0, recordLimit);
+        const limitedColors = chart.colors.slice(0, recordLimit);
+        
+        setChartData({
+          labels: limitedLabels,
+          dataPoints: limitedDataPoints,
+          colors: limitedColors,
+          sortedPrograms: chart.sortedPrograms, // Keep full list for table
+        });
+      } else {
+        setChartData(chart);
+      }
     } else {
       setSimilarPrograms([]);
       setChartData(null);
@@ -215,7 +220,7 @@ const UniversityComparison = () => {
             aralığını ne kadar genişleteceğinizi belirler
           </Typography>
           <Typography variant="body2">
-            5. Grafikte gösterilecek üniversite sayısını ayarlayın (liste tüm
+            5. Grafikte gösterilecek departman sayısını ayarlayın (liste tüm
             sonuçları gösterir)
           </Typography>
         </Paper>
