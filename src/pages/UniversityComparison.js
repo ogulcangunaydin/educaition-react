@@ -14,6 +14,7 @@ import ProgramSelector from "../components/UniversityComparison/ProgramSelector"
 import MetricSelector from "../components/UniversityComparison/MetricSelector";
 import BufferSlider from "../components/UniversityComparison/BufferSlider";
 import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
+import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
@@ -36,6 +37,7 @@ const UniversityComparison = () => {
   const [metric, setMetric] = useState("ranking");
   const [buffer, setBuffer] = useState(0);
   const [recordLimit, setRecordLimit] = useState(10);
+  const [universityType, setUniversityType] = useState("Vakıf");
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -104,37 +106,45 @@ const UniversityComparison = () => {
         buffer
       );
 
+      // Filter by university type
+      const filteredByType = similar.filter(
+        (p) => universityType === "all" || p.university_type === universityType
+      );
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = similar.filter(
+      const similarWithoutSelected = filteredByType.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
 
       setSimilarPrograms(allPrograms);
 
-      // Prepare chart data (this handles sorting and filtering zero-spread)
-      const chart = prepareChartData(allPrograms, year, metric);
-      
-      // Apply record limit to the chart data (after zero-spread filtering)
-      if (chart && recordLimit < 200) {
-        const limitedLabels = chart.labels.slice(0, recordLimit);
-        const limitedDataPoints = chart.dataPoints.slice(0, recordLimit);
-        const limitedColors = chart.colors.slice(0, recordLimit);
-        
-        setChartData({
-          labels: limitedLabels,
-          dataPoints: limitedDataPoints,
-          colors: limitedColors,
-          sortedPrograms: chart.sortedPrograms, // Keep full list for table
-        });
-      } else {
-        setChartData(chart);
-      }
+      // Limit programs for chart based on recordLimit
+      // Always include the selected program as first, then limit the rest
+      const limitedForChart =
+        recordLimit >= 200
+          ? allPrograms
+          : [
+              selectedProgram,
+              ...similarWithoutSelected.slice(0, recordLimit - 1),
+            ];
+
+      // Prepare chart data
+      const chart = prepareChartData(limitedForChart, year, metric);
+      setChartData(chart);
     } else {
       setSimilarPrograms([]);
       setChartData(null);
     }
-  }, [selectedProgram, year, metric, buffer, recordLimit, allUniversitiesData]);
+  }, [
+    selectedProgram,
+    year,
+    metric,
+    buffer,
+    recordLimit,
+    universityType,
+    allUniversitiesData,
+  ]);
 
   // Handle year change
   const handleYearChange = (newYear) => {
@@ -159,6 +169,11 @@ const UniversityComparison = () => {
   // Handle record limit change
   const handleRecordLimitChange = (newLimit) => {
     setRecordLimit(newLimit);
+  };
+
+  // Handle university type change
+  const handleUniversityTypeChange = (newType) => {
+    setUniversityType(newType);
   };
 
   if (loading) {
@@ -245,6 +260,12 @@ const UniversityComparison = () => {
               <MetricSelector
                 value={metric}
                 onChange={handleMetricChange}
+                disabled={!selectedProgram}
+              />
+
+              <UniversityTypeSelector
+                universityType={universityType}
+                onChange={handleUniversityTypeChange}
                 disabled={!selectedProgram}
               />
 

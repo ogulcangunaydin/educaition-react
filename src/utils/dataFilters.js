@@ -58,20 +58,6 @@ export const findSimilarPrograms = (
     searchMax = selectedMax * (1 + bufferMultiplier);
   }
 
-  console.log("=== BUFFER CALCULATION DEBUG ===");
-  console.log(
-    "Selected Program:",
-    selectedProgram.program,
-    selectedProgram.program_detail
-  );
-  console.log("Metric:", metric);
-  console.log("Year:", year);
-  console.log("Buffer:", buffer + "%");
-  console.log("Selected Min:", selectedMin);
-  console.log("Selected Max:", selectedMax);
-  console.log("Search Range:", searchMin, "-", searchMax);
-  console.log("minColumn:", minColumn, "maxColumn:", maxColumn);
-
   // Filter programs that fall within the buffer range
   const filtered = allUniversitiesData.filter((program) => {
     // Must have data for the selected year
@@ -96,32 +82,8 @@ export const findSimilarPrograms = (
     // progMax must be <= searchMax (not higher than upper bound)
     const isInRange = progMin >= searchMin && progMax <= searchMax;
 
-    if (isInRange) {
-      console.log("✓ MATCH:", program.university, "-", program.program);
-      console.log("  Program range:", progMin, "-", progMax);
-      console.log(
-        "  Min check:",
-        progMin,
-        ">=",
-        searchMin,
-        "?",
-        progMin >= searchMin
-      );
-      console.log(
-        "  Max check:",
-        progMax,
-        "<=",
-        searchMax,
-        "?",
-        progMax <= searchMax
-      );
-    }
-
     return isInRange;
   });
-
-  console.log("Total matched programs:", filtered.length);
-  console.log("================================\n");
 
   return filtered;
 };
