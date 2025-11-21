@@ -46,6 +46,10 @@ const DepartmentList = ({ programs, year, metric }) => {
           aValue = a.university || "";
           bValue = b.university || "";
           break;
+        case "city":
+          aValue = a.city || "";
+          bValue = b.city || "";
+          break;
         case "program":
           aValue = formatProgramName(a);
           bValue = formatProgramName(b);
@@ -115,6 +119,15 @@ const DepartmentList = ({ programs, year, metric }) => {
                   onClick={() => handleSort("university")}
                 >
                   Üniversite
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel
+                  active={orderBy === "city"}
+                  direction={orderBy === "city" ? order : "asc"}
+                  onClick={() => handleSort("city")}
+                >
+                  Şehir
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -198,6 +211,9 @@ const DepartmentList = ({ programs, year, metric }) => {
                       sx={{ mt: 0.5 }}
                     />
                   </Box>
+                </TableCell>
+                <TableCell>
+                  <Typography variant="body2">{program.city || "-"}</Typography>
                 </TableCell>
                 <TableCell>
                   <Typography variant="body2">

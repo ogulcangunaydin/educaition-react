@@ -15,6 +15,7 @@ import MetricSelector from "../components/UniversityComparison/MetricSelector";
 import BufferSlider from "../components/UniversityComparison/BufferSlider";
 import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
+import TopCitiesSlider from "../components/UniversityComparison/TopCitiesSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
@@ -28,6 +29,7 @@ const UniversityComparison = () => {
   // State for CSV data
   const [halicData, setHalicData] = useState([]);
   const [allUniversitiesData, setAllUniversitiesData] = useState([]);
+  const [cityPreferencesData, setCityPreferencesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -38,6 +40,7 @@ const UniversityComparison = () => {
   const [buffer, setBuffer] = useState(0);
   const [recordLimit, setRecordLimit] = useState(10);
   const [universityType, setUniversityType] = useState("Vakıf");
+  const [topCitiesLimit, setTopCitiesLimit] = useState(3);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -52,25 +55,48 @@ const UniversityComparison = () => {
         setError(null);
 
         // Load both CSV files
-        const [halicResponse, allUniversitiesResponse] = await Promise.all([
-          fetch("/assets/data/halic_programs.csv"),
-          fetch("/assets/data/all_universities_programs_master.csv"),
-        ]);
+        const [halicResponse, allUniversitiesResponse, cityPrefsResponse] =
+          await Promise.all([
+            fetch("/assets/data/halic_programs.csv"),
+            fetch("/assets/data/all_universities_programs_master.csv"),
+            fetch("/assets/data/halic_tercih_edilen_iller.csv"),
+          ]);
 
-        if (!halicResponse.ok || !allUniversitiesResponse.ok) {
+        if (
+          !halicResponse.ok ||
+          !allUniversitiesResponse.ok ||
+          !cityPrefsResponse.ok
+        ) {
           throw new Error("Failed to load CSV files");
         }
 
-        const [halicText, allUniversitiesText] = await Promise.all([
-          halicResponse.text(),
-          allUniversitiesResponse.text(),
-        ]);
+        const [halicText, allUniversitiesText, cityPrefsText] =
+          await Promise.all([
+            halicResponse.text(),
+            allUniversitiesResponse.text(),
+            cityPrefsResponse.text(),
+          ]);
 
         const halicParsed = parseCSV(halicText);
         const allUniversitiesParsed = parseCSV(allUniversitiesText);
 
+        // Parse city preferences CSV (simple format, not using parseCSV)
+        const cityPrefsLines = cityPrefsText.trim().split("\n");
+        const cityPrefsData = [];
+        for (let i = 1; i < cityPrefsLines.length; i++) {
+          const [yop_kodu, year, il, tercih_sayisi] =
+            cityPrefsLines[i].split(",");
+          cityPrefsData.push({
+            yop_kodu,
+            year,
+            il,
+            tercih_sayisi: parseInt(tercih_sayisi),
+          });
+        }
+
         setHalicData(halicParsed);
         setAllUniversitiesData(allUniversitiesParsed);
+        setCityPreferencesData(cityPrefsData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading CSV files:", err);
@@ -111,8 +137,32 @@ const UniversityComparison = () => {
         (p) => universityType === "all" || p.university_type === universityType
       );
 
+      // Filter by top cities if limit is set
+      let filteredByCity = filteredByType;
+      if (topCitiesLimit > 0 && cityPreferencesData.length > 0) {
+        // Calculate total preferences per city
+        const cityTotals = {};
+        cityPreferencesData.forEach((row) => {
+          const city = row.il;
+          cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
+        });
+
+        // Get top N cities
+        const topCities = Object.entries(cityTotals)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, topCitiesLimit)
+          .map(([city]) => city);
+
+        // Filter programs by top cities (always include Haliç program)
+        filteredByCity = filteredByType.filter(
+          (p) =>
+            p.yop_kodu === selectedProgram.yop_kodu ||
+            topCities.includes(p.city)
+        );
+      }
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = filteredByType.filter(
+      const similarWithoutSelected = filteredByCity.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
@@ -143,7 +193,9 @@ const UniversityComparison = () => {
     buffer,
     recordLimit,
     universityType,
+    topCitiesLimit,
     allUniversitiesData,
+    cityPreferencesData,
   ]);
 
   // Handle year change
@@ -174,6 +226,11 @@ const UniversityComparison = () => {
   // Handle university type change
   const handleUniversityTypeChange = (newType) => {
     setUniversityType(newType);
+  };
+
+  // Handle top cities limit change
+  const handleTopCitiesChange = (newLimit) => {
+    setTopCitiesLimit(newLimit);
   };
 
   if (loading) {
@@ -269,6 +326,12 @@ const UniversityComparison = () => {
                 disabled={!selectedProgram}
               />
 
+              <TopCitiesSlider
+                value={topCitiesLimit}
+                onChange={handleTopCitiesChange}
+                disabled={!selectedProgram}
+              />
+
               <BufferSlider
                 value={buffer}
                 onChange={handleBufferChange}
@@ -295,6 +358,24 @@ const UniversityComparison = () => {
                     <strong>Puan Türü:</strong>{" "}
                     {selectedProgram.puan_type.toUpperCase()}
                   </Typography>
+                  {topCitiesLimit > 0 && cityPreferencesData.length > 0 && (
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>Dahil Edilen Şehirler:</strong>{" "}
+                      {(() => {
+                        const cityTotals = {};
+                        cityPreferencesData.forEach((row) => {
+                          const city = row.il;
+                          cityTotals[city] =
+                            (cityTotals[city] || 0) + row.tercih_sayisi;
+                        });
+                        const topCities = Object.entries(cityTotals)
+                          .sort((a, b) => b[1] - a[1])
+                          .slice(0, topCitiesLimit)
+                          .map(([city]) => city);
+                        return topCities.join(", ");
+                      })()}
+                    </Typography>
+                  )}
                   {metric === "score" ? (
                     <>
                       <Typography variant="body2">
