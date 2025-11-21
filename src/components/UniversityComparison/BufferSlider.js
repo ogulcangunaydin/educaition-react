@@ -13,7 +13,7 @@ const BufferSlider = ({ value, onChange, disabled = false }) => {
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography id="buffer-slider" gutterBottom>
-        Buffer (Tolerans): {value}%
+        Tolerans: {value}%
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
         Seçilen programın değer aralığını ne kadar genişletmek istersiniz?

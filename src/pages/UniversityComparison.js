@@ -44,6 +44,11 @@ const UniversityComparison = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Clear basket once on mount
+  useEffect(() => {
+    clearBasket();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   // State for selections
   const [year, setYear] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);

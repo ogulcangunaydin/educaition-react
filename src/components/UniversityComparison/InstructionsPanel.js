@@ -56,10 +56,10 @@ const InstructionsPanel = () => {
               <br />• <strong>Puan:</strong> Üniversite giriş puanlarına göre
             </Typography>
             <Typography variant="body2">
-              <strong>4. Buffer (Tolerans):</strong> Karşılaştırma aralığını
-              ayarlayın. %0 en fazla seçtiğiniz bölümün aralığı kadar olanlar
-              sıralanır. Eğer bu aralığı arttırırsanız, daha geniş bir yelpazede
-              benzer programlar gösterilir.
+              <strong>4. Tolerans:</strong> Karşılaştırma aralığını ayarlayın.
+              %0 en fazla seçtiğiniz bölümün aralığı kadar olanlar sıralanır.
+              Eğer bu aralığı arttırırsanız, daha geniş bir yelpazede benzer
+              programlar gösterilir.
             </Typography>
           </Box>
         </AccordionDetails>
