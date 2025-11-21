@@ -24,7 +24,7 @@ const DepartmentList = ({ programs, year, metric }) => {
     metric === "ranking" ? "tbs" : "taban"
   );
   const [order, setOrder] = useState("asc");
-  const { toggleProgram, isSelected, selectedPrograms } = useBasket();
+  const { toggleProgram, isSelected, selectedPrograms, setYear } = useBasket();
   const navigate = useNavigate();
 
   if (!programs || programs.length === 0) {
@@ -133,7 +133,10 @@ const DepartmentList = ({ programs, year, metric }) => {
             <Button
               variant="contained"
               color="primary"
-              onClick={() => navigate("/highschool-analysis")}
+              onClick={() => {
+                setYear(year);
+                navigate("/highschool-analysis");
+              }}
             >
               Lise Analizi →
             </Button>

@@ -44,7 +44,7 @@ const getSchoolTypeLabel = (schoolType) => {
 };
 
 const HighSchoolAnalysis = () => {
-  const { selectedPrograms } = useBasket();
+  const { selectedPrograms, selectedYear } = useBasket();
   const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
@@ -122,8 +122,10 @@ const HighSchoolAnalysis = () => {
             const parts = line.split(",");
             if (parts.length >= 5) {
               const yop_kodu = parts[0];
+              const year = parts[1];
 
-              if (programCodes.has(yop_kodu)) {
+              // Filter by selected year
+              if (programCodes.has(yop_kodu) && year === String(selectedYear)) {
                 const lise_id = parts[2];
                 const yerlesen_sayisi = parseInt(parts[3]);
                 const school_type = parts[4];
@@ -168,7 +170,7 @@ const HighSchoolAnalysis = () => {
     };
 
     loadHighSchoolData();
-  }, [selectedPrograms, liseMapping]);
+  }, [selectedPrograms, liseMapping, selectedYear]);
 
   // Download as CSV
   const handleDownload = () => {
@@ -269,7 +271,7 @@ const HighSchoolAnalysis = () => {
 
         <Paper sx={{ p: 3, mb: 3 }}>
           <Typography variant="h6" gutterBottom>
-            Seçilen Programlar
+            Seçilen Programlar {selectedYear && `(${selectedYear})`}
           </Typography>
           <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
             {selectedPrograms.map((program) => (
@@ -294,7 +296,8 @@ const HighSchoolAnalysis = () => {
         ) : (
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Yerleşen Öğrencilerin Liseleri ({highSchoolData.length} kayıt)
+              Yerleşen Öğrencilerin Liseleri - {selectedYear} (
+              {highSchoolData.length} kayıt)
             </Typography>
 
             <TableContainer sx={{ maxHeight: 600, mt: 2 }}>

@@ -12,6 +12,7 @@ export const useBasket = () => {
 
 export const BasketProvider = ({ children }) => {
   const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const [selectedYear, setSelectedYear] = useState(null);
 
   const addProgram = (program) => {
     setSelectedPrograms((prev) => {
@@ -49,6 +50,8 @@ export const BasketProvider = ({ children }) => {
     <BasketContext.Provider
       value={{
         selectedPrograms,
+        selectedYear,
+        setYear: setSelectedYear,
         addProgram,
         removeProgram,
         toggleProgram,
