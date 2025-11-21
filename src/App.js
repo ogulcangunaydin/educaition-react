@@ -17,6 +17,7 @@ import DissonanceTest from "./pages/dissonanceTest";
 import DissonanceTestResult from "./pages/dissonanceTestResult";
 import UniversityComparison from "./pages/UniversityComparison";
 import HighSchoolAnalysis from "./pages/HighSchoolAnalysis";
+import RivalAnalysis from "./pages/RivalAnalysis";
 
 function App() {
   const accessToken = localStorage.getItem("access_token");
@@ -54,6 +55,7 @@ function App() {
           element={<UniversityComparison />}
         />
         <Route path="/highschool-analysis" element={<HighSchoolAnalysis />} />
+        <Route path="/rival-analysis" element={<RivalAnalysis />} />
         <Route
           path="/"
           element={

@@ -137,8 +137,19 @@ const DepartmentList = ({ programs, year, metric }) => {
                 setYear(year);
                 navigate("/highschool-analysis");
               }}
+              sx={{ mr: 1 }}
             >
               Lise Analizi →
+            </Button>
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setYear(year);
+                navigate("/rival-analysis");
+              }}
+            >
+              Rakip Analizi →
             </Button>
           </Box>
         )}
