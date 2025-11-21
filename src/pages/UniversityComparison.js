@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import {
   Container,
   Box,
@@ -21,6 +21,7 @@ import MinProgramCountSlider from "../components/UniversityComparison/MinProgram
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
+import { useBasket } from "../contexts/BasketContext";
 import {
   getHalicProgramsForYear,
   findSimilarPrograms,
@@ -28,6 +29,9 @@ import {
 } from "../utils/dataFilters";
 
 const UniversityComparison = () => {
+  const { clearBasket } = useBasket();
+  const previousProgramRef = useRef(null);
+
   // State for CSV data
   const [halicData, setHalicData] = useState([]);
   const [allUniversitiesData, setAllUniversitiesData] = useState([]);
@@ -192,6 +196,18 @@ const UniversityComparison = () => {
       setAvailablePrograms([]);
     }
   }, [year, halicData]);
+
+  // Clear basket when selected program changes to a different program
+  useEffect(() => {
+    if (
+      selectedProgram &&
+      previousProgramRef.current !== null &&
+      previousProgramRef.current !== selectedProgram?.yop_kodu
+    ) {
+      clearBasket();
+    }
+    previousProgramRef.current = selectedProgram?.yop_kodu || null;
+  }, [selectedProgram, clearBasket]);
 
   // Update similar programs when selections change
   useEffect(() => {
