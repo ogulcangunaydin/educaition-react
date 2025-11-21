@@ -41,7 +41,10 @@ const ComparisonChart = ({
   // Using floating bars: [min, max] creates a bar from min to max value
   const datasets = [
     {
-      label: metric === "ranking" ? "Sıralama Aralığı" : "Puan Aralığı",
+      label:
+        metric === "ranking"
+          ? "HALİÇ ÜNİVERSİTESİ / Sıralama Aralığı Gösteriliyor"
+          : "HALİÇ ÜNİVERSİTESİ / Puan Aralığı Gösteriliyor",
       data: chartData.dataPoints.map((d) => [d.min, d.max]),
       backgroundColor: chartData.colors,
       borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),

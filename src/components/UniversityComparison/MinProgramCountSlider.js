@@ -79,7 +79,7 @@ const MinProgramCountSlider = ({
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography gutterBottom>
-        Program Minimum Tercih Sayısı: {value === 0 ? "Tümü" : value}
+        Minimum Program Tercih Sayısı: {value === 0 ? "Tümü" : value}
       </Typography>
       <Typography
         variant="caption"

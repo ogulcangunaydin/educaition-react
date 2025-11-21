@@ -230,17 +230,6 @@ const DepartmentList = ({ programs, year, metric }) => {
             {getSortedPrograms().map((program, index) => (
               <TableRow
                 key={`${program.yop_kodu}-${index}`}
-                hover
-                sx={{
-                  "&:nth-of-type(odd)": { bgcolor: "action.hover" },
-                  bgcolor:
-                    program.university === "HALİÇ ÜNİVERSİTESİ"
-                      ? "warning.light"
-                      : isSelected(program.yop_kodu)
-                      ? "primary.light"
-                      : "inherit",
-                  cursor: "pointer",
-                }}
                 onClick={() => toggleProgram(program)}
               >
                 <TableCell padding="checkbox">
