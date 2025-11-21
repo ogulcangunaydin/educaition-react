@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Container,
   Box,
@@ -17,6 +17,7 @@ import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSli
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
 import TopCitiesSlider from "../components/UniversityComparison/TopCitiesSlider";
 import MinUniversityCountSlider from "../components/UniversityComparison/MinUniversityCountSlider";
+import MinProgramCountSlider from "../components/UniversityComparison/MinProgramCountSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
@@ -34,6 +35,7 @@ const UniversityComparison = () => {
   const [universityPreferencesData, setUniversityPreferencesData] = useState(
     []
   );
+  const [programPreferencesData, setProgramPreferencesData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -46,11 +48,29 @@ const UniversityComparison = () => {
   const [universityType, setUniversityType] = useState("Vakıf");
   const [topCitiesLimit, setTopCitiesLimit] = useState(3);
   const [minUniversityCount, setMinUniversityCount] = useState(3);
+  const [minProgramCount, setMinProgramCount] = useState(0);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
   const [similarPrograms, setSimilarPrograms] = useState([]);
   const [chartData, setChartData] = useState(null);
+
+  // Calculate program frequency data for the selected program
+  const programFrequencyData = useMemo(() => {
+    if (!selectedProgram || programPreferencesData.length === 0) {
+      return [];
+    }
+
+    const programTotals = {};
+    programPreferencesData.forEach((row) => {
+      if (row.yop_kodu === selectedProgram.yop_kodu) {
+        const prog = row.program;
+        programTotals[prog] = (programTotals[prog] || 0) + row.tercih_sayisi;
+      }
+    });
+
+    return Object.entries(programTotals).sort((a, b) => b[1] - a[1]);
+  }, [selectedProgram, programPreferencesData]);
 
   // Load CSV data on mount
   useEffect(() => {
@@ -65,29 +85,38 @@ const UniversityComparison = () => {
           allUniversitiesResponse,
           cityPrefsResponse,
           uniPrefsResponse,
+          progPrefsResponse,
         ] = await Promise.all([
           fetch("/assets/data/halic_programs.csv"),
           fetch("/assets/data/all_universities_programs_master.csv"),
           fetch("/assets/data/halic_tercih_edilen_iller.csv"),
           fetch("/assets/data/halic_tercih_edilen_universiteler.csv"),
+          fetch("/assets/data/halic_tercih_edilen_programlar.csv"),
         ]);
 
         if (
           !halicResponse.ok ||
           !allUniversitiesResponse.ok ||
           !cityPrefsResponse.ok ||
-          !uniPrefsResponse.ok
+          !uniPrefsResponse.ok ||
+          !progPrefsResponse.ok
         ) {
           throw new Error("Failed to load CSV files");
         }
 
-        const [halicText, allUniversitiesText, cityPrefsText, uniPrefsText] =
-          await Promise.all([
-            halicResponse.text(),
-            allUniversitiesResponse.text(),
-            cityPrefsResponse.text(),
-            uniPrefsResponse.text(),
-          ]);
+        const [
+          halicText,
+          allUniversitiesText,
+          cityPrefsText,
+          uniPrefsText,
+          progPrefsText,
+        ] = await Promise.all([
+          halicResponse.text(),
+          allUniversitiesResponse.text(),
+          cityPrefsResponse.text(),
+          uniPrefsResponse.text(),
+          progPrefsResponse.text(),
+        ]);
 
         const halicParsed = parseCSV(halicText);
         const allUniversitiesParsed = parseCSV(allUniversitiesText);
@@ -121,10 +150,25 @@ const UniversityComparison = () => {
           });
         }
 
+        // Parse program preferences CSV
+        const progPrefsLines = progPrefsText.trim().split("\n");
+        const progPrefsData = [];
+        for (let i = 1; i < progPrefsLines.length; i++) {
+          const [yop_kodu, year, program, tercih_sayisi] =
+            progPrefsLines[i].split(",");
+          progPrefsData.push({
+            yop_kodu,
+            year,
+            program,
+            tercih_sayisi: parseInt(tercih_sayisi),
+          });
+        }
+
         setHalicData(halicParsed);
         setAllUniversitiesData(allUniversitiesParsed);
         setCityPreferencesData(cityPrefsData);
         setUniversityPreferencesData(uniPrefsData);
+        setProgramPreferencesData(progPrefsData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading CSV files:", err);
@@ -213,8 +257,33 @@ const UniversityComparison = () => {
         );
       }
 
+      // Filter by minimum program count
+      let filteredByProgramCount = filteredByUniversityCount;
+      if (minProgramCount > 0 && programPreferencesData.length > 0) {
+        // Calculate total preferences per program for THIS specific Haliç program only
+        const programTotals = {};
+        programPreferencesData.forEach((row) => {
+          // Only count preferences for the selected Haliç program
+          if (row.yop_kodu === selectedProgram.yop_kodu) {
+            const prog = row.program;
+            programTotals[prog] =
+              (programTotals[prog] || 0) + row.tercih_sayisi;
+          }
+        });
+
+        // Filter by matching program names (always include selected Haliç program)
+        filteredByProgramCount = filteredByUniversityCount.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+
+          // Try to match program name
+          const programName = p.program || p.department || "";
+          const count = programTotals[programName] || 0;
+          return count >= minProgramCount;
+        });
+      }
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = filteredByUniversityCount.filter(
+      const similarWithoutSelected = filteredByProgramCount.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
@@ -247,9 +316,11 @@ const UniversityComparison = () => {
     universityType,
     topCitiesLimit,
     minUniversityCount,
+    minProgramCount,
     allUniversitiesData,
     cityPreferencesData,
     universityPreferencesData,
+    programPreferencesData,
   ]);
 
   // Handle year change
@@ -290,6 +361,11 @@ const UniversityComparison = () => {
   // Handle minimum university count change
   const handleMinUniversityCountChange = (newCount) => {
     setMinUniversityCount(newCount);
+  };
+
+  // Handle minimum program count change
+  const handleMinProgramCountChange = (newCount) => {
+    setMinProgramCount(newCount);
   };
 
   if (loading) {
@@ -397,6 +473,13 @@ const UniversityComparison = () => {
                 disabled={!selectedProgram}
               />
 
+              <MinProgramCountSlider
+                value={minProgramCount}
+                onChange={handleMinProgramCountChange}
+                disabled={!selectedProgram}
+                frequencyData={programFrequencyData}
+              />
+
               <BufferSlider
                 value={buffer}
                 onChange={handleBufferChange}
@@ -473,6 +556,32 @@ const UniversityComparison = () => {
                         })()}
                       </Typography>
                     )}
+                  {minProgramCount > 0 && programPreferencesData.length > 0 && (
+                    <Typography variant="body2" sx={{ mt: 1 }}>
+                      <strong>
+                        Bu Programa Başvuranların Tercih Ettiği Programlar (Min{" "}
+                        {minProgramCount} tercih):
+                      </strong>{" "}
+                      {(() => {
+                        const programTotals = {};
+                        // Only count preferences for THIS specific program
+                        programPreferencesData.forEach((row) => {
+                          if (row.yop_kodu === selectedProgram.yop_kodu) {
+                            const prog = row.program;
+                            programTotals[prog] =
+                              (programTotals[prog] || 0) + row.tercih_sayisi;
+                          }
+                        });
+                        const filteredPrograms = Object.entries(programTotals)
+                          .filter(([_, count]) => count >= minProgramCount)
+                          .sort((a, b) => b[1] - a[1])
+                          .map(([prog, count]) => `${prog} (${count})`);
+                        return filteredPrograms.length > 0
+                          ? filteredPrograms.join(", ")
+                          : "Hiçbiri";
+                      })()}
+                    </Typography>
+                  )}
                   {metric === "score" ? (
                     <>
                       <Typography variant="body2">

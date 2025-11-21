@@ -13,7 +13,7 @@ const MinUniversityCountSlider = ({ value, onChange, disabled = false }) => {
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography gutterBottom>
-        Minimum Tercih Sayısı: {value === 0 ? "Tümü" : value}
+        Minimum Üniversite Tercih Sayısı: {value === 0 ? "Tümü" : value}
       </Typography>
       <Typography
         variant="caption"
