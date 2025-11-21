@@ -1,5 +1,4 @@
-import React from "react";
-import { Paper, Typography, Slider, Box } from "@mui/material";
+import { Typography, Slider, Box } from "@mui/material";
 
 const TopCitiesSlider = ({ value, onChange, disabled }) => {
   const marks = [
@@ -11,7 +10,7 @@ const TopCitiesSlider = ({ value, onChange, disabled }) => {
   ];
 
   return (
-    <Paper sx={{ p: 2, mt: 2 }}>
+    <Box sx={{ mb: 4, px: 2 }}>
       <Typography variant="subtitle2" gutterBottom>
         En Çok Tercih Edilen İller
       </Typography>
@@ -32,7 +31,7 @@ const TopCitiesSlider = ({ value, onChange, disabled }) => {
           disabled={disabled}
         />
       </Box>
-    </Paper>
+    </Box>
   );
 };
 

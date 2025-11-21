@@ -16,6 +16,7 @@ import BufferSlider from "../components/UniversityComparison/BufferSlider";
 import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
 import TopCitiesSlider from "../components/UniversityComparison/TopCitiesSlider";
+import MinUniversityCountSlider from "../components/UniversityComparison/MinUniversityCountSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import { parseCSV } from "../utils/csvParser";
@@ -30,6 +31,9 @@ const UniversityComparison = () => {
   const [halicData, setHalicData] = useState([]);
   const [allUniversitiesData, setAllUniversitiesData] = useState([]);
   const [cityPreferencesData, setCityPreferencesData] = useState([]);
+  const [universityPreferencesData, setUniversityPreferencesData] = useState(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -41,6 +45,7 @@ const UniversityComparison = () => {
   const [recordLimit, setRecordLimit] = useState(10);
   const [universityType, setUniversityType] = useState("Vakıf");
   const [topCitiesLimit, setTopCitiesLimit] = useState(3);
+  const [minUniversityCount, setMinUniversityCount] = useState(3);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -54,27 +59,34 @@ const UniversityComparison = () => {
         setLoading(true);
         setError(null);
 
-        // Load both CSV files
-        const [halicResponse, allUniversitiesResponse, cityPrefsResponse] =
-          await Promise.all([
-            fetch("/assets/data/halic_programs.csv"),
-            fetch("/assets/data/all_universities_programs_master.csv"),
-            fetch("/assets/data/halic_tercih_edilen_iller.csv"),
-          ]);
+        // Load CSV files
+        const [
+          halicResponse,
+          allUniversitiesResponse,
+          cityPrefsResponse,
+          uniPrefsResponse,
+        ] = await Promise.all([
+          fetch("/assets/data/halic_programs.csv"),
+          fetch("/assets/data/all_universities_programs_master.csv"),
+          fetch("/assets/data/halic_tercih_edilen_iller.csv"),
+          fetch("/assets/data/halic_tercih_edilen_universiteler.csv"),
+        ]);
 
         if (
           !halicResponse.ok ||
           !allUniversitiesResponse.ok ||
-          !cityPrefsResponse.ok
+          !cityPrefsResponse.ok ||
+          !uniPrefsResponse.ok
         ) {
           throw new Error("Failed to load CSV files");
         }
 
-        const [halicText, allUniversitiesText, cityPrefsText] =
+        const [halicText, allUniversitiesText, cityPrefsText, uniPrefsText] =
           await Promise.all([
             halicResponse.text(),
             allUniversitiesResponse.text(),
             cityPrefsResponse.text(),
+            uniPrefsResponse.text(),
           ]);
 
         const halicParsed = parseCSV(halicText);
@@ -94,9 +106,25 @@ const UniversityComparison = () => {
           });
         }
 
+        // Parse university preferences CSV
+        const uniPrefsLines = uniPrefsText.trim().split("\n");
+        const uniPrefsData = [];
+        for (let i = 1; i < uniPrefsLines.length; i++) {
+          const [yop_kodu, year, universite, tercih_sayisi, university_type] =
+            uniPrefsLines[i].split(",");
+          uniPrefsData.push({
+            yop_kodu,
+            year,
+            universite,
+            tercih_sayisi: parseInt(tercih_sayisi),
+            university_type,
+          });
+        }
+
         setHalicData(halicParsed);
         setAllUniversitiesData(allUniversitiesParsed);
         setCityPreferencesData(cityPrefsData);
+        setUniversityPreferencesData(uniPrefsData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading CSV files:", err);
@@ -161,8 +189,32 @@ const UniversityComparison = () => {
         );
       }
 
+      // Filter by minimum university count (exclude HALİÇ from count check)
+      let filteredByUniversityCount = filteredByCity;
+      if (minUniversityCount > 0 && universityPreferencesData.length > 0) {
+        // Calculate total preferences per university for THIS specific Haliç program only
+        const universityTotals = {};
+        universityPreferencesData.forEach((row) => {
+          // Only count preferences for the selected Haliç program
+          if (row.yop_kodu === selectedProgram.yop_kodu) {
+            const uni = row.universite;
+            if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+              universityTotals[uni] =
+                (universityTotals[uni] || 0) + row.tercih_sayisi;
+            }
+          }
+        });
+
+        // Filter programs by university count (always include selected Haliç program)
+        filteredByUniversityCount = filteredByCity.filter(
+          (p) =>
+            p.yop_kodu === selectedProgram.yop_kodu ||
+            (universityTotals[p.university] || 0) >= minUniversityCount
+        );
+      }
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = filteredByCity.filter(
+      const similarWithoutSelected = filteredByUniversityCount.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
@@ -194,8 +246,10 @@ const UniversityComparison = () => {
     recordLimit,
     universityType,
     topCitiesLimit,
+    minUniversityCount,
     allUniversitiesData,
     cityPreferencesData,
+    universityPreferencesData,
   ]);
 
   // Handle year change
@@ -231,6 +285,11 @@ const UniversityComparison = () => {
   // Handle top cities limit change
   const handleTopCitiesChange = (newLimit) => {
     setTopCitiesLimit(newLimit);
+  };
+
+  // Handle minimum university count change
+  const handleMinUniversityCountChange = (newCount) => {
+    setMinUniversityCount(newCount);
   };
 
   if (loading) {
@@ -332,6 +391,12 @@ const UniversityComparison = () => {
                 disabled={!selectedProgram}
               />
 
+              <MinUniversityCountSlider
+                value={minUniversityCount}
+                onChange={handleMinUniversityCountChange}
+                disabled={!selectedProgram}
+              />
+
               <BufferSlider
                 value={buffer}
                 onChange={handleBufferChange}
@@ -376,6 +441,38 @@ const UniversityComparison = () => {
                       })()}
                     </Typography>
                   )}
+                  {minUniversityCount > 0 &&
+                    universityPreferencesData.length > 0 && (
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        <strong>
+                          Bu Programa Başvuranların Tercih Ettiği Üniversiteler
+                          (Min {minUniversityCount} tercih):
+                        </strong>{" "}
+                        {(() => {
+                          const universityTotals = {};
+                          // Only count preferences for THIS specific program
+                          universityPreferencesData.forEach((row) => {
+                            if (row.yop_kodu === selectedProgram.yop_kodu) {
+                              const uni = row.universite;
+                              if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+                                universityTotals[uni] =
+                                  (universityTotals[uni] || 0) +
+                                  row.tercih_sayisi;
+                              }
+                            }
+                          });
+                          const filteredUniversities = Object.entries(
+                            universityTotals
+                          )
+                            .filter(([_, count]) => count >= minUniversityCount)
+                            .sort((a, b) => b[1] - a[1])
+                            .map(([uni, count]) => `${uni} (${count})`);
+                          return filteredUniversities.length > 0
+                            ? filteredUniversities.join(", ")
+                            : "Hiçbiri";
+                        })()}
+                      </Typography>
+                    )}
                   {metric === "score" ? (
                     <>
                       <Typography variant="body2">
