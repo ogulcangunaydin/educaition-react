@@ -11,15 +11,21 @@ import {
   TableSortLabel,
   Chip,
   Box,
+  Checkbox,
+  Button,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import { formatScore, formatRanking } from "../../utils/csvParser";
 import { formatProgramName } from "../../utils/dataFilters";
+import { useBasket } from "../../contexts/BasketContext";
 
 const DepartmentList = ({ programs, year, metric }) => {
   const [orderBy, setOrderBy] = useState(
     metric === "ranking" ? "tbs" : "taban"
   );
   const [order, setOrder] = useState("asc");
+  const { toggleProgram, isSelected, selectedPrograms } = useBasket();
+  const navigate = useNavigate();
 
   if (!programs || programs.length === 0) {
     return (
@@ -101,17 +107,45 @@ const DepartmentList = ({ programs, year, metric }) => {
 
   return (
     <Paper sx={{ p: 3 }}>
-      <Typography variant="h6" gutterBottom>
-        Eşleşen Programlar ({programs.length})
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Seçilen programa benzer özelliklere sahip programlar
-      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 2,
+        }}
+      >
+        <Box>
+          <Typography variant="h6" gutterBottom>
+            Eşleşen Programlar ({programs.length})
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Seçilen programa benzer özelliklere sahip programlar
+          </Typography>
+        </Box>
+        {selectedPrograms.length > 0 && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Chip
+              label={`${selectedPrograms.length} program seçildi`}
+              color="primary"
+              variant="outlined"
+            />
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate("/highschool-analysis")}
+            >
+              Lise Analizi →
+            </Button>
+          </Box>
+        )}
+      </Box>
 
       <TableContainer sx={{ maxHeight: 600 }}>
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="checkbox">Seç</TableCell>
               <TableCell>
                 <TableSortLabel
                   active={orderBy === "university"}
@@ -188,9 +222,20 @@ const DepartmentList = ({ programs, year, metric }) => {
                   bgcolor:
                     program.university === "HALİÇ ÜNİVERSİTESİ"
                       ? "warning.light"
+                      : isSelected(program.yop_kodu)
+                      ? "primary.light"
                       : "inherit",
+                  cursor: "pointer",
                 }}
+                onClick={() => toggleProgram(program)}
               >
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    checked={isSelected(program.yop_kodu)}
+                    onChange={() => toggleProgram(program)}
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </TableCell>
                 <TableCell>
                   <Box>
                     <Typography
