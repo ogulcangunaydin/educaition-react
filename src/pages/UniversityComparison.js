@@ -20,6 +20,7 @@ import MinUniversityCountSlider from "../components/UniversityComparison/MinUniv
 import MinProgramCountSlider from "../components/UniversityComparison/MinProgramCountSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
+import InstructionsPanel from "../components/UniversityComparison/InstructionsPanel";
 import { parseCSV } from "../utils/csvParser";
 import { useBasket } from "../contexts/BasketContext";
 import {
@@ -418,35 +419,7 @@ const UniversityComparison = () => {
       <Header title="Üniversite Karşılaştırma" />
       <Container maxWidth="xl" sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
         {/* Instructions */}
-        <Paper
-          sx={{
-            p: 3,
-            mb: 3,
-            bgcolor: "primary.light",
-            color: "primary.contrastText",
-          }}
-        >
-          <Typography variant="h6" gutterBottom>
-            Nasıl Kullanılır?
-          </Typography>
-          <Typography variant="body2" paragraph>
-            1. Önce bir yıl seçin (2022, 2023 veya 2024)
-          </Typography>
-          <Typography variant="body2" paragraph>
-            2. Haliç Üniversitesi'nden karşılaştırmak istediğiniz programı seçin
-          </Typography>
-          <Typography variant="body2" paragraph>
-            3. Karşılaştırma kriterini seçin (Başarı Sıralaması veya Puan)
-          </Typography>
-          <Typography variant="body2" paragraph>
-            4. Buffer (tolerans) değerini ayarlayın - Bu değer, karşılaştırma
-            aralığını ne kadar genişleteceğinizi belirler
-          </Typography>
-          <Typography variant="body2">
-            5. Grafikte gösterilecek departman sayısını ayarlayın (liste tüm
-            sonuçları gösterir)
-          </Typography>
-        </Paper>
+        <InstructionsPanel />
 
         <Grid container spacing={3}>
           {/* Left Panel - Selectors */}

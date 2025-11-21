@@ -3,8 +3,8 @@ import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 const MetricSelector = ({ value, onChange, disabled = false }) => {
   const metrics = [
-    { value: "ranking", label: "Başarı Sıralaması (Ranking)" },
-    { value: "score", label: "Puan (Score)" },
+    { value: "ranking", label: "Başarı Sıralaması" },
+    { value: "score", label: "Puan" },
   ];
 
   return (
