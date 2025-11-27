@@ -12,7 +12,6 @@ import Header from "../components/Header";
 import YearSelector from "../components/UniversityComparison/YearSelector";
 import ProgramSelector from "../components/UniversityComparison/ProgramSelector";
 import MetricSelector from "../components/UniversityComparison/MetricSelector";
-import BufferSlider from "../components/UniversityComparison/BufferSlider";
 import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
 import TopCitiesSlider from "../components/UniversityComparison/TopCitiesSlider";
@@ -53,7 +52,6 @@ const UniversityComparison = () => {
   const [year, setYear] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [metric, setMetric] = useState("ranking");
-  const [buffer, setBuffer] = useState(0);
   const [recordLimit, setRecordLimit] = useState(10);
   const [universityType, setUniversityType] = useState("Vakıf");
   const [topCitiesLimit, setTopCitiesLimit] = useState(3);
@@ -271,7 +269,7 @@ const UniversityComparison = () => {
         selectedProgram,
         year,
         metric,
-        buffer,
+        0, // Buffer is now controlled by chart's custom range
         customRangeMin,
         customRangeMax
       );
@@ -383,7 +381,6 @@ const UniversityComparison = () => {
     selectedProgram,
     year,
     metric,
-    buffer,
     recordLimit,
     universityType,
     topCitiesLimit,
@@ -410,11 +407,6 @@ const UniversityComparison = () => {
   // Handle metric change
   const handleMetricChange = (newMetric) => {
     setMetric(newMetric);
-  };
-
-  // Handle buffer change
-  const handleBufferChange = (newBuffer) => {
-    setBuffer(newBuffer);
   };
 
   // Handle record limit change
@@ -524,12 +516,6 @@ const UniversityComparison = () => {
                 onChange={handleMinProgramCountChange}
                 disabled={!selectedProgram}
                 frequencyData={programFrequencyData}
-              />
-
-              <BufferSlider
-                value={buffer}
-                onChange={handleBufferChange}
-                disabled={!selectedProgram}
               />
 
               <RecordLimitSlider
