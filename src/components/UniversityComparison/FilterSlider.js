@@ -101,10 +101,10 @@ const FilterSlider = ({
           sx={{ mt: 0.5, display: "block" }}
         >
           {value === 0
-            ? `Toplam ${frequencyData.length} farklı ${type}`
+            ? `Toplam ${frequencyData.length} farklı seçenek`
             : `${
                 frequencyData.filter(([_, freq]) => freq >= value).length
-              } farklı ${type} dahil (toplam ${frequencyData.length})`}
+              } farklı seçenek dahil (toplam ${frequencyData.length})`}
         </Typography>
       )}
     </Box>

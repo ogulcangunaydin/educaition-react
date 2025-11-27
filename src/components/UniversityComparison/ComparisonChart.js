@@ -217,7 +217,7 @@ const ComparisonChart = ({
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           <TextField
-            label={`Buffer Adımı (${
+            label={`Aralık Adımı (${
               metric === "ranking" ? "Sıralama" : "Puan"
             })`}
             type="number"
@@ -337,11 +337,6 @@ const ComparisonChart = ({
         </Typography>
         <Typography variant="body2">
           <strong>Burs Türü:</strong> {selectedProgram?.scholarship}
-        </Typography>
-        <Typography variant="body2">
-          <strong>Grafikte Gösterilen:</strong>{" "}
-          {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)}{" "}
-          program
         </Typography>
         {totalPrograms &&
           totalPrograms >

@@ -82,6 +82,22 @@ const DepartmentList = ({ programs, year, metric }) => {
           aValue = a[`tavan_bs_${year}`] || 0;
           bValue = b[`tavan_bs_${year}`] || 0;
           break;
+        case "kontenjan":
+          aValue = a[`kontenjan_${year}`] || 0;
+          bValue = b[`kontenjan_${year}`] || 0;
+          break;
+        case "yerlesen":
+          aValue = a[`yerlesen_${year}`] || 0;
+          bValue = b[`yerlesen_${year}`] || 0;
+          break;
+        case "doluluk":
+          const aKontenjan = a[`kontenjan_${year}`] || 0;
+          const aYerlesen = a[`yerlesen_${year}`] || 0;
+          const bKontenjan = b[`kontenjan_${year}`] || 0;
+          const bYerlesen = b[`yerlesen_${year}`] || 0;
+          aValue = aKontenjan > 0 ? (aYerlesen / aKontenjan) * 100 : 0;
+          bValue = bKontenjan > 0 ? (bYerlesen / bKontenjan) * 100 : 0;
+          break;
         default:
           return 0;
       }
@@ -278,6 +294,33 @@ const DepartmentList = ({ programs, year, metric }) => {
                   </TableCell>
                 </>
               )}
+              <TableCell align="right">
+                <TableSortLabel
+                  active={orderBy === "doluluk"}
+                  direction={orderBy === "doluluk" ? order : "asc"}
+                  onClick={() => handleSort("doluluk")}
+                >
+                  Doluluk
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align="right">
+                <TableSortLabel
+                  active={orderBy === "yerlesen"}
+                  direction={orderBy === "yerlesen" ? order : "asc"}
+                  onClick={() => handleSort("yerlesen")}
+                >
+                  Yerleşen
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align="right">
+                <TableSortLabel
+                  active={orderBy === "kontenjan"}
+                  direction={orderBy === "kontenjan" ? order : "asc"}
+                  onClick={() => handleSort("kontenjan")}
+                >
+                  Kontenjan
+                </TableSortLabel>
+              </TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -352,6 +395,27 @@ const DepartmentList = ({ programs, year, metric }) => {
                     </TableCell>
                   </>
                 )}
+                <TableCell align="right">
+                  <Typography variant="body2">
+                    {program[`kontenjan_${year}`] && program[`yerlesen_${year}`]
+                      ? `${Math.round(
+                          (program[`yerlesen_${year}`] /
+                            program[`kontenjan_${year}`]) *
+                            100
+                        )}%`
+                      : "-"}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2">
+                    {program[`yerlesen_${year}`] || "-"}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2">
+                    {program[`kontenjan_${year}`] || "-"}
+                  </Typography>
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

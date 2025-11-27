@@ -54,6 +54,7 @@ const UniversityComparison = () => {
   const [topCitiesLimit, setTopCitiesLimit] = useState(0);
   const [minUniversityCount, setMinUniversityCount] = useState(0);
   const [minProgramCount, setMinProgramCount] = useState(0);
+  const [minFulfillmentRate, setMinFulfillmentRate] = useState(0);
   const [customRangeMin, setCustomRangeMin] = useState(null);
   const [customRangeMax, setCustomRangeMax] = useState(null);
 
@@ -115,6 +116,59 @@ const UniversityComparison = () => {
 
     return Object.entries(universityTotals).sort((a, b) => b[1] - a[1]);
   }, [selectedProgram, universityPreferencesData]);
+
+  // Calculate fulfillment rate frequency data for similar programs
+  const fulfillmentFrequencyData = useMemo(() => {
+    if (!selectedProgram || !year || allUniversitiesData.length === 0) {
+      return [];
+    }
+
+    // Get similar programs
+    const similar = findSimilarPrograms(
+      allUniversitiesData,
+      selectedProgram,
+      year,
+      metric,
+      0,
+      customRangeMin,
+      customRangeMax
+    );
+
+    // Filter by university type first
+    const filteredSimilar = similar.filter(
+      (p) => universityType === "all" || p.university_type === universityType
+    );
+
+    // Calculate fulfillment rates for each program
+    const fulfillmentRates = [];
+    filteredSimilar.forEach((program) => {
+      const kontenjan = program[`kontenjan_${year}`];
+      const yerlesen = program[`yerlesen_${year}`];
+
+      if (kontenjan && yerlesen) {
+        const fulfillmentRate = (yerlesen / kontenjan) * 100;
+        fulfillmentRates.push(fulfillmentRate);
+      }
+    });
+
+    // Count how many programs have at least X% fulfillment for each threshold
+    // Using thresholds: 0%, 20%, 40%, 60%, 80%, 100%
+    const thresholds = [0, 2, 4, 6, 8, 10]; // These map to 0%, 20%, 40%, 60%, 80%, 100%
+
+    return thresholds.map((threshold) => {
+      const minRate = threshold * 10;
+      const count = fulfillmentRates.filter((rate) => rate >= minRate).length;
+      return [threshold, count];
+    });
+  }, [
+    selectedProgram,
+    year,
+    metric,
+    universityType,
+    allUniversitiesData,
+    customRangeMin,
+    customRangeMax,
+  ]);
 
   // Load CSV data on mount
   useEffect(() => {
@@ -382,8 +436,25 @@ const UniversityComparison = () => {
         });
       }
 
+      // Filter by minimum fulfillment rate
+      let filteredByFulfillmentRate = filteredByProgramCount;
+      if (minFulfillmentRate > 0) {
+        filteredByFulfillmentRate = filteredByProgramCount.filter((p) => {
+          // Always include selected Haliç program
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+
+          const kontenjan = p[`kontenjan_${year}`];
+          const yerlesen = p[`yerlesen_${year}`];
+
+          if (!kontenjan || !yerlesen) return false;
+
+          const fulfillmentRate = (yerlesen / kontenjan) * 100;
+          return fulfillmentRate >= minFulfillmentRate * 10;
+        });
+      }
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = filteredByProgramCount.filter(
+      const similarWithoutSelected = filteredByFulfillmentRate.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
@@ -416,6 +487,7 @@ const UniversityComparison = () => {
     topCitiesLimit,
     minUniversityCount,
     minProgramCount,
+    minFulfillmentRate,
     allUniversitiesData,
     cityPreferencesData,
     universityPreferencesData,
@@ -462,6 +534,11 @@ const UniversityComparison = () => {
   // Handle minimum program count change
   const handleMinProgramCountChange = (newCount) => {
     setMinProgramCount(newCount);
+  };
+
+  // Handle minimum fulfillment rate change
+  const handleMinFulfillmentRateChange = (newRate) => {
+    setMinFulfillmentRate(newRate);
   };
 
   if (loading) {
@@ -560,6 +637,20 @@ const UniversityComparison = () => {
                 }
                 frequencyData={programFrequencyData}
                 type="program tipi"
+              />
+              <FilterSlider
+                value={minFulfillmentRate}
+                onChange={handleMinFulfillmentRateChange}
+                disabled={!selectedProgram}
+                label={(val) =>
+                  val === 0
+                    ? "Tüm doluluk oranlarındaki programlar gösteriliyor."
+                    : `Doluluk oranı en az %${
+                        val * 10
+                      } olan programlar gösteriliyor.`
+                }
+                frequencyData={fulfillmentFrequencyData}
+                type="doluluk oranı"
               />
               {selectedProgram && (
                 <Box
