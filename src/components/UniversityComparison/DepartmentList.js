@@ -21,11 +21,17 @@ import { useBasket } from "../../contexts/BasketContext";
 
 const DepartmentList = ({ programs, year, metric }) => {
   const [orderBy, setOrderBy] = useState(
-    metric === "ranking" ? "tbs" : "taban"
+    metric === "ranking" ? "tavan_bs" : "tavan"
   );
-  const [order, setOrder] = useState("asc");
+  const [order, setOrder] = useState(metric === "ranking" ? "asc" : "desc");
   const { toggleProgram, isSelected, selectedPrograms, setYear } = useBasket();
   const navigate = useNavigate();
+
+  // Update default sorting when metric changes
+  React.useEffect(() => {
+    setOrderBy(metric === "ranking" ? "tavan_bs" : "tavan");
+    setOrder(metric === "ranking" ? "asc" : "desc");
+  }, [metric]);
 
   if (!programs || programs.length === 0) {
     return (
@@ -188,42 +194,50 @@ const DepartmentList = ({ programs, year, metric }) => {
                 </TableSortLabel>
               </TableCell>
               <TableCell>Tür</TableCell>
-              <TableCell align="right">
-                <TableSortLabel
-                  active={orderBy === "taban"}
-                  direction={orderBy === "taban" ? order : "asc"}
-                  onClick={() => handleSort("taban")}
-                >
-                  Min Puan
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">
-                <TableSortLabel
-                  active={orderBy === "tavan"}
-                  direction={orderBy === "tavan" ? order : "asc"}
-                  onClick={() => handleSort("tavan")}
-                >
-                  Max Puan
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">
-                <TableSortLabel
-                  active={orderBy === "tbs"}
-                  direction={orderBy === "tbs" ? order : "asc"}
-                  onClick={() => handleSort("tbs")}
-                >
-                  Min Sıralama
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">
-                <TableSortLabel
-                  active={orderBy === "tavan_bs"}
-                  direction={orderBy === "tavan_bs" ? order : "asc"}
-                  onClick={() => handleSort("tavan_bs")}
-                >
-                  Max Sıralama
-                </TableSortLabel>
-              </TableCell>
+              {metric === "score" && (
+                <>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "taban"}
+                      direction={orderBy === "taban" ? order : "asc"}
+                      onClick={() => handleSort("taban")}
+                    >
+                      Taban Puan
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "tavan"}
+                      direction={orderBy === "tavan" ? order : "asc"}
+                      onClick={() => handleSort("tavan")}
+                    >
+                      Tavan Puan
+                    </TableSortLabel>
+                  </TableCell>
+                </>
+              )}
+              {metric === "ranking" && (
+                <>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "tbs"}
+                      direction={orderBy === "tbs" ? order : "asc"}
+                      onClick={() => handleSort("tbs")}
+                    >
+                      Taban Sıralama
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "tavan_bs"}
+                      direction={orderBy === "tavan_bs" ? order : "asc"}
+                      onClick={() => handleSort("tavan_bs")}
+                    >
+                      Tavan Sıralama
+                    </TableSortLabel>
+                  </TableCell>
+                </>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -278,18 +292,26 @@ const DepartmentList = ({ programs, year, metric }) => {
                     variant="outlined"
                   />
                 </TableCell>
-                <TableCell align="right">
-                  {formatScore(program[`taban_${year}`])}
-                </TableCell>
-                <TableCell align="right">
-                  {formatScore(program[`tavan_${year}`])}
-                </TableCell>
-                <TableCell align="right">
-                  {formatRanking(program[`tbs_${year}`])}
-                </TableCell>
-                <TableCell align="right">
-                  {formatRanking(program[`tavan_bs_${year}`])}
-                </TableCell>
+                {metric === "score" && (
+                  <>
+                    <TableCell align="right">
+                      {formatScore(program[`taban_${year}`])}
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatScore(program[`tavan_${year}`])}
+                    </TableCell>
+                  </>
+                )}
+                {metric === "ranking" && (
+                  <>
+                    <TableCell align="right">
+                      {formatRanking(program[`tbs_${year}`])}
+                    </TableCell>
+                    <TableCell align="right">
+                      {formatRanking(program[`tavan_bs_${year}`])}
+                    </TableCell>
+                  </>
+                )}
               </TableRow>
             ))}
           </TableBody>
