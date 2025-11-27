@@ -59,6 +59,8 @@ const UniversityComparison = () => {
   const [topCitiesLimit, setTopCitiesLimit] = useState(3);
   const [minUniversityCount, setMinUniversityCount] = useState(3);
   const [minProgramCount, setMinProgramCount] = useState(0);
+  const [customRangeMin, setCustomRangeMin] = useState(null);
+  const [customRangeMax, setCustomRangeMax] = useState(null);
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -215,6 +217,52 @@ const UniversityComparison = () => {
     previousProgramRef.current = selectedProgram?.yop_kodu || null;
   }, [selectedProgram, clearBasket]);
 
+  // Reset custom range when program or metric changes
+  useEffect(() => {
+    setCustomRangeMin(null);
+    setCustomRangeMax(null);
+  }, [selectedProgram, metric]);
+
+  // Handle Y-axis range expansion
+  const handleExpandRange = (direction, step) => {
+    if (!selectedProgram || !year || !metric) return;
+
+    const minColumn =
+      metric === "ranking" ? `tavan_bs_${year}` : `taban_${year}`;
+    const maxColumn = metric === "ranking" ? `tbs_${year}` : `tavan_${year}`;
+
+    const currentMin =
+      customRangeMin !== null ? customRangeMin : selectedProgram[minColumn];
+    const currentMax =
+      customRangeMax !== null ? customRangeMax : selectedProgram[maxColumn];
+
+    if (direction === "top") {
+      // Expand toward better values
+      if (metric === "ranking") {
+        // For ranking: top means smaller numbers (better)
+        setCustomRangeMin(Math.max(0, currentMin - step));
+      } else {
+        // For score: top means higher scores (better)
+        setCustomRangeMax(currentMax + step);
+      }
+    } else {
+      // Expand toward worse values
+      if (metric === "ranking") {
+        // For ranking: bottom means larger numbers (worse)
+        setCustomRangeMax(currentMax + step);
+      } else {
+        // For score: bottom means lower scores (worse)
+        setCustomRangeMin(Math.max(0, currentMin - step));
+      }
+    }
+  };
+
+  // Handle reset range
+  const handleResetRange = () => {
+    setCustomRangeMin(null);
+    setCustomRangeMax(null);
+  };
+
   // Update similar programs when selections change
   useEffect(() => {
     if (selectedProgram && year && metric && allUniversitiesData.length > 0) {
@@ -223,7 +271,9 @@ const UniversityComparison = () => {
         selectedProgram,
         year,
         metric,
-        buffer
+        buffer,
+        customRangeMin,
+        customRangeMax
       );
 
       // Filter by university type
@@ -343,6 +393,8 @@ const UniversityComparison = () => {
     cityPreferencesData,
     universityPreferencesData,
     programPreferencesData,
+    customRangeMin,
+    customRangeMax,
   ]);
 
   // Handle year change
@@ -636,6 +688,10 @@ const UniversityComparison = () => {
               year={year}
               metric={metric}
               totalPrograms={similarPrograms.length}
+              onExpandRange={handleExpandRange}
+              currentRangeMin={customRangeMin}
+              currentRangeMax={customRangeMax}
+              onResetRange={handleResetRange}
             />
 
             <DepartmentList

@@ -19,7 +19,9 @@ export const findSimilarPrograms = (
   selectedProgram,
   year,
   metric,
-  buffer
+  buffer,
+  customRangeMin = null,
+  customRangeMax = null
 ) => {
   if (!allUniversitiesData || !selectedProgram || !year || !metric) {
     return [];
@@ -31,9 +33,11 @@ export const findSimilarPrograms = (
   const minColumn = metric === "ranking" ? `tavan_bs_${year}` : `taban_${year}`;
   const maxColumn = metric === "ranking" ? `tbs_${year}` : `tavan_${year}`;
 
-  // Get min and max values from selected program
-  const selectedMin = selectedProgram[minColumn];
-  const selectedMax = selectedProgram[maxColumn];
+  // Get min and max values from selected program or use custom range
+  const selectedMin =
+    customRangeMin !== null ? customRangeMin : selectedProgram[minColumn];
+  const selectedMax =
+    customRangeMax !== null ? customRangeMax : selectedProgram[maxColumn];
 
   if (selectedMin === null || selectedMax === null) {
     return [];

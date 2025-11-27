@@ -1,5 +1,13 @@
-import React from "react";
-import { Box, Paper, Typography } from "@mui/material";
+import React, { useState } from "react";
+import {
+  Box,
+  Paper,
+  Typography,
+  IconButton,
+  TextField,
+  Tooltip as MuiTooltip,
+} from "@mui/material";
+import { ArrowUpward, ArrowDownward, RestartAlt } from "@mui/icons-material";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -26,7 +34,20 @@ const ComparisonChart = ({
   year,
   metric,
   totalPrograms,
+  onExpandRange,
+  currentRangeMin,
+  currentRangeMax,
+  onResetRange,
 }) => {
+  const [bufferStep, setBufferStep] = useState(
+    metric === "ranking" ? 25000 : 50
+  );
+
+  // Update buffer step when metric changes
+  React.useEffect(() => {
+    setBufferStep(metric === "ranking" ? 25000 : 50);
+  }, [metric]);
+
   if (!chartData || !chartData.labels || chartData.labels.length === 0) {
     return (
       <Paper sx={{ p: 3, textAlign: "center", minHeight: 400 }}>
@@ -36,6 +57,41 @@ const ComparisonChart = ({
       </Paper>
     );
   }
+
+  const handleExpandTop = () => {
+    if (onExpandRange) {
+      onExpandRange("top", bufferStep);
+    }
+  };
+
+  const handleExpandBottom = () => {
+    if (onExpandRange) {
+      onExpandRange("bottom", bufferStep);
+    }
+  };
+
+  const handleReset = () => {
+    if (onResetRange) {
+      onResetRange();
+    }
+  };
+
+  // Get current range for display
+  const minColumn = metric === "ranking" ? `tavan_bs_${year}` : `taban_${year}`;
+  const maxColumn = metric === "ranking" ? `tbs_${year}` : `tavan_${year}`;
+  const originalMin = selectedProgram?.[minColumn];
+  const originalMax = selectedProgram?.[maxColumn];
+  const displayMin = currentRangeMin !== null ? currentRangeMin : originalMin;
+  const displayMax = currentRangeMax !== null ? currentRangeMax : originalMax;
+  const isCustomRange = currentRangeMin !== null || currentRangeMax !== null;
+
+  const formatValue = (val) =>
+    metric === "ranking"
+      ? Math.round(val).toLocaleString("tr-TR")
+      : val.toLocaleString("tr-TR", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
   // Prepare data for floating bar chart showing only min-max ranges
   // Using floating bars: [min, max] creates a bar from min to max value
@@ -146,6 +202,102 @@ const ComparisonChart = ({
 
   return (
     <Paper sx={{ p: 3, mb: 3 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          mb: 2,
+          flexWrap: "wrap",
+        }}
+      >
+        <TextField
+          label={`Buffer Adımı (${metric === "ranking" ? "Sıralama" : "Puan"})`}
+          type="number"
+          value={bufferStep}
+          onChange={(e) => setBufferStep(Number(e.target.value))}
+          size="small"
+          sx={{ width: 200 }}
+          inputProps={{ min: 1, step: metric === "ranking" ? 1000 : 1 }}
+        />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+            <MuiTooltip
+              title={
+                metric === "ranking"
+                  ? "Üst aralığı genişlet (daha küçük sıralamalar)"
+                  : "Üst aralığı genişlet (daha yüksek puanlar)"
+              }
+            >
+              <IconButton
+                onClick={handleExpandTop}
+                color="primary"
+                size="small"
+                sx={{
+                  border: "1px solid",
+                  borderColor: "primary.main",
+                  "&:hover": { backgroundColor: "primary.light" },
+                }}
+              >
+                <ArrowUpward />
+              </IconButton>
+            </MuiTooltip>
+            <MuiTooltip
+              title={
+                metric === "ranking"
+                  ? "Alt aralığı genişlet (daha büyük sıralamalar)"
+                  : "Alt aralığı genişlet (daha düşük puanlar)"
+              }
+            >
+              <IconButton
+                onClick={handleExpandBottom}
+                color="secondary"
+                size="small"
+                sx={{
+                  border: "1px solid",
+                  borderColor: "secondary.main",
+                  "&:hover": { backgroundColor: "secondary.light" },
+                }}
+              >
+                <ArrowDownward />
+              </IconButton>
+            </MuiTooltip>
+          </Box>
+          <Box sx={{ ml: 1 }}>
+            <Typography variant="body2" fontWeight="bold">
+              Mevcut Aralık:
+            </Typography>
+            <Typography
+              variant="body2"
+              color={isCustomRange ? "primary.main" : "text.primary"}
+            >
+              {formatValue(displayMin)} - {formatValue(displayMax)}
+            </Typography>
+            {isCustomRange && (
+              <Typography variant="caption" color="text.secondary">
+                (Orijinal: {formatValue(originalMin)} -{" "}
+                {formatValue(originalMax)})
+              </Typography>
+            )}
+          </Box>
+        </Box>
+        {isCustomRange && (
+          <MuiTooltip title="Aralığı sıfırla">
+            <IconButton
+              onClick={handleReset}
+              color="warning"
+              size="small"
+              sx={{
+                border: "1px solid",
+                borderColor: "warning.main",
+                "&:hover": { backgroundColor: "warning.light" },
+              }}
+            >
+              <RestartAlt />
+            </IconButton>
+          </MuiTooltip>
+        )}
+      </Box>
       <Box sx={{ height: 500 }}>
         <Bar options={options} data={data} />
       </Box>
