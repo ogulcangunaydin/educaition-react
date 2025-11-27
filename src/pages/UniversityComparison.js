@@ -12,7 +12,6 @@ import Header from "../components/Header";
 import YearSelector from "../components/UniversityComparison/YearSelector";
 import ProgramSelector from "../components/UniversityComparison/ProgramSelector";
 import MetricSelector from "../components/UniversityComparison/MetricSelector";
-import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
 import FilterSlider from "../components/UniversityComparison/FilterSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
@@ -562,11 +561,6 @@ const UniversityComparison = () => {
                 frequencyData={programFrequencyData}
                 type="program tipi"
               />
-              <RecordLimitSlider
-                value={recordLimit}
-                onChange={handleRecordLimitChange}
-                disabled={!selectedProgram}
-              />
               {selectedProgram && (
                 <Box
                   sx={{ mt: 3, p: 2, bgcolor: "info.light", borderRadius: 1 }}
@@ -725,6 +719,8 @@ const UniversityComparison = () => {
               currentRangeMin={customRangeMin}
               currentRangeMax={customRangeMax}
               onResetRange={handleResetRange}
+              recordLimit={recordLimit}
+              onRecordLimitChange={handleRecordLimitChange}
             />
 
             <DepartmentList

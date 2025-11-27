@@ -38,6 +38,8 @@ const ComparisonChart = ({
   currentRangeMin,
   currentRangeMax,
   onResetRange,
+  recordLimit,
+  onRecordLimitChange,
 }) => {
   const [bufferStep, setBufferStep] = useState(
     metric === "ranking" ? 25000 : 50
@@ -210,94 +212,114 @@ const ComparisonChart = ({
           gap: 2,
           mb: 2,
           flexWrap: "wrap",
+          justifyContent: "space-between",
         }}
       >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          <TextField
+            label={`Buffer Adımı (${
+              metric === "ranking" ? "Sıralama" : "Puan"
+            })`}
+            type="number"
+            value={bufferStep}
+            onChange={(e) => setBufferStep(Number(e.target.value))}
+            size="small"
+            sx={{ width: 200 }}
+            inputProps={{ min: 1, step: metric === "ranking" ? 1000 : 1 }}
+          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+              <MuiTooltip
+                title={
+                  metric === "ranking"
+                    ? "Üst aralığı genişlet (daha küçük sıralamalar)"
+                    : "Üst aralığı genişlet (daha yüksek puanlar)"
+                }
+              >
+                <IconButton
+                  onClick={handleExpandTop}
+                  color="primary"
+                  size="small"
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "primary.main",
+                    "&:hover": { backgroundColor: "primary.light" },
+                  }}
+                >
+                  <ArrowUpward />
+                </IconButton>
+              </MuiTooltip>
+              <MuiTooltip
+                title={
+                  metric === "ranking"
+                    ? "Alt aralığı genişlet (daha büyük sıralamalar)"
+                    : "Alt aralığı genişlet (daha düşük puanlar)"
+                }
+              >
+                <IconButton
+                  onClick={handleExpandBottom}
+                  color="secondary"
+                  size="small"
+                  sx={{
+                    border: "1px solid",
+                    borderColor: "secondary.main",
+                    "&:hover": { backgroundColor: "secondary.light" },
+                  }}
+                >
+                  <ArrowDownward />
+                </IconButton>
+              </MuiTooltip>
+            </Box>
+            <Box sx={{ ml: 1 }}>
+              <Typography variant="body2" fontWeight="bold">
+                Mevcut Aralık:
+              </Typography>
+              <Typography
+                variant="body2"
+                color={isCustomRange ? "primary.main" : "text.primary"}
+              >
+                {formatValue(displayMin)} - {formatValue(displayMax)}
+              </Typography>
+              {isCustomRange && (
+                <Typography variant="caption" color="text.secondary">
+                  (Orijinal: {formatValue(originalMin)} -{" "}
+                  {formatValue(originalMax)})
+                </Typography>
+              )}
+            </Box>
+          </Box>
+          {isCustomRange && (
+            <MuiTooltip title="Aralığı sıfırla">
+              <IconButton
+                onClick={handleReset}
+                color="warning"
+                size="small"
+                sx={{
+                  border: "1px solid",
+                  borderColor: "warning.main",
+                  "&:hover": { backgroundColor: "warning.light" },
+                }}
+              >
+                <RestartAlt />
+              </IconButton>
+            </MuiTooltip>
+          )}
+        </Box>
         <TextField
-          label={`Buffer Adımı (${metric === "ranking" ? "Sıralama" : "Puan"})`}
+          label="Gösterilecek Program Sayısı"
           type="number"
-          value={bufferStep}
-          onChange={(e) => setBufferStep(Number(e.target.value))}
+          value={recordLimit}
+          onChange={(e) => {
+            const val = e.target.value;
+            const num = Number(val);
+            if (num >= 10 && num <= 31) {
+              onRecordLimitChange(num);
+            }
+          }}
           size="small"
           sx={{ width: 200 }}
-          inputProps={{ min: 1, step: metric === "ranking" ? 1000 : 1 }}
+          inputProps={{ min: 10, max: 30, step: 5 }}
         />
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
-            <MuiTooltip
-              title={
-                metric === "ranking"
-                  ? "Üst aralığı genişlet (daha küçük sıralamalar)"
-                  : "Üst aralığı genişlet (daha yüksek puanlar)"
-              }
-            >
-              <IconButton
-                onClick={handleExpandTop}
-                color="primary"
-                size="small"
-                sx={{
-                  border: "1px solid",
-                  borderColor: "primary.main",
-                  "&:hover": { backgroundColor: "primary.light" },
-                }}
-              >
-                <ArrowUpward />
-              </IconButton>
-            </MuiTooltip>
-            <MuiTooltip
-              title={
-                metric === "ranking"
-                  ? "Alt aralığı genişlet (daha büyük sıralamalar)"
-                  : "Alt aralığı genişlet (daha düşük puanlar)"
-              }
-            >
-              <IconButton
-                onClick={handleExpandBottom}
-                color="secondary"
-                size="small"
-                sx={{
-                  border: "1px solid",
-                  borderColor: "secondary.main",
-                  "&:hover": { backgroundColor: "secondary.light" },
-                }}
-              >
-                <ArrowDownward />
-              </IconButton>
-            </MuiTooltip>
-          </Box>
-          <Box sx={{ ml: 1 }}>
-            <Typography variant="body2" fontWeight="bold">
-              Mevcut Aralık:
-            </Typography>
-            <Typography
-              variant="body2"
-              color={isCustomRange ? "primary.main" : "text.primary"}
-            >
-              {formatValue(displayMin)} - {formatValue(displayMax)}
-            </Typography>
-            {isCustomRange && (
-              <Typography variant="caption" color="text.secondary">
-                (Orijinal: {formatValue(originalMin)} -{" "}
-                {formatValue(originalMax)})
-              </Typography>
-            )}
-          </Box>
-        </Box>
-        {isCustomRange && (
-          <MuiTooltip title="Aralığı sıfırla">
-            <IconButton
-              onClick={handleReset}
-              color="warning"
-              size="small"
-              sx={{
-                border: "1px solid",
-                borderColor: "warning.main",
-                "&:hover": { backgroundColor: "warning.light" },
-              }}
-            >
-              <RestartAlt />
-            </IconButton>
-          </MuiTooltip>
-        )}
       </Box>
       <Box sx={{ height: 500 }}>
         <Bar options={options} data={data} />
@@ -319,8 +341,7 @@ const ComparisonChart = ({
         <Typography variant="body2">
           <strong>Grafikte Gösterilen:</strong>{" "}
           {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)}{" "}
-          program (Bir kişi alıp max ve min farkı 0 olan programlar
-          gösterilmemektedir)
+          program
         </Typography>
         {totalPrograms &&
           totalPrograms >
