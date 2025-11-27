@@ -134,6 +134,7 @@ const ComparisonChart = ({
           text: metric === "ranking" ? "Başarı Sıralaması" : "Puan",
         },
         beginAtZero: false,
+        reverse: metric === "ranking", // Reverse Y-axis for ranking so lower numbers appear at top
       },
     },
   };

@@ -130,7 +130,7 @@ export const prepareChartData = (programs, year, metric) => {
   // Special color for Haliç University (highlighted)
   const halicColor = "rgba(255, 193, 7, 0.8)"; // Bright orange/yellow
 
-  // Build department-level entries (one entry per program)
+  // First pass: collect all valid items to calculate data range
   const departmentItems = programs
     .map((program) => {
       let min = program[minColumn];
@@ -143,6 +143,10 @@ export const prepareChartData = (programs, year, metric) => {
         [min, max] = [max, min];
       }
 
+      const originalMin = min;
+      const originalMax = max;
+      const isSingleStudent = min === max;
+
       const spread = max - min;
       const label = `${program.university} - ${formatProgramName(program)}`;
 
@@ -154,24 +158,43 @@ export const prepareChartData = (programs, year, metric) => {
         min,
         max,
         spread,
+        originalMin,
+        originalMax,
+        isSingleStudent,
       };
     })
     .filter((item) => item !== null);
 
-  // Sort: Haliç first, then by spread (largest to smallest)
+  // Calculate the overall data range to determine appropriate minimum bar size
+  const allSpreads = departmentItems
+    .map((item) => item.spread)
+    .filter((s) => s > 0);
+  const maxSpread = Math.max(...allSpreads);
+
+  // Set minimum visible bar size as 3% of the maximum spread (or at least 1)
+  const minVisibleSpread = Math.max(maxSpread * 0.03, 1);
+
+  // Second pass: adjust single-student programs to have minimum visible spread
+  departmentItems.forEach((item) => {
+    if (item.isSingleStudent) {
+      item.max = item.min + minVisibleSpread;
+      item.spread = minVisibleSpread;
+    }
+  });
+
+  // Sort: Haliç first, then by metric-appropriate sorting
   departmentItems.sort((a, b) => {
     if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
     if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
-    return b.spread - a.spread; // Sort by spread descending (largest first)
+    // For ranking: sort by min (ascending - lower is better)
+    // For score: sort by spread (descending - larger spread first)
+    return b.spread - a.spread;
   });
 
-  // Filter out departments with zero spread for the chart (but keep them in programs list)
-  const departmentsForChart = departmentItems.filter(
-    (item) => item.spread > 0 || item.university === "HALİÇ ÜNİVERSİTESİ"
-  );
+  // All departments are now included in the chart (no filtering by spread)
 
   // Build chart data
-  departmentsForChart.forEach((item) => {
+  departmentItems.forEach((item) => {
     labels.push(item.label);
     dataPoints.push({
       min: item.min,

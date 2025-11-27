@@ -639,7 +639,7 @@ const UniversityComparison = () => {
             />
 
             <DepartmentList
-              programs={chartData?.sortedPrograms || similarPrograms}
+              programs={similarPrograms}
               year={year}
               metric={metric}
             />
