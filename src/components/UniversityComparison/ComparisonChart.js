@@ -95,6 +95,38 @@ const ComparisonChart = ({
           maximumFractionDigits: 2,
         });
 
+  // Create gradient backgrounds based on fulfillment rate
+  const createGradientBackground = (ctx, chartArea, color, fulfillmentRate) => {
+    if (!chartArea) return color;
+
+    const { bottom, top } = chartArea;
+    const gradient = ctx.createLinearGradient(0, bottom, 0, top);
+
+    // Calculate where the transition should occur (as percentage from bottom)
+    const fillPercentage = Math.min(fulfillmentRate, 100) / 100;
+
+    // Extract RGB values from the color string
+    const rgbaMatch = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!rgbaMatch) return color;
+
+    const [, r, g, b] = rgbaMatch;
+
+    // Create darker color (multiply RGB by 0.6) for filled portion
+    const darkerColor = `rgba(${Math.round(r * 0.6)}, ${Math.round(
+      g * 0.6
+    )}, ${Math.round(b * 0.6)}, 0.8)`;
+    // Create lighter color (keep original or slightly lighter) for unfilled portion
+    const lighterColor = color.replace("0.6", "0.3").replace("0.8", "0.3");
+
+    // Add color stops: from bottom (0) to fillPercentage use darker, rest use lighter
+    gradient.addColorStop(0, darkerColor);
+    gradient.addColorStop(fillPercentage, darkerColor);
+    gradient.addColorStop(fillPercentage, lighterColor);
+    gradient.addColorStop(1, lighterColor);
+
+    return gradient;
+  };
+
   // Prepare data for floating bar chart showing only min-max ranges
   // Using floating bars: [min, max] creates a bar from min to max value
   const datasets = [
@@ -104,7 +136,15 @@ const ComparisonChart = ({
           ? "HALİÇ ÜNİVERSİTESİ / Sıralama Aralığı Gösteriliyor"
           : "HALİÇ ÜNİVERSİTESİ / Puan Aralığı Gösteriliyor",
       data: chartData.dataPoints.map((d) => [d.min, d.max]),
-      backgroundColor: chartData.colors,
+      backgroundColor: (context) => {
+        const chart = context.chart;
+        const { ctx, chartArea } = chart;
+        const index = context.dataIndex;
+        const color = chartData.colors[index];
+        const fulfillmentRate =
+          chartData.dataPoints[index].fulfillmentRate || 100;
+        return createGradientBackground(ctx, chartArea, color, fulfillmentRate);
+      },
       borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
       borderWidth: 2,
       borderSkipped: false,
@@ -145,10 +185,12 @@ const ComparisonChart = ({
                     maximumFractionDigits: 2,
                   });
             const spread = dataPoint.max - dataPoint.min;
+            const fulfillmentRate = dataPoint.fulfillmentRate || 100;
             return [
               `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
               `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
               `Fark: ${formatValue(spread)}`,
+              `Doluluk: %${Math.round(fulfillmentRate)}`,
             ];
           },
         },

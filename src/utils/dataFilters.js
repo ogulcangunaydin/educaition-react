@@ -179,11 +179,18 @@ export const prepareChartData = (programs, year, metric) => {
   const minVisibleSpread = Math.max(maxSpread * 0.03, 1);
 
   // Second pass: adjust single-student programs to have minimum visible spread
+  // and calculate fulfillment rate
   departmentItems.forEach((item) => {
     if (item.isSingleStudent) {
       item.max = item.min + minVisibleSpread;
       item.spread = minVisibleSpread;
     }
+
+    // Calculate fulfillment rate
+    const kontenjan = item.program[`kontenjan_${year}`];
+    const yerlesen = item.program[`yerlesen_${year}`];
+    item.fulfillmentRate =
+      kontenjan && yerlesen ? (yerlesen / kontenjan) * 100 : 100;
   });
 
   // Sort: Haliç first, then by metric-appropriate sorting
@@ -207,6 +214,7 @@ export const prepareChartData = (programs, year, metric) => {
       q3: item.max,
       max: item.max,
       programs: [item.program],
+      fulfillmentRate: item.fulfillmentRate,
     });
 
     // Use special color for Haliç University, otherwise use type-based color
