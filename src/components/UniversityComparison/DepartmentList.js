@@ -111,6 +111,32 @@ const DepartmentList = ({ programs, year, metric }) => {
     }
   };
 
+  const handleSelectAll = () => {
+    // Check if any program from the current list is selected
+    const anySelected = programs.some((program) =>
+      isSelected(program.yop_kodu)
+    );
+
+    if (anySelected) {
+      // Deselect all programs in the current list
+      programs.forEach((program) => {
+        if (isSelected(program.yop_kodu)) {
+          toggleProgram(program);
+        }
+      });
+    } else {
+      // Select all programs in the current list
+      programs.forEach((program) => {
+        if (!isSelected(program.yop_kodu)) {
+          toggleProgram(program);
+        }
+      });
+    }
+  };
+
+  // Check if any program is selected
+  const anySelected = programs.some((program) => isSelected(program.yop_kodu));
+
   return (
     <Paper sx={{ p: 3 }}>
       <Box
@@ -165,7 +191,21 @@ const DepartmentList = ({ programs, year, metric }) => {
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
-              <TableCell padding="checkbox">Seç</TableCell>
+              <TableCell padding="checkbox">
+                <Button
+                  size="small"
+                  onClick={handleSelectAll}
+                  sx={{
+                    minWidth: "auto",
+                    padding: "2px 8px",
+                    fontSize: "0.75rem",
+                    textTransform: "none",
+                    color: anySelected ? "error.main" : "primary.main",
+                  }}
+                >
+                  {anySelected ? "Tümünü Kaldır" : "Tümünü Seç"}
+                </Button>
+              </TableCell>
               <TableCell>
                 <TableSortLabel
                   active={orderBy === "university"}
