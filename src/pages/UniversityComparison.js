@@ -14,9 +14,7 @@ import ProgramSelector from "../components/UniversityComparison/ProgramSelector"
 import MetricSelector from "../components/UniversityComparison/MetricSelector";
 import RecordLimitSlider from "../components/UniversityComparison/RecordLimitSlider";
 import UniversityTypeSelector from "../components/UniversityComparison/UniversityTypeSelector";
-import TopCitiesSlider from "../components/UniversityComparison/TopCitiesSlider";
-import MinUniversityCountSlider from "../components/UniversityComparison/MinUniversityCountSlider";
-import MinProgramCountSlider from "../components/UniversityComparison/MinProgramCountSlider";
+import FilterSlider from "../components/UniversityComparison/FilterSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import InstructionsPanel from "../components/UniversityComparison/InstructionsPanel";
@@ -54,8 +52,8 @@ const UniversityComparison = () => {
   const [metric, setMetric] = useState("ranking");
   const [recordLimit, setRecordLimit] = useState(10);
   const [universityType, setUniversityType] = useState("Vakıf");
-  const [topCitiesLimit, setTopCitiesLimit] = useState(3);
-  const [minUniversityCount, setMinUniversityCount] = useState(3);
+  const [topCitiesLimit, setTopCitiesLimit] = useState(0);
+  const [minUniversityCount, setMinUniversityCount] = useState(0);
   const [minProgramCount, setMinProgramCount] = useState(0);
   const [customRangeMin, setCustomRangeMin] = useState(null);
   const [customRangeMax, setCustomRangeMax] = useState(null);
@@ -81,6 +79,43 @@ const UniversityComparison = () => {
 
     return Object.entries(programTotals).sort((a, b) => b[1] - a[1]);
   }, [selectedProgram, programPreferencesData]);
+
+  // Calculate city frequency data for the selected program
+  const cityFrequencyData = useMemo(() => {
+    if (!selectedProgram || cityPreferencesData.length === 0) {
+      return [];
+    }
+
+    const cityTotals = {};
+    cityPreferencesData.forEach((row) => {
+      if (row.yop_kodu === selectedProgram.yop_kodu) {
+        const city = row.il;
+        cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
+      }
+    });
+
+    return Object.entries(cityTotals).sort((a, b) => b[1] - a[1]);
+  }, [selectedProgram, cityPreferencesData]);
+
+  // Calculate university frequency data for the selected program
+  const universityFrequencyData = useMemo(() => {
+    if (!selectedProgram || universityPreferencesData.length === 0) {
+      return [];
+    }
+
+    const universityTotals = {};
+    universityPreferencesData.forEach((row) => {
+      if (row.yop_kodu === selectedProgram.yop_kodu) {
+        const uni = row.universite;
+        if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+          universityTotals[uni] =
+            (universityTotals[uni] || 0) + row.tercih_sayisi;
+        }
+      }
+    });
+
+    return Object.entries(universityTotals).sort((a, b) => b[1] - a[1]);
+  }, [selectedProgram, universityPreferencesData]);
 
   // Load CSV data on mount
   useEffect(() => {
@@ -282,24 +317,20 @@ const UniversityComparison = () => {
       // Filter by top cities if limit is set
       let filteredByCity = filteredByType;
       if (topCitiesLimit > 0 && cityPreferencesData.length > 0) {
-        // Calculate total preferences per city
+        // Calculate total preferences per city for THIS specific program
         const cityTotals = {};
         cityPreferencesData.forEach((row) => {
-          const city = row.il;
-          cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
+          if (row.yop_kodu === selectedProgram.yop_kodu) {
+            const city = row.il;
+            cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
+          }
         });
 
-        // Get top N cities
-        const topCities = Object.entries(cityTotals)
-          .sort((a, b) => b[1] - a[1])
-          .slice(0, topCitiesLimit)
-          .map(([city]) => city);
-
-        // Filter programs by top cities (always include Haliç program)
+        // Filter programs: only include cities that meet minimum threshold (always include Haliç program)
         filteredByCity = filteredByType.filter(
           (p) =>
             p.yop_kodu === selectedProgram.yop_kodu ||
-            topCities.includes(p.city)
+            (cityTotals[p.city] || 0) >= topCitiesLimit
         );
       }
 
@@ -477,53 +508,65 @@ const UniversityComparison = () => {
               <Typography variant="h6" gutterBottom>
                 Filtreler
               </Typography>
-
               <YearSelector value={year} onChange={handleYearChange} />
-
               <ProgramSelector
                 programs={availablePrograms}
                 value={selectedProgram?.yop_kodu || ""}
                 onChange={handleProgramChange}
                 disabled={!year}
               />
-
               <MetricSelector
                 value={metric}
                 onChange={handleMetricChange}
                 disabled={!selectedProgram}
               />
-
               <UniversityTypeSelector
                 universityType={universityType}
                 onChange={handleUniversityTypeChange}
                 disabled={!selectedProgram}
               />
-
-              <TopCitiesSlider
+              <FilterSlider
                 value={topCitiesLimit}
                 onChange={handleTopCitiesChange}
                 disabled={!selectedProgram}
+                label={(val) =>
+                  val === 0
+                    ? "Tüm illerdeki tüm programlar gösteriliyor."
+                    : `Yerleşenlerin en az ${val} defa tercih ettikleri illerdeki programlar gösteriliyor.`
+                }
+                frequencyData={cityFrequencyData}
+                type="il"
               />
 
-              <MinUniversityCountSlider
+              <FilterSlider
                 value={minUniversityCount}
                 onChange={handleMinUniversityCountChange}
                 disabled={!selectedProgram}
+                label={(val) =>
+                  val === 0
+                    ? "Tüm üniversitelerdeki tüm programlar gösteriliyor."
+                    : `Yerleşenlerin en az ${val} defa tercih ettikleri üniversitelerin programlarını tutar`
+                }
+                frequencyData={universityFrequencyData}
+                type="üniversite"
               />
-
-              <MinProgramCountSlider
+              <FilterSlider
                 value={minProgramCount}
                 onChange={handleMinProgramCountChange}
                 disabled={!selectedProgram}
+                label={(val) =>
+                  val === 0
+                    ? "Tüm program tiplerinden programlar gösteriliyor."
+                    : `Yerleşenlerin en az ${val} defa tercih ettikleri program tipinden olan programları tutar.`
+                }
                 frequencyData={programFrequencyData}
+                type="program tipi"
               />
-
               <RecordLimitSlider
                 value={recordLimit}
                 onChange={handleRecordLimitChange}
                 disabled={!selectedProgram}
               />
-
               {selectedProgram && (
                 <Box
                   sx={{ mt: 3, p: 2, bgcolor: "info.light", borderRadius: 1 }}
@@ -544,15 +587,19 @@ const UniversityComparison = () => {
                       {(() => {
                         const cityTotals = {};
                         cityPreferencesData.forEach((row) => {
-                          const city = row.il;
-                          cityTotals[city] =
-                            (cityTotals[city] || 0) + row.tercih_sayisi;
+                          if (row.yop_kodu === selectedProgram.yop_kodu) {
+                            const city = row.il;
+                            cityTotals[city] =
+                              (cityTotals[city] || 0) + row.tercih_sayisi;
+                          }
                         });
-                        const topCities = Object.entries(cityTotals)
+                        const filteredCities = Object.entries(cityTotals)
+                          .filter(([_, count]) => count >= topCitiesLimit)
                           .sort((a, b) => b[1] - a[1])
-                          .slice(0, topCitiesLimit)
-                          .map(([city]) => city);
-                        return topCities.join(", ");
+                          .map(([city, count]) => `${city} (${count})`);
+                        return filteredCities.length > 0
+                          ? filteredCities.join(", ")
+                          : "Hiçbiri";
                       })()}
                     </Typography>
                   )}

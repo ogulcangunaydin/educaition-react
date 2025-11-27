@@ -142,10 +142,11 @@ const ComparisonChart = ({
                     minimumFractionDigits: 2,
                     maximumFractionDigits: 2,
                   });
+            const spread = dataPoint.max - dataPoint.min;
             return [
               `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
               `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
-              `Program Sayısı: ${dataPoint.programs.length}`,
+              `Fark: ${formatValue(spread)}`,
             ];
           },
         },

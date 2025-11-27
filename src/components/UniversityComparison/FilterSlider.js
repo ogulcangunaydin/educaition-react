@@ -1,35 +1,35 @@
 import React from "react";
 import { Box, Typography, Slider } from "@mui/material";
 
-const MinProgramCountSlider = ({
+const FilterSlider = ({
   value,
   onChange,
   disabled = false,
-  frequencyData = [],
+  label,
+  frequencyData = null,
+  type = "seçenek",
 }) => {
   const marks = [
-    { value: 1, label: "Tümü" },
-    { value: 5, label: "5" },
-    { value: 10, label: "10" },
-    { value: 20, label: "20" },
-    { value: 50, label: "50" },
+    { value: 0, label: "Tümü" },
+    { value: 2, label: "2" },
+    { value: 4, label: "4" },
+    { value: 6, label: "6" },
+    { value: 8, label: "8" },
+    { value: 10, label: "10+" },
   ];
 
-  // Calculate frequency distribution for visualization
+  // Calculate frequency distribution for visualization (if frequency data provided)
   const getFrequencyBars = () => {
     if (!frequencyData || frequencyData.length === 0) return null;
 
-    // Create ranges matching slider increments (every 5)
-    const ranges = [];
-    for (let i = 0; i <= 50; i += 5) {
-      const min = i;
-      const max = i + 4;
-      ranges.push({
-        min,
-        max: i === 50 ? Infinity : max,
-        label: i === 50 ? `${min}+` : `${min}-${max}`,
-      });
-    }
+    // Create ranges matching slider increments
+    const ranges = [
+      { min: 0, max: 2, label: "0-2" },
+      { min: 2, max: 4, label: "3-4" },
+      { min: 4, max: 6, label: "5-6" },
+      { min: 6, max: 8, label: "7-8" },
+      { min: 8, max: Infinity, label: "9+" },
+    ];
 
     const distribution = ranges.map((range) => {
       const count = frequencyData.filter(
@@ -60,7 +60,8 @@ const MinProgramCountSlider = ({
                 maxCount > 0 ? `${(item.count / maxCount) * 100}%` : "2px",
               minHeight: "2px",
               bgcolor:
-                value > 0 && value > item.max
+                value > 0 &&
+                (value >= item.max || (item.max === Infinity && value > 9))
                   ? "rgba(25, 118, 210, 0.3)"
                   : "primary.main",
               borderRadius: "2px 2px 0 0",
@@ -78,18 +79,16 @@ const MinProgramCountSlider = ({
 
   return (
     <Box sx={{ mb: 4, px: 2 }}>
-      <Typography gutterBottom>
-        Yerleşenlerin en az {value} defa tercih ettikleri program tipinden olan
-        programları tutar.
-      </Typography>
-      {/* Frequency visualization */}
-      {getFrequencyBars()}
+      <Typography gutterBottom>{label(value)}</Typography>
+
+      {/* Frequency visualization (optional) */}
+      {frequencyData && getFrequencyBars()}
 
       <Slider
         value={value}
         onChange={(e, newValue) => onChange(newValue)}
-        min={1}
-        max={20}
+        min={0}
+        max={10}
         marks={marks}
         valueLabelDisplay="auto"
         disabled={disabled}
@@ -101,11 +100,15 @@ const MinProgramCountSlider = ({
           color="text.secondary"
           sx={{ mt: 0.5, display: "block" }}
         >
-          Toplam {frequencyData.length} farklı program
+          {value === 0
+            ? `Toplam ${frequencyData.length} farklı ${type}`
+            : `${
+                frequencyData.filter(([_, freq]) => freq >= value).length
+              } farklı ${type} dahil (toplam ${frequencyData.length})`}
         </Typography>
       )}
     </Box>
   );
 };
 
-export default MinProgramCountSlider;
+export default FilterSlider;

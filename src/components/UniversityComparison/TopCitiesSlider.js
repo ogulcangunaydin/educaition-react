@@ -2,28 +2,24 @@ import { Typography, Slider, Box } from "@mui/material";
 
 const TopCitiesSlider = ({ value, onChange, disabled }) => {
   const marks = [
-    { value: 0, label: "Tümü" },
-    { value: 3, label: "İlk 3" },
-    { value: 5, label: "İlk 5" },
-    { value: 10, label: "İlk 10" },
-    { value: 20, label: "İlk 20" },
+    { value: 1, label: "Tümü" },
+    { value: 3, label: "3" },
+    { value: 5, label: "5" },
+    { value: 10, label: "10" },
+    { value: 20, label: "20" },
   ];
 
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography variant="subtitle2" gutterBottom>
-        En Çok Tercih Edilen İller
-      </Typography>
-      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        {value === 0
-          ? "Tüm illerdeki üniversiteler gösteriliyor"
-          : `İlk ${value} tercih edilen ildeki üniversiteler gösteriliyor`}
+        Yerleşenlerin en az {value} defa tercih ettikleri illerdeki bölümler
+        gösteriliyor.
       </Typography>
       <Box sx={{ px: 1 }}>
         <Slider
           value={value}
           onChange={(e, newValue) => onChange(newValue)}
-          min={0}
+          min={1}
           max={20}
           step={1}
           marks={marks}

@@ -3,7 +3,7 @@ import { Box, Typography, Slider } from "@mui/material";
 
 const MinUniversityCountSlider = ({ value, onChange, disabled = false }) => {
   const marks = [
-    { value: 0, label: "Tümü" },
+    { value: 1, label: "Tümü" },
     { value: 3, label: "İlk 3" },
     { value: 5, label: "İlk 5" },
     { value: 10, label: "İlk 10" },
@@ -13,21 +13,13 @@ const MinUniversityCountSlider = ({ value, onChange, disabled = false }) => {
   return (
     <Box sx={{ mb: 4, px: 2 }}>
       <Typography gutterBottom>
-        Minimum Üniversite Tercih Sayısı: {value === 0 ? "Tümü" : value}
-      </Typography>
-      <Typography
-        variant="caption"
-        color="text.secondary"
-        sx={{ mb: 1, display: "block" }}
-      >
-        {value === 0
-          ? "Tüm üniversiteler dahil"
-          : `En az ${value} kez tercih edilen üniversiteler`}
+        Yerleşenlerin en az {value} defa tercih ettikleri üniversitelerin
+        programlarını tutar
       </Typography>
       <Slider
         value={value}
         onChange={(e, newValue) => onChange(newValue)}
-        min={0}
+        min={1}
         max={20}
         step={1}
         marks={marks}
