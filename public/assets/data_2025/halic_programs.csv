@@ -1,0 +1,121 @@
+yop_kodu,university,faculty,program,program_detail,city,university_type,scholarship,puan_type,kontenjan_2025,yerlesen_2025,taban_2025,tbs_2025,tavan_2025,tavan_bs_2025,has_2025
+201990481,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Bilgisayar Mühendisliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,14,12,"428,20262",67.235,"438,00067",57.401,True
+201990477,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Endüstri Mühendisliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,12,11,"427,97547",67.459,"445,81560",49.954,True
+201990507,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Yazılım Mühendisliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,14,12,"413,00966",83.815,"426,73756",68.777,True
+201990483,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Elektrik-Elektronik Mühendisliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,10,9,"419,83389",76.197,"425,67529",69.935,True
+201990479,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Makine Mühendisliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,7,6,"410,23508",86.863,"419,01631",77.124,True
+201910218,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,Mimarlık,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,4,4,"400,58749",98.259,"404,72976",93.176,True
+201990475,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,9,8,"387,23474",115.117,"398,76899",100.416,True
+201990559,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Dijital Oyun Tasarımı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,7,6,"363,37129",150.162,"389,73232",111.860,True
+201910306,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,15,15,"371,89942",136.677,"387,07189",115.329,True
+201990515,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,12,11,"363,50234",149.932,"378,07098",127.731,True
+201990496,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,Endüstriyel Tasarım,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,10,9,"357,20921",160.798,"380,65267",124.079,True
+201910103,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Matematik,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,6,5,"361,43590",153.452,"369,58771",140.267,True
+201910324,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,12,11,"330,96656",215.421,"355,20254",164.481,True
+201990505,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,10,9,"338,24334",198.614,"386,45578",116.164,True
+201910351,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Ebelik,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,13,11,"338,99047",196.993,"357,39398",160.478,True
+201990487,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Fizyoterapi ve Rehabilitasyon,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,7,6,"341,15458",192.226,"351,43009",171.531,True
+201910387,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Fizyoterapi ve Rehabilitasyon,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,8,7,"335,58689",204.603,"338,84068",197.323,True
+201991014,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,64,64,"269,09016",455.405,"342,55944",189.226,True
+201990972,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Ebelik,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,53,53,"246,73368",626.776,"307,12076",283.729,True
+201990944,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,47,47,"216,25884",980.681,"294,94126",327.934,True
+201990846,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,Endüstriyel Tasarım,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,45,45,"231,36591",794.706,"297,50279",318.131,True
+201991007,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,18,18,"240,50406",690.299,"264,32137",485.946,True
+201990986,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Fizyoterapi ve Rehabilitasyon,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,31,31,"232,60779",779.844,"287,77106",358.142,True
+201990769,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Dijital Oyun Tasarımı,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,4,3,Dolmadı,Dolmadı,"309,05927",277.381,True
+201991028,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,45,45,"227,85511",837.352,"332,28503",212.325,True
+201990965,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Ebelik,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,16,16,"225,91020",861.318,"241,74640",677.018,True
+201991021,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Hemşirelik,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,14,14,"214,20454",1.005.004,"224,75221",876.028,True
+201990958,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,41,27,Dolmadı,Dolmadı,"266,94816",468.770,True
+201990776,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Dijital Oyun Tasarımı,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,31,31,"209,84259",1.054.564,"322,67049",236.964,True
+201990937,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,14,14,"198,66033",1.164.473,"224,70875",876.610,True
+201990951,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Beslenme ve Diyetetik,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,13,1,Dolmadı,Dolmadı,"190,05837",1.208.020,True
+201990874,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Bilgisayar Mühendisliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,8,9,"290,74719",297.711,"342,97475",160.251,True
+201990881,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Bilgisayar Mühendisliği,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,67,33,Dolmadı,Dolmadı,"387,16278",115.210,True
+201991560,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Dil ve Konuşma Terapisi,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,7,6,"390,62702",110.651,"399,81147",99.214,True
+201991574,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Dil ve Konuşma Terapisi,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,29,29,"238,04633",717.151,"300,80372",305.818,True
+201991567,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Dil ve Konuşma Terapisi,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,5,5,"227,94003",836.341,"235,71894",743.809,True
+201990895,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Elektrik-Elektronik Mühendisliği,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,49,16,Dolmadı,Dolmadı,"383,82580",119.773,True
+201990888,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Elektrik-Elektronik Mühendisliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,5,0,Dolmadı,Dolmadı,0,,True
+201990902,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Endüstri Mühendisliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,4,1,Dolmadı,Dolmadı,"321,29563",205.379,True
+201990909,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Endüstri Mühendisliği,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,60,42,Dolmadı,Dolmadı,"403,13990",95.091,True
+201990839,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,Endüstriyel Tasarım,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,6,6,"190,10272",1.227.509,"222,33053",906.176,True
+201990979,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Fizyoterapi ve Rehabilitasyon,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,9,9,"200,32059",1.149.945,"227,83830",837.551,True
+201991000,HALİÇ ÜNİVERSİTESİ,Sağlık Bilimleri Fakültesi,Fizyoterapi ve Rehabilitasyon,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,37,9,Dolmadı,Dolmadı,"293,43362",334.015,True
+201990480,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Makine Mühendisliği,(İngilizce) (%50 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%50 İndirimli,say,32,32,"303,27645",296.977,"360,30470",155.433,True
+201990916,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Makine Mühendisliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,3,0,Dolmadı,Dolmadı,0,,True
+201910527,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Matematik,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,30,14,Dolmadı,Dolmadı,"296,51276",321.793,True
+201910606,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,Mimarlık,(%50 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%50 İndirimli,say,17,17,"320,03049",244.147,"381,44292",122.986,True
+201910042,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,say,9,8,"350,33283",173.710,"384,72772",118.511,True
+201990741,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,40,27,Dolmadı,Dolmadı,"308,86324",278.009,True
+201990734,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,2,3,"191,65525",1.194.567,"222,54774",841.546,True
+201910493,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,40,7,Dolmadı,Dolmadı,"320,30498",243.405,True
+201910033,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Moleküler Biyoloji ve Genetik,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,2,1,Dolmadı,Dolmadı,"199,76750",1.154.815,True
+201990552,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(İngilizce) (%50 İndirimli) (6 Yıllık),İSTANBUL,Vakıf,%50 İndirimli,say,11,11,"462,11497",35.624,"476,13017",24.966,True
+201990530,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(İngilizce) (Burslu) (6 Yıllık),İSTANBUL,Vakıf,Burslu,say,7,6,"480,26713",22.118,"487,22192",17.756,True
+201911119,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(%25 İndirimli) (6 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,23,23,"452,69030",43.693,"464,04438",34.048,True
+201911094,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(Burslu) (6 Yıllık),İSTANBUL,Vakıf,Burslu,say,19,17,"480,54459",21.942,"493,80681",14.056,True
+201911085,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(Ücretli) (6 Yıllık),İSTANBUL,Vakıf,Ücretli,say,75,9,Dolmadı,Dolmadı,"451,29416",44.991,True
+201991581,HALİÇ ÜNİVERSİTESİ,Tıp Fakültesi,Tıp,(İngilizce) (Ücretli) (6 Yıllık),İSTANBUL,Vakıf,Ücretli,say,23,0,Dolmadı,Dolmadı,0,,True
+201990930,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Yazılım Mühendisliği,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,say,67,4,Dolmadı,Dolmadı,"353,72891",167.207,True
+201990923,HALİÇ ÜNİVERSİTESİ,Mühendislik Fakültesi,Yazılım Mühendisliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,say,8,4,Dolmadı,Dolmadı,"321,80039",204.179,True
+201990499,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Yönetim Bilişim Sistemleri,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,12,11,"394,69535",36.222,"406,78288",23.076,True
+201990501,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,12,11,"381,67456",55.078,"394,21886",36.851,True
+201910087,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,15,14,"369,60700",77.754,"380,12638",57.702,True
+201910157,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,13,11,"361,61061",95.431,"375,03269",67.049,True
+201990485,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Uluslararası Ticaret ve İşletmecilik,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,13,11,"345,67958",138.045,"354,36289",113.404,True
+201990853,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,İç Mimarlık ve Çevre Tasarımı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,10,10,"347,08505",133.772,"370,53468",75.814,True
+201910139,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,12,11,"346,13625",136.658,"353,37602",115.941,True
+201910642,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Siyaset Bilimi ve Uluslararası İlişkiler,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,9,8,"338,11151",162.832,"362,74765",92.765,True
+201910915,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,72,72,"288,71893",428.743,"343,80498",143.883,True
+201990832,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Yönetim Bilişim Sistemleri,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,43,43,"294,23908",387.815,"332,62747",182.606,True
+201990527,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,57,57,"244,65140",869.147,"337,28128",165.765,True
+201910078,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,9,9,"260,37106",691.654,"285,23898",456.593,True
+201990825,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Yönetim Bilişim Sistemleri,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,16,16,"243,14726",886.828,"291,24591",409.564,True
+201990526,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Psikoloji,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,7,7,"251,64687",787.980,"268,22753",610.449,True
+201990867,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,İç Mimarlık ve Çevre Tasarımı,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,41,41,"265,33718",639.661,"323,60412",219.810,True
+201990818,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Uluslararası Ticaret ve İşletmecilik,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,59,59,"242,67629",892.323,"308,56105",295.717,True
+201910748,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,60,60,"236,67632",963.360,"319,45151",238.702,True
+201990860,HALİÇ ÜNİVERSİTESİ,Mimarlık Fakültesi,İç Mimarlık ve Çevre Tasarımı,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,13,13,"231,29634",1.027.049,"258,44742",712.313,True
+201910669,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,54,54,"243,94989",877.314,"323,38993",220.786,True
+201990811,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Uluslararası Ticaret ve İşletmecilik,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,8,8,"211,90758",1.243.324,"231,19435",1.028.288,True
+201910121,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,8,8,"215,41488",1.206.646,"239,24310",932.915,True
+201910148,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,İşletme,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,8,8,"210,70784",1.255.374,"245,97245",853.668,True
+201910633,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Siyaset Bilimi ve Uluslararası İlişkiler,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,4,3,Dolmadı,Dolmadı,"196,96440",1.378.367,True
+201991609,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Ekonomi,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,29,14,Dolmadı,Dolmadı,"307,62073",301.024,True
+201991602,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Ekonomi,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,5,3,Dolmadı,Dolmadı,"221,18206",1.143.567,True
+201991595,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Ekonomi,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,7,7,"333,63919",178.788,"336,16056",169.642,True
+201990385,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Grafik Tasarımı,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,45,8,Dolmadı,Dolmadı,"278,92321",510.354,True
+201991105,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Grafik Tasarımı,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,6,4,Dolmadı,Dolmadı,"245,29351",861.591,True
+201990225,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Grafik Tasarımı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,10,9,"319,00390",240.854,"337,99695",163.261,True
+201991616,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Lojistik Yönetimi,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,7,6,"334,37164",176.139,"343,30606",145.441,True
+201991623,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Lojistik Yönetimi,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,7,0,Dolmadı,Dolmadı,0,,True
+201991630,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Lojistik Yönetimi,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,27,13,Dolmadı,Dolmadı,"282,09516",482.813,True
+201910703,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Siyaset Bilimi ve Uluslararası İlişkiler,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,43,24,Dolmadı,Dolmadı,"279,68003",503.717,True
+201991042,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(İngilizce) (%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,35,3,Dolmadı,Dolmadı,"285,03390",458.263,True
+201991077,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,7,2,Dolmadı,Dolmadı,"244,92820",865.903,True
+201991112,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,7,0,Dolmadı,Dolmadı,0,,True
+201991119,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,9,8,"290,46864",415.380,"309,91904",288.077,True
+201991126,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,12,12,"293,40745",393.746,"304,53757",319.316,True
+201991154,HALİÇ ÜNİVERSİTESİ,Spor Bilimleri Fakültesi,Spor Yöneticiliği,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,52,13,Dolmadı,Dolmadı,"279,16065",508.245,True
+201991070,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Tekstil ve Moda Tasarımı,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,ea,6,0,Dolmadı,Dolmadı,0,,True
+201990234,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Tekstil ve Moda Tasarımı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,ea,10,9,"301,42047",338.864,"348,35866",130.031,True
+201990394,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Tekstil ve Moda Tasarımı,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,ea,45,12,Dolmadı,Dolmadı,"252,09316",782.915,True
+201990513,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Gastronomi ve Mutfak Sanatları,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,13,11,"391,91321",11.580,"414,36621",4.083,True
+201990511,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Çizgi Film ve Animasyon,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,11,9,"369,18289",29.250,"380,18262",18.953,True
+201990528,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Görsel İletişim Tasarımı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,11,10,"373,00862",25.273,"386,81722",14.332,True
+201910863,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Türk Dili ve Edebiyatı,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,6,4,"354,84363",49.096,"362,43350",37.542,True
+201910439,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Halkla İlişkiler ve Tanıtım,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,12,11,"358,39882",43.369,"371,74081",26.491,True
+201990762,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Çizgi Film ve Animasyon,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,söz,56,12,Dolmadı,Dolmadı,"357,38079",44.954,True
+201990790,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Gastronomi ve Mutfak Sanatları,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,söz,68,15,Dolmadı,Dolmadı,"353,18762",51.998,True
+201990804,HALİÇ ÜNİVERSİTESİ,Güzel Sanatlar Fakültesi,Görsel İletişim Tasarımı,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,söz,55,11,Dolmadı,Dolmadı,"337,75215",86.218,True
+201910696,HALİÇ ÜNİVERSİTESİ,İşletme Fakültesi,Halkla İlişkiler ve Tanıtım,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,söz,64,10,Dolmadı,Dolmadı,"300,33662",243.069,True
+201991588,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Tarih,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,söz,16,16,"339,25275",82.312,"379,74490",19.305,True
+201910872,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Türk Dili ve Edebiyatı,(%50 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%50 İndirimli,söz,23,13,Dolmadı,Dolmadı,"315,45419",164.560,True
+201990748,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Türk Dili ve Edebiyatı,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,söz,2,0,Dolmadı,Dolmadı,0,,True
+201990497,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,İngilizce Mütercim ve Tercümanlık,(Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,dil,12,10,"436,75291",9.443,"455,12583",5.676,True
+201910024,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Amerikan Kültürü ve Edebiyatı,(İngilizce) (Burslu) (4 Yıllık),İSTANBUL,Vakıf,Burslu,dil,12,10,"411,91194",17.122,"415,83410",15.751,True
+201990727,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,İngilizce Mütercim ve Tercümanlık,(%25 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%25 İndirimli,dil,57,57,"241,89746",99.793,"396,14216",23.138,True
+201990720,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,İngilizce Mütercim ve Tercümanlık,(Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,dil,8,3,Dolmadı,Dolmadı,"205,37210",123.940,True
+201910015,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Amerikan Kültürü ve Edebiyatı,(İngilizce) (Ücretli) (4 Yıllık),İSTANBUL,Vakıf,Ücretli,dil,4,1,Dolmadı,Dolmadı,"157,22614",140.155,True
+201910509,HALİÇ ÜNİVERSİTESİ,Fen-Edebiyat Fakültesi,Amerikan Kültürü ve Edebiyatı,(İngilizce) (%50 İndirimli) (4 Yıllık),İSTANBUL,Vakıf,%50 İndirimli,dil,61,48,Dolmadı,Dolmadı,"406,69583",19.056,True

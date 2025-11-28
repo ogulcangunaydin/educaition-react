@@ -37,6 +37,7 @@ const UniversityComparison = () => {
     []
   );
   const [programPreferencesData, setProgramPreferencesData] = useState([]);
+  const [priceData, setPriceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -177,19 +178,31 @@ const UniversityComparison = () => {
         setLoading(true);
         setError(null);
 
-        // Load CSV files
+        // Load CSV files (existing data + 2025 data)
         const [
           halicResponse,
           allUniversitiesResponse,
           cityPrefsResponse,
           uniPrefsResponse,
           progPrefsResponse,
+          priceResponse,
+          halic2025Response,
+          allUniversities2025Response,
+          cityPrefs2025Response,
+          uniPrefs2025Response,
+          progPrefs2025Response,
         ] = await Promise.all([
           fetch("/assets/data/halic_programs.csv"),
           fetch("/assets/data/all_universities_programs_master.csv"),
           fetch("/assets/data/halic_tercih_edilen_iller.csv"),
           fetch("/assets/data/halic_tercih_edilen_universiteler.csv"),
           fetch("/assets/data/halic_tercih_edilen_programlar.csv"),
+          fetch("/assets/data/all_programs_prices_processed.csv"),
+          fetch("/assets/data_2025/halic_programs.csv"),
+          fetch("/assets/data_2025/all_universities_programs_master.csv"),
+          fetch("/assets/data_2025/halic_tercih_edilen_iller.csv"),
+          fetch("/assets/data_2025/halic_tercih_edilen_universiteler.csv"),
+          fetch("/assets/data_2025/halic_tercih_edilen_programlar.csv"),
         ]);
 
         if (
@@ -197,7 +210,13 @@ const UniversityComparison = () => {
           !allUniversitiesResponse.ok ||
           !cityPrefsResponse.ok ||
           !uniPrefsResponse.ok ||
-          !progPrefsResponse.ok
+          !progPrefsResponse.ok ||
+          !priceResponse.ok ||
+          !halic2025Response.ok ||
+          !allUniversities2025Response.ok ||
+          !cityPrefs2025Response.ok ||
+          !uniPrefs2025Response.ok ||
+          !progPrefs2025Response.ok
         ) {
           throw new Error("Failed to load CSV files");
         }
@@ -208,19 +227,43 @@ const UniversityComparison = () => {
           cityPrefsText,
           uniPrefsText,
           progPrefsText,
+          priceText,
+          halic2025Text,
+          allUniversities2025Text,
+          cityPrefs2025Text,
+          uniPrefs2025Text,
+          progPrefs2025Text,
         ] = await Promise.all([
           halicResponse.text(),
           allUniversitiesResponse.text(),
           cityPrefsResponse.text(),
           uniPrefsResponse.text(),
           progPrefsResponse.text(),
+          priceResponse.text(),
+          halic2025Response.text(),
+          allUniversities2025Response.text(),
+          cityPrefs2025Response.text(),
+          uniPrefs2025Response.text(),
+          progPrefs2025Response.text(),
         ]);
 
         const halicParsed = parseCSV(halicText);
+        const halic2025Parsed = parseCSV(halic2025Text);
         const allUniversitiesParsed = parseCSV(allUniversitiesText);
+        const allUniversities2025Parsed = parseCSV(allUniversities2025Text);
+
+        // Merge Halic data from both sources
+        const mergedHalicData = [...halicParsed, ...halic2025Parsed];
+
+        // Merge all universities data from both sources
+        const mergedAllUniversitiesData = [
+          ...allUniversitiesParsed,
+          ...allUniversities2025Parsed,
+        ];
 
         // Parse city preferences CSV (simple format, not using parseCSV)
         const cityPrefsLines = cityPrefsText.trim().split("\n");
+        const cityPrefs2025Lines = cityPrefs2025Text.trim().split("\n");
         const cityPrefsData = [];
         for (let i = 1; i < cityPrefsLines.length; i++) {
           const [yop_kodu, year, il, tercih_sayisi] =
@@ -232,9 +275,21 @@ const UniversityComparison = () => {
             tercih_sayisi: parseInt(tercih_sayisi),
           });
         }
+        // Add 2025 city preferences
+        for (let i = 1; i < cityPrefs2025Lines.length; i++) {
+          const [yop_kodu, year, il, tercih_sayisi] =
+            cityPrefs2025Lines[i].split(",");
+          cityPrefsData.push({
+            yop_kodu,
+            year,
+            il,
+            tercih_sayisi: parseInt(tercih_sayisi),
+          });
+        }
 
         // Parse university preferences CSV
         const uniPrefsLines = uniPrefsText.trim().split("\n");
+        const uniPrefs2025Lines = uniPrefs2025Text.trim().split("\n");
         const uniPrefsData = [];
         for (let i = 1; i < uniPrefsLines.length; i++) {
           const [yop_kodu, year, universite, tercih_sayisi, university_type] =
@@ -247,9 +302,22 @@ const UniversityComparison = () => {
             university_type,
           });
         }
+        // Add 2025 university preferences
+        for (let i = 1; i < uniPrefs2025Lines.length; i++) {
+          const [yop_kodu, year, universite, tercih_sayisi, university_type] =
+            uniPrefs2025Lines[i].split(",");
+          uniPrefsData.push({
+            yop_kodu,
+            year,
+            universite,
+            tercih_sayisi: parseInt(tercih_sayisi),
+            university_type,
+          });
+        }
 
         // Parse program preferences CSV
         const progPrefsLines = progPrefsText.trim().split("\n");
+        const progPrefs2025Lines = progPrefs2025Text.trim().split("\n");
         const progPrefsData = [];
         for (let i = 1; i < progPrefsLines.length; i++) {
           const [yop_kodu, year, program, tercih_sayisi] =
@@ -261,12 +329,48 @@ const UniversityComparison = () => {
             tercih_sayisi: parseInt(tercih_sayisi),
           });
         }
+        // Add 2025 program preferences
+        for (let i = 1; i < progPrefs2025Lines.length; i++) {
+          const [yop_kodu, year, program, tercih_sayisi] =
+            progPrefs2025Lines[i].split(",");
+          progPrefsData.push({
+            yop_kodu,
+            year,
+            program,
+            tercih_sayisi: parseInt(tercih_sayisi),
+          });
+        }
 
-        setHalicData(halicParsed);
-        setAllUniversitiesData(allUniversitiesParsed);
+        // Parse price data CSV
+        const priceLines = priceText.trim().split("\n");
+        const parsedPriceData = [];
+        for (let i = 1; i < priceLines.length; i++) {
+          const [
+            yop_kodu,
+            university,
+            program,
+            is_english,
+            scholarship_pct,
+            full_price,
+            discounted_price,
+          ] = priceLines[i].split(",");
+          parsedPriceData.push({
+            yop_kodu: yop_kodu?.trim(),
+            university: university?.trim(),
+            program: program?.trim(),
+            is_english: is_english === "True",
+            scholarship_pct: parseFloat(scholarship_pct),
+            full_price: parseFloat(full_price),
+            discounted_price: parseFloat(discounted_price),
+          });
+        }
+
+        setHalicData(mergedHalicData);
+        setAllUniversitiesData(mergedAllUniversitiesData);
         setCityPreferencesData(cityPrefsData);
         setUniversityPreferencesData(uniPrefsData);
         setProgramPreferencesData(progPrefsData);
+        setPriceData(parsedPriceData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading CSV files:", err);
@@ -472,7 +576,7 @@ const UniversityComparison = () => {
             ];
 
       // Prepare chart data
-      const chart = prepareChartData(limitedForChart, year, metric);
+      const chart = prepareChartData(limitedForChart, year, metric, priceData);
       setChartData(chart);
     } else {
       setSimilarPrograms([]);

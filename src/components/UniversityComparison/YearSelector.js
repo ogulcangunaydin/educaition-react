@@ -2,7 +2,7 @@ import React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
 const YearSelector = ({ value, onChange, disabled = false }) => {
-  const years = ["2022", "2023", "2024"];
+  const years = ["2022", "2023", "2024", "2025"];
 
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>

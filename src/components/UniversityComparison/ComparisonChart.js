@@ -128,7 +128,7 @@ const ComparisonChart = ({
   };
 
   // Prepare data for floating bar chart showing only min-max ranges
-  // Using floating bars: [min, max] creates a bar from min to max value
+  // Plus a second dataset for price bars on secondary Y-axis
   const datasets = [
     {
       label:
@@ -148,6 +148,19 @@ const ComparisonChart = ({
       borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
       borderWidth: 2,
       borderSkipped: false,
+      yAxisID: "y",
+      barPercentage: 0.8,
+      categoryPercentage: 0.9,
+    },
+    {
+      label: "Yıllık Ücret (TL)",
+      data: chartData.pricePoints || [],
+      backgroundColor: "rgba(75, 192, 192, 0.6)",
+      borderColor: "rgba(75, 192, 192, 1)",
+      borderWidth: 2,
+      yAxisID: "y1",
+      barPercentage: 0.6,
+      categoryPercentage: 0.9,
     },
   ];
 
@@ -175,23 +188,35 @@ const ComparisonChart = ({
             return chartData.labels[context[0].dataIndex];
           },
           label: (context) => {
-            const dataPoint = chartData.dataPoints[context.dataIndex];
-            const metricLabel = metric === "ranking" ? "Sıralama" : "Puan";
-            const formatValue = (val) =>
-              metric === "ranking"
-                ? Math.round(val).toLocaleString("tr-TR")
-                : val.toLocaleString("tr-TR", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  });
-            const spread = dataPoint.max - dataPoint.min;
-            const fulfillmentRate = dataPoint.fulfillmentRate || 100;
-            return [
-              `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
-              `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
-              `Fark: ${formatValue(spread)}`,
-              `Doluluk: %${Math.round(fulfillmentRate)}`,
-            ];
+            const dataIndex = context.dataIndex;
+            const datasetIndex = context.datasetIndex;
+
+            if (datasetIndex === 0) {
+              // First dataset: range bars
+              const dataPoint = chartData.dataPoints[dataIndex];
+              const metricLabel = metric === "ranking" ? "Sıralama" : "Puan";
+              const formatValue = (val) =>
+                metric === "ranking"
+                  ? Math.round(val).toLocaleString("tr-TR")
+                  : val.toLocaleString("tr-TR", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    });
+              const spread = dataPoint.max - dataPoint.min;
+              const fulfillmentRate = dataPoint.fulfillmentRate || 100;
+              const price = chartData.pricePoints?.[dataIndex] || 0;
+              return [
+                `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
+                `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
+                `Fark: ${formatValue(spread)}`,
+                `Doluluk: %${Math.round(fulfillmentRate)}`,
+                `Ücret: ${price.toLocaleString("tr-TR")} ₺`,
+              ];
+            } else {
+              // Second dataset: price bars
+              const price = context.parsed.y;
+              return `Yıllık Ücret: ${price.toLocaleString("tr-TR")} ₺`;
+            }
           },
         },
       },
@@ -230,12 +255,34 @@ const ComparisonChart = ({
         },
       },
       y: {
+        type: "linear",
+        display: true,
+        position: "left",
         title: {
           display: true,
           text: metric === "ranking" ? "Başarı Sıralaması" : "Puan",
         },
         beginAtZero: false,
         reverse: metric === "ranking", // Reverse Y-axis for ranking so lower numbers appear at top
+      },
+      y1: {
+        type: "linear",
+        display: true,
+        position: "right",
+        title: {
+          display: true,
+          text: "Yıllık Ücret (TL)",
+        },
+        beginAtZero: true,
+        grid: {
+          drawOnChartArea: false, // Only draw grid lines for the left axis
+        },
+        ticks: {
+          callback: function (value) {
+            // Format price with thousands separator
+            return value.toLocaleString("tr-TR") + " ₺";
+          },
+        },
       },
     },
   };

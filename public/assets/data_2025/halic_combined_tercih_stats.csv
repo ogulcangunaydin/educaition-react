@@ -1,0 +1,109 @@
+yop_kodu,year,program,scholarship,puan_type,faculty,ortalama_tercih_edilme_sirasi_A,ortalama_yerlesen_tercih_sirasi_B,marka_etkinlik_degeri_A_div_B
+201990481,2025,Bilgisayar Mühendisliği,Burslu,say,Mühendislik Fakültesi,8.8,6.4,1.38
+201990477,2025,Endüstri Mühendisliği,Burslu,say,Mühendislik Fakültesi,9.6,10.4,0.92
+201990507,2025,Yazılım Mühendisliği,Burslu,say,Mühendislik Fakültesi,9.8,6.3,1.56
+201990483,2025,Elektrik-Elektronik Mühendisliği,Burslu,say,Mühendislik Fakültesi,11.3,12.4,0.91
+201990479,2025,Makine Mühendisliği,Burslu,say,Mühendislik Fakültesi,11.7,11.7,1.0
+201910218,2025,Mimarlık,Burslu,say,Mimarlık Fakültesi,10.1,9.8,1.03
+201990475,2025,Moleküler Biyoloji ve Genetik,Burslu,say,Fen-Edebiyat Fakültesi,9.5,8.1,1.17
+201990559,2025,Dijital Oyun Tasarımı,Burslu,say,Güzel Sanatlar Fakültesi,9.0,7.0,1.29
+201910306,2025,Hemşirelik,Burslu,say,Sağlık Bilimleri Fakültesi,10.9,8.4,1.3
+201990515,2025,Hemşirelik,Burslu,say,Sağlık Bilimleri Fakültesi,11.3,9.7,1.16
+201990496,2025,Endüstriyel Tasarım,Burslu,say,Mimarlık Fakültesi,11.1,9.8,1.13
+201910103,2025,Matematik,Burslu,say,Fen-Edebiyat Fakültesi,10.5,6.6,1.59
+201910324,2025,Beslenme ve Diyetetik,Burslu,say,Sağlık Bilimleri Fakültesi,10.2,11.7,0.87
+201990505,2025,Beslenme ve Diyetetik,Burslu,say,Sağlık Bilimleri Fakültesi,10.2,6.0,1.7
+201910351,2025,Ebelik,Burslu,say,Sağlık Bilimleri Fakültesi,10.5,10.7,0.98
+201990487,2025,Fizyoterapi ve Rehabilitasyon,Burslu,say,Sağlık Bilimleri Fakültesi,11.6,9.0,1.29
+201910387,2025,Fizyoterapi ve Rehabilitasyon,Burslu,say,Sağlık Bilimleri Fakültesi,10.7,10.6,1.01
+201991014,2025,Hemşirelik,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,6.0,1.2,5.0
+201990972,2025,Ebelik,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,6.6,1.8,3.67
+201990944,2025,Beslenme ve Diyetetik,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,7.3,1.5,4.87
+201990846,2025,Endüstriyel Tasarım,%25 İndirimli,say,Mimarlık Fakültesi,6.0,1.4,4.29
+201991007,2025,Hemşirelik,Ücretli,say,Sağlık Bilimleri Fakültesi,6.6,2.1,3.14
+201990986,2025,Fizyoterapi ve Rehabilitasyon,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,6.7,1.9,3.53
+201990769,2025,Dijital Oyun Tasarımı,Ücretli,say,Güzel Sanatlar Fakültesi,9.4,9.7,0.97
+201991028,2025,Hemşirelik,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,7.0,2.5,2.8
+201990965,2025,Ebelik,Ücretli,say,Sağlık Bilimleri Fakültesi,8.6,5.1,1.69
+201991021,2025,Hemşirelik,Ücretli,say,Sağlık Bilimleri Fakültesi,9.1,4.9,1.86
+201990958,2025,Beslenme ve Diyetetik,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,8.2,1.7,4.82
+201990776,2025,Dijital Oyun Tasarımı,%25 İndirimli,say,Güzel Sanatlar Fakültesi,7.0,1.3,5.38
+201990937,2025,Beslenme ve Diyetetik,Ücretli,say,Sağlık Bilimleri Fakültesi,8.7,3.4,2.56
+201990881,2025,Bilgisayar Mühendisliği,%25 İndirimli,say,Mühendislik Fakültesi,7.1,1.2,5.92
+201991560,2025,Dil ve Konuşma Terapisi,Burslu,say,Sağlık Bilimleri Fakültesi,7.7,11.5,0.67
+201991574,2025,Dil ve Konuşma Terapisi,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,6.4,2.7,2.37
+201991567,2025,Dil ve Konuşma Terapisi,Ücretli,say,Sağlık Bilimleri Fakültesi,8.3,2.8,2.96
+201990895,2025,Elektrik-Elektronik Mühendisliği,%25 İndirimli,say,Mühendislik Fakültesi,7.2,2.2,3.27
+201990909,2025,Endüstri Mühendisliği,%25 İndirimli,say,Mühendislik Fakültesi,5.9,2.7,2.19
+201990839,2025,Endüstriyel Tasarım,Ücretli,say,Mimarlık Fakültesi,8.4,2.3,3.65
+201990979,2025,Fizyoterapi ve Rehabilitasyon,Ücretli,say,Sağlık Bilimleri Fakültesi,9.0,2.8,3.21
+201991000,2025,Fizyoterapi ve Rehabilitasyon,%25 İndirimli,say,Sağlık Bilimleri Fakültesi,7.1,2.4,2.96
+201990480,2025,Makine Mühendisliği,%50 İndirimli,say,Mühendislik Fakültesi,7.5,3.0,2.5
+201910527,2025,Matematik,%25 İndirimli,say,Fen-Edebiyat Fakültesi,8.1,1.4,5.79
+201910606,2025,Mimarlık,%50 İndirimli,say,Mimarlık Fakültesi,7.0,2.9,2.41
+201910042,2025,Moleküler Biyoloji ve Genetik,Burslu,say,Fen-Edebiyat Fakültesi,8.2,6.9,1.19
+201990741,2025,Moleküler Biyoloji ve Genetik,%25 İndirimli,say,Fen-Edebiyat Fakültesi,6.7,1.9,3.53
+201910493,2025,Moleküler Biyoloji ve Genetik,%25 İndirimli,say,Fen-Edebiyat Fakültesi,7.0,1.4,5.0
+201910033,2025,Moleküler Biyoloji ve Genetik,Ücretli,say,Fen-Edebiyat Fakültesi,12.5,4.0,3.12
+201990552,2025,Tıp,%50 İndirimli,say,Tıp Fakültesi,11.0,5.2,2.12
+201990530,2025,Tıp,Burslu,say,Tıp Fakültesi,9.4,6.0,1.57
+201911119,2025,Tıp,%25 İndirimli,say,Tıp Fakültesi,10.0,3.7,2.7
+201911094,2025,Tıp,Burslu,say,Tıp Fakültesi,9.2,8.1,1.14
+201911085,2025,Tıp,Ücretli,say,Tıp Fakültesi,14.7,5.8,2.53
+201990930,2025,Yazılım Mühendisliği,%25 İndirimli,say,Mühendislik Fakültesi,7.7,2.5,3.08
+201990499,2025,Yönetim Bilişim Sistemleri,Burslu,ea,İşletme Fakültesi,9.3,8.3,1.12
+201990501,2025,Psikoloji,Burslu,ea,Fen-Edebiyat Fakültesi,9.8,9.6,1.02
+201910087,2025,Psikoloji,Burslu,ea,Fen-Edebiyat Fakültesi,8.7,6.1,1.43
+201910157,2025,İşletme,Burslu,ea,İşletme Fakültesi,9.9,9.6,1.03
+201990485,2025,Uluslararası Ticaret ve İşletmecilik,Burslu,ea,İşletme Fakültesi,8.6,8.8,0.98
+201990853,2025,İç Mimarlık ve Çevre Tasarımı,Burslu,ea,Mimarlık Fakültesi,8.3,4.3,1.93
+201910139,2025,İşletme,Burslu,ea,İşletme Fakültesi,10.2,7.4,1.38
+201910642,2025,Siyaset Bilimi ve Uluslararası İlişkiler,Burslu,ea,İşletme Fakültesi,11.1,8.8,1.26
+201910915,2025,Psikoloji,%25 İndirimli,ea,Fen-Edebiyat Fakültesi,5.3,1.5,3.53
+201990832,2025,Yönetim Bilişim Sistemleri,%25 İndirimli,ea,İşletme Fakültesi,5.2,1.4,3.71
+201990527,2025,Psikoloji,%25 İndirimli,ea,Fen-Edebiyat Fakültesi,5.8,1.3,4.46
+201910078,2025,Psikoloji,Ücretli,ea,Fen-Edebiyat Fakültesi,7.4,1.6,4.62
+201990825,2025,Yönetim Bilişim Sistemleri,Ücretli,ea,İşletme Fakültesi,6.8,1.9,3.58
+201990526,2025,Psikoloji,Ücretli,ea,Fen-Edebiyat Fakültesi,6.1,1.1,5.55
+201990867,2025,İç Mimarlık ve Çevre Tasarımı,%25 İndirimli,ea,Mimarlık Fakültesi,6.0,1.4,4.29
+201990818,2025,Uluslararası Ticaret ve İşletmecilik,%25 İndirimli,ea,İşletme Fakültesi,6.3,1.7,3.71
+201910748,2025,İşletme,%25 İndirimli,ea,İşletme Fakültesi,6.9,1.8,3.83
+201990860,2025,İç Mimarlık ve Çevre Tasarımı,Ücretli,ea,Mimarlık Fakültesi,8.2,2.6,3.15
+201910669,2025,İşletme,%25 İndirimli,ea,İşletme Fakültesi,6.1,1.8,3.39
+201990811,2025,Uluslararası Ticaret ve İşletmecilik,Ücretli,ea,İşletme Fakültesi,8.5,2.4,3.54
+201910121,2025,İşletme,Ücretli,ea,İşletme Fakültesi,8.9,2.9,3.07
+201910148,2025,İşletme,Ücretli,ea,İşletme Fakültesi,10.5,3.3,3.18
+201910633,2025,Siyaset Bilimi ve Uluslararası İlişkiler,Ücretli,ea,İşletme Fakültesi,9.8,1.0,9.8
+201991609,2025,Ekonomi,%25 İndirimli,ea,İşletme Fakültesi,7.5,2.6,2.88
+201991602,2025,Ekonomi,Ücretli,ea,İşletme Fakültesi,10.5,4.0,2.62
+201991595,2025,Ekonomi,Burslu,ea,İşletme Fakültesi,9.0,10.1,0.89
+201990385,2025,Grafik Tasarımı,%25 İndirimli,ea,Güzel Sanatlar Fakültesi,5.7,3.6,1.58
+201991105,2025,Grafik Tasarımı,Ücretli,ea,Güzel Sanatlar Fakültesi,7.6,5.3,1.43
+201990225,2025,Grafik Tasarımı,Burslu,ea,Güzel Sanatlar Fakültesi,9.0,3.8,2.37
+201991616,2025,Lojistik Yönetimi,Burslu,ea,İşletme Fakültesi,8.9,7.5,1.19
+201991630,2025,Lojistik Yönetimi,%25 İndirimli,ea,İşletme Fakültesi,7.6,1.3,5.85
+201910703,2025,Siyaset Bilimi ve Uluslararası İlişkiler,%25 İndirimli,ea,İşletme Fakültesi,6.5,2.1,3.1
+201991042,2025,Spor Yöneticiliği,%25 İndirimli,ea,Spor Bilimleri Fakültesi,10.6,7.0,1.51
+201991077,2025,Spor Yöneticiliği,Ücretli,ea,Spor Bilimleri Fakültesi,10.1,6.5,1.55
+201991119,2025,Spor Yöneticiliği,Burslu,ea,Spor Bilimleri Fakültesi,8.0,5.0,1.6
+201991126,2025,Spor Yöneticiliği,Burslu,ea,Spor Bilimleri Fakültesi,6.7,6.0,1.12
+201991154,2025,Spor Yöneticiliği,%25 İndirimli,ea,Spor Bilimleri Fakültesi,7.9,3.2,2.47
+201990234,2025,Tekstil ve Moda Tasarımı,Burslu,ea,Güzel Sanatlar Fakültesi,7.0,4.1,1.71
+201990394,2025,Tekstil ve Moda Tasarımı,%25 İndirimli,ea,Güzel Sanatlar Fakültesi,6.5,2.5,2.6
+201990513,2025,Gastronomi ve Mutfak Sanatları,Burslu,söz,Güzel Sanatlar Fakültesi,7.4,3.1,2.39
+201990511,2025,Çizgi Film ve Animasyon,Burslu,söz,Güzel Sanatlar Fakültesi,6.9,2.8,2.46
+201990528,2025,Görsel İletişim Tasarımı,Burslu,söz,Güzel Sanatlar Fakültesi,8.7,5.5,1.58
+201910863,2025,Türk Dili ve Edebiyatı,Burslu,söz,Fen-Edebiyat Fakültesi,9.1,4.3,2.12
+201910439,2025,Halkla İlişkiler ve Tanıtım,Burslu,söz,İşletme Fakültesi,8.6,6.0,1.43
+201990762,2025,Çizgi Film ve Animasyon,%25 İndirimli,söz,Güzel Sanatlar Fakültesi,5.4,2.1,2.57
+201990790,2025,Gastronomi ve Mutfak Sanatları,%25 İndirimli,söz,Güzel Sanatlar Fakültesi,6.2,1.7,3.65
+201990804,2025,Görsel İletişim Tasarımı,%25 İndirimli,söz,Güzel Sanatlar Fakültesi,7.2,1.0,7.2
+201910696,2025,Halkla İlişkiler ve Tanıtım,%25 İndirimli,söz,İşletme Fakültesi,7.9,1.4,5.64
+201991588,2025,Tarih,Burslu,söz,Fen-Edebiyat Fakültesi,8.8,6.7,1.31
+201910872,2025,Türk Dili ve Edebiyatı,%50 İndirimli,söz,Fen-Edebiyat Fakültesi,8.6,4.5,1.91
+201990497,2025,İngilizce Mütercim ve Tercümanlık,Burslu,dil,Fen-Edebiyat Fakültesi,8.5,5.4,1.57
+201910024,2025,Amerikan Kültürü ve Edebiyatı,Burslu,dil,Fen-Edebiyat Fakültesi,9.5,6.2,1.53
+201990727,2025,İngilizce Mütercim ve Tercümanlık,%25 İndirimli,dil,Fen-Edebiyat Fakültesi,5.3,1.2,4.42
+201990720,2025,İngilizce Mütercim ve Tercümanlık,Ücretli,dil,Fen-Edebiyat Fakültesi,10.5,1.3,8.08
+201910015,2025,Amerikan Kültürü ve Edebiyatı,Ücretli,dil,Fen-Edebiyat Fakültesi,7.3,2.0,3.65
+201910509,2025,Amerikan Kültürü ve Edebiyatı,%50 İndirimli,dil,Fen-Edebiyat Fakültesi,5.6,2.1,2.67

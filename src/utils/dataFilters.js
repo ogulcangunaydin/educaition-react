@@ -74,6 +74,11 @@ export const findSimilarPrograms = (
     let progMin = program[minColumn];
     let progMax = program[maxColumn];
 
+    // Handle "Dolmadı" cases: if min is null but max exists, use max for both
+    if (progMin === null && progMax !== null) {
+      progMin = progMax;
+    }
+
     if (progMin === null || progMax === null) return false;
 
     // Ensure progMin is actually smaller than progMax (data might be inconsistent)
@@ -112,8 +117,27 @@ export const groupProgramsByUniversity = (programs) => {
 /**
  * Prepare chart data for box and whisker plot
  */
-export const prepareChartData = (programs, year, metric) => {
+export const prepareChartData = (programs, year, metric, priceData = []) => {
   if (!programs || programs.length === 0) return null;
+
+  // Create a map for quick price lookup by yop_kodu and scholarship_pct
+  // Normalize yop_kodu by removing .0 suffix if present
+  const priceMap = new Map();
+  priceData.forEach((price) => {
+    if (!price.yop_kodu) return; // Skip entries without yop_kodu
+
+    // Normalize yop_kodu: convert to number then back to string to remove trailing .0
+    let normalizedYopKodu = price.yop_kodu;
+    if (normalizedYopKodu.includes(".")) {
+      const numValue = parseFloat(normalizedYopKodu);
+      if (!isNaN(numValue)) {
+        normalizedYopKodu = Math.round(numValue).toString();
+      }
+    }
+
+    const key = `${normalizedYopKodu}_${price.scholarship_pct}`;
+    priceMap.set(key, price.discounted_price);
+  });
 
   // For RANKING: tavan_bs is BEST (lower number = min), tbs is WORST (higher number = max)
   // For SCORE: taban is min, tavan is max
@@ -122,6 +146,7 @@ export const prepareChartData = (programs, year, metric) => {
 
   const labels = [];
   const dataPoints = [];
+  const pricePoints = [];
   const colors = [];
 
   // Color scheme for university types
@@ -139,6 +164,10 @@ export const prepareChartData = (programs, year, metric) => {
     .map((program) => {
       let min = program[minColumn];
       let max = program[maxColumn];
+
+      // Check if this program had "Dolmadı" (not filled) status
+      // The parser already filled min with max value in such cases
+      const minWasFilled = program[`${minColumn}_filled`] === true;
 
       if (min === null || max === null) return null;
 
@@ -165,6 +194,7 @@ export const prepareChartData = (programs, year, metric) => {
         originalMin,
         originalMax,
         isSingleStudent,
+        minWasFilled, // Track if min was filled from max due to "Dolmadı"
       };
     })
     .filter((item) => item !== null);
@@ -207,6 +237,40 @@ export const prepareChartData = (programs, year, metric) => {
   // Build chart data
   departmentItems.forEach((item) => {
     labels.push(item.label);
+
+    // Get price for this program (match by yop_kodu and scholarship_pct)
+    let yopKodu = item.program.yop_kodu;
+
+    // Normalize yop_kodu to match the price map format
+    if (yopKodu && typeof yopKodu === "string" && yopKodu.includes(".")) {
+      const numValue = parseFloat(yopKodu);
+      if (!isNaN(numValue)) {
+        yopKodu = Math.round(numValue).toString();
+      }
+    } else if (yopKodu && typeof yopKodu === "number") {
+      yopKodu = Math.round(yopKodu).toString();
+    }
+
+    const scholarship = item.program.scholarship || "Ücretli";
+    let scholarshipPct = 0;
+
+    // Parse scholarship percentage from text
+    if (scholarship.includes("100") || scholarship.includes("Tam Burslu")) {
+      scholarshipPct = 100;
+    } else if (scholarship.includes("75")) {
+      scholarshipPct = 75;
+    } else if (
+      scholarship.includes("50") ||
+      scholarship.includes("Yarım Burslu")
+    ) {
+      scholarshipPct = 50;
+    } else if (scholarship.includes("25")) {
+      scholarshipPct = 25;
+    }
+
+    const priceKey = `${yopKodu}_${scholarshipPct}`;
+    const price = priceMap.get(priceKey) || 0;
+
     dataPoints.push({
       min: item.min,
       q1: item.min,
@@ -216,6 +280,8 @@ export const prepareChartData = (programs, year, metric) => {
       programs: [item.program],
       fulfillmentRate: item.fulfillmentRate,
     });
+
+    pricePoints.push(price);
 
     // Use special color for Haliç University, otherwise use type-based color
     if (item.university === "HALİÇ ÜNİVERSİTESİ") {
@@ -228,6 +294,7 @@ export const prepareChartData = (programs, year, metric) => {
   return {
     labels,
     dataPoints,
+    pricePoints,
     colors,
     sortedPrograms: departmentItems.map((item) => item.program), // All programs in chart order
   };

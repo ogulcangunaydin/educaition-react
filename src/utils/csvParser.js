@@ -50,14 +50,35 @@ export const parseCSVRow = (row) => {
   const parsed = { ...row };
 
   // Parse numeric fields for all years
-  ["2022", "2023", "2024"].forEach((year) => {
+  ["2022", "2023", "2024", "2025"].forEach((year) => {
     parsed[`kontenjan_${year}`] = parseScore(row[`kontenjan_${year}`]);
+
     // Scores use comma as decimal separator
-    parsed[`taban_${year}`] = parseScore(row[`taban_${year}`]);
-    parsed[`tavan_${year}`] = parseScore(row[`tavan_${year}`]);
+    const tabanValue = parseScore(row[`taban_${year}`]);
+    const tavanValue = parseScore(row[`tavan_${year}`]);
+
     // Rankings use dot as thousand separator
-    parsed[`tavan_bs_${year}`] = parseRanking(row[`tavan_bs_${year}`]);
-    parsed[`tbs_${year}`] = parseRanking(row[`tbs_${year}`]);
+    const tavanBsValue = parseRanking(row[`tavan_bs_${year}`]);
+    const tbsValue = parseRanking(row[`tbs_${year}`]);
+
+    // Handle "Dolmadı" cases: if min is null but max exists, use max for min
+    // and track this with a remark
+    if (tabanValue === null && tavanValue !== null) {
+      parsed[`taban_${year}`] = tavanValue;
+      parsed[`taban_${year}_filled`] = true; // Mark that this was filled
+    } else {
+      parsed[`taban_${year}`] = tabanValue;
+    }
+
+    if (tbsValue === null && tavanBsValue !== null) {
+      parsed[`tbs_${year}`] = tavanBsValue;
+      parsed[`tbs_${year}_filled`] = true; // Mark that this was filled
+    } else {
+      parsed[`tbs_${year}`] = tbsValue;
+    }
+
+    parsed[`tavan_${year}`] = tavanValue;
+    parsed[`tavan_bs_${year}`] = tavanBsValue;
     parsed[`yerlesen_${year}`] = parseScore(row[`yerlesen_${year}`]);
   });
 
@@ -65,6 +86,7 @@ export const parseCSVRow = (row) => {
   parsed.has_2022 = row.has_2022 === "True";
   parsed.has_2023 = row.has_2023 === "True";
   parsed.has_2024 = row.has_2024 === "True";
+  parsed.has_2025 = row.has_2025 === "True";
 
   parsed.years_with_data = parseInt(row.years_with_data) || 0;
 

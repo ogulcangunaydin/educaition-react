@@ -13,6 +13,7 @@ import {
   Box,
   Checkbox,
   Button,
+  Tooltip,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { formatScore, formatRanking } from "../../utils/csvParser";
@@ -378,7 +379,34 @@ const DepartmentList = ({ programs, year, metric }) => {
                 {metric === "score" && (
                   <>
                     <TableCell align="right">
-                      {formatScore(program[`taban_${year}`])}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-end",
+                          gap: 0.5,
+                        }}
+                      >
+                        {formatScore(program[`taban_${year}`])}
+                        {program[`taban_${year}_filled`] && (
+                          <Tooltip
+                            title="Dolmadı - Tavan puanı gösteriliyor"
+                            arrow
+                          >
+                            <Typography
+                              component="span"
+                              sx={{
+                                color: "warning.main",
+                                fontSize: "1rem",
+                                fontWeight: "bold",
+                                cursor: "help",
+                              }}
+                            >
+                              ※
+                            </Typography>
+                          </Tooltip>
+                        )}
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
                       {formatScore(program[`tavan_${year}`])}
@@ -388,7 +416,34 @@ const DepartmentList = ({ programs, year, metric }) => {
                 {metric === "ranking" && (
                   <>
                     <TableCell align="right">
-                      {formatRanking(program[`tbs_${year}`])}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "flex-end",
+                          gap: 0.5,
+                        }}
+                      >
+                        {formatRanking(program[`tbs_${year}`])}
+                        {program[`tbs_${year}_filled`] && (
+                          <Tooltip
+                            title="Dolmadı - Tavan sıralama gösteriliyor"
+                            arrow
+                          >
+                            <Typography
+                              component="span"
+                              sx={{
+                                color: "warning.main",
+                                fontSize: "1rem",
+                                fontWeight: "bold",
+                                cursor: "help",
+                              }}
+                            >
+                              ※
+                            </Typography>
+                          </Tooltip>
+                        )}
+                      </Box>
                     </TableCell>
                     <TableCell align="right">
                       {formatRanking(program[`tavan_bs_${year}`])}
