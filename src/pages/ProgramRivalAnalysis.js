@@ -16,15 +16,12 @@ import {
   Chip,
   TableSortLabel,
 } from "@mui/material";
-import { Download, ArrowBack } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
+import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
-  const navigate = useNavigate();
-
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rivalData, setRivalData] = useState([]);
@@ -268,13 +265,6 @@ const ProgramRivalAnalysis = () => {
               Program seçilmemiş. Lütfen önce Üniversite Karşılaştırma
               sayfasından program seçiniz.
             </Alert>
-            <Button
-              variant="contained"
-              startIcon={<ArrowBack />}
-              onClick={() => navigate("/university-comparison")}
-            >
-              Üniversite Karşılaştırma'ya Dön
-            </Button>
           </Paper>
         </Container>
       </>

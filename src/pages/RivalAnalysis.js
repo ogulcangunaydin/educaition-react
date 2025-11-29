@@ -17,13 +17,11 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
 
 const RivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
-  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -279,13 +277,6 @@ const RivalAnalysis = () => {
             <Typography>
               Rakip analizi için önce program seçmeniz gerekiyor.
             </Typography>
-            <Button
-              variant="outlined"
-              onClick={() => navigate("/university-comparison")}
-              sx={{ mt: 2 }}
-            >
-              Program Karşılaştırmaya Dön
-            </Button>
           </Alert>
         </Container>
       </>
