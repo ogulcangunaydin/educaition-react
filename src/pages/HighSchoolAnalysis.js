@@ -15,7 +15,7 @@ import {
   TableRow,
   Chip,
 } from "@mui/material";
-import { Download, ArrowBack } from "@mui/icons-material";
+import { Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
@@ -56,20 +56,47 @@ const HighSchoolAnalysis = () => {
   useEffect(() => {
     const loadLiseMapping = async () => {
       try {
-        const response = await fetch("/assets/data/lise_mapping.csv");
-        if (!response.ok) throw new Error("Failed to load lise mapping");
+        // Load from both folders
+        const [response1, response2] = await Promise.all([
+          fetch("/assets/data/lise_mapping.csv"),
+          fetch("/assets/data_2025/lise_mapping.csv"),
+        ]);
 
-        const text = await response.text();
-        const lines = text.trim().split("\n");
+        if (!response1.ok && !response2.ok)
+          throw new Error("Failed to load lise mapping");
+
         const mapping = {};
 
-        for (let i = 1; i < lines.length; i++) {
-          const parts = lines[i].split(",");
-          if (parts.length >= 3) {
-            const lise_id = parts[2];
-            const lise_adi = parts[0];
-            const sehir = parts[1];
-            mapping[lise_id] = { lise_adi, sehir };
+        // Process first file if available
+        if (response1.ok) {
+          const text1 = await response1.text();
+          const lines1 = text1.trim().split("\n");
+          for (let i = 1; i < lines1.length; i++) {
+            const parts = lines1[i].split(",");
+            if (parts.length >= 3) {
+              const lise_id = parts[2];
+              const lise_adi = parts[0];
+              const sehir = parts[1];
+              mapping[lise_id] = { lise_adi, sehir };
+            }
+          }
+        }
+
+        // Process second file if available (2025 data may have additional schools)
+        if (response2.ok) {
+          const text2 = await response2.text();
+          const lines2 = text2.trim().split("\n");
+          for (let i = 1; i < lines2.length; i++) {
+            const parts = lines2[i].split(",");
+            if (parts.length >= 3) {
+              const lise_id = parts[2];
+              const lise_adi = parts[0];
+              const sehir = parts[1];
+              // Don't overwrite if already exists from first file
+              if (!mapping[lise_id]) {
+                mapping[lise_id] = { lise_adi, sehir };
+              }
+            }
           }
         }
 
@@ -99,13 +126,31 @@ const HighSchoolAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
-          "/assets/data/all_universities_lise_bazinda_yerlesen.csv"
-        );
-        if (!response.ok) throw new Error("Failed to load high school data");
+        // Load from both folders
+        const [response1, response2] = await Promise.all([
+          fetch("/assets/data/all_universities_lise_bazinda_yerlesen.csv"),
+          fetch("/assets/data_2025/all_universities_lise_bazinda_yerlesen.csv"),
+        ]);
 
-        const text = await response.text();
-        const lines = text.trim().split("\n");
+        if (!response1.ok && !response2.ok)
+          throw new Error("Failed to load high school data");
+
+        const allLines = [];
+
+        // Combine lines from both files
+        if (response1.ok) {
+          const text1 = await response1.text();
+          const lines1 = text1.trim().split("\n");
+          allLines.push(...lines1.slice(1)); // Skip header
+        }
+
+        if (response2.ok) {
+          const text2 = await response2.text();
+          const lines2 = text2.trim().split("\n");
+          allLines.push(...lines2.slice(1)); // Skip header
+        }
+
+        const lines = allLines;
 
         // Get program codes
         const programCodes = new Set(selectedPrograms.map((p) => p.yop_kodu));
@@ -115,7 +160,7 @@ const HighSchoolAnalysis = () => {
 
         // Process in chunks to avoid blocking
         const chunkSize = 10000;
-        for (let i = 1; i < lines.length; i += chunkSize) {
+        for (let i = 0; i < lines.length; i += chunkSize) {
           const chunk = lines.slice(i, Math.min(i + chunkSize, lines.length));
 
           for (const line of chunk) {
@@ -246,12 +291,6 @@ const HighSchoolAnalysis = () => {
             mb: 3,
           }}
         >
-          <Button
-            startIcon={<ArrowBack />}
-            onClick={() => navigate("/university-comparison")}
-          >
-            Geri Dön
-          </Button>
           <Box>
             <Chip
               label={`${selectedPrograms.length} program`}

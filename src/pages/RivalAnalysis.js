@@ -16,7 +16,7 @@ import {
   Chip,
   TableSortLabel,
 } from "@mui/material";
-import { Download, ArrowBack } from "@mui/icons-material";
+import { Download } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
@@ -43,66 +43,121 @@ const RivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        const response = await fetch(
-          "/assets/data/all_universities_combined_tercih_stats.csv"
+        // Load from both folders
+        const [response1, response2] = await Promise.all([
+          fetch("/assets/data/all_universities_combined_tercih_stats.csv"),
+          fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
+        ]);
+
+        if (!response1.ok && !response2.ok)
+          throw new Error("Failed to load rival data");
+
+        const allLines = [];
+
+        // Combine lines from both files
+        if (response1.ok) {
+          const text1 = await response1.text();
+          const lines1 = text1.trim().split("\n");
+          allLines.push(...lines1.slice(1)); // Skip header
+        }
+
+        if (response2.ok) {
+          const text2 = await response2.text();
+          const lines2 = text2.trim().split("\n");
+          allLines.push(...lines2.slice(1)); // Skip header
+        }
+
+        const lines = allLines;
+
+        console.log("[RivalAnalysis] Total CSV lines:", lines.length);
+        console.log("[RivalAnalysis] Selected year:", selectedYear);
+        console.log(
+          "[RivalAnalysis] Selected programs:",
+          selectedPrograms.length
         );
-        if (!response.ok) throw new Error("Failed to load rival data");
+        console.log(
+          "[RivalAnalysis] First selected program:",
+          selectedPrograms[0]
+        );
 
-        const text = await response.text();
-        const lines = text.trim().split("\n");
-
-        // Get program codes
-        const programCodes = new Set(selectedPrograms.map((p) => p.yop_kodu));
-
-        // Parse and aggregate data by university
-        const universityData = {};
-
-        for (let i = 1; i < lines.length; i++) {
+        // Parse CSV data into a map for quick lookup by yop_kodu
+        const csvDataMap = new Map();
+        for (let i = 0; i < lines.length; i++) {
           const parts = lines[i].split(",");
           if (parts.length >= 5) {
             const yop_kodu = parts[0];
             const year = parts[1];
 
-            // Filter by selected programs and year
-            if (programCodes.has(yop_kodu) && year === String(selectedYear)) {
-              const ortalama_tercih_edilme = parseFloat(parts[2]);
-              const ortalama_yerlesen_tercih = parseFloat(parts[3]);
-              const marka_etkinlik = parseFloat(parts[4]);
-
-              const program = selectedPrograms.find(
-                (p) => p.yop_kodu === yop_kodu
-              );
-
-              if (program) {
-                const university = program.university;
-                const city = program.city;
-
-                if (!universityData[university]) {
-                  universityData[university] = {
-                    university,
-                    city,
-                    programCount: 0,
-                    totalTercihEdilme: 0,
-                    totalYerlesenTercih: 0,
-                    totalMarkaEtkinlik: 0,
-                    programs: [],
-                  };
-                }
-
-                universityData[university].programCount += 1;
-                universityData[university].totalTercihEdilme +=
-                  ortalama_tercih_edilme;
-                universityData[university].totalYerlesenTercih +=
-                  ortalama_yerlesen_tercih;
-                universityData[university].totalMarkaEtkinlik += marka_etkinlik;
-                universityData[university].programs.push({
-                  program: program.program || program.department,
-                  yop_kodu,
-                });
-              }
+            // Only include data for the selected year
+            if (year === String(selectedYear)) {
+              csvDataMap.set(yop_kodu, {
+                ortalama_tercih_edilme: parseFloat(parts[2]),
+                ortalama_yerlesen_tercih: parseFloat(parts[3]),
+                marka_etkinlik: parseFloat(parts[4]),
+              });
             }
           }
         }
+
+        console.log("[RivalAnalysis] CSV data map size:", csvDataMap.size);
+        console.log(
+          "[RivalAnalysis] First program yop_kodu:",
+          selectedPrograms[0]?.yop_kodu
+        );
+        console.log(
+          "[RivalAnalysis] CSV has this yop_kodu?",
+          csvDataMap.has(selectedPrograms[0]?.yop_kodu)
+        );
+
+        // Aggregate data by university for all selected programs
+        const universityData = {};
+        let matchedCount = 0;
+        for (const program of selectedPrograms) {
+          const csvData = csvDataMap.get(program.yop_kodu);
+
+          if (csvData) {
+            matchedCount++;
+            const university = program.university;
+            const city = program.city;
+
+            if (!universityData[university]) {
+              universityData[university] = {
+                university,
+                city,
+                programCount: 0,
+                totalTercihEdilme: 0,
+                totalYerlesenTercih: 0,
+                totalMarkaEtkinlik: 0,
+                programs: [],
+              };
+            }
+
+            universityData[university].programCount += 1;
+            universityData[university].totalTercihEdilme +=
+              csvData.ortalama_tercih_edilme;
+            universityData[university].totalYerlesenTercih +=
+              csvData.ortalama_yerlesen_tercih;
+            universityData[university].totalMarkaEtkinlik +=
+              csvData.marka_etkinlik;
+            universityData[university].programs.push({
+              program: program.program || program.department,
+              yop_kodu: program.yop_kodu,
+              program_detail: program.program_detail || "",
+              scholarship: program.scholarship || "",
+            });
+          }
+        }
+
+        console.log(
+          "[RivalAnalysis] Matched programs:",
+          matchedCount,
+          "out of",
+          selectedPrograms.length
+        );
+        console.log(
+          "[RivalAnalysis] Universities found:",
+          Object.keys(universityData)
+        );
 
         // Calculate averages
         const data = Object.values(universityData).map((uni) => ({
@@ -249,12 +304,6 @@ const RivalAnalysis = () => {
             mb: 3,
           }}
         >
-          <Button
-            startIcon={<ArrowBack />}
-            onClick={() => navigate("/university-comparison")}
-          >
-            Geri Dön
-          </Button>
           <Box>
             <Chip
               label={`${selectedPrograms.length} program`}

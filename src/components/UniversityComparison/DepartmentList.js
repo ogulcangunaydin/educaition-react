@@ -15,7 +15,6 @@ import {
   Button,
   Tooltip,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { formatScore, formatRanking } from "../../utils/csvParser";
 import { formatProgramName } from "../../utils/dataFilters";
 import { useBasket } from "../../contexts/BasketContext";
@@ -26,7 +25,6 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
   );
   const [order, setOrder] = useState(metric === "ranking" ? "asc" : "desc");
   const { toggleProgram, isSelected, selectedPrograms, setYear } = useBasket();
-  const navigate = useNavigate();
 
   // Create price map once for performance
   const priceMap = React.useMemo(() => {
@@ -246,7 +244,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
               color="primary"
               onClick={() => {
                 setYear(year);
-                navigate("/highschool-analysis");
+                window.open("/highschool-analysis", "_blank");
               }}
               sx={{ mr: 1 }}
             >
@@ -257,10 +255,20 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
               color="secondary"
               onClick={() => {
                 setYear(year);
-                navigate("/rival-analysis");
+                window.open("/rival-analysis", "_blank");
               }}
             >
-              Rakip Analizi →
+              Üniversite Rakip Analizi →
+            </Button>
+            <Button
+              variant="contained"
+              color="info"
+              onClick={() => {
+                setYear(year);
+                window.open("/program-rival-analysis", "_blank");
+              }}
+            >
+              Program Rakip Analizi →
             </Button>
           </Box>
         )}

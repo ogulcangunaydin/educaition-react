@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const BasketContext = createContext();
 
@@ -11,8 +11,47 @@ export const useBasket = () => {
 };
 
 export const BasketProvider = ({ children }) => {
-  const [selectedPrograms, setSelectedPrograms] = useState([]);
-  const [selectedYear, setSelectedYear] = useState(null);
+  // Initialize from localStorage
+  const [selectedPrograms, setSelectedPrograms] = useState(() => {
+    try {
+      const saved = localStorage.getItem("selectedPrograms");
+      return saved ? JSON.parse(saved) : [];
+    } catch (error) {
+      console.error("Error loading selectedPrograms from localStorage:", error);
+      return [];
+    }
+  });
+
+  const [selectedYear, setSelectedYear] = useState(() => {
+    try {
+      const saved = localStorage.getItem("selectedYear");
+      return saved ? JSON.parse(saved) : null;
+    } catch (error) {
+      console.error("Error loading selectedYear from localStorage:", error);
+      return null;
+    }
+  });
+
+  // Save to localStorage whenever selectedPrograms changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        "selectedPrograms",
+        JSON.stringify(selectedPrograms)
+      );
+    } catch (error) {
+      console.error("Error saving selectedPrograms to localStorage:", error);
+    }
+  }, [selectedPrograms]);
+
+  // Save to localStorage whenever selectedYear changes
+  useEffect(() => {
+    try {
+      localStorage.setItem("selectedYear", JSON.stringify(selectedYear));
+    } catch (error) {
+      console.error("Error saving selectedYear to localStorage:", error);
+    }
+  }, [selectedYear]);
 
   const addProgram = (program) => {
     setSelectedPrograms((prev) => {
@@ -40,6 +79,7 @@ export const BasketProvider = ({ children }) => {
 
   const clearBasket = () => {
     setSelectedPrograms([]);
+    localStorage.removeItem("selectedPrograms");
   };
 
   const isSelected = (yop_kodu) => {
