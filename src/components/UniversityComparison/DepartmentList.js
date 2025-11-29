@@ -20,13 +20,37 @@ import { formatScore, formatRanking } from "../../utils/csvParser";
 import { formatProgramName } from "../../utils/dataFilters";
 import { useBasket } from "../../contexts/BasketContext";
 
-const DepartmentList = ({ programs, year, metric }) => {
+const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
   const [orderBy, setOrderBy] = useState(
     metric === "ranking" ? "tavan_bs" : "tavan"
   );
   const [order, setOrder] = useState(metric === "ranking" ? "asc" : "desc");
   const { toggleProgram, isSelected, selectedPrograms, setYear } = useBasket();
   const navigate = useNavigate();
+
+  // Create price map once for performance
+  const priceMap = React.useMemo(() => {
+    const map = new Map();
+    if (!priceData || priceData.length === 0) return map;
+
+    priceData.forEach((p) => {
+      let priceYopKodu = p.yop_kodu;
+      if (
+        priceYopKodu &&
+        typeof priceYopKodu === "string" &&
+        priceYopKodu.includes(".")
+      ) {
+        const numValue = parseFloat(priceYopKodu);
+        if (!isNaN(numValue)) {
+          priceYopKodu = Math.round(numValue).toString();
+        }
+      }
+      const key = `${priceYopKodu}_${p.scholarship_pct}`;
+      map.set(key, p.discounted_price);
+    });
+
+    return map;
+  }, [priceData]);
 
   // Update default sorting when metric changes
   React.useEffect(() => {
@@ -99,6 +123,10 @@ const DepartmentList = ({ programs, year, metric }) => {
           aValue = aKontenjan > 0 ? (aYerlesen / aKontenjan) * 100 : 0;
           bValue = bKontenjan > 0 ? (bYerlesen / bKontenjan) * 100 : 0;
           break;
+        case "price":
+          aValue = getProgramPrice(a);
+          bValue = getProgramPrice(b);
+          break;
         default:
           return 0;
       }
@@ -113,6 +141,40 @@ const DepartmentList = ({ programs, year, metric }) => {
     });
 
     return sorted;
+  };
+
+  const getProgramPrice = (program) => {
+    if (priceMap.size === 0) return 0;
+
+    // Normalize yop_kodu
+    let yopKodu = program.yop_kodu;
+    if (yopKodu && typeof yopKodu === "string" && yopKodu.includes(".")) {
+      const numValue = parseFloat(yopKodu);
+      if (!isNaN(numValue)) {
+        yopKodu = Math.round(numValue).toString();
+      }
+    } else if (yopKodu && typeof yopKodu === "number") {
+      yopKodu = Math.round(yopKodu).toString();
+    }
+
+    const scholarship = program.scholarship || "Ücretli";
+    let scholarshipPct = 0;
+
+    if (scholarship.includes("100") || scholarship.includes("Tam Burslu")) {
+      scholarshipPct = 100;
+    } else if (scholarship.includes("75")) {
+      scholarshipPct = 75;
+    } else if (
+      scholarship.includes("50") ||
+      scholarship.includes("Yarım Burslu")
+    ) {
+      scholarshipPct = 50;
+    } else if (scholarship.includes("25")) {
+      scholarshipPct = 25;
+    }
+
+    const key = `${yopKodu}_${scholarshipPct}`;
+    return priceMap.get(key) || 0;
   };
 
   const getUniversityTypeColor = (type) => {
@@ -306,6 +368,15 @@ const DepartmentList = ({ programs, year, metric }) => {
               </TableCell>
               <TableCell align="right">
                 <TableSortLabel
+                  active={orderBy === "price"}
+                  direction={orderBy === "price" ? order : "asc"}
+                  onClick={() => handleSort("price")}
+                >
+                  Ücret (TL)
+                </TableSortLabel>
+              </TableCell>
+              <TableCell align="right">
+                <TableSortLabel
                   active={orderBy === "yerlesen"}
                   direction={orderBy === "yerlesen" ? order : "asc"}
                   onClick={() => handleSort("yerlesen")}
@@ -459,6 +530,16 @@ const DepartmentList = ({ programs, year, metric }) => {
                             100
                         )}%`
                       : "-"}
+                  </Typography>
+                </TableCell>
+                <TableCell align="right">
+                  <Typography variant="body2">
+                    {(() => {
+                      const price = getProgramPrice(program);
+                      return price > 0
+                        ? `${price.toLocaleString("tr-TR")} ₺`
+                        : "-";
+                    })()}
                   </Typography>
                 </TableCell>
                 <TableCell align="right">

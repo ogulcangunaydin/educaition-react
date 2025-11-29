@@ -928,6 +928,7 @@ const UniversityComparison = () => {
               programs={similarPrograms}
               year={year}
               metric={metric}
+              priceData={priceData}
             />
           </Grid>
         </Grid>
