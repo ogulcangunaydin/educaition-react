@@ -371,6 +371,8 @@ const HighSchoolAnalysis = () => {
                 key={program.yop_kodu}
                 label={`${program.university} - ${
                   program.program || program.department
+                }${
+                  program.scholarship ? ` (Burs: ${program.scholarship})` : ""
                 }`}
                 size="small"
               />
