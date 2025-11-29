@@ -6,6 +6,10 @@ import {
   IconButton,
   TextField,
   Tooltip as MuiTooltip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@mui/material";
 import { ArrowUpward, ArrowDownward, RestartAlt } from "@mui/icons-material";
 import {
@@ -40,6 +44,8 @@ const ComparisonChart = ({
   onResetRange,
   recordLimit,
   onRecordLimitChange,
+  sortBy,
+  onSortChange,
 }) => {
   const [bufferStep, setBufferStep] = useState(
     metric === "ranking" ? 25000 : 50
@@ -298,13 +304,13 @@ const ComparisonChart = ({
         sx={{
           display: "flex",
           alignItems: "center",
-          gap: 2,
+          gap: 1,
           mb: 2,
           flexWrap: "wrap",
           justifyContent: "space-between",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <TextField
             label={`Aralık Adımı (${
               metric === "ranking" ? "Sıralama" : "Puan"
@@ -384,6 +390,7 @@ const ComparisonChart = ({
                 color="warning"
                 size="small"
                 sx={{
+                  width: 20,
                   border: "1px solid",
                   borderColor: "warning.main",
                   "&:hover": { backgroundColor: "warning.light" },
@@ -394,6 +401,24 @@ const ComparisonChart = ({
             </MuiTooltip>
           )}
         </Box>
+        <FormControl size="small" sx={{ minWidth: 200 }}>
+          <InputLabel>Sıralama</InputLabel>
+          <Select
+            value={sortBy}
+            label="Sıralama"
+            onChange={(e) => onSortChange(e.target.value)}
+          >
+            <MenuItem value="spread">Aralık Büyüklüğü</MenuItem>
+            <MenuItem value="price">Ücret</MenuItem>
+            <MenuItem value="fulfillment">Doluluk Oranı</MenuItem>
+            <MenuItem value="max">
+              {metric === "ranking" ? "Taban Sıralama" : "Tavan Puan"}
+            </MenuItem>
+            <MenuItem value="min">
+              {metric === "ranking" ? "Tavan Sıralama" : "Taban Puan"}
+            </MenuItem>
+          </Select>
+        </FormControl>
         <TextField
           label="Gösterilecek Program Sayısı"
           type="number"

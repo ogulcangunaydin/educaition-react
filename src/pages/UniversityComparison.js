@@ -58,6 +58,7 @@ const UniversityComparison = () => {
   const [minFulfillmentRate, setMinFulfillmentRate] = useState(0);
   const [customRangeMin, setCustomRangeMin] = useState(null);
   const [customRangeMax, setCustomRangeMax] = useState(null);
+  const [chartSortBy, setChartSortBy] = useState("spread");
 
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
@@ -576,7 +577,13 @@ const UniversityComparison = () => {
             ];
 
       // Prepare chart data
-      const chart = prepareChartData(limitedForChart, year, metric, priceData);
+      const chart = prepareChartData(
+        limitedForChart,
+        year,
+        metric,
+        priceData,
+        chartSortBy
+      );
       setChartData(chart);
     } else {
       setSimilarPrograms([]);
@@ -598,6 +605,8 @@ const UniversityComparison = () => {
     programPreferencesData,
     customRangeMin,
     customRangeMax,
+    chartSortBy,
+    priceData,
   ]);
 
   // Handle year change
@@ -613,11 +622,6 @@ const UniversityComparison = () => {
   // Handle metric change
   const handleMetricChange = (newMetric) => {
     setMetric(newMetric);
-  };
-
-  // Handle record limit change
-  const handleRecordLimitChange = (newLimit) => {
-    setRecordLimit(newLimit);
   };
 
   // Handle university type change
@@ -677,7 +681,7 @@ const UniversityComparison = () => {
   return (
     <>
       <Header title="Üniversite Karşılaştırma" />
-      <Container maxWidth="xl" sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
+      <Container maxWidth={false} sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
         {/* Instructions */}
         <InstructionsPanel />
 
@@ -915,7 +919,9 @@ const UniversityComparison = () => {
               currentRangeMax={customRangeMax}
               onResetRange={handleResetRange}
               recordLimit={recordLimit}
-              onRecordLimitChange={handleRecordLimitChange}
+              onRecordLimitChange={setRecordLimit}
+              sortBy={chartSortBy}
+              onSortChange={setChartSortBy}
             />
 
             <DepartmentList

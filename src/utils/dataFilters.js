@@ -117,7 +117,13 @@ export const groupProgramsByUniversity = (programs) => {
 /**
  * Prepare chart data for box and whisker plot
  */
-export const prepareChartData = (programs, year, metric, priceData = []) => {
+export const prepareChartData = (
+  programs,
+  year,
+  metric,
+  priceData = [],
+  sortBy = "spread"
+) => {
   if (!programs || programs.length === 0) return null;
 
   // Create a map for quick price lookup by yop_kodu and scholarship_pct
@@ -208,8 +214,8 @@ export const prepareChartData = (programs, year, metric, priceData = []) => {
   // Set minimum visible bar size as 3% of the maximum spread (or at least 1)
   const minVisibleSpread = Math.max(maxSpread * 0.03, 1);
 
-  // Second pass: adjust single-student programs to have minimum visible spread
-  // and calculate fulfillment rate
+  // Second pass: adjust single-student programs to have minimum visible spread,
+  // calculate fulfillment rate, and get price for sorting
   departmentItems.forEach((item) => {
     if (item.isSingleStudent) {
       item.max = item.min + minVisibleSpread;
@@ -221,27 +227,9 @@ export const prepareChartData = (programs, year, metric, priceData = []) => {
     const yerlesen = item.program[`yerlesen_${year}`];
     item.fulfillmentRate =
       kontenjan && yerlesen ? (yerlesen / kontenjan) * 100 : 100;
-  });
 
-  // Sort: Haliç first, then by metric-appropriate sorting
-  departmentItems.sort((a, b) => {
-    if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
-    if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
-    // For ranking: sort by min (ascending - lower is better)
-    // For score: sort by spread (descending - larger spread first)
-    return b.spread - a.spread;
-  });
-
-  // All departments are now included in the chart (no filtering by spread)
-
-  // Build chart data
-  departmentItems.forEach((item) => {
-    labels.push(item.label);
-
-    // Get price for this program (match by yop_kodu and scholarship_pct)
+    // Get price for sorting
     let yopKodu = item.program.yop_kodu;
-
-    // Normalize yop_kodu to match the price map format
     if (yopKodu && typeof yopKodu === "string" && yopKodu.includes(".")) {
       const numValue = parseFloat(yopKodu);
       if (!isNaN(numValue)) {
@@ -253,8 +241,6 @@ export const prepareChartData = (programs, year, metric, priceData = []) => {
 
     const scholarship = item.program.scholarship || "Ücretli";
     let scholarshipPct = 0;
-
-    // Parse scholarship percentage from text
     if (scholarship.includes("100") || scholarship.includes("Tam Burslu")) {
       scholarshipPct = 100;
     } else if (scholarship.includes("75")) {
@@ -269,7 +255,41 @@ export const prepareChartData = (programs, year, metric, priceData = []) => {
     }
 
     const priceKey = `${yopKodu}_${scholarshipPct}`;
-    const price = priceMap.get(priceKey) || 0;
+    item.price = priceMap.get(priceKey) || 0;
+  });
+
+  // Sort: Haliç first, then by selected sort method
+  departmentItems.sort((a, b) => {
+    if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
+    if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
+
+    // Apply sorting based on sortBy parameter
+    switch (sortBy) {
+      case "price":
+        return b.price - a.price; // Higher price first
+      case "fulfillment":
+        return a.fulfillmentRate - b.fulfillmentRate; // Lower fulfillment first (reversed)
+      case "max":
+        // Sort by maximum value (worst first - hardest to get in)
+        // For ranking: higher max is worse (larger ranking number = worse rank)
+        // For score: lower max is worse (lower score = worse)
+        return metric === "ranking" ? b.max - a.max : a.max - b.max;
+      case "min":
+        // Sort by minimum value (worst first - hardest to get in)
+        // For ranking: higher min is worse (larger ranking number = worse rank)
+        // For score: lower min is worse (lower score = worse)
+        return metric === "ranking" ? b.min - a.min : a.min - b.min;
+      case "spread":
+      default:
+        return b.spread - a.spread; // Larger spread first
+    }
+  });
+
+  // All departments are now included in the chart (no filtering by spread)
+
+  // Build chart data
+  departmentItems.forEach((item) => {
+    labels.push(item.label);
 
     dataPoints.push({
       min: item.min,
@@ -281,7 +301,7 @@ export const prepareChartData = (programs, year, metric, priceData = []) => {
       fulfillmentRate: item.fulfillmentRate,
     });
 
-    pricePoints.push(price);
+    pricePoints.push(item.price);
 
     // Use special color for Haliç University, otherwise use type-based color
     if (item.university === "HALİÇ ÜNİVERSİTESİ") {
