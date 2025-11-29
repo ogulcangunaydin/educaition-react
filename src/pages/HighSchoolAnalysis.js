@@ -50,6 +50,7 @@ const HighSchoolAnalysis = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [liseMapping, setLiseMapping] = useState({});
+  const [universityMapping, setUniversityMapping] = useState({});
   const [highSchoolData, setHighSchoolData] = useState([]);
 
   // Load lise mapping
@@ -110,6 +111,30 @@ const HighSchoolAnalysis = () => {
     loadLiseMapping();
   }, []);
 
+  // Load university mapping
+  useEffect(() => {
+    const loadUniversityMapping = async () => {
+      try {
+        const dataFolder =
+          selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
+        const response = await fetch(
+          `${dataFolder}/lise_by_university/_university_mapping.json`
+        );
+
+        if (response.ok) {
+          const mapping = await response.json();
+          setUniversityMapping(mapping);
+        }
+      } catch (err) {
+        console.error("Error loading university mapping:", err);
+      }
+    };
+
+    if (selectedYear) {
+      loadUniversityMapping();
+    }
+  }, [selectedYear]);
+
   // Load high school data for selected programs
   useEffect(() => {
     const loadHighSchoolData = async () => {
@@ -118,94 +143,130 @@ const HighSchoolAnalysis = () => {
         return;
       }
 
-      if (Object.keys(liseMapping).length === 0) {
-        return; // Wait for mapping to load
+      if (
+        Object.keys(liseMapping).length === 0 ||
+        Object.keys(universityMapping).length === 0
+      ) {
+        return; // Wait for mappings to load
       }
 
       try {
         setLoading(true);
         setError(null);
 
-        // Load from both folders
-        const [response1, response2] = await Promise.all([
-          fetch("/assets/data/all_universities_lise_bazinda_yerlesen.csv"),
-          fetch("/assets/data_2025/all_universities_lise_bazinda_yerlesen.csv"),
-        ]);
+        const dataFolder =
+          selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
 
-        if (!response1.ok && !response2.ok)
-          throw new Error("Failed to load high school data");
+        console.log("[HighSchoolAnalysis] Selected year:", selectedYear);
+        console.log(
+          "[HighSchoolAnalysis] Selected programs:",
+          selectedPrograms.length
+        );
 
-        const allLines = [];
+        // Get unique universities from selected programs
+        const universities = [
+          ...new Set(selectedPrograms.map((p) => p.university)),
+        ];
+        console.log(
+          "[HighSchoolAnalysis] Unique universities:",
+          universities.length,
+          universities
+        );
 
-        // Combine lines from both files
-        if (response1.ok) {
-          const text1 = await response1.text();
-          const lines1 = text1.trim().split("\n");
-          allLines.push(...lines1.slice(1)); // Skip header
-        }
+        // Create program map
+        const programMap = new Map();
+        selectedPrograms.forEach((p) => {
+          programMap.set(p.yop_kodu, p);
+        });
 
-        if (response2.ok) {
-          const text2 = await response2.text();
-          const lines2 = text2.trim().split("\n");
-          allLines.push(...lines2.slice(1)); // Skip header
-        }
+        // Create Set for fast yop_kodu lookup
+        const programSet = new Set(selectedPrograms.map((p) => p.yop_kodu));
+        const selectedYearStr = String(selectedYear);
 
-        const lines = allLines;
+        const allData = [];
+        let totalMatched = 0;
 
-        // Get program codes
-        const programCodes = new Set(selectedPrograms.map((p) => p.yop_kodu));
-
-        // Parse and filter data
-        const data = [];
-
-        // Process in chunks to avoid blocking
-        const chunkSize = 10000;
-        for (let i = 0; i < lines.length; i += chunkSize) {
-          const chunk = lines.slice(i, Math.min(i + chunkSize, lines.length));
-
-          for (const line of chunk) {
-            const parts = line.split(",");
-            if (parts.length >= 5) {
-              const yop_kodu = parts[0];
-              const year = parts[1];
-
-              // Filter by selected year
-              if (programCodes.has(yop_kodu) && year === String(selectedYear)) {
-                const lise_id = parts[2];
-                const yerlesen_sayisi = parseInt(parts[3]);
-                const school_type = parts[4];
-
-                const liseInfo = liseMapping[lise_id] || {
-                  lise_adi: `Lise ID: ${lise_id}`,
-                  sehir: "Bilinmiyor",
-                };
-
-                const program = selectedPrograms.find(
-                  (p) => p.yop_kodu === yop_kodu
-                );
-
-                data.push({
-                  yop_kodu,
-                  university: program?.university || "",
-                  program: program?.program || program?.department || "",
-                  city: program?.city || "",
-                  year: parts[1],
-                  lise_id,
-                  lise_adi: liseInfo.lise_adi,
-                  lise_sehir: liseInfo.sehir,
-                  yerlesen_sayisi,
-                  school_type,
-                  school_type_label: getSchoolTypeLabel(school_type),
-                });
-              }
-            }
+        // Load CSV file for each university
+        for (const university of universities) {
+          const sanitizedName = universityMapping[university];
+          if (!sanitizedName) {
+            console.warn(`No mapping found for university: ${university}`);
+            continue;
           }
 
-          // Allow UI to update
-          await new Promise((resolve) => setTimeout(resolve, 0));
+          const csvPath = `${dataFolder}/lise_by_university/${sanitizedName}.csv`;
+          console.log(`Loading ${csvPath}...`);
+
+          try {
+            const response = await fetch(csvPath);
+            if (!response.ok) {
+              console.warn(`File not found: ${csvPath}`);
+              continue;
+            }
+
+            const text = await response.text();
+            const lines = text.trim().split("\n");
+
+            console.log(`  ${sanitizedName}: ${lines.length} lines`);
+
+            // Skip header
+            for (let i = 1; i < lines.length; i++) {
+              const line = lines[i];
+              if (!line) continue;
+
+              const firstComma = line.indexOf(",");
+              if (firstComma === -1) continue;
+
+              const yop_kodu = line.substring(0, firstComma);
+
+              // Fast rejection
+              if (!programSet.has(yop_kodu)) continue;
+
+              const parts = line.split(",");
+              if (parts.length >= 5) {
+                const year = parts[1];
+
+                if (year === selectedYearStr) {
+                  totalMatched++;
+                  const lise_id = parts[2];
+                  const yerlesen_sayisi = parseInt(parts[3]);
+                  const school_type = parts[4];
+
+                  const liseInfo = liseMapping[lise_id] || {
+                    lise_adi: `Lise ID: ${lise_id}`,
+                    sehir: "Bilinmiyor",
+                  };
+
+                  const program = programMap.get(yop_kodu);
+
+                  allData.push({
+                    yop_kodu,
+                    university: program?.university || "",
+                    program: program?.program || program?.department || "",
+                    city: program?.city || "",
+                    year,
+                    lise_id,
+                    lise_adi: liseInfo.lise_adi,
+                    lise_sehir: liseInfo.sehir,
+                    yerlesen_sayisi,
+                    school_type,
+                    school_type_label: getSchoolTypeLabel(school_type),
+                  });
+                }
+              }
+            }
+          } catch (fileErr) {
+            console.error(`Error loading ${csvPath}:`, fileErr);
+          }
         }
 
-        setHighSchoolData(data);
+        console.log(
+          "[HighSchoolAnalysis] Total matched records:",
+          totalMatched
+        );
+        console.log("[HighSchoolAnalysis] Data rows:", allData.length);
+
+        setHighSchoolData(allData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading high school data:", err);
@@ -215,7 +276,8 @@ const HighSchoolAnalysis = () => {
     };
 
     loadHighSchoolData();
-  }, [selectedPrograms, liseMapping, selectedYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedPrograms, selectedYear, liseMapping, universityMapping]);
 
   // Download as CSV
   const handleDownload = () => {
