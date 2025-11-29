@@ -14,7 +14,9 @@ import {
   Checkbox,
   Button,
   Tooltip,
+  IconButton,
 } from "@mui/material";
+import { Clear as ClearIcon } from "@mui/icons-material";
 import { formatScore, formatRanking } from "../../utils/csvParser";
 import { formatProgramName } from "../../utils/dataFilters";
 import { useBasket } from "../../contexts/BasketContext";
@@ -24,7 +26,8 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
     metric === "ranking" ? "tavan_bs" : "tavan"
   );
   const [order, setOrder] = useState(metric === "ranking" ? "asc" : "desc");
-  const { toggleProgram, isSelected, selectedPrograms, setYear } = useBasket();
+  const { toggleProgram, isSelected, selectedPrograms, setYear, clearBasket } =
+    useBasket();
 
   // Create price map once for performance
   const priceMap = React.useMemo(() => {
@@ -234,11 +237,23 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
         </Box>
         {selectedPrograms.length > 0 && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-            <Chip
-              label={`${selectedPrograms.length} program seçildi`}
-              color="primary"
-              variant="outlined"
-            />
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Chip
+                label={`${selectedPrograms.length} program seçildi`}
+                color="primary"
+                variant="outlined"
+              />
+              <Tooltip title="Sepeti Temizle" arrow>
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={clearBasket}
+                  sx={{ ml: -1 }}
+                >
+                  <ClearIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+            </Box>
             <Button
               variant="contained"
               color="primary"
