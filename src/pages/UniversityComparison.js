@@ -7,6 +7,7 @@ import {
   Grid,
   CircularProgress,
   Alert,
+  styled,
 } from "@mui/material";
 import Header from "../components/Header";
 import YearSelector from "../components/UniversityComparison/YearSelector";
@@ -25,6 +26,32 @@ import {
   prepareChartData,
 } from "../utils/dataFilters";
 import fetchWithAuth from "../utils/fetchWithAuth";
+
+const PageContainer = styled(Box)(({ theme }) => ({
+  position: "relative",
+  minHeight: "100vh",
+  "&::before": {
+    content: '""',
+    position: "fixed",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "600px",
+    height: "600px",
+    backgroundImage: "url(/halic_universitesi_logo.svg)",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    backgroundSize: "contain",
+    opacity: 0.03,
+    zIndex: 0,
+    pointerEvents: "none",
+  },
+}));
+
+const ContentWrapper = styled(Box)({
+  position: "relative",
+  zIndex: 1,
+});
 
 const UniversityComparison = () => {
   const { clearBasket } = useBasket();
@@ -699,261 +726,275 @@ const UniversityComparison = () => {
   }
 
   return (
-    <>
+    <PageContainer>
       <Header title="Üniversite Karşılaştırma" />
-      <Container maxWidth={false} sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
-        {/* Instructions */}
-        <InstructionsPanel />
+      <ContentWrapper>
+        <Container maxWidth={false} sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
+          {/* Instructions */}
+          <InstructionsPanel />
 
-        <Grid container spacing={3}>
-          {/* Left Panel - Selectors */}
-          <Grid item xs={12} md={4}>
-            <Paper sx={{ p: 3 }}>
-              <Typography variant="h6" gutterBottom>
-                Filtreler
-              </Typography>
-              <YearSelector value={year} onChange={handleYearChange} />
-              <ProgramSelector
-                programs={availablePrograms}
-                value={selectedProgram?.yop_kodu || ""}
-                onChange={handleProgramChange}
-                disabled={!year}
-              />
-              <MetricSelector
-                value={metric}
-                onChange={handleMetricChange}
-                disabled={!selectedProgram}
-              />
-              <UniversityTypeSelector
-                universityType={universityType}
-                onChange={handleUniversityTypeChange}
-                disabled={!selectedProgram}
-              />
-              <FilterSlider
-                value={topCitiesLimit}
-                onChange={handleTopCitiesChange}
-                disabled={!selectedProgram}
-                label={(val) =>
-                  val === 0
-                    ? "Tüm illerdeki tüm programlar gösteriliyor."
-                    : `Yerleşenlerin en az ${val} defa tercih ettikleri illerdeki programlar gösteriliyor.`
-                }
-                frequencyData={cityFrequencyData}
-                type="il"
-              />
+          <Grid container spacing={3}>
+            {/* Left Panel - Selectors */}
+            <Grid item xs={12} md={4}>
+              <Paper sx={{ p: 3 }}>
+                <Typography variant="h6" gutterBottom>
+                  Filtreler
+                </Typography>
+                <YearSelector value={year} onChange={handleYearChange} />
+                <ProgramSelector
+                  programs={availablePrograms}
+                  value={selectedProgram?.yop_kodu || ""}
+                  onChange={handleProgramChange}
+                  disabled={!year}
+                />
+                <MetricSelector
+                  value={metric}
+                  onChange={handleMetricChange}
+                  disabled={!selectedProgram}
+                />
+                <UniversityTypeSelector
+                  universityType={universityType}
+                  onChange={handleUniversityTypeChange}
+                  disabled={!selectedProgram}
+                />
+                <FilterSlider
+                  value={topCitiesLimit}
+                  onChange={handleTopCitiesChange}
+                  disabled={!selectedProgram}
+                  label={(val) =>
+                    val === 0
+                      ? "Tüm illerdeki tüm programlar gösteriliyor."
+                      : `Yerleşenlerin en az ${val} defa tercih ettikleri illerdeki programlar gösteriliyor.`
+                  }
+                  frequencyData={cityFrequencyData}
+                  type="il"
+                />
 
-              <FilterSlider
-                value={minUniversityCount}
-                onChange={handleMinUniversityCountChange}
-                disabled={!selectedProgram}
-                label={(val) =>
-                  val === 0
-                    ? "Tüm üniversitelerdeki tüm programlar gösteriliyor."
-                    : `Yerleşenlerin en az ${val} defa tercih ettikleri üniversitelerin programlarını tutar`
-                }
-                frequencyData={universityFrequencyData}
-                type="üniversite"
-              />
-              <FilterSlider
-                value={minProgramCount}
-                onChange={handleMinProgramCountChange}
-                disabled={!selectedProgram}
-                label={(val) =>
-                  val === 0
-                    ? "Tüm program tiplerinden programlar gösteriliyor."
-                    : `Yerleşenlerin en az ${val} defa tercih ettikleri program tipinden olan programları tutar.`
-                }
-                frequencyData={programFrequencyData}
-                type="program tipi"
-              />
-              <FilterSlider
-                value={minFulfillmentRate}
-                onChange={handleMinFulfillmentRateChange}
-                disabled={!selectedProgram}
-                label={(val) =>
-                  val === 0
-                    ? "Tüm doluluk oranlarındaki programlar gösteriliyor."
-                    : `Doluluk oranı en az %${
-                        val * 10
-                      } olan programlar gösteriliyor.`
-                }
-                frequencyData={fulfillmentFrequencyData}
-                type="doluluk oranı"
-              />
-              {selectedProgram && (
-                <Box
-                  sx={{ mt: 3, p: 2, bgcolor: "info.light", borderRadius: 1 }}
-                >
-                  <Typography variant="subtitle2" gutterBottom>
-                    Seçilen Program Bilgileri:
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Fakülte:</strong> {selectedProgram.faculty}
-                  </Typography>
-                  <Typography variant="body2">
-                    <strong>Puan Türü:</strong>{" "}
-                    {selectedProgram.puan_type.toUpperCase()}
-                  </Typography>
-                  {topCitiesLimit > 0 && cityPreferencesData.length > 0 && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>Dahil Edilen Şehirler:</strong>{" "}
-                      {(() => {
-                        const cityTotals = {};
-                        cityPreferencesData.forEach((row) => {
-                          if (row.yop_kodu === selectedProgram.yop_kodu) {
-                            const city = row.il;
-                            cityTotals[city] =
-                              (cityTotals[city] || 0) + row.tercih_sayisi;
-                          }
-                        });
-                        const filteredCities = Object.entries(cityTotals)
-                          .filter(([_, count]) => count >= topCitiesLimit)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([city, count]) => `${city} (${count})`);
-                        return filteredCities.length > 0
-                          ? filteredCities.join(", ")
-                          : "Hiçbiri";
-                      })()}
+                <FilterSlider
+                  value={minUniversityCount}
+                  onChange={handleMinUniversityCountChange}
+                  disabled={!selectedProgram}
+                  label={(val) =>
+                    val === 0
+                      ? "Tüm üniversitelerdeki tüm programlar gösteriliyor."
+                      : `Yerleşenlerin en az ${val} defa tercih ettikleri üniversitelerin programlarını tutar`
+                  }
+                  frequencyData={universityFrequencyData}
+                  type="üniversite"
+                />
+                <FilterSlider
+                  value={minProgramCount}
+                  onChange={handleMinProgramCountChange}
+                  disabled={!selectedProgram}
+                  label={(val) =>
+                    val === 0
+                      ? "Tüm program tiplerinden programlar gösteriliyor."
+                      : `Yerleşenlerin en az ${val} defa tercih ettikleri program tipinden olan programları tutar.`
+                  }
+                  frequencyData={programFrequencyData}
+                  type="program tipi"
+                />
+                <FilterSlider
+                  value={minFulfillmentRate}
+                  onChange={handleMinFulfillmentRateChange}
+                  disabled={!selectedProgram}
+                  label={(val) =>
+                    val === 0
+                      ? "Tüm doluluk oranlarındaki programlar gösteriliyor."
+                      : `Doluluk oranı en az %${
+                          val * 10
+                        } olan programlar gösteriliyor.`
+                  }
+                  frequencyData={fulfillmentFrequencyData}
+                  type="doluluk oranı"
+                />
+                {selectedProgram && (
+                  <Box
+                    sx={{ mt: 3, p: 2, bgcolor: "info.light", borderRadius: 1 }}
+                  >
+                    <Typography variant="subtitle2" gutterBottom>
+                      Seçilen Program Bilgileri:
                     </Typography>
-                  )}
-                  {minUniversityCount > 0 &&
-                    universityPreferencesData.length > 0 && (
+                    <Typography variant="body2">
+                      <strong>Fakülte:</strong> {selectedProgram.faculty}
+                    </Typography>
+                    <Typography variant="body2">
+                      <strong>Puan Türü:</strong>{" "}
+                      {selectedProgram.puan_type.toUpperCase()}
+                    </Typography>
+                    {topCitiesLimit > 0 && cityPreferencesData.length > 0 && (
                       <Typography variant="body2" sx={{ mt: 1 }}>
-                        <strong>
-                          Bu Programa Başvuranların Tercih Ettiği Üniversiteler
-                          (Min {minUniversityCount} tercih):
-                        </strong>{" "}
+                        <strong>Dahil Edilen Şehirler:</strong>{" "}
                         {(() => {
-                          const universityTotals = {};
-                          // Only count preferences for THIS specific program
-                          universityPreferencesData.forEach((row) => {
+                          const cityTotals = {};
+                          cityPreferencesData.forEach((row) => {
                             if (row.yop_kodu === selectedProgram.yop_kodu) {
-                              const uni = row.universite;
-                              if (uni !== "HALİÇ ÜNİVERSİTESİ") {
-                                universityTotals[uni] =
-                                  (universityTotals[uni] || 0) +
-                                  row.tercih_sayisi;
-                              }
+                              const city = row.il;
+                              cityTotals[city] =
+                                (cityTotals[city] || 0) + row.tercih_sayisi;
                             }
                           });
-                          const filteredUniversities = Object.entries(
-                            universityTotals
-                          )
-                            .filter(([_, count]) => count >= minUniversityCount)
+                          const filteredCities = Object.entries(cityTotals)
+                            .filter(([_, count]) => count >= topCitiesLimit)
                             .sort((a, b) => b[1] - a[1])
-                            .map(([uni, count]) => `${uni} (${count})`);
-                          return filteredUniversities.length > 0
-                            ? filteredUniversities.join(", ")
+                            .map(([city, count]) => `${city} (${count})`);
+                          return filteredCities.length > 0
+                            ? filteredCities.join(", ")
                             : "Hiçbiri";
                         })()}
                       </Typography>
                     )}
-                  {minProgramCount > 0 && programPreferencesData.length > 0 && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
-                      <strong>
-                        Bu Programa Başvuranların Tercih Ettiği Programlar (Min{" "}
-                        {minProgramCount} tercih):
-                      </strong>{" "}
-                      {(() => {
-                        const programTotals = {};
-                        // Only count preferences for THIS specific program
-                        programPreferencesData.forEach((row) => {
-                          if (row.yop_kodu === selectedProgram.yop_kodu) {
-                            const prog = row.program;
-                            programTotals[prog] =
-                              (programTotals[prog] || 0) + row.tercih_sayisi;
-                          }
-                        });
-                        const filteredPrograms = Object.entries(programTotals)
-                          .filter(([_, count]) => count >= minProgramCount)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([prog, count]) => `${prog} (${count})`);
-                        return filteredPrograms.length > 0
-                          ? filteredPrograms.join(", ")
-                          : "Hiçbiri";
-                      })()}
-                    </Typography>
-                  )}
-                  {metric === "score" ? (
-                    <>
-                      <Typography variant="body2">
-                        <strong>Min Puan:</strong>{" "}
-                        {selectedProgram[`taban_${year}`]
-                          ? selectedProgram[`taban_${year}`].toLocaleString(
-                              "tr-TR",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
+                    {minUniversityCount > 0 &&
+                      universityPreferencesData.length > 0 && (
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          <strong>
+                            Bu Programa Başvuranların Tercih Ettiği
+                            Üniversiteler (Min {minUniversityCount} tercih):
+                          </strong>{" "}
+                          {(() => {
+                            const universityTotals = {};
+                            // Only count preferences for THIS specific program
+                            universityPreferencesData.forEach((row) => {
+                              if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                const uni = row.universite;
+                                if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+                                  universityTotals[uni] =
+                                    (universityTotals[uni] || 0) +
+                                    row.tercih_sayisi;
+                                }
                               }
+                            });
+                            const filteredUniversities = Object.entries(
+                              universityTotals
                             )
-                          : "-"}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Max Puan:</strong>{" "}
-                        {selectedProgram[`tavan_${year}`]
-                          ? selectedProgram[`tavan_${year}`].toLocaleString(
-                              "tr-TR",
-                              {
-                                minimumFractionDigits: 2,
-                                maximumFractionDigits: 2,
+                              .filter(
+                                ([_, count]) => count >= minUniversityCount
+                              )
+                              .sort((a, b) => b[1] - a[1])
+                              .map(([uni, count]) => `${uni} (${count})`);
+                            return filteredUniversities.length > 0
+                              ? filteredUniversities.join(", ")
+                              : "Hiçbiri";
+                          })()}
+                        </Typography>
+                      )}
+                    {minProgramCount > 0 &&
+                      programPreferencesData.length > 0 && (
+                        <Typography variant="body2" sx={{ mt: 1 }}>
+                          <strong>
+                            Bu Programa Başvuranların Tercih Ettiği Programlar
+                            (Min {minProgramCount} tercih):
+                          </strong>{" "}
+                          {(() => {
+                            const programTotals = {};
+                            // Only count preferences for THIS specific program
+                            programPreferencesData.forEach((row) => {
+                              if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                const prog = row.program;
+                                programTotals[prog] =
+                                  (programTotals[prog] || 0) +
+                                  row.tercih_sayisi;
                               }
+                            });
+                            const filteredPrograms = Object.entries(
+                              programTotals
                             )
-                          : "-"}
-                      </Typography>
-                    </>
-                  ) : (
-                    <>
-                      <Typography variant="body2">
-                        <strong>Min Sıralama:</strong>{" "}
-                        {selectedProgram[`tbs_${year}`]
-                          ? Math.round(
-                              selectedProgram[`tbs_${year}`]
-                            ).toLocaleString("tr-TR")
-                          : "-"}
-                      </Typography>
-                      <Typography variant="body2">
-                        <strong>Max Sıralama:</strong>{" "}
-                        {selectedProgram[`tavan_bs_${year}`]
-                          ? Math.round(
-                              selectedProgram[`tavan_bs_${year}`]
-                            ).toLocaleString("tr-TR")
-                          : "-"}
-                      </Typography>
-                    </>
-                  )}
-                </Box>
+                              .filter(([_, count]) => count >= minProgramCount)
+                              .sort((a, b) => b[1] - a[1])
+                              .map(([prog, count]) => `${prog} (${count})`);
+                            return filteredPrograms.length > 0
+                              ? filteredPrograms.join(", ")
+                              : "Hiçbiri";
+                          })()}
+                        </Typography>
+                      )}
+                    {metric === "score" ? (
+                      <>
+                        <Typography variant="body2">
+                          <strong>Min Puan:</strong>{" "}
+                          {selectedProgram[`taban_${year}`]
+                            ? selectedProgram[`taban_${year}`].toLocaleString(
+                                "tr-TR",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : "-"}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Max Puan:</strong>{" "}
+                          {selectedProgram[`tavan_${year}`]
+                            ? selectedProgram[`tavan_${year}`].toLocaleString(
+                                "tr-TR",
+                                {
+                                  minimumFractionDigits: 2,
+                                  maximumFractionDigits: 2,
+                                }
+                              )
+                            : "-"}
+                        </Typography>
+                      </>
+                    ) : (
+                      <>
+                        <Typography variant="body2">
+                          <strong>Min Sıralama:</strong>{" "}
+                          {selectedProgram[`tbs_${year}`]
+                            ? Math.round(
+                                selectedProgram[`tbs_${year}`]
+                              ).toLocaleString("tr-TR")
+                            : "-"}
+                        </Typography>
+                        <Typography variant="body2">
+                          <strong>Max Sıralama:</strong>{" "}
+                          {selectedProgram[`tavan_bs_${year}`]
+                            ? Math.round(
+                                selectedProgram[`tavan_bs_${year}`]
+                              ).toLocaleString("tr-TR")
+                            : "-"}
+                        </Typography>
+                      </>
+                    )}
+                  </Box>
+                )}
+              </Paper>
+            </Grid>
+
+            {/* Right Panel - Results */}
+            <Grid item xs={12} md={8}>
+              {selectedProgram && year ? (
+                <>
+                  <ComparisonChart
+                    chartData={chartData}
+                    selectedProgram={selectedProgram}
+                    year={year}
+                    metric={metric}
+                    totalPrograms={similarPrograms.length}
+                    onExpandRange={handleExpandRange}
+                    currentRangeMin={customRangeMin}
+                    currentRangeMax={customRangeMax}
+                    onResetRange={handleResetRange}
+                    recordLimit={recordLimit}
+                    onRecordLimitChange={setRecordLimit}
+                    sortBy={chartSortBy}
+                    onSortChange={setChartSortBy}
+                  />
+
+                  <DepartmentList
+                    programs={similarPrograms}
+                    year={year}
+                    metric={metric}
+                    priceData={priceData}
+                  />
+                </>
+              ) : (
+                <div> </div>
               )}
-            </Paper>
+            </Grid>
           </Grid>
-
-          {/* Right Panel - Results */}
-          <Grid item xs={12} md={8}>
-            <ComparisonChart
-              chartData={chartData}
-              selectedProgram={selectedProgram}
-              year={year}
-              metric={metric}
-              totalPrograms={similarPrograms.length}
-              onExpandRange={handleExpandRange}
-              currentRangeMin={customRangeMin}
-              currentRangeMax={customRangeMax}
-              onResetRange={handleResetRange}
-              recordLimit={recordLimit}
-              onRecordLimitChange={setRecordLimit}
-              sortBy={chartSortBy}
-              onSortChange={setChartSortBy}
-            />
-
-            <DepartmentList
-              programs={similarPrograms}
-              year={year}
-              metric={metric}
-              priceData={priceData}
-            />
-          </Grid>
-        </Grid>
-      </Container>
-    </>
+        </Container>
+      </ContentWrapper>
+    </PageContainer>
   );
 };
 
