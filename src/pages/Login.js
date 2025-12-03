@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Button, TextField, Box } from "@mui/material";
+import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
 // Styled components
@@ -10,6 +10,43 @@ const LoginContainer = styled(Box)({
   justifyContent: "center",
   alignItems: "center",
   minHeight: "100vh",
+  background: "linear-gradient(135deg, #001bc3 0%, #0029e8 100%)",
+  position: "relative",
+  overflow: "hidden",
+  "&::before": {
+    content: '""',
+    position: "absolute",
+    width: "800px",
+    height: "800px",
+    backgroundImage: "url(/halic_universitesi_logo.svg)",
+    backgroundSize: "contain",
+    backgroundRepeat: "no-repeat",
+    backgroundPosition: "center",
+    opacity: 0.08,
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    zIndex: 0,
+  },
+});
+
+const LoginForm = styled(Paper)({
+  padding: "40px",
+  borderRadius: "12px",
+  boxShadow: "0 8px 32px rgba(0, 0, 0, 0.2)",
+  backgroundColor: "rgba(255, 255, 255, 0.98)",
+  backdropFilter: "blur(10px)",
+  zIndex: 1,
+  minWidth: "400px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+});
+
+const Logo = styled("img")({
+  width: "120px",
+  height: "auto",
+  marginBottom: "20px",
 });
 
 const StyledTextField = styled(TextField)({
@@ -57,42 +94,47 @@ function Login() {
 
   return (
     <LoginContainer>
-      <h2>Welcome to Educaition</h2> {/* Caption added */}
-      <form onSubmit={handleSubmit}>
-        <StyledTextField
-          fullWidth
-          label="Username"
-          variant="outlined"
-          id="username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          required
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <StyledTextField
-          fullWidth
-          label="Password"
-          variant="outlined"
-          type="password"
-          id="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-          InputLabelProps={{
-            shrink: true,
-          }}
-        />
-        <StyledButton
-          type="submit"
-          variant="contained"
-          color="primary"
-          fullWidth
-        >
-          Login
-        </StyledButton>
-      </form>
+      <LoginForm elevation={8}>
+        <Logo src="/halic_universitesi_logo.svg" alt="Haliç Üniversitesi" />
+        <h2 style={{ margin: "0 0 30px 0", color: "#001bc3" }}>
+          Welcome to Educaition
+        </h2>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+          <StyledTextField
+            fullWidth
+            label="Username"
+            variant="outlined"
+            id="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <StyledTextField
+            fullWidth
+            label="Password"
+            variant="outlined"
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            InputLabelProps={{
+              shrink: true,
+            }}
+          />
+          <StyledButton
+            type="submit"
+            variant="contained"
+            color="primary"
+            fullWidth
+          >
+            Login
+          </StyledButton>
+        </form>
+      </LoginForm>
     </LoginContainer>
   );
 }
