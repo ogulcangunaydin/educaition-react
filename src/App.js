@@ -65,7 +65,7 @@ function App() {
           path="/"
           element={
             accessToken ? (
-              <Navigate to="/dashboard" />
+              <Navigate to="/university-comparison" />
             ) : (
               <Navigate to="/login" />
             )

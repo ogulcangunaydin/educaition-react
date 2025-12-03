@@ -19,6 +19,7 @@ import {
 import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
+import fetchWithAuth from "../utils/fetchWithAuth";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
@@ -27,6 +28,25 @@ const ProgramRivalAnalysis = () => {
   const [rivalData, setRivalData] = useState([]);
   const [orderBy, setOrderBy] = useState("marka_etkinlik_degeri");
   const [order, setOrder] = useState("desc");
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetchWithAuth(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } catch (error) {}
+    };
+
+    fetchRooms();
+  }, []);
 
   // Load rival analysis data
   useEffect(() => {

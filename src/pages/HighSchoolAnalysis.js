@@ -18,6 +18,7 @@ import {
 import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
+import fetchWithAuth from "../utils/fetchWithAuth";
 
 // School type decoder
 const decodeSchoolType = (schoolType) => {
@@ -50,6 +51,25 @@ const HighSchoolAnalysis = () => {
   const [liseMapping, setLiseMapping] = useState({});
   const [universityMapping, setUniversityMapping] = useState({});
   const [highSchoolData, setHighSchoolData] = useState([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetchWithAuth(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } catch (error) {}
+    };
+
+    fetchRooms();
+  }, []);
 
   // Load lise mapping
   useEffect(() => {

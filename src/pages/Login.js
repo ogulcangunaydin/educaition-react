@@ -48,7 +48,8 @@ function Login() {
       const data = await response.json();
       localStorage.setItem("access_token", data.access_token);
       localStorage.setItem("current_user_id", data.current_user_id);
-      navigate("/dashboard");
+
+      navigate("/university-comparison");
     } catch (error) {
       alert("Login failed: " + error.message);
     }

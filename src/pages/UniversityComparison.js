@@ -24,6 +24,7 @@ import {
   findSimilarPrograms,
   prepareChartData,
 } from "../utils/dataFilters";
+import fetchWithAuth from "../utils/fetchWithAuth";
 
 const UniversityComparison = () => {
   const { clearBasket } = useBasket();
@@ -40,6 +41,25 @@ const UniversityComparison = () => {
   const [priceData, setPriceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const response = await fetchWithAuth(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+      } catch (error) {}
+    };
+
+    fetchRooms();
+  }, []);
 
   // Clear basket once on mount
   useEffect(() => {
