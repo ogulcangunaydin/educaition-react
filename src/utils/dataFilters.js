@@ -252,6 +252,9 @@ export const prepareChartData = (
       scholarshipPct = 50;
     } else if (scholarship.includes("25")) {
       scholarshipPct = 25;
+    } else if (scholarship === "Burslu") {
+      // "Burslu" without percentage means full scholarship (100%)
+      scholarshipPct = 100;
     }
 
     const priceKey = `${yopKodu}_${scholarshipPct}`;
