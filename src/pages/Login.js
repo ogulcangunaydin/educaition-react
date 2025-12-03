@@ -67,6 +67,9 @@ function Login() {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           required
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <StyledTextField
           fullWidth
@@ -77,6 +80,9 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          InputLabelProps={{
+            shrink: true,
+          }}
         />
         <StyledButton
           type="submit"
