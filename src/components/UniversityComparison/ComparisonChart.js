@@ -165,7 +165,7 @@ const ComparisonChart = ({
       borderColor: "rgba(75, 192, 192, 1)",
       borderWidth: 2,
       yAxisID: "y1",
-      barPercentage: 0.6,
+      barPercentage: 0.3,
       categoryPercentage: 0.9,
     },
   ];
