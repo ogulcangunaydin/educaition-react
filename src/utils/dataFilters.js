@@ -126,6 +126,9 @@ export const prepareChartData = (
 ) => {
   if (!programs || programs.length === 0) return null;
 
+  // Only show prices for 2024 and 2025
+  const showPrices = year === "2024" || year === "2025";
+
   // Create a map for quick price lookup by yop_kodu and scholarship_pct
   // Normalize yop_kodu by removing .0 suffix if present
   const priceMap = new Map();
@@ -142,7 +145,16 @@ export const prepareChartData = (
     }
 
     const key = `${normalizedYopKodu}_${price.scholarship_pct}`;
-    priceMap.set(key, price.discounted_price);
+    // Store year-specific discounted price
+    const yearPrice =
+      year === "2024"
+        ? price.discounted_price_2024
+        : year === "2025"
+        ? price.discounted_price_2025
+        : null;
+    if (yearPrice !== null && !isNaN(yearPrice)) {
+      priceMap.set(key, yearPrice);
+    }
   });
 
   // For RANKING: tavan_bs is BEST (lower number = min), tbs is WORST (higher number = max)
@@ -258,7 +270,8 @@ export const prepareChartData = (
     }
 
     const priceKey = `${yopKodu}_${scholarshipPct}`;
-    item.price = priceMap.get(priceKey) || 0;
+    // Only show prices for 2024 and 2025 years
+    item.price = showPrices ? priceMap.get(priceKey) || 0 : 0;
   });
 
   // Sort: Haliç first, then by selected sort method

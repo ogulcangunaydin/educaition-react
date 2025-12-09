@@ -389,7 +389,7 @@ const UniversityComparison = () => {
           });
         }
 
-        // Parse price data CSV
+        // Parse price data CSV (new format with 2024 and 2025 prices)
         const priceLines = priceText.trim().split("\n");
         const parsedPriceData = [];
         for (let i = 1; i < priceLines.length; i++) {
@@ -399,8 +399,10 @@ const UniversityComparison = () => {
             program,
             is_english,
             scholarship_pct,
-            full_price,
-            discounted_price,
+            full_price_2024,
+            full_price_2025,
+            discounted_price_2024,
+            discounted_price_2025,
           ] = priceLines[i].split(",");
           parsedPriceData.push({
             yop_kodu: yop_kodu?.trim(),
@@ -408,8 +410,10 @@ const UniversityComparison = () => {
             program: program?.trim(),
             is_english: is_english === "True",
             scholarship_pct: parseFloat(scholarship_pct),
-            full_price: parseFloat(full_price),
-            discounted_price: parseFloat(discounted_price),
+            full_price_2024: parseFloat(full_price_2024) || null,
+            full_price_2025: parseFloat(full_price_2025) || null,
+            discounted_price_2024: parseFloat(discounted_price_2024) || null,
+            discounted_price_2025: parseFloat(discounted_price_2025) || null,
           });
         }
 

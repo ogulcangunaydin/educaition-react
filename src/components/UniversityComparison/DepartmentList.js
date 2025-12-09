@@ -29,10 +29,13 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
   const { toggleProgram, isSelected, selectedPrograms, setYear, clearBasket } =
     useBasket();
 
+  // Only show prices for 2024 and 2025
+  const showPrices = year === "2024" || year === "2025";
+
   // Create price map once for performance
   const priceMap = React.useMemo(() => {
     const map = new Map();
-    if (!priceData || priceData.length === 0) return map;
+    if (!priceData || priceData.length === 0 || !showPrices) return map;
 
     priceData.forEach((p) => {
       let priceYopKodu = p.yop_kodu;
@@ -47,11 +50,16 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
         }
       }
       const key = `${priceYopKodu}_${p.scholarship_pct}`;
-      map.set(key, p.discounted_price);
+      // Use year-specific price
+      const yearPrice =
+        year === "2024" ? p.discounted_price_2024 : p.discounted_price_2025;
+      if (yearPrice !== null && yearPrice !== undefined && !isNaN(yearPrice)) {
+        map.set(key, yearPrice);
+      }
     });
 
     return map;
-  }, [priceData]);
+  }, [priceData, year, showPrices]);
 
   // Update default sorting when metric changes
   React.useEffect(() => {
@@ -392,15 +400,17 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                   Doluluk
                 </TableSortLabel>
               </TableCell>
-              <TableCell align="right">
-                <TableSortLabel
-                  active={orderBy === "price"}
-                  direction={orderBy === "price" ? order : "asc"}
-                  onClick={() => handleSort("price")}
-                >
-                  Ücret (TL)
-                </TableSortLabel>
-              </TableCell>
+              {showPrices && (
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "price"}
+                    direction={orderBy === "price" ? order : "asc"}
+                    onClick={() => handleSort("price")}
+                  >
+                    Ücret (TL)
+                  </TableSortLabel>
+                </TableCell>
+              )}
               <TableCell align="right">
                 <TableSortLabel
                   active={orderBy === "yerlesen"}
@@ -558,16 +568,18 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                       : "-"}
                   </Typography>
                 </TableCell>
-                <TableCell align="right">
-                  <Typography variant="body2">
-                    {(() => {
-                      const price = getProgramPrice(program);
-                      return price > 0
-                        ? `${price.toLocaleString("tr-TR")} ₺`
-                        : "-";
-                    })()}
-                  </Typography>
-                </TableCell>
+                {showPrices && (
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {(() => {
+                        const price = getProgramPrice(program);
+                        return price > 0
+                          ? `${price.toLocaleString("tr-TR")} ₺`
+                          : "-";
+                      })()}
+                    </Typography>
+                  </TableCell>
+                )}
                 <TableCell align="right">
                   <Typography variant="body2">
                     {program[`yerlesen_${year}`] || "-"}

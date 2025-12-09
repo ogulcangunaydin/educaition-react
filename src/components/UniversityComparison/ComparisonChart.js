@@ -133,8 +133,11 @@ const ComparisonChart = ({
     return gradient;
   };
 
+  // Only show price data for 2024 and 2025
+  const showPrices = year === "2024" || year === "2025";
+
   // Prepare data for floating bar chart showing only min-max ranges
-  // Plus a second dataset for price bars on secondary Y-axis
+  // Plus a second dataset for price bars on secondary Y-axis (only for 2024/2025)
   const datasets = [
     {
       label:
@@ -158,16 +161,21 @@ const ComparisonChart = ({
       barPercentage: 0.8,
       categoryPercentage: 0.9,
     },
-    {
-      label: "Yıllık Ücret (TL)",
-      data: chartData.pricePoints || [],
-      backgroundColor: "rgba(75, 192, 192, 0.6)",
-      borderColor: "rgba(75, 192, 192, 1)",
-      borderWidth: 2,
-      yAxisID: "y1",
-      barPercentage: 0.3,
-      categoryPercentage: 0.9,
-    },
+    // Only include price dataset for 2024 and 2025
+    ...(showPrices
+      ? [
+          {
+            label: "Yıllık Ücret (TL)",
+            data: chartData.pricePoints || [],
+            backgroundColor: "rgba(75, 192, 192, 0.6)",
+            borderColor: "rgba(75, 192, 192, 1)",
+            borderWidth: 2,
+            yAxisID: "y1",
+            barPercentage: 0.3,
+            categoryPercentage: 0.9,
+          },
+        ]
+      : []),
   ];
 
   const options = {
@@ -210,14 +218,18 @@ const ComparisonChart = ({
                     });
               const spread = dataPoint.max - dataPoint.min;
               const fulfillmentRate = dataPoint.fulfillmentRate || 100;
-              const price = chartData.pricePoints?.[dataIndex] || 0;
-              return [
+              const result = [
                 `Max ${metricLabel}: ${formatValue(dataPoint.max)}`,
                 `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
                 `Fark: ${formatValue(spread)}`,
                 `Doluluk: %${Math.round(fulfillmentRate)}`,
-                `Ücret: ${price.toLocaleString("tr-TR")} ₺`,
               ];
+              // Only show price for 2024 and 2025
+              if (showPrices) {
+                const price = chartData.pricePoints?.[dataIndex] || 0;
+                result.push(`Ücret: ${price.toLocaleString("tr-TR")} ₺`);
+              }
+              return result;
             } else {
               // Second dataset: price bars
               const price = context.parsed.y;
@@ -273,10 +285,10 @@ const ComparisonChart = ({
       },
       y1: {
         type: "linear",
-        display: true,
+        display: showPrices, // Only display for 2024 and 2025
         position: "right",
         title: {
-          display: true,
+          display: showPrices,
           text: "Yıllık Ücret (TL)",
         },
         beginAtZero: true,
