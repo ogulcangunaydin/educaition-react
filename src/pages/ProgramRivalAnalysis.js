@@ -15,6 +15,7 @@ import {
   TableRow,
   Chip,
   TableSortLabel,
+  Tooltip,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
@@ -60,10 +61,11 @@ const ProgramRivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load from both folders
-        const [response1, response2] = await Promise.all([
+        // Load from both folders and also load price data
+        const [response1, response2, priceResponse] = await Promise.all([
           fetch("/assets/data/all_universities_combined_tercih_stats.csv"),
           fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
+          fetch("/assets/data/all_programs_prices_processed.csv"),
         ]);
 
         if (!response1.ok && !response2.ok)
@@ -82,6 +84,43 @@ const ProgramRivalAnalysis = () => {
           const text2 = await response2.text();
           const lines2 = text2.trim().split("\n");
           allLines.push(...lines2.slice(1)); // Skip header
+        }
+
+        // Parse price data
+        const priceMap = new Map();
+        if (priceResponse.ok) {
+          const priceText = await priceResponse.text();
+          const priceLines = priceText.trim().split("\n");
+          for (let i = 1; i < priceLines.length; i++) {
+            const parts = priceLines[i].split(",");
+            if (parts.length >= 9) {
+              const yop_kodu = parts[0]?.trim();
+              const scholarship_pct = parseFloat(parts[4]);
+              // Use year-specific prices
+              const price_2024 = parseFloat(parts[7]) || null; // discounted_price_2024
+              const price_2025 = parseFloat(parts[8]) || null; // discounted_price_2025
+
+              // Normalize yop_kodu
+              let normalizedYopKodu = yop_kodu;
+              if (normalizedYopKodu && normalizedYopKodu.includes(".")) {
+                const numValue = parseFloat(normalizedYopKodu);
+                if (!isNaN(numValue)) {
+                  normalizedYopKodu = Math.round(numValue).toString();
+                }
+              }
+
+              const key = `${normalizedYopKodu}_${scholarship_pct}`;
+              const price =
+                selectedYear === "2024"
+                  ? price_2024
+                  : selectedYear === "2025"
+                  ? price_2025
+                  : null;
+              if (price !== null && !isNaN(price)) {
+                priceMap.set(key, price);
+              }
+            }
+          }
         }
 
         const lines = allLines;
@@ -129,11 +168,109 @@ const ProgramRivalAnalysis = () => {
           csvDataMap.has(selectedPrograms[0]?.yop_kodu)
         );
 
+        // Find Haliç University programs for baseline price calculation
+        let halicTotalPrice = 0;
+        let halicPriceCount = 0;
+        for (const program of selectedPrograms) {
+          if (
+            program.university === "Haliç Üniversitesi" ||
+            program.university === "HALİÇ ÜNİVERSİTESİ"
+          ) {
+            const scholarship = program.scholarship || "";
+            let scholarship_pct = 0;
+            if (scholarship.includes("Burslu") || scholarship.includes("100")) {
+              scholarship_pct = 100;
+            } else if (scholarship.includes("75")) {
+              scholarship_pct = 75;
+            } else if (scholarship.includes("50")) {
+              scholarship_pct = 50;
+            } else if (scholarship.includes("25")) {
+              scholarship_pct = 25;
+            }
+
+            let normalizedYopKodu = program.yop_kodu;
+            if (normalizedYopKodu && normalizedYopKodu.includes(".")) {
+              const numValue = parseFloat(normalizedYopKodu);
+              if (!isNaN(numValue)) {
+                normalizedYopKodu = Math.round(numValue).toString();
+              }
+            }
+
+            const priceKey = `${normalizedYopKodu}_${scholarship_pct}`;
+            const price = priceMap.get(priceKey);
+            if (price) {
+              halicTotalPrice += price;
+              halicPriceCount++;
+            }
+          }
+        }
+        const halicAvgPrice =
+          halicPriceCount > 0 ? halicTotalPrice / halicPriceCount : null;
+        console.log("[ProgramRivalAnalysis] Haliç avg price:", halicAvgPrice);
+
         // Create a row for each selected program using yop_kodu as primary key
         const programData = [];
         for (const program of selectedPrograms) {
           const csvData = csvDataMap.get(program.yop_kodu);
           if (csvData) {
+            // Get price for this program
+            const scholarship = program.scholarship || "";
+            let scholarship_pct = 0;
+            if (scholarship.includes("Burslu") || scholarship.includes("100")) {
+              scholarship_pct = 100;
+            } else if (scholarship.includes("75")) {
+              scholarship_pct = 75;
+            } else if (scholarship.includes("50")) {
+              scholarship_pct = 50;
+            } else if (scholarship.includes("25")) {
+              scholarship_pct = 25;
+            }
+
+            let normalizedYopKodu = program.yop_kodu;
+            if (normalizedYopKodu && normalizedYopKodu.includes(".")) {
+              const numValue = parseFloat(normalizedYopKodu);
+              if (!isNaN(numValue)) {
+                normalizedYopKodu = Math.round(numValue).toString();
+              }
+            }
+
+            const priceKey = `${normalizedYopKodu}_${scholarship_pct}`;
+            const programPrice = priceMap.get(priceKey) || null;
+
+            // Get kontenjan and yerlesen for occupancy rate
+            const kontenjan = program[`kontenjan_${selectedYear}`] || 0;
+            const yerlesen = program[`yerlesen_${selectedYear}`] || 0;
+            const occupancyRate =
+              kontenjan > 0 ? (yerlesen / kontenjan) * 100 : null;
+
+            // Calculate price_index
+            const isHalic =
+              program.university === "Haliç Üniversitesi" ||
+              program.university === "HALİÇ ÜNİVERSİTESİ";
+            let priceIndex = null;
+            if (isHalic) {
+              priceIndex = 1.0;
+            } else if (
+              programPrice !== null &&
+              halicAvgPrice !== null &&
+              halicAvgPrice > 0
+            ) {
+              priceIndex = programPrice / halicAvgPrice;
+            }
+
+            // Price evaluation: priceIndex * occupancyRate / 100
+            let priceEvaluationScore = null;
+            let priceEvaluation = "-";
+            if (priceIndex !== null && occupancyRate !== null) {
+              priceEvaluationScore = priceIndex * (occupancyRate / 100);
+              if (priceEvaluationScore <= 1) {
+                priceEvaluation = "Fiyat sorunu yok";
+              } else {
+                priceEvaluation =
+                  "Fiyat çok yüksek veya marka yatırımı yetersiz";
+              }
+            }
+
             programData.push({
               yop_kodu: program.yop_kodu,
               university: program.university,
@@ -145,6 +282,11 @@ const ProgramRivalAnalysis = () => {
               tercihEdilme: csvData.ortalama_tercih_edilme,
               yerlesenTercih: csvData.ortalama_yerlesen_tercih,
               markaEtkinlik: csvData.marka_etkinlik,
+              price: programPrice,
+              occupancyRate,
+              priceIndex,
+              priceEvaluationScore,
+              priceEvaluation,
             });
           }
         }
@@ -204,6 +346,22 @@ const ProgramRivalAnalysis = () => {
           aValue = a.markaEtkinlik;
           bValue = b.markaEtkinlik;
           break;
+        case "price_index":
+          aValue = a.priceIndex || 0;
+          bValue = b.priceIndex || 0;
+          break;
+        case "occupancy_rate":
+          aValue = a.occupancyRate || 0;
+          bValue = b.occupancyRate || 0;
+          break;
+        case "price_evaluation":
+          aValue = a.priceEvaluationScore || 0;
+          bValue = b.priceEvaluationScore || 0;
+          break;
+        case "price":
+          aValue = a.price || 0;
+          bValue = b.price || 0;
+          break;
         default:
           return 0;
       }
@@ -218,9 +376,12 @@ const ProgramRivalAnalysis = () => {
     });
   };
 
+  // Check if prices are available for the selected year
+  const showPrices = selectedYear === "2024" || selectedYear === "2025";
+
   // Download as CSV
   const handleDownload = () => {
-    const headers = [
+    const baseHeaders = [
       "YÖP Kodu",
       "Üniversite",
       "Şehir",
@@ -233,18 +394,44 @@ const ProgramRivalAnalysis = () => {
       "Marka Etkinlik Değeri (A/B)",
     ];
 
-    const rows = getSortedData().map((row) => [
-      row.yop_kodu,
-      row.university,
-      row.city,
-      row.program,
-      row.program_detail,
-      row.scholarship,
-      row.puan_type,
-      row.tercihEdilme.toFixed(2),
-      row.yerlesenTercih.toFixed(2),
-      row.markaEtkinlik.toFixed(2),
-    ]);
+    const priceHeaders = showPrices
+      ? [
+          "Fiyat (₺)",
+          "Fiyat Endeksi",
+          "Doluluk Oranı (%)",
+          "Fiyat Değerlendirme Skoru",
+        ]
+      : [];
+
+    const headers = [...baseHeaders, ...priceHeaders];
+
+    const rows = getSortedData().map((row) => {
+      const baseData = [
+        row.yop_kodu,
+        row.university,
+        row.city,
+        row.program,
+        row.program_detail,
+        row.scholarship,
+        row.puan_type,
+        row.tercihEdilme.toFixed(2),
+        row.yerlesenTercih.toFixed(2),
+        row.markaEtkinlik.toFixed(2),
+      ];
+
+      const priceData = showPrices
+        ? [
+            row.price !== null ? row.price.toLocaleString("tr-TR") : "-",
+            row.priceIndex !== null ? row.priceIndex.toFixed(2) : "-",
+            row.occupancyRate !== null ? row.occupancyRate.toFixed(1) : "-",
+            row.priceEvaluationScore !== null
+              ? row.priceEvaluationScore.toFixed(2)
+              : "-",
+          ]
+        : [];
+
+      return [...baseData, ...priceData];
+    });
 
     const csvContent = [headers, ...rows]
       .map((row) => row.map((cell) => `"${cell}"`).join(","))
@@ -410,6 +597,53 @@ const ProgramRivalAnalysis = () => {
                     Marka Etkinlik Değeri (A/B)
                   </TableSortLabel>
                 </TableCell>
+                {showPrices && (
+                  <>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "price"}
+                        direction={orderBy === "price" ? order : "asc"}
+                        onClick={() => handleSort("price")}
+                      >
+                        Fiyat (₺)
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "price_index"}
+                        direction={orderBy === "price_index" ? order : "asc"}
+                        onClick={() => handleSort("price_index")}
+                      >
+                        Fiyat Endeksi
+                      </TableSortLabel>
+                    </TableCell>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "occupancy_rate"}
+                        direction={orderBy === "occupancy_rate" ? order : "asc"}
+                        onClick={() => handleSort("occupancy_rate")}
+                      >
+                        Doluluk Oranı (%)
+                      </TableSortLabel>
+                    </TableCell>
+                    <Tooltip
+                      title="Fiyat Endeksi × Doluluk Oranı. ≤1 ise fiyat sorunu yok, >1 ise fiyat yüksek veya marka yatırımı yetersiz"
+                      arrow
+                    >
+                      <TableCell align="right">
+                        <TableSortLabel
+                          active={orderBy === "price_evaluation"}
+                          direction={
+                            orderBy === "price_evaluation" ? order : "asc"
+                          }
+                          onClick={() => handleSort("price_evaluation")}
+                        >
+                          Fiyat Değerlendirme
+                        </TableSortLabel>
+                      </TableCell>
+                    </Tooltip>
+                  </>
+                )}
               </TableRow>
             </TableHead>
             <TableBody>
@@ -466,6 +700,76 @@ const ProgramRivalAnalysis = () => {
                       {row.markaEtkinlik.toFixed(2)}
                     </Typography>
                   </TableCell>
+                  {showPrices && (
+                    <>
+                      <TableCell align="right">
+                        {row.price !== null ? (
+                          <Typography variant="body2">
+                            {row.price.toLocaleString("tr-TR")} ₺
+                          </Typography>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.priceIndex !== null ? (
+                          <Chip
+                            label={row.priceIndex.toFixed(2)}
+                            size="small"
+                            color={
+                              row.priceIndex <= 1
+                                ? "success"
+                                : row.priceIndex <= 1.2
+                                ? "warning"
+                                : "error"
+                            }
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.occupancyRate !== null ? (
+                          <Chip
+                            label={`${row.occupancyRate.toFixed(1)}%`}
+                            size="small"
+                            color={
+                              row.occupancyRate >= 90
+                                ? "success"
+                                : row.occupancyRate >= 70
+                                ? "primary"
+                                : row.occupancyRate >= 50
+                                ? "warning"
+                                : "error"
+                            }
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                      <TableCell align="right">
+                        {row.priceEvaluationScore !== null ? (
+                          <Tooltip
+                            title={row.priceEvaluation}
+                            arrow
+                            placement="top"
+                          >
+                            <Chip
+                              label={row.priceEvaluationScore.toFixed(2)}
+                              size="small"
+                              color={
+                                row.priceEvaluationScore <= 1
+                                  ? "success"
+                                  : "error"
+                              }
+                            />
+                          </Tooltip>
+                        ) : (
+                          "-"
+                        )}
+                      </TableCell>
+                    </>
+                  )}
                 </TableRow>
               ))}
             </TableBody>
