@@ -61,11 +61,25 @@ const ProgramRivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load from both folders and also load price data
-        const [response1, response2, priceResponse] = await Promise.all([
+        // Load from both folders and also load price data and tercih statistics
+        const [
+          response1,
+          response2,
+          priceResponse,
+          tercihIstatResponse1,
+          tercihIstatResponse2,
+          tercihKullanmaResponse1,
+          tercihKullanmaResponse2,
+        ] = await Promise.all([
           fetch("/assets/data/all_universities_combined_tercih_stats.csv"),
           fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
           fetch("/assets/data/all_programs_prices_processed.csv"),
+          fetch("/assets/data/all_universities_tercih_istatistikleri.csv"),
+          fetch("/assets/data_2025/all_universities_tercih_istatistikleri.csv"),
+          fetch("/assets/data/all_universities_tercih_kullanma_oranlari.csv"),
+          fetch(
+            "/assets/data_2025/all_universities_tercih_kullanma_oranlari.csv"
+          ),
         ]);
 
         if (!response1.ok && !response2.ok)
@@ -119,6 +133,145 @@ const ProgramRivalAnalysis = () => {
               if (price !== null && !isNaN(price)) {
                 priceMap.set(key, price);
               }
+            }
+          }
+        }
+
+        // Parse tercih istatistikleri data (bir_kontenjana_talip, ilk_uc_sirada_tercih_eden, ilk_uc_tercih_olarak_yerlesen)
+        const tercihIstatMap = new Map();
+
+        // Helper to parse Turkish decimal format
+        const parseTurkishDecimal = (value) => {
+          if (!value || value === "") return null;
+          // Remove quotes if present
+          const cleaned = value.toString().replace(/"/g, "").replace(",", ".");
+          const parsed = parseFloat(cleaned);
+          return isNaN(parsed) ? null : parsed;
+        };
+
+        // Helper to parse CSV line with quoted fields containing commas
+        const parseCSVLine = (line) => {
+          const result = [];
+          let current = "";
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === "," && !inQuotes) {
+              result.push(current.trim());
+              current = "";
+            } else {
+              current += char;
+            }
+          }
+          result.push(current.trim());
+          return result;
+        };
+
+        // Parse 2022-2024 data from data folder
+        if (tercihIstatResponse1.ok) {
+          const text = await tercihIstatResponse1.text();
+          const lines = text.trim().split("\n");
+          for (let i = 1; i < lines.length; i++) {
+            const parts = parseCSVLine(lines[i]);
+            if (parts.length >= 16) {
+              const yop_kodu = parts[0]?.trim();
+              // Year columns: 2022=index 1,4,7,10,13 | 2023=index 2,5,8,11,14 | 2024=index 3,6,9,12,15
+              const yearIndex =
+                selectedYear === "2022"
+                  ? 0
+                  : selectedYear === "2023"
+                  ? 1
+                  : selectedYear === "2024"
+                  ? 2
+                  : -1;
+              if (yearIndex >= 0) {
+                tercihIstatMap.set(yop_kodu, {
+                  birKontenjanaTalip: parseTurkishDecimal(parts[1 + yearIndex]),
+                  ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(
+                    parts[4 + yearIndex]
+                  ),
+                  ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(
+                    parts[7 + yearIndex]
+                  ),
+                  ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(
+                    parts[10 + yearIndex]
+                  ),
+                  ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(
+                    parts[13 + yearIndex]
+                  ),
+                });
+              }
+            }
+          }
+        }
+
+        // Parse 2025 data from data_2025 folder (overwrites if year is 2025)
+        if (selectedYear === "2025" && tercihIstatResponse2.ok) {
+          const text = await tercihIstatResponse2.text();
+          const lines = text.trim().split("\n");
+          for (let i = 1; i < lines.length; i++) {
+            const parts = parseCSVLine(lines[i]);
+            if (parts.length >= 6) {
+              const yop_kodu = parts[0]?.trim();
+              tercihIstatMap.set(yop_kodu, {
+                birKontenjanaTalip: parseTurkishDecimal(parts[1]),
+                ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(parts[2]),
+                ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(parts[3]),
+                ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(parts[4]),
+                ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(parts[5]),
+              });
+            }
+          }
+        }
+
+        // Parse tercih kullanma oranlari data
+        const tercihKullanmaMap = new Map();
+
+        // Parse 2022-2024 data from data folder
+        if (tercihKullanmaResponse1.ok) {
+          const text = await tercihKullanmaResponse1.text();
+          const lines = text.trim().split("\n");
+          for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(",");
+            if (parts.length >= 10) {
+              const yop_kodu = parts[0]?.trim();
+              // Year columns: 2022=index 0 | 2023=index 1 | 2024=index 2
+              const yearIndex =
+                selectedYear === "2022"
+                  ? 0
+                  : selectedYear === "2023"
+                  ? 1
+                  : selectedYear === "2024"
+                  ? 2
+                  : -1;
+              if (yearIndex >= 0) {
+                tercihKullanmaMap.set(yop_kodu, {
+                  kullanilanTercih: parseTurkishDecimal(parts[1 + yearIndex]),
+                  bosBirakilanTercih: parseTurkishDecimal(parts[4 + yearIndex]),
+                  ortalamaKullanilanTercih: parseTurkishDecimal(
+                    parts[7 + yearIndex]
+                  ),
+                });
+              }
+            }
+          }
+        }
+
+        // Parse 2025 data from data_2025 folder
+        if (selectedYear === "2025" && tercihKullanmaResponse2.ok) {
+          const text = await tercihKullanmaResponse2.text();
+          const lines = text.trim().split("\n");
+          for (let i = 1; i < lines.length; i++) {
+            const parts = lines[i].split(",");
+            if (parts.length >= 4) {
+              const yop_kodu = parts[0]?.trim();
+              tercihKullanmaMap.set(yop_kodu, {
+                kullanilanTercih: parseTurkishDecimal(parts[1]),
+                bosBirakilanTercih: parseTurkishDecimal(parts[2]),
+                ortalamaKullanilanTercih: parseTurkishDecimal(parts[3]),
+              });
             }
           }
         }
@@ -271,6 +424,22 @@ const ProgramRivalAnalysis = () => {
               }
             }
 
+            // Get tercih istatistikleri data
+            const tercihIstat = tercihIstatMap.get(program.yop_kodu) || {};
+            const tercihKullanma =
+              tercihKullanmaMap.get(program.yop_kodu) || {};
+
+            // Calculate Üst Üç Çekim Farkı = ilk_uc_tercih_olarak_yerlesen_orani - ilk_uc_sirada_tercih_eden_orani
+            let ustUcCekimFarki = null;
+            if (
+              tercihIstat.ilkUcTercihOlarakYerlesenOrani !== null &&
+              tercihIstat.ilkUcSiradaTercihEdenOrani !== null
+            ) {
+              ustUcCekimFarki =
+                tercihIstat.ilkUcTercihOlarakYerlesenOrani -
+                tercihIstat.ilkUcSiradaTercihEdenOrani;
+            }
+
             programData.push({
               yop_kodu: program.yop_kodu,
               university: program.university,
@@ -287,6 +456,22 @@ const ProgramRivalAnalysis = () => {
               priceIndex,
               priceEvaluationScore,
               priceEvaluation,
+              // New tercih istatistikleri fields
+              birKontenjanaTalip: tercihIstat.birKontenjanaTalip,
+              ilkUcSiradaTercihEdenSayisi:
+                tercihIstat.ilkUcSiradaTercihEdenSayisi,
+              ilkUcSiradaTercihEdenOrani:
+                tercihIstat.ilkUcSiradaTercihEdenOrani,
+              ilkUcTercihOlarakYerlesenSayisi:
+                tercihIstat.ilkUcTercihOlarakYerlesenSayisi,
+              ilkUcTercihOlarakYerlesenOrani:
+                tercihIstat.ilkUcTercihOlarakYerlesenOrani,
+              // Calculated field
+              ustUcCekimFarki,
+              // Tercih kullanma fields
+              kullanilanTercih: tercihKullanma.kullanilanTercih,
+              bosBirakilanTercih: tercihKullanma.bosBirakilanTercih,
+              ortalamaKullanilanTercih: tercihKullanma.ortalamaKullanilanTercih,
             });
           }
         }
@@ -362,6 +547,42 @@ const ProgramRivalAnalysis = () => {
           aValue = a.price || 0;
           bValue = b.price || 0;
           break;
+        case "bir_kontenjana_talip":
+          aValue = a.birKontenjanaTalip || 0;
+          bValue = b.birKontenjanaTalip || 0;
+          break;
+        case "ilk_uc_sirada_tercih_eden_sayisi":
+          aValue = a.ilkUcSiradaTercihEdenSayisi || 0;
+          bValue = b.ilkUcSiradaTercihEdenSayisi || 0;
+          break;
+        case "ilk_uc_sirada_tercih_eden_orani":
+          aValue = a.ilkUcSiradaTercihEdenOrani || 0;
+          bValue = b.ilkUcSiradaTercihEdenOrani || 0;
+          break;
+        case "ilk_uc_tercih_olarak_yerlesen_sayisi":
+          aValue = a.ilkUcTercihOlarakYerlesenSayisi || 0;
+          bValue = b.ilkUcTercihOlarakYerlesenSayisi || 0;
+          break;
+        case "ilk_uc_tercih_olarak_yerlesen_orani":
+          aValue = a.ilkUcTercihOlarakYerlesenOrani || 0;
+          bValue = b.ilkUcTercihOlarakYerlesenOrani || 0;
+          break;
+        case "ust_uc_cekim_farki":
+          aValue = a.ustUcCekimFarki || 0;
+          bValue = b.ustUcCekimFarki || 0;
+          break;
+        case "kullanilan_tercih":
+          aValue = a.kullanilanTercih || 0;
+          bValue = b.kullanilanTercih || 0;
+          break;
+        case "bos_birakilan_tercih":
+          aValue = a.bosBirakilanTercih || 0;
+          bValue = b.bosBirakilanTercih || 0;
+          break;
+        case "ortalama_kullanilan_tercih":
+          aValue = a.ortalamaKullanilanTercih || 0;
+          bValue = b.ortalamaKullanilanTercih || 0;
+          break;
         default:
           return 0;
       }
@@ -392,6 +613,17 @@ const ProgramRivalAnalysis = () => {
       "Ort. Tercih Edilme Sırası (A)",
       "Ort. Yerleşen Tercih Sırası (B)",
       "Marka Etkinlik Değeri (A/B)",
+      // Tercih İstatistikleri
+      "Bir Kontenjana Talip Olan Aday Sayısı",
+      "İlk Üç Sırada Tercih Eden Sayısı",
+      "İlk Üç Sırada Tercih Eden Oranı (%)",
+      "İlk Üç Tercih Olarak Yerleşen Sayısı",
+      "İlk Üç Tercih Olarak Yerleşen Oranı (%)",
+      "Üst Üç Çekim Farkı",
+      // Tercih Kullanma
+      "Kullanılan Tercih",
+      "Boş Bırakılan Tercih",
+      "Ortalama Kullanılan Tercih",
     ];
 
     const priceHeaders = showPrices
@@ -417,6 +649,40 @@ const ProgramRivalAnalysis = () => {
         row.tercihEdilme.toFixed(2),
         row.yerlesenTercih.toFixed(2),
         row.markaEtkinlik.toFixed(2),
+        // Tercih İstatistikleri
+        row.birKontenjanaTalip !== null && row.birKontenjanaTalip !== undefined
+          ? row.birKontenjanaTalip.toFixed(1)
+          : "-",
+        row.ilkUcSiradaTercihEdenSayisi !== null &&
+        row.ilkUcSiradaTercihEdenSayisi !== undefined
+          ? row.ilkUcSiradaTercihEdenSayisi
+          : "-",
+        row.ilkUcSiradaTercihEdenOrani !== null &&
+        row.ilkUcSiradaTercihEdenOrani !== undefined
+          ? row.ilkUcSiradaTercihEdenOrani.toFixed(1)
+          : "-",
+        row.ilkUcTercihOlarakYerlesenSayisi !== null &&
+        row.ilkUcTercihOlarakYerlesenSayisi !== undefined
+          ? row.ilkUcTercihOlarakYerlesenSayisi
+          : "-",
+        row.ilkUcTercihOlarakYerlesenOrani !== null &&
+        row.ilkUcTercihOlarakYerlesenOrani !== undefined
+          ? row.ilkUcTercihOlarakYerlesenOrani.toFixed(1)
+          : "-",
+        row.ustUcCekimFarki !== null && row.ustUcCekimFarki !== undefined
+          ? row.ustUcCekimFarki.toFixed(1)
+          : "-",
+        // Tercih Kullanma
+        row.kullanilanTercih !== null && row.kullanilanTercih !== undefined
+          ? row.kullanilanTercih
+          : "-",
+        row.bosBirakilanTercih !== null && row.bosBirakilanTercih !== undefined
+          ? row.bosBirakilanTercih
+          : "-",
+        row.ortalamaKullanilanTercih !== null &&
+        row.ortalamaKullanilanTercih !== undefined
+          ? row.ortalamaKullanilanTercih
+          : "-",
       ];
 
       const priceData = showPrices
@@ -597,6 +863,126 @@ const ProgramRivalAnalysis = () => {
                     Marka Etkinlik Değeri (A/B)
                   </TableSortLabel>
                 </TableCell>
+                {/* Tercih İstatistikleri Columns */}
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "bir_kontenjana_talip"}
+                    direction={
+                      orderBy === "bir_kontenjana_talip" ? order : "asc"
+                    }
+                    onClick={() => handleSort("bir_kontenjana_talip")}
+                  >
+                    Bir Kont. Talip
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
+                    direction={
+                      orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
+                        ? order
+                        : "asc"
+                    }
+                    onClick={() =>
+                      handleSort("ilk_uc_sirada_tercih_eden_sayisi")
+                    }
+                  >
+                    İlk 3 Tercih Eden
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
+                    direction={
+                      orderBy === "ilk_uc_sirada_tercih_eden_orani"
+                        ? order
+                        : "asc"
+                    }
+                    onClick={() =>
+                      handleSort("ilk_uc_sirada_tercih_eden_orani")
+                    }
+                  >
+                    İlk 3 Tercih Oranı (%)
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"}
+                    direction={
+                      orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
+                        ? order
+                        : "asc"
+                    }
+                    onClick={() =>
+                      handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
+                    }
+                  >
+                    İlk 3 Yerleşen
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"}
+                    direction={
+                      orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
+                        ? order
+                        : "asc"
+                    }
+                    onClick={() =>
+                      handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
+                    }
+                  >
+                    İlk 3 Yerleşen Oranı (%)
+                  </TableSortLabel>
+                </TableCell>
+                <Tooltip
+                  title="İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç Sırada Tercih Eden Oranı"
+                  arrow
+                >
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "ust_uc_cekim_farki"}
+                      direction={
+                        orderBy === "ust_uc_cekim_farki" ? order : "asc"
+                      }
+                      onClick={() => handleSort("ust_uc_cekim_farki")}
+                    >
+                      Üst Üç Çekim Farkı
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                {/* Tercih Kullanma Columns */}
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "kullanilan_tercih"}
+                    direction={orderBy === "kullanilan_tercih" ? order : "asc"}
+                    onClick={() => handleSort("kullanilan_tercih")}
+                  >
+                    Kullanılan Tercih
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "bos_birakilan_tercih"}
+                    direction={
+                      orderBy === "bos_birakilan_tercih" ? order : "asc"
+                    }
+                    onClick={() => handleSort("bos_birakilan_tercih")}
+                  >
+                    Boş Bırakılan Tercih
+                  </TableSortLabel>
+                </TableCell>
+                <TableCell align="right">
+                  <TableSortLabel
+                    active={orderBy === "ortalama_kullanilan_tercih"}
+                    direction={
+                      orderBy === "ortalama_kullanilan_tercih" ? order : "asc"
+                    }
+                    onClick={() => handleSort("ortalama_kullanilan_tercih")}
+                  >
+                    Ort. Kullanılan Tercih
+                  </TableSortLabel>
+                </TableCell>
                 {showPrices && (
                   <>
                     <TableCell align="right">
@@ -698,6 +1084,84 @@ const ProgramRivalAnalysis = () => {
                   <TableCell align="right">
                     <Typography variant="body2" fontWeight="bold">
                       {row.markaEtkinlik.toFixed(2)}
+                    </Typography>
+                  </TableCell>
+                  {/* Tercih İstatistikleri Data */}
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.birKontenjanaTalip !== null &&
+                      row.birKontenjanaTalip !== undefined
+                        ? row.birKontenjanaTalip.toFixed(1)
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.ilkUcSiradaTercihEdenSayisi !== null &&
+                      row.ilkUcSiradaTercihEdenSayisi !== undefined
+                        ? row.ilkUcSiradaTercihEdenSayisi
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.ilkUcSiradaTercihEdenOrani !== null &&
+                      row.ilkUcSiradaTercihEdenOrani !== undefined
+                        ? `${row.ilkUcSiradaTercihEdenOrani.toFixed(1)}%`
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.ilkUcTercihOlarakYerlesenSayisi !== null &&
+                      row.ilkUcTercihOlarakYerlesenSayisi !== undefined
+                        ? row.ilkUcTercihOlarakYerlesenSayisi
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.ilkUcTercihOlarakYerlesenOrani !== null &&
+                      row.ilkUcTercihOlarakYerlesenOrani !== undefined
+                        ? `${row.ilkUcTercihOlarakYerlesenOrani.toFixed(1)}%`
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    {row.ustUcCekimFarki !== null &&
+                    row.ustUcCekimFarki !== undefined ? (
+                      <Chip
+                        label={`${row.ustUcCekimFarki.toFixed(1)}%`}
+                        size="small"
+                        color={row.ustUcCekimFarki >= 0 ? "success" : "error"}
+                      />
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                  {/* Tercih Kullanma Data */}
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.kullanilanTercih !== null &&
+                      row.kullanilanTercih !== undefined
+                        ? row.kullanilanTercih
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.bosBirakilanTercih !== null &&
+                      row.bosBirakilanTercih !== undefined
+                        ? row.bosBirakilanTercih
+                        : "-"}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="right">
+                    <Typography variant="body2">
+                      {row.ortalamaKullanilanTercih !== null &&
+                      row.ortalamaKullanilanTercih !== undefined
+                        ? row.ortalamaKullanilanTercih
+                        : "-"}
                     </Typography>
                   </TableCell>
                   {showPrices && (
