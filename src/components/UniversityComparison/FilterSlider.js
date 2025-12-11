@@ -8,28 +8,32 @@ const FilterSlider = ({
   label,
   frequencyData = null,
   type = "seçenek",
+  maxValue = 10,
+  step = 2,
 }) => {
-  const marks = [
-    { value: 0, label: "Tümü" },
-    { value: 2, label: "2" },
-    { value: 4, label: "4" },
-    { value: 6, label: "6" },
-    { value: 8, label: "8" },
-    { value: 10, label: "10+" },
-  ];
+  // Generate marks dynamically based on max and step
+  const marks = [];
+  for (let i = 0; i <= maxValue; i += step) {
+    marks.push({
+      value: i,
+      label: i === 0 ? "Tümü" : i === maxValue ? `${i}+` : `${i}`,
+    });
+  }
 
   // Calculate frequency distribution for visualization (if frequency data provided)
   const getFrequencyBars = () => {
     if (!frequencyData || frequencyData.length === 0) return null;
 
-    // Create ranges matching slider increments
-    const ranges = [
-      { min: 0, max: 2, label: "0-2" },
-      { min: 2, max: 4, label: "3-4" },
-      { min: 4, max: 6, label: "5-6" },
-      { min: 6, max: 8, label: "7-8" },
-      { min: 8, max: Infinity, label: "9+" },
-    ];
+    // Create ranges matching slider increments dynamically
+    const ranges = [];
+    for (let i = 0; i < maxValue; i += step) {
+      const isLast = i + step >= maxValue;
+      ranges.push({
+        min: i,
+        max: isLast ? Infinity : i + step,
+        label: isLast ? `${i + 1}+` : `${i + 1}-${i + step}`,
+      });
+    }
 
     const distribution = ranges.map((range) => {
       const count = frequencyData.filter(
@@ -61,7 +65,8 @@ const FilterSlider = ({
               minHeight: "2px",
               bgcolor:
                 value > 0 &&
-                (value >= item.max || (item.max === Infinity && value > 9))
+                (value >= item.max ||
+                  (item.max === Infinity && value > maxValue - step))
                   ? "rgba(25, 118, 210, 0.3)"
                   : "primary.main",
               borderRadius: "2px 2px 0 0",
@@ -88,7 +93,8 @@ const FilterSlider = ({
         value={value}
         onChange={(e, newValue) => onChange(newValue)}
         min={0}
-        max={10}
+        max={maxValue}
+        step={step}
         marks={marks}
         valueLabelDisplay="auto"
         disabled={disabled}

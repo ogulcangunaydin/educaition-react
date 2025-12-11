@@ -797,6 +797,8 @@ const UniversityComparison = () => {
                   }
                   frequencyData={programFrequencyData}
                   type="program tipi"
+                  maxValue={30}
+                  step={6}
                 />
                 <FilterSlider
                   value={minFulfillmentRate}
