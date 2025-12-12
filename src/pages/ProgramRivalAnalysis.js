@@ -29,8 +29,8 @@ const ProgramRivalAnalysis = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rivalData, setRivalData] = useState([]);
-  const [orderBy, setOrderBy] = useState("marka_etkinlik_degeri");
-  const [order, setOrder] = useState("desc");
+  const [orderBy, setOrderBy] = useState("tercih_edilme");
+  const [order, setOrder] = useState("asc");
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -529,10 +529,6 @@ const ProgramRivalAnalysis = () => {
           aValue = a.yerlesenTercih;
           bValue = b.yerlesenTercih;
           break;
-        case "marka_etkinlik_degeri":
-          aValue = a.markaEtkinlik;
-          bValue = b.markaEtkinlik;
-          break;
         case "price_index":
           aValue = a.priceIndex || 0;
           bValue = b.priceIndex || 0;
@@ -612,9 +608,8 @@ const ProgramRivalAnalysis = () => {
       "Detay",
       "Burs",
       "Puan Türü",
-      "Ort. Tercih Edilme Sırası (A)",
-      "Ort. Yerleşen Tercih Sırası (B)",
-      "Marka Etkinlik Değeri (A/B)",
+      "Ort. Tercih Edilme Sırası",
+      "Ort. Yerleşen Tercih Sırası",
       // Tercih İstatistikleri
       "Bir Kontenjana Talip Olan Aday Sayısı",
       "İlk Üç Sırada Tercih Eden Sayısı",
@@ -650,7 +645,6 @@ const ProgramRivalAnalysis = () => {
         row.puan_type,
         row.tercihEdilme.toFixed(2),
         row.yerlesenTercih.toFixed(2),
-        row.markaEtkinlik.toFixed(2),
         // Tercih İstatistikleri
         row.birKontenjanaTalip !== null && row.birKontenjanaTalip !== undefined
           ? row.birKontenjanaTalip.toFixed(1)
@@ -794,12 +788,6 @@ const ProgramRivalAnalysis = () => {
 
           <Alert severity="info" sx={{ mb: 2 }}>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              <strong>Marka Etkinlik Değeri (A/B):</strong> Ortalama Tercih
-              Edilme Sırası / Ortalama Yerleşen Tercih Sırası. Düşük değer,
-              programın daha erken tercih edildiğini ve daha geç sırada
-              yerleşenlerin bulunduğunu gösterir (daha güçlü marka).
-            </Typography>
-            <Typography variant="body2" sx={{ mb: 1 }}>
               <strong>Üst Üç Çekim Farkı:</strong> İlk Üç Tercih Olarak Yerleşen
               Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın
               çekim gücünün yüksek olduğunu gösterir.
@@ -862,7 +850,7 @@ const ProgramRivalAnalysis = () => {
                     direction={orderBy === "tercih_edilme" ? order : "asc"}
                     onClick={() => handleSort("tercih_edilme")}
                   >
-                    Ort. Tercih Edilme Sırası (A)
+                    Ort. Tercih Edilme Sırası
                   </TableSortLabel>
                 </TableCell>
                 <TableCell align="right">
@@ -871,18 +859,7 @@ const ProgramRivalAnalysis = () => {
                     direction={orderBy === "yerlesen_tercih" ? order : "asc"}
                     onClick={() => handleSort("yerlesen_tercih")}
                   >
-                    Ort. Yerleşen Tercih Sırası (B)
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "marka_etkinlik_degeri"}
-                    direction={
-                      orderBy === "marka_etkinlik_degeri" ? order : "asc"
-                    }
-                    onClick={() => handleSort("marka_etkinlik_degeri")}
-                  >
-                    Marka Etkinlik Değeri (A/B)
+                    Ort. Yerleşen Tercih Sırası
                   </TableSortLabel>
                 </TableCell>
                 {/* Tercih İstatistikleri Columns */}
@@ -1120,11 +1097,6 @@ const ProgramRivalAnalysis = () => {
                   <TableCell align="right">
                     <Typography variant="body2">
                       {row.yerlesenTercih.toFixed(2)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2" fontWeight="bold">
-                      {row.markaEtkinlik.toFixed(2)}
                     </Typography>
                   </TableCell>
                   {/* Tercih İstatistikleri Data */}
