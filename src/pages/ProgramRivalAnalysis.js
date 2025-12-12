@@ -804,7 +804,7 @@ const ProgramRivalAnalysis = () => {
             </Typography>
             {showPrices && (
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Fiyat Değerlendirme:</strong> Fiyat Endeksi × Doluluk
+                <strong>Fiyat Değerlendirme:</strong> Fiyat Endeksi x Doluluk
                 Oranı. ≤1 ise fiyat sorunu yok, &gt;1 ise fiyat yüksek veya
                 marka yatırımı yetersiz.
               </Typography>
