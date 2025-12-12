@@ -20,14 +20,15 @@ import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import InstructionsPanel from "../components/UniversityComparison/InstructionsPanel";
 import { parseCSV } from "../utils/csvParser";
 import { useBasket } from "../contexts/BasketContext";
+import { useUniversity } from "../contexts/UniversityContext";
 import {
-  getHalicProgramsForYear,
+  getUniversityProgramsForYear,
   findSimilarPrograms,
   prepareChartData,
 } from "../utils/dataFilters";
 import fetchWithAuth from "../utils/fetchWithAuth";
 
-const PageContainer = styled(Box)(({ theme }) => ({
+const PageContainer = styled(Box)(({ logourl }) => ({
   position: "relative",
   minHeight: "100vh",
   "&::before": {
@@ -38,7 +39,7 @@ const PageContainer = styled(Box)(({ theme }) => ({
     transform: "translate(-50%, -50%)",
     width: "600px",
     height: "600px",
-    backgroundImage: "url(/halic_universitesi_logo.svg)",
+    backgroundImage: `url(${logourl || "/halic_universitesi_logo.svg"})`,
     backgroundRepeat: "no-repeat",
     backgroundPosition: "center",
     backgroundSize: "contain",
@@ -55,10 +56,10 @@ const ContentWrapper = styled(Box)({
 
 const UniversityComparison = () => {
   const { clearBasket } = useBasket();
+  const { university } = useUniversity();
   const previousProgramRef = useRef(null);
 
   // State for CSV data
-  const [halicData, setHalicData] = useState([]);
   const [allUniversitiesData, setAllUniversitiesData] = useState([]);
   const [cityPreferencesData, setCityPreferencesData] = useState([]);
   const [universityPreferencesData, setUniversityPreferencesData] = useState(
@@ -156,7 +157,7 @@ const UniversityComparison = () => {
     universityPreferencesData.forEach((row) => {
       if (row.yop_kodu === selectedProgram.yop_kodu) {
         const uni = row.universite;
-        if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+        if (uni !== university.name) {
           universityTotals[uni] =
             (universityTotals[uni] || 0) + row.tercih_sayisi;
         }
@@ -164,7 +165,7 @@ const UniversityComparison = () => {
     });
 
     return Object.entries(universityTotals).sort((a, b) => b[1] - a[1]);
-  }, [selectedProgram, universityPreferencesData]);
+  }, [selectedProgram, universityPreferencesData, university.name]);
 
   // Calculate fulfillment rate frequency data for similar programs
   const fulfillmentFrequencyData = useMemo(() => {
@@ -219,48 +220,52 @@ const UniversityComparison = () => {
     customRangeMax,
   ]);
 
-  // Load CSV data on mount
+  // Load CSV data on mount or when university changes
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
         setError(null);
 
+        const dataPrefix = university.dataPrefix;
+
         // Load CSV files (existing data + 2025 data)
         const [
-          halicResponse,
+          uniProgramsResponse,
           allUniversitiesResponse,
           cityPrefsResponse,
           uniPrefsResponse,
           progPrefsResponse,
           priceResponse,
-          halic2025Response,
+          uniPrograms2025Response,
           allUniversities2025Response,
           cityPrefs2025Response,
           uniPrefs2025Response,
           progPrefs2025Response,
         ] = await Promise.all([
-          fetch("/assets/data/halic_programs.csv"),
+          fetch(`/assets/data/${dataPrefix}_programs.csv`),
           fetch("/assets/data/all_universities_programs_master.csv"),
-          fetch("/assets/data/halic_tercih_edilen_iller.csv"),
-          fetch("/assets/data/halic_tercih_edilen_universiteler.csv"),
-          fetch("/assets/data/halic_tercih_edilen_programlar.csv"),
+          fetch(`/assets/data/${dataPrefix}_tercih_edilen_iller.csv`),
+          fetch(`/assets/data/${dataPrefix}_tercih_edilen_universiteler.csv`),
+          fetch(`/assets/data/${dataPrefix}_tercih_edilen_programlar.csv`),
           fetch("/assets/data/all_programs_prices_processed.csv"),
-          fetch("/assets/data_2025/halic_programs.csv"),
+          fetch(`/assets/data_2025/${dataPrefix}_programs.csv`),
           fetch("/assets/data_2025/all_universities_programs_master.csv"),
-          fetch("/assets/data_2025/halic_tercih_edilen_iller.csv"),
-          fetch("/assets/data_2025/halic_tercih_edilen_universiteler.csv"),
-          fetch("/assets/data_2025/halic_tercih_edilen_programlar.csv"),
+          fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_iller.csv`),
+          fetch(
+            `/assets/data_2025/${dataPrefix}_tercih_edilen_universiteler.csv`
+          ),
+          fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_programlar.csv`),
         ]);
 
         if (
-          !halicResponse.ok ||
+          !uniProgramsResponse.ok ||
           !allUniversitiesResponse.ok ||
           !cityPrefsResponse.ok ||
           !uniPrefsResponse.ok ||
           !progPrefsResponse.ok ||
           !priceResponse.ok ||
-          !halic2025Response.ok ||
+          !uniPrograms2025Response.ok ||
           !allUniversities2025Response.ok ||
           !cityPrefs2025Response.ok ||
           !uniPrefs2025Response.ok ||
@@ -270,38 +275,34 @@ const UniversityComparison = () => {
         }
 
         const [
-          halicText,
+          ,
+          // uniProgramsText - not needed, using allUniversitiesData instead
           allUniversitiesText,
           cityPrefsText,
           uniPrefsText,
           progPrefsText,
-          priceText,
-          halic2025Text,
+          priceText, // uniPrograms2025Text - not needed, using allUniversitiesData instead
+          ,
           allUniversities2025Text,
           cityPrefs2025Text,
           uniPrefs2025Text,
           progPrefs2025Text,
         ] = await Promise.all([
-          halicResponse.text(),
+          uniProgramsResponse.text(),
           allUniversitiesResponse.text(),
           cityPrefsResponse.text(),
           uniPrefsResponse.text(),
           progPrefsResponse.text(),
           priceResponse.text(),
-          halic2025Response.text(),
+          uniPrograms2025Response.text(),
           allUniversities2025Response.text(),
           cityPrefs2025Response.text(),
           uniPrefs2025Response.text(),
           progPrefs2025Response.text(),
         ]);
 
-        const halicParsed = parseCSV(halicText);
-        const halic2025Parsed = parseCSV(halic2025Text);
         const allUniversitiesParsed = parseCSV(allUniversitiesText);
         const allUniversities2025Parsed = parseCSV(allUniversities2025Text);
-
-        // Merge Halic data from both sources
-        const mergedHalicData = [...halicParsed, ...halic2025Parsed];
 
         // Merge all universities data from both sources
         const mergedAllUniversitiesData = [
@@ -417,7 +418,6 @@ const UniversityComparison = () => {
           });
         }
 
-        setHalicData(mergedHalicData);
         setAllUniversitiesData(mergedAllUniversitiesData);
         setCityPreferencesData(cityPrefsData);
         setUniversityPreferencesData(uniPrefsData);
@@ -434,18 +434,24 @@ const UniversityComparison = () => {
     };
 
     loadData();
-  }, []);
+  }, [university.dataPrefix]);
 
-  // Update available programs when year changes
+  // Update available programs when year or university changes
+  // Filter programs for the current university from all universities data
   useEffect(() => {
-    if (year && halicData.length > 0) {
-      const programs = getHalicProgramsForYear(halicData, year);
+    if (year && allUniversitiesData.length > 0) {
+      // Filter programs that belong to the current user's university
+      const programs = getUniversityProgramsForYear(
+        allUniversitiesData,
+        year,
+        university.name
+      );
       setAvailablePrograms(programs);
       setSelectedProgram(null); // Reset program selection
     } else {
       setAvailablePrograms([]);
     }
-  }, [year, halicData]);
+  }, [year, allUniversitiesData, university.name]);
 
   // Clear basket when selected program changes to a different program
   useEffect(() => {
@@ -535,7 +541,7 @@ const UniversityComparison = () => {
           }
         });
 
-        // Filter programs: only include cities that meet minimum threshold (always include Haliç program)
+        // Filter programs: only include cities that meet minimum threshold (always include own university program)
         filteredByCity = filteredByType.filter(
           (p) =>
             p.yop_kodu === selectedProgram.yop_kodu ||
@@ -543,23 +549,23 @@ const UniversityComparison = () => {
         );
       }
 
-      // Filter by minimum university count (exclude HALİÇ from count check)
+      // Filter by minimum university count (exclude own university from count check)
       let filteredByUniversityCount = filteredByCity;
       if (minUniversityCount > 0 && universityPreferencesData.length > 0) {
-        // Calculate total preferences per university for THIS specific Haliç program only
+        // Calculate total preferences per university for THIS specific own university program only
         const universityTotals = {};
         universityPreferencesData.forEach((row) => {
-          // Only count preferences for the selected Haliç program
+          // Only count preferences for the selected own university program
           if (row.yop_kodu === selectedProgram.yop_kodu) {
             const uni = row.universite;
-            if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+            if (uni !== university.name) {
               universityTotals[uni] =
                 (universityTotals[uni] || 0) + row.tercih_sayisi;
             }
           }
         });
 
-        // Filter programs by university count (always include selected Haliç program)
+        // Filter programs by university count (always include selected own university program)
         filteredByUniversityCount = filteredByCity.filter(
           (p) =>
             p.yop_kodu === selectedProgram.yop_kodu ||
@@ -570,10 +576,10 @@ const UniversityComparison = () => {
       // Filter by minimum program count
       let filteredByProgramCount = filteredByUniversityCount;
       if (minProgramCount > 0 && programPreferencesData.length > 0) {
-        // Calculate total preferences per program for THIS specific Haliç program only
+        // Calculate total preferences per program for THIS specific own university program only
         const programTotals = {};
         programPreferencesData.forEach((row) => {
-          // Only count preferences for the selected Haliç program
+          // Only count preferences for the selected own university program
           if (row.yop_kodu === selectedProgram.yop_kodu) {
             const prog = row.program;
             programTotals[prog] =
@@ -581,7 +587,7 @@ const UniversityComparison = () => {
           }
         });
 
-        // Filter by matching program names (always include selected Haliç program)
+        // Filter by matching program names (always include selected own university program)
         filteredByProgramCount = filteredByUniversityCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
 
@@ -596,7 +602,7 @@ const UniversityComparison = () => {
       let filteredByFulfillmentRate = filteredByProgramCount;
       if (minFulfillmentRate > 0) {
         filteredByFulfillmentRate = filteredByProgramCount.filter((p) => {
-          // Always include selected Haliç program
+          // Always include selected own university program
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
 
           const kontenjan = p[`kontenjan_${year}`];
@@ -633,7 +639,8 @@ const UniversityComparison = () => {
         year,
         metric,
         priceData,
-        chartSortBy
+        chartSortBy,
+        university.name
       );
       setChartData(chart);
     } else {
@@ -658,6 +665,7 @@ const UniversityComparison = () => {
     customRangeMax,
     chartSortBy,
     priceData,
+    university.name,
   ]);
 
   // Handle year change
@@ -730,7 +738,7 @@ const UniversityComparison = () => {
   }
 
   return (
-    <PageContainer>
+    <PageContainer logourl={university.logo}>
       <Header title="Üniversite Karşılaştırma" />
       <ContentWrapper>
         <Container maxWidth={false} sx={{ mt: 4, mb: 4, marginTop: "70px" }}>
@@ -863,7 +871,7 @@ const UniversityComparison = () => {
                             universityPreferencesData.forEach((row) => {
                               if (row.yop_kodu === selectedProgram.yop_kodu) {
                                 const uni = row.universite;
-                                if (uni !== "HALİÇ ÜNİVERSİTESİ") {
+                                if (uni !== university.name) {
                                   universityTotals[uni] =
                                     (universityTotals[uni] || 0) +
                                     row.tercih_sayisi;

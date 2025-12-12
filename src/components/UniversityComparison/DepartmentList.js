@@ -20,8 +20,10 @@ import { Clear as ClearIcon } from "@mui/icons-material";
 import { formatScore, formatRanking } from "../../utils/csvParser";
 import { formatProgramName } from "../../utils/dataFilters";
 import { useBasket } from "../../contexts/BasketContext";
+import { useUniversity } from "../../contexts/UniversityContext";
 
 const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
+  const { isOwnUniversityName } = useUniversity();
   const [orderBy, setOrderBy] = useState(
     metric === "ranking" ? "tavan_bs" : "tavan"
   );
@@ -449,10 +451,9 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontWeight:
-                          program.university === "HALİÇ ÜNİVERSİTESİ"
-                            ? "bold"
-                            : "normal",
+                        fontWeight: isOwnUniversityName(program.university)
+                          ? "bold"
+                          : "normal",
                       }}
                     >
                       {program.university}

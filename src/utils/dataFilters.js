@@ -3,7 +3,23 @@
  */
 
 /**
- * Get Haliç programs that have data for the specified year
+ * Get programs for the specified university and year
+ * @param {Array} data - All programs data
+ * @param {string} year - Year to filter
+ * @param {string} universityName - University name (e.g., "HALİÇ ÜNİVERSİTESİ")
+ */
+export const getUniversityProgramsForYear = (data, year, universityName) => {
+  if (!data || !year || !universityName) return [];
+
+  return data.filter(
+    (program) =>
+      program[`has_${year}`] === true && program.university === universityName
+  );
+};
+
+/**
+ * @deprecated Use getUniversityProgramsForYear instead
+ * Get Haliç programs that have data for the specified year (kept for backward compatibility)
  */
 export const getHalicProgramsForYear = (halicData, year) => {
   if (!halicData || !year) return [];
@@ -116,13 +132,20 @@ export const groupProgramsByUniversity = (programs) => {
 
 /**
  * Prepare chart data for box and whisker plot
+ * @param {Array} programs - Programs to display
+ * @param {string} year - Selected year
+ * @param {string} metric - "ranking" or "score"
+ * @param {Array} priceData - Price data array
+ * @param {string} sortBy - Sort method
+ * @param {string} ownUniversityName - The user's own university name to highlight (e.g., "HALİÇ ÜNİVERSİTESİ")
  */
 export const prepareChartData = (
   programs,
   year,
   metric,
   priceData = [],
-  sortBy = "spread"
+  sortBy = "spread",
+  ownUniversityName = "HALİÇ ÜNİVERSİTESİ"
 ) => {
   if (!programs || programs.length === 0) return null;
 
@@ -174,8 +197,8 @@ export const prepareChartData = (
     KKTC: "rgba(75, 192, 192, 0.6)", // Teal for TRNC universities
   };
 
-  // Special color for Haliç University (highlighted)
-  const halicColor = "rgba(255, 193, 7, 0.8)"; // Bright orange/yellow
+  // Special color for own university (highlighted)
+  const ownUniversityColor = "rgba(255, 193, 7, 0.8)"; // Bright orange/yellow
 
   // First pass: collect all valid items to calculate data range
   const departmentItems = programs
@@ -274,10 +297,10 @@ export const prepareChartData = (
     item.price = showPrices ? priceMap.get(priceKey) || 0 : 0;
   });
 
-  // Sort: Haliç first, then by selected sort method
+  // Sort: Own university first, then by selected sort method
   departmentItems.sort((a, b) => {
-    if (a.university === "HALİÇ ÜNİVERSİTESİ") return -1;
-    if (b.university === "HALİÇ ÜNİVERSİTESİ") return 1;
+    if (a.university === ownUniversityName) return -1;
+    if (b.university === ownUniversityName) return 1;
 
     // Apply sorting based on sortBy parameter
     switch (sortBy) {
@@ -319,9 +342,9 @@ export const prepareChartData = (
 
     pricePoints.push(item.price);
 
-    // Use special color for Haliç University, otherwise use type-based color
-    if (item.university === "HALİÇ ÜNİVERSİTESİ") {
-      colors.push(halicColor);
+    // Use special color for own university, otherwise use type-based color
+    if (item.university === ownUniversityName) {
+      colors.push(ownUniversityColor);
     } else {
       colors.push(colorMap[item.university_type] || "rgba(153, 102, 255, 0.6)");
     }

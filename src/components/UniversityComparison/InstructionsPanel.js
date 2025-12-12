@@ -11,8 +11,11 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoIcon from "@mui/icons-material/Info";
+import { useUniversity } from "../../contexts/UniversityContext";
 
 const InstructionsPanel = () => {
+  const { university } = useUniversity();
+
   return (
     <Paper
       sx={{
@@ -45,7 +48,7 @@ const InstructionsPanel = () => {
               seçin (2022-2025)
             </Typography>
             <Typography variant="body2">
-              <strong>2. Program Seçimi:</strong> Haliç Üniversitesi'nden
+              <strong>2. Program Seçimi:</strong> {university.displayName}'nden
               karşılaştırmak istediğiniz programı seçin (alfabetik sırada)
             </Typography>
             <Typography variant="body2">

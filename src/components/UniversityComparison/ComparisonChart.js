@@ -22,6 +22,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
+import { useUniversity } from "../../contexts/UniversityContext";
 
 ChartJS.register(
   CategoryScale,
@@ -47,6 +48,7 @@ const ComparisonChart = ({
   sortBy,
   onSortChange,
 }) => {
+  const { university } = useUniversity();
   const [bufferStep, setBufferStep] = useState(
     metric === "ranking" ? 25000 : 50
   );
@@ -142,8 +144,8 @@ const ComparisonChart = ({
     {
       label:
         metric === "ranking"
-          ? "HALİÇ ÜNİVERSİTESİ / Sıralama Aralığı Gösteriliyor"
-          : "HALİÇ ÜNİVERSİTESİ / Puan Aralığı Gösteriliyor",
+          ? `${university.name} / Sıralama Aralığı Gösteriliyor`
+          : `${university.name} / Puan Aralığı Gösteriliyor`,
       data: chartData.dataPoints.map((d) => [d.min, d.max]),
       backgroundColor: (context) => {
         const chart = context.chart;

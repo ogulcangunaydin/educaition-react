@@ -1,8 +1,11 @@
 import React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 import { formatProgramName } from "../../utils/dataFilters";
+import { useUniversity } from "../../contexts/UniversityContext";
 
 const ProgramSelector = ({ programs, value, onChange, disabled = false }) => {
+  const { university } = useUniversity();
+
   // Sort programs alphabetically by formatted name
   const sortedPrograms = programs
     ? [...programs].sort((a, b) => {
@@ -12,16 +15,16 @@ const ProgramSelector = ({ programs, value, onChange, disabled = false }) => {
       })
     : [];
 
+  const labelText = `${university.displayName} Programı Seçiniz`;
+
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
-      <InputLabel id="program-select-label">
-        Haliç Üniversitesi Programı Seçiniz
-      </InputLabel>
+      <InputLabel id="program-select-label">{labelText}</InputLabel>
       <Select
         labelId="program-select-label"
         id="program-select"
         value={value || ""}
-        label="Haliç Üniversitesi Programı Seçiniz"
+        label={labelText}
         onChange={(e) => {
           const selected = sortedPrograms.find(
             (p) => p.yop_kodu === e.target.value

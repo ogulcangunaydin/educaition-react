@@ -4,13 +4,16 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 import { BasketProvider } from "./contexts/BasketContext";
+import { UniversityProvider } from "./contexts/UniversityContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BasketProvider>
-      <App />
-    </BasketProvider>
+    <UniversityProvider>
+      <BasketProvider>
+        <App />
+      </BasketProvider>
+    </UniversityProvider>
   </React.StrictMode>
 );
 

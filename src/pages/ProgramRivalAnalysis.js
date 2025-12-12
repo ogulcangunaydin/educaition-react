@@ -20,10 +20,12 @@ import {
 import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
+import { useUniversity } from "../contexts/UniversityContext";
 import fetchWithAuth from "../utils/fetchWithAuth";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
+  const { isOwnUniversityName } = useUniversity();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [rivalData, setRivalData] = useState([]);
@@ -321,14 +323,11 @@ const ProgramRivalAnalysis = () => {
           csvDataMap.has(selectedPrograms[0]?.yop_kodu)
         );
 
-        // Find Haliç University programs for baseline price calculation
-        let halicTotalPrice = 0;
-        let halicPriceCount = 0;
+        // Find own university programs for baseline price calculation
+        let ownUniversityTotalPrice = 0;
+        let ownUniversityPriceCount = 0;
         for (const program of selectedPrograms) {
-          if (
-            program.university === "Haliç Üniversitesi" ||
-            program.university === "HALİÇ ÜNİVERSİTESİ"
-          ) {
+          if (isOwnUniversityName(program.university)) {
             const scholarship = program.scholarship || "";
             let scholarship_pct = 0;
             if (scholarship.includes("Burslu") || scholarship.includes("100")) {
@@ -352,14 +351,19 @@ const ProgramRivalAnalysis = () => {
             const priceKey = `${normalizedYopKodu}_${scholarship_pct}`;
             const price = priceMap.get(priceKey);
             if (price) {
-              halicTotalPrice += price;
-              halicPriceCount++;
+              ownUniversityTotalPrice += price;
+              ownUniversityPriceCount++;
             }
           }
         }
-        const halicAvgPrice =
-          halicPriceCount > 0 ? halicTotalPrice / halicPriceCount : null;
-        console.log("[ProgramRivalAnalysis] Haliç avg price:", halicAvgPrice);
+        const ownUniversityAvgPrice =
+          ownUniversityPriceCount > 0
+            ? ownUniversityTotalPrice / ownUniversityPriceCount
+            : null;
+        console.log(
+          "[ProgramRivalAnalysis] Own university avg price:",
+          ownUniversityAvgPrice
+        );
 
         // Create a row for each selected program using yop_kodu as primary key
         const programData = [];
@@ -397,18 +401,16 @@ const ProgramRivalAnalysis = () => {
               kontenjan > 0 ? (yerlesen / kontenjan) * 100 : null;
 
             // Calculate price_index
-            const isHalic =
-              program.university === "Haliç Üniversitesi" ||
-              program.university === "HALİÇ ÜNİVERSİTESİ";
+            const isOwnUniversity = isOwnUniversityName(program.university);
             let priceIndex = null;
-            if (isHalic) {
+            if (isOwnUniversity) {
               priceIndex = 1.0;
             } else if (
               programPrice !== null &&
-              halicAvgPrice !== null &&
-              halicAvgPrice > 0
+              ownUniversityAvgPrice !== null &&
+              ownUniversityAvgPrice > 0
             ) {
-              priceIndex = programPrice / halicAvgPrice;
+              priceIndex = programPrice / ownUniversityAvgPrice;
             }
 
             // Price evaluation: priceIndex * occupancyRate / 100
@@ -493,7 +495,7 @@ const ProgramRivalAnalysis = () => {
     };
 
     loadRivalData();
-  }, [selectedPrograms, selectedYear]);
+  }, [selectedPrograms, selectedYear, isOwnUniversityName]);
 
   // Handle sorting
   const handleSort = (property) => {
@@ -1079,10 +1081,9 @@ const ProgramRivalAnalysis = () => {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontWeight:
-                          row.university === "HALİÇ ÜNİVERSİTESİ"
-                            ? "bold"
-                            : "normal",
+                        fontWeight: isOwnUniversityName(row.university)
+                          ? "bold"
+                          : "normal",
                       }}
                     >
                       {row.university}
