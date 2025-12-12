@@ -791,11 +791,31 @@ const ProgramRivalAnalysis = () => {
           </Box>
 
           <Alert severity="info" sx={{ mb: 2 }}>
-            <Typography variant="body2">
-              <strong>Marka Etkinlik Değeri:</strong> Ortalama Tercih Edilme
-              Sırası / Ortalama Yerleşen Tercih Sırası. Düşük değer, programın
-              daha erken tercih edildiğini ve daha geç sırada yerleşenlerin
-              bulunduğunu gösterir (daha güçlü marka).
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              <strong>Marka Etkinlik Değeri (A/B):</strong> Ortalama Tercih
+              Edilme Sırası / Ortalama Yerleşen Tercih Sırası. Düşük değer,
+              programın daha erken tercih edildiğini ve daha geç sırada
+              yerleşenlerin bulunduğunu gösterir (daha güçlü marka).
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              <strong>Üst Üç Çekim Farkı:</strong> İlk Üç Tercih Olarak Yerleşen
+              Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın
+              çekim gücünün yüksek olduğunu gösterir.
+            </Typography>
+            {showPrices && (
+              <Typography variant="body2" sx={{ mb: 1 }}>
+                <strong>Fiyat Değerlendirme:</strong> Fiyat Endeksi × Doluluk
+                Oranı. ≤1 ise fiyat sorunu yok, &gt;1 ise fiyat yüksek veya
+                marka yatırımı yetersiz.
+              </Typography>
+            )}
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ mt: 1, fontStyle: "italic" }}
+            >
+              💡 Kısaltılmış sütun adlarının üzerine geldiğinizde tam adlarını
+              görebilirsiniz.
             </Typography>
           </Alert>
         </Paper>
@@ -864,79 +884,91 @@ const ProgramRivalAnalysis = () => {
                   </TableSortLabel>
                 </TableCell>
                 {/* Tercih İstatistikleri Columns */}
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "bir_kontenjana_talip"}
-                    direction={
-                      orderBy === "bir_kontenjana_talip" ? order : "asc"
-                    }
-                    onClick={() => handleSort("bir_kontenjana_talip")}
-                  >
-                    Bir Kont. Talip
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
-                    direction={
-                      orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
-                        ? order
-                        : "asc"
-                    }
-                    onClick={() =>
-                      handleSort("ilk_uc_sirada_tercih_eden_sayisi")
-                    }
-                  >
-                    İlk 3 Tercih Eden
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
-                    direction={
-                      orderBy === "ilk_uc_sirada_tercih_eden_orani"
-                        ? order
-                        : "asc"
-                    }
-                    onClick={() =>
-                      handleSort("ilk_uc_sirada_tercih_eden_orani")
-                    }
-                  >
-                    İlk 3 Tercih Oranı (%)
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"}
-                    direction={
-                      orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
-                        ? order
-                        : "asc"
-                    }
-                    onClick={() =>
-                      handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
-                    }
-                  >
-                    İlk 3 Yerleşen
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"}
-                    direction={
-                      orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
-                        ? order
-                        : "asc"
-                    }
-                    onClick={() =>
-                      handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
-                    }
-                  >
-                    İlk 3 Yerleşen Oranı (%)
-                  </TableSortLabel>
-                </TableCell>
+                <Tooltip title="Bir Kontenjana Talip Olan Aday Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "bir_kontenjana_talip"}
+                      direction={
+                        orderBy === "bir_kontenjana_talip" ? order : "asc"
+                      }
+                      onClick={() => handleSort("bir_kontenjana_talip")}
+                    >
+                      Bir Kont. Talip
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="İlk Üç Sırada Tercih Eden Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
+                      direction={
+                        orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
+                          ? order
+                          : "asc"
+                      }
+                      onClick={() =>
+                        handleSort("ilk_uc_sirada_tercih_eden_sayisi")
+                      }
+                    >
+                      İlk 3 Tercih Eden
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="İlk Üç Sırada Tercih Eden Oranı (%)" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
+                      direction={
+                        orderBy === "ilk_uc_sirada_tercih_eden_orani"
+                          ? order
+                          : "asc"
+                      }
+                      onClick={() =>
+                        handleSort("ilk_uc_sirada_tercih_eden_orani")
+                      }
+                    >
+                      İlk 3 Tercih Oranı (%)
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="İlk Üç Tercih Olarak Yerleşen Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={
+                        orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
+                      }
+                      direction={
+                        orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
+                          ? order
+                          : "asc"
+                      }
+                      onClick={() =>
+                        handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
+                      }
+                    >
+                      İlk 3 Yerleşen
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="İlk Üç Tercih Olarak Yerleşen Oranı (%)" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"}
+                      direction={
+                        orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
+                          ? order
+                          : "asc"
+                      }
+                      onClick={() =>
+                        handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
+                      }
+                    >
+                      İlk 3 Yerleşen Oranı (%)
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
                 <Tooltip
-                  title="İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç Sırada Tercih Eden Oranı"
+                  title="İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın çekim gücünün yüksek olduğunu gösterir."
                   arrow
                 >
                   <TableCell align="right">
@@ -952,37 +984,45 @@ const ProgramRivalAnalysis = () => {
                   </TableCell>
                 </Tooltip>
                 {/* Tercih Kullanma Columns */}
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "kullanilan_tercih"}
-                    direction={orderBy === "kullanilan_tercih" ? order : "asc"}
-                    onClick={() => handleSort("kullanilan_tercih")}
-                  >
-                    Kullanılan Tercih
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "bos_birakilan_tercih"}
-                    direction={
-                      orderBy === "bos_birakilan_tercih" ? order : "asc"
-                    }
-                    onClick={() => handleSort("bos_birakilan_tercih")}
-                  >
-                    Boş Bırakılan Tercih
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "ortalama_kullanilan_tercih"}
-                    direction={
-                      orderBy === "ortalama_kullanilan_tercih" ? order : "asc"
-                    }
-                    onClick={() => handleSort("ortalama_kullanilan_tercih")}
-                  >
-                    Ort. Kullanılan Tercih
-                  </TableSortLabel>
-                </TableCell>
+                <Tooltip title="Kullanılan Tercih Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "kullanilan_tercih"}
+                      direction={
+                        orderBy === "kullanilan_tercih" ? order : "asc"
+                      }
+                      onClick={() => handleSort("kullanilan_tercih")}
+                    >
+                      Kullanılan Tercih
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="Boş Bırakılan Tercih Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "bos_birakilan_tercih"}
+                      direction={
+                        orderBy === "bos_birakilan_tercih" ? order : "asc"
+                      }
+                      onClick={() => handleSort("bos_birakilan_tercih")}
+                    >
+                      Boş Bırakılan Tercih
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
+                <Tooltip title="Ortalama Kullanılan Tercih Sayısı" arrow>
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "ortalama_kullanilan_tercih"}
+                      direction={
+                        orderBy === "ortalama_kullanilan_tercih" ? order : "asc"
+                      }
+                      onClick={() => handleSort("ortalama_kullanilan_tercih")}
+                    >
+                      Ort. Kullanılan Tercih
+                    </TableSortLabel>
+                  </TableCell>
+                </Tooltip>
                 {showPrices && (
                   <>
                     <TableCell align="right">
