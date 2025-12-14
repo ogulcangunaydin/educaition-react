@@ -101,9 +101,13 @@ const UniversityComparison = () => {
   const [recordLimit, setRecordLimit] = useState(10);
   const [universityType, setUniversityType] = useState("Vakıf");
   const [topCitiesLimit, setTopCitiesLimit] = useState(0);
+  const [topCitiesReversed, setTopCitiesReversed] = useState(false);
   const [minUniversityCount, setMinUniversityCount] = useState(0);
+  const [universityCountReversed, setUniversityCountReversed] = useState(false);
   const [minProgramCount, setMinProgramCount] = useState(0);
+  const [programCountReversed, setProgramCountReversed] = useState(false);
   const [minFulfillmentRate, setMinFulfillmentRate] = useState(0);
+  const [fulfillmentRateReversed, setFulfillmentRateReversed] = useState(false);
   const [customRangeMin, setCustomRangeMin] = useState(null);
   const [customRangeMax, setCustomRangeMax] = useState(null);
   const [chartSortBy, setChartSortBy] = useState("spread");
@@ -540,12 +544,19 @@ const UniversityComparison = () => {
           }
         });
 
-        // Filter programs: only include cities that meet minimum threshold (always include own university program)
-        filteredByCity = filteredByType.filter(
-          (p) =>
-            p.yop_kodu === selectedProgram.yop_kodu ||
-            (cityTotals[p.city] || 0) >= topCitiesLimit
-        );
+        // Only allow cities that pass the filter
+        const allowedCities = Object.entries(cityTotals)
+          .filter(([_, count]) =>
+            topCitiesReversed
+              ? count <= topCitiesLimit
+              : count >= topCitiesLimit
+          )
+          .map(([city]) => city);
+
+        filteredByCity = filteredByType.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          return allowedCities.includes(p.city);
+        });
       }
 
       // Filter by minimum university count (exclude own university from count check)
@@ -564,12 +575,19 @@ const UniversityComparison = () => {
           }
         });
 
-        // Filter programs by university count (always include selected own university program)
-        filteredByUniversityCount = filteredByCity.filter(
-          (p) =>
-            p.yop_kodu === selectedProgram.yop_kodu ||
-            (universityTotals[p.university] || 0) >= minUniversityCount
-        );
+        // Only allow universities that pass the filter
+        const allowedUniversities = Object.entries(universityTotals)
+          .filter(([_, count]) =>
+            universityCountReversed
+              ? count <= minUniversityCount
+              : count >= minUniversityCount
+          )
+          .map(([uni]) => uni);
+
+        filteredByUniversityCount = filteredByCity.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          return allowedUniversities.includes(p.university);
+        });
       }
 
       // Filter by minimum program count
@@ -586,14 +604,20 @@ const UniversityComparison = () => {
           }
         });
 
-        // Filter by matching program names (always include selected own university program)
+        // Only allow programs that pass the filter
+        const allowedPrograms = Object.entries(programTotals)
+          .filter(([_, count]) =>
+            programCountReversed
+              ? count <= minProgramCount
+              : count >= minProgramCount
+          )
+          .map(([prog]) => prog);
+
         filteredByProgramCount = filteredByUniversityCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
-
           // Try to match program name
           const programName = p.program || p.department || "";
-          const count = programTotals[programName] || 0;
-          return count >= minProgramCount;
+          return allowedPrograms.includes(programName);
         });
       }
 
@@ -610,7 +634,9 @@ const UniversityComparison = () => {
           if (!kontenjan || !yerlesen) return false;
 
           const fulfillmentRate = (yerlesen / kontenjan) * 100;
-          return fulfillmentRate >= minFulfillmentRate;
+          return fulfillmentRateReversed
+            ? fulfillmentRate <= minFulfillmentRate
+            : fulfillmentRate >= minFulfillmentRate;
         });
       }
 
@@ -653,9 +679,13 @@ const UniversityComparison = () => {
     recordLimit,
     universityType,
     topCitiesLimit,
+    topCitiesReversed,
     minUniversityCount,
+    universityCountReversed,
     minProgramCount,
+    programCountReversed,
     minFulfillmentRate,
+    fulfillmentRateReversed,
     allUniversitiesData,
     cityPreferencesData,
     universityPreferencesData,
@@ -772,51 +802,67 @@ const UniversityComparison = () => {
                   value={topCitiesLimit}
                   onChange={handleTopCitiesChange}
                   disabled={!selectedProgram}
-                  label={(val) =>
+                  label={(val, reversed) =>
                     val === 0
                       ? "Tüm illerdeki tüm programlar gösteriliyor."
+                      : reversed
+                      ? `Yerleşenlerin en fazla ${val} defa tercih ettikleri illerdeki programlar gösteriliyor.`
                       : `Yerleşenlerin en az ${val} defa tercih ettikleri illerdeki programlar gösteriliyor.`
                   }
                   frequencyData={cityFrequencyData}
                   type="il"
+                  isReversed={topCitiesReversed}
+                  onReversedChange={setTopCitiesReversed}
                 />
 
                 <FilterSlider
                   value={minUniversityCount}
                   onChange={handleMinUniversityCountChange}
                   disabled={!selectedProgram}
-                  label={(val) =>
+                  label={(val, reversed) =>
                     val === 0
                       ? "Tüm üniversitelerdeki tüm programlar gösteriliyor."
+                      : reversed
+                      ? `Yerleşenlerin en fazla ${val} defa tercih ettikleri üniversitelerin programlarını tutar`
                       : `Yerleşenlerin en az ${val} defa tercih ettikleri üniversitelerin programlarını tutar`
                   }
                   frequencyData={universityFrequencyData}
                   type="üniversite"
+                  isReversed={universityCountReversed}
+                  onReversedChange={setUniversityCountReversed}
                 />
                 <FilterSlider
                   value={minProgramCount}
                   onChange={handleMinProgramCountChange}
                   disabled={!selectedProgram}
-                  label={(val) =>
+                  label={(val, reversed) =>
                     val === 0
                       ? "Tüm program tiplerinden programlar gösteriliyor."
+                      : reversed
+                      ? `Yerleşenlerin en fazla ${val} defa tercih ettikleri program tipinden olan programları tutar.`
                       : `Yerleşenlerin en az ${val} defa tercih ettikleri program tipinden olan programları tutar.`
                   }
                   frequencyData={programFrequencyData}
                   type="program tipi"
+                  isReversed={programCountReversed}
+                  onReversedChange={setProgramCountReversed}
                 />
                 <FilterSlider
                   value={minFulfillmentRate}
                   onChange={handleMinFulfillmentRateChange}
                   disabled={!selectedProgram}
-                  label={(val) =>
+                  label={(val, reversed) =>
                     val === 0
                       ? "Tüm doluluk oranlarındaki programlar gösteriliyor."
+                      : reversed
+                      ? `Doluluk oranı en fazla %${val} olan programlar gösteriliyor.`
                       : `Doluluk oranı en az %${val} olan programlar gösteriliyor.`
                   }
                   frequencyData={fulfillmentFrequencyData}
                   type="doluluk oranı"
                   isPercentage={true}
+                  isReversed={fulfillmentRateReversed}
+                  onReversedChange={setFulfillmentRateReversed}
                 />
                 {selectedProgram && (
                   <Box
@@ -845,7 +891,11 @@ const UniversityComparison = () => {
                             }
                           });
                           const filteredCities = Object.entries(cityTotals)
-                            .filter(([_, count]) => count >= topCitiesLimit)
+                            .filter(([_, count]) =>
+                              topCitiesReversed
+                                ? count <= topCitiesLimit
+                                : count >= topCitiesLimit
+                            )
                             .sort((a, b) => b[1] - a[1])
                             .map(([city, count]) => `${city} (${count})`);
                           return filteredCities.length > 0
@@ -859,7 +909,11 @@ const UniversityComparison = () => {
                         <Typography variant="body2" sx={{ mt: 1 }}>
                           <strong>
                             Bu Programa Başvuranların Tercih Ettiği
-                            Üniversiteler (Min {minUniversityCount} tercih):
+                            Üniversiteler (
+                            {universityCountReversed
+                              ? `Max ${minUniversityCount}`
+                              : `Min ${minUniversityCount}`}{" "}
+                            tercih):
                           </strong>{" "}
                           {(() => {
                             const universityTotals = {};
@@ -877,8 +931,10 @@ const UniversityComparison = () => {
                             const filteredUniversities = Object.entries(
                               universityTotals
                             )
-                              .filter(
-                                ([_, count]) => count >= minUniversityCount
+                              .filter(([_, count]) =>
+                                universityCountReversed
+                                  ? count <= minUniversityCount
+                                  : count >= minUniversityCount
                               )
                               .sort((a, b) => b[1] - a[1])
                               .map(([uni, count]) => `${uni} (${count})`);
@@ -892,8 +948,11 @@ const UniversityComparison = () => {
                       programPreferencesData.length > 0 && (
                         <Typography variant="body2" sx={{ mt: 1 }}>
                           <strong>
-                            Bu Programa Başvuranların Tercih Ettiği Programlar
-                            (Min {minProgramCount} tercih):
+                            Bu Programa Başvuranların Tercih Ettiği Programlar (
+                            {programCountReversed
+                              ? `Max ${minProgramCount}`
+                              : `Min ${minProgramCount}`}{" "}
+                            tercih):
                           </strong>{" "}
                           {(() => {
                             const programTotals = {};
@@ -909,7 +968,11 @@ const UniversityComparison = () => {
                             const filteredPrograms = Object.entries(
                               programTotals
                             )
-                              .filter(([_, count]) => count >= minProgramCount)
+                              .filter(([_, count]) =>
+                                programCountReversed
+                                  ? count <= minProgramCount
+                                  : count >= minProgramCount
+                              )
                               .sort((a, b) => b[1] - a[1])
                               .map(([prog, count]) => `${prog} (${count})`);
                             return filteredPrograms.length > 0

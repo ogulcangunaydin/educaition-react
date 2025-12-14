@@ -1,5 +1,6 @@
-import React from "react";
-import { Box, Typography, Slider } from "@mui/material";
+import React, { useState } from "react";
+import { Box, Typography, Slider, IconButton, Tooltip } from "@mui/material";
+import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
 
 const FilterSlider = ({
   value,
@@ -9,46 +10,69 @@ const FilterSlider = ({
   frequencyData = null,
   type = "seçenek",
   isPercentage = false, // For fulfillment rate slider
+  isReversed = false, // External reverse state
+  onReversedChange = null, // Callback to notify parent of reverse toggle
 }) => {
-  // Fixed preset values for filtering
-  const presetValues = isPercentage
-    ? [0, 30, 50, 75, 90, 100] // Percentage values for fulfillment
-    : [0, 5, 10, 30, 50, 100]; // Absolute values for other filters
+  // Use internal state if no external control provided
+  const [internalReversed, setInternalReversed] = useState(false);
+  const reversed = onReversedChange ? isReversed : internalReversed;
 
-  // Find current value's index in preset values
+  // Fixed preset values for filtering
+  const baseValues = isPercentage
+    ? [0, 30, 50, 75, 90, 100]
+    : [0, 5, 10, 30, 50, 100];
+
+  // In reverse mode: [0, max, ...descending...]
+  let displayValues;
+  if (reversed) {
+    displayValues = [0, ...baseValues.slice(1).slice().reverse()];
+  } else {
+    displayValues = baseValues;
+  }
+
+  // Map value <-> index based on display order
   const valueToIndex = (val) => {
-    const idx = presetValues.indexOf(val);
+    const idx = displayValues.indexOf(val);
     return idx >= 0 ? idx : 0;
   };
-
-  // Convert index back to actual value
-  const indexToValue = (idx) => presetValues[idx] || 0;
-
-  // Current index for the slider
+  const indexToValue = (idx) => displayValues[idx] || 0;
   const currentIndex = valueToIndex(value);
 
-  // Generate marks using indices (0-5) for even spacing
-  const marks = presetValues.map((val, idx) => ({
+  // Generate marks using display order
+  const marks = displayValues.map((val, idx) => ({
     value: idx,
     label: val === 0 ? "Tümü" : isPercentage ? `%${val}` : `${val}`,
   }));
+  const maxIndex = displayValues.length - 1;
 
-  const maxIndex = presetValues.length - 1;
+  // Toggle reverse mode
+  const handleToggleReverse = () => {
+    const newReversed = !reversed;
+    if (onReversedChange) {
+      onReversedChange(newReversed);
+    } else {
+      setInternalReversed(newReversed);
+    }
+    // Reset to "All" when toggling
+    onChange(0);
+  };
 
   // Calculate frequency distribution for visualization (if frequency data provided)
   const getFrequencyBars = () => {
     if (!frequencyData || frequencyData.length === 0) return null;
 
-    // Create ranges matching slider preset values
+    // Create ranges matching display order (bars)
+    const barValues = reversed ? [...displayValues].reverse() : displayValues;
     const ranges = [];
-    for (let i = 0; i < presetValues.length - 1; i++) {
-      const min = presetValues[i];
-      const max = presetValues[i + 1];
-      const isLast = i === presetValues.length - 2;
+    for (let i = 0; i < barValues.length - 1; i++) {
+      const min = barValues[i];
+      const max = barValues[i + 1];
+      const isLast = i === barValues.length - 2;
+      const [rangeMin, rangeMax] = min < max ? [min, max] : [max, min];
       ranges.push({
-        min: min,
-        max: isLast ? Infinity : max,
-        label: isLast ? `${min}+` : `${min}-${max}`,
+        min: rangeMin,
+        max: isLast ? Infinity : rangeMax,
+        label: isLast ? `${rangeMin}+` : `${rangeMin}-${rangeMax}`,
       });
     }
 
@@ -63,6 +87,19 @@ const FilterSlider = ({
 
     const maxCount = Math.max(...distribution.map((d) => d.count));
 
+    // Determine if a bar should be grayed out (excluded from filter)
+    const isBarExcluded = (item) => {
+      if (value === 0) return false; // All included
+      if (reversed) {
+        // In reverse: show values <= tick
+        // Exclude bars where the max is greater than the selected value
+        return item.max > value;
+      } else {
+        // Normal: show values >= tick
+        return item.max !== Infinity && item.max <= value;
+      }
+    };
+
     return (
       <Box
         sx={{
@@ -74,38 +111,68 @@ const FilterSlider = ({
           px: "6px", // Match slider thumb radius to align bars with track
         }}
       >
-        {distribution.map((item, index) => (
-          <Box
-            key={index}
-            sx={{
-              flex: 1,
-              height:
-                maxCount > 0 ? `${(item.count / maxCount) * 100}%` : "2px",
-              minHeight: "2px",
-              bgcolor:
-                value > 0 && value > item.min
+        {(reversed ? [...distribution].reverse() : distribution).map(
+          (item, index) => (
+            <Box
+              key={index}
+              sx={{
+                flex: 1,
+                height:
+                  maxCount > 0 ? `${(item.count / maxCount) * 100}%` : "2px",
+                minHeight: "2px",
+                bgcolor: isBarExcluded(item)
                   ? "rgba(25, 118, 210, 0.3)"
                   : "primary.main",
-              borderRadius: "2px 2px 0 0",
-              transition: "all 0.3s ease",
-              mr: index < distribution.length - 1 ? "1px" : 0, // Small gap between bars
-            }}
-            title={`${
-              isPercentage
-                ? `%${item.min}-${
-                    item.max === Infinity ? "100+" : "%" + item.max
-                  }`
-                : item.label
-            }: ${item.count} ${type}`}
-          />
-        ))}
+                borderRadius: "2px 2px 0 0",
+                transition: "all 0.3s ease",
+                mr: index < distribution.length - 1 ? "1px" : 0, // Small gap between bars
+              }}
+              title={`$${
+                isPercentage
+                  ? `%${item.min}-$${
+                      item.max === Infinity ? "100+" : "%" + item.max
+                    }`
+                  : item.label
+              }: ${item.count} ${type}`}
+            />
+          )
+        )}
       </Box>
     );
   };
 
   return (
     <Box sx={{ mb: 4, px: 2 }}>
-      <Typography gutterBottom>{label(value)}</Typography>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Typography gutterBottom sx={{ mb: 0 }}>
+          {label(value, reversed)}
+        </Typography>
+        <Tooltip
+          title={reversed ? "En az filtresine geç" : "En fazla filtresine geç"}
+        >
+          <IconButton
+            size="small"
+            onClick={handleToggleReverse}
+            disabled={disabled || !frequencyData || frequencyData.length === 0}
+            sx={{
+              bgcolor: reversed ? "primary.main" : "transparent",
+              color: reversed ? "white" : "primary.main",
+              "&:hover": {
+                bgcolor: reversed ? "primary.dark" : "rgba(25, 118, 210, 0.1)",
+              },
+              ml: 1,
+            }}
+          >
+            <SwapHorizIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </Box>
 
       {/* No data message */}
       {(!frequencyData || frequencyData.length === 0) && (
@@ -113,6 +180,7 @@ const FilterSlider = ({
           sx={{
             height: 40,
             mb: 1,
+            mt: 1,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
@@ -127,7 +195,9 @@ const FilterSlider = ({
       )}
 
       {/* Frequency visualization (when data exists) */}
-      {frequencyData && frequencyData.length > 0 && getFrequencyBars()}
+      {frequencyData && frequencyData.length > 0 && (
+        <Box sx={{ mt: 1 }}>{getFrequencyBars()}</Box>
+      )}
 
       <Slider
         value={currentIndex}
@@ -152,6 +222,10 @@ const FilterSlider = ({
         >
           {value === 0
             ? `Toplam ${frequencyData.length} farklı ${type}`
+            : reversed
+            ? `${
+                frequencyData.filter(([_, freq]) => freq <= value).length
+              } ${type} dahil (toplam ${frequencyData.length})`
             : `${
                 frequencyData.filter(([_, freq]) => freq >= value).length
               } ${type} dahil (toplam ${frequencyData.length})`}
