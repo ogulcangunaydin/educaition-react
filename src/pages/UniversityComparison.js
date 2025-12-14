@@ -202,12 +202,11 @@ const UniversityComparison = () => {
     });
 
     // Count how many programs have at least X% fulfillment for each threshold
-    // Using thresholds: 0%, 20%, 40%, 60%, 80%, 100%
-    const thresholds = [0, 2, 4, 6, 8, 10]; // These map to 0%, 20%, 40%, 60%, 80%, 100%
+    // Using percentage thresholds: 0%, 20%, 40%, 60%, 80%, 100%
+    const thresholds = [0, 20, 40, 60, 80, 100];
 
     return thresholds.map((threshold) => {
-      const minRate = threshold * 10;
-      const count = fulfillmentRates.filter((rate) => rate >= minRate).length;
+      const count = fulfillmentRates.filter((rate) => rate >= threshold).length;
       return [threshold, count];
     });
   }, [
@@ -611,7 +610,7 @@ const UniversityComparison = () => {
           if (!kontenjan || !yerlesen) return false;
 
           const fulfillmentRate = (yerlesen / kontenjan) * 100;
-          return fulfillmentRate >= minFulfillmentRate * 10;
+          return fulfillmentRate >= minFulfillmentRate;
         });
       }
 
@@ -805,8 +804,6 @@ const UniversityComparison = () => {
                   }
                   frequencyData={programFrequencyData}
                   type="program tipi"
-                  maxValue={30}
-                  step={6}
                 />
                 <FilterSlider
                   value={minFulfillmentRate}
@@ -815,12 +812,11 @@ const UniversityComparison = () => {
                   label={(val) =>
                     val === 0
                       ? "Tüm doluluk oranlarındaki programlar gösteriliyor."
-                      : `Doluluk oranı en az %${
-                          val * 10
-                        } olan programlar gösteriliyor.`
+                      : `Doluluk oranı en az %${val} olan programlar gösteriliyor.`
                   }
                   frequencyData={fulfillmentFrequencyData}
                   type="doluluk oranı"
+                  isPercentage={true}
                 />
                 {selectedProgram && (
                   <Box
