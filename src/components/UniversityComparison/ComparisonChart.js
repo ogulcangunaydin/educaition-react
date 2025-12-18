@@ -225,6 +225,8 @@ const ComparisonChart = ({
                 `Min ${metricLabel}: ${formatValue(dataPoint.min)}`,
                 `Fark: ${formatValue(spread)}`,
                 `Doluluk: %${Math.round(fulfillmentRate)}`,
+                `Kontenjan: ${dataPoint.capacity || 0}`,
+                `Yerleşen: ${dataPoint.yerlesen || 0}`,
               ];
               // Only show price for 2024 and 2025
               if (showPrices) {

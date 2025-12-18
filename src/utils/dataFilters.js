@@ -330,6 +330,10 @@ export const prepareChartData = (
   departmentItems.forEach((item) => {
     labels.push(item.label);
 
+    // Get capacity and placed students for the year
+    const capacity = item.program[`kontenjan_${year}`] || 0;
+    const yerlesen = item.program[`yerlesen_${year}`] || 0;
+
     dataPoints.push({
       min: item.min,
       q1: item.min,
@@ -338,6 +342,8 @@ export const prepareChartData = (
       max: item.max,
       programs: [item.program],
       fulfillmentRate: item.fulfillmentRate,
+      capacity: capacity,
+      yerlesen: yerlesen,
     });
 
     pricePoints.push(item.price);
