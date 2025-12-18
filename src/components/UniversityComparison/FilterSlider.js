@@ -156,21 +156,27 @@ const FilterSlider = ({
         <Tooltip
           title={reversed ? "En az filtresine geç" : "En fazla filtresine geç"}
         >
-          <IconButton
-            size="small"
-            onClick={handleToggleReverse}
-            disabled={disabled || !frequencyData || frequencyData.length === 0}
-            sx={{
-              bgcolor: reversed ? "primary.main" : "transparent",
-              color: reversed ? "white" : "primary.main",
-              "&:hover": {
-                bgcolor: reversed ? "primary.dark" : "rgba(25, 118, 210, 0.1)",
-              },
-              ml: 1,
-            }}
-          >
-            <SwapHorizIcon fontSize="small" />
-          </IconButton>
+          <span>
+            <IconButton
+              size="small"
+              onClick={handleToggleReverse}
+              disabled={
+                disabled || !frequencyData || frequencyData.length === 0
+              }
+              sx={{
+                bgcolor: reversed ? "primary.main" : "transparent",
+                color: reversed ? "white" : "primary.main",
+                "&:hover": {
+                  bgcolor: reversed
+                    ? "primary.dark"
+                    : "rgba(25, 118, 210, 0.1)",
+                },
+                ml: 1,
+              }}
+            >
+              <SwapHorizIcon fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>
       </Box>
 

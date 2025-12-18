@@ -112,9 +112,17 @@ const UniversityComparison = () => {
   const [customRangeMax, setCustomRangeMax] = useState(null);
   const [chartSortBy, setChartSortBy] = useState("spread");
 
+  // State for manually excluded items (clicked to exclude)
+  const [excludedCities, setExcludedCities] = useState(new Set());
+  const [excludedUniversities, setExcludedUniversities] = useState(new Set());
+  const [excludedPrograms, setExcludedPrograms] = useState(new Set());
+  const [excludedScholarships, setExcludedScholarships] = useState(new Set());
+
   // State for computed data
   const [availablePrograms, setAvailablePrograms] = useState([]);
   const [similarPrograms, setSimilarPrograms] = useState([]);
+  const [programsBeforeScholarshipFilter, setProgramsBeforeScholarshipFilter] =
+    useState([]);
   const [chartData, setChartData] = useState(null);
 
   // Calculate program frequency data for the selected program
@@ -474,6 +482,14 @@ const UniversityComparison = () => {
     setCustomRangeMax(null);
   }, [selectedProgram, metric]);
 
+  // Reset excluded items when selected program changes
+  useEffect(() => {
+    setExcludedCities(new Set());
+    setExcludedUniversities(new Set());
+    setExcludedPrograms(new Set());
+    setExcludedScholarships(new Set());
+  }, [selectedProgram]);
+
   // Handle Y-axis range expansion
   const handleExpandRange = (direction, step) => {
     if (!selectedProgram || !year || !metric) return;
@@ -559,6 +575,14 @@ const UniversityComparison = () => {
         });
       }
 
+      // Filter out manually excluded cities
+      if (excludedCities.size > 0) {
+        filteredByCity = filteredByCity.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          return !excludedCities.has(p.city);
+        });
+      }
+
       // Filter by minimum university count (exclude own university from count check)
       let filteredByUniversityCount = filteredByCity;
       if (minUniversityCount > 0 && universityPreferencesData.length > 0) {
@@ -587,6 +611,14 @@ const UniversityComparison = () => {
         filteredByUniversityCount = filteredByCity.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
           return allowedUniversities.includes(p.university);
+        });
+      }
+
+      // Filter out manually excluded universities
+      if (excludedUniversities.size > 0) {
+        filteredByUniversityCount = filteredByUniversityCount.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          return !excludedUniversities.has(p.university);
         });
       }
 
@@ -621,6 +653,15 @@ const UniversityComparison = () => {
         });
       }
 
+      // Filter out manually excluded programs
+      if (excludedPrograms.size > 0) {
+        filteredByProgramCount = filteredByProgramCount.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          const programName = p.program || p.department || "";
+          return !excludedPrograms.has(programName);
+        });
+      }
+
       // Filter by minimum fulfillment rate
       let filteredByFulfillmentRate = filteredByProgramCount;
       if (minFulfillmentRate > 0) {
@@ -640,8 +681,21 @@ const UniversityComparison = () => {
         });
       }
 
+      // Save programs before scholarship filtering for UI display
+      setProgramsBeforeScholarshipFilter(filteredByFulfillmentRate);
+
+      // Filter out manually excluded scholarships
+      let filteredByScholarship = filteredByFulfillmentRate;
+      if (excludedScholarships.size > 0) {
+        filteredByScholarship = filteredByFulfillmentRate.filter((p) => {
+          if (p.yop_kodu === selectedProgram.yop_kodu) return true;
+          const scholarship = p.scholarship || "Ücretli";
+          return !excludedScholarships.has(scholarship);
+        });
+      }
+
       // Ensure selected program is always included and first
-      const similarWithoutSelected = filteredByFulfillmentRate.filter(
+      const similarWithoutSelected = filteredByScholarship.filter(
         (p) => p.yop_kodu !== selectedProgram.yop_kodu
       );
       const allPrograms = [selectedProgram, ...similarWithoutSelected];
@@ -695,7 +749,60 @@ const UniversityComparison = () => {
     chartSortBy,
     priceData,
     university.name,
+    excludedCities,
+    excludedUniversities,
+    excludedPrograms,
+    excludedScholarships,
   ]);
+
+  // Toggle functions for excluding/including items
+  const toggleExcludedCity = (city) => {
+    setExcludedCities((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(city)) {
+        newSet.delete(city);
+      } else {
+        newSet.add(city);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleExcludedUniversity = (uni) => {
+    setExcludedUniversities((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(uni)) {
+        newSet.delete(uni);
+      } else {
+        newSet.add(uni);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleExcludedProgram = (prog) => {
+    setExcludedPrograms((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(prog)) {
+        newSet.delete(prog);
+      } else {
+        newSet.add(prog);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleExcludedScholarship = (scholarship) => {
+    setExcludedScholarships((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(scholarship)) {
+        newSet.delete(scholarship);
+      } else {
+        newSet.add(scholarship);
+      }
+      return newSet;
+    });
+  };
 
   // Handle year change
   const handleYearChange = (newYear) => {
@@ -878,108 +985,325 @@ const UniversityComparison = () => {
                       <strong>Puan Türü:</strong>{" "}
                       {selectedProgram.puan_type.toUpperCase()}
                     </Typography>
+                    {/* Scholarship exclusion filter - always show for similar programs */}
+                    {programsBeforeScholarshipFilter.length > 1 && (
+                      <Box sx={{ mt: 1 }}>
+                        <Typography variant="body2">
+                          <strong>Burs Türleri:</strong>{" "}
+                          <Typography variant="caption" color="text.secondary">
+                            (Hariç tutmak için tıklayın)
+                          </Typography>
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 0.5,
+                            mt: 0.5,
+                          }}
+                        >
+                          {(() => {
+                            // Get unique scholarships from programs BEFORE scholarship filtering
+                            const scholarshipCounts = {};
+                            programsBeforeScholarshipFilter.forEach((p) => {
+                              if (p.yop_kodu !== selectedProgram.yop_kodu) {
+                                const scholarship = p.scholarship || "Ücretli";
+                                scholarshipCounts[scholarship] =
+                                  (scholarshipCounts[scholarship] || 0) + 1;
+                              }
+                            });
+                            const scholarshipEntries = Object.entries(
+                              scholarshipCounts
+                            ).sort((a, b) => b[1] - a[1]);
+                            return scholarshipEntries.length > 0 ? (
+                              scholarshipEntries.map(([scholarship, count]) => (
+                                <Box
+                                  key={scholarship}
+                                  onClick={() =>
+                                    toggleExcludedScholarship(scholarship)
+                                  }
+                                  sx={{
+                                    cursor: "pointer",
+                                    px: 1,
+                                    py: 0.25,
+                                    borderRadius: 1,
+                                    bgcolor: excludedScholarships.has(
+                                      scholarship
+                                    )
+                                      ? "error.light"
+                                      : "grey.200",
+                                    textDecoration: excludedScholarships.has(
+                                      scholarship
+                                    )
+                                      ? "line-through"
+                                      : "none",
+                                    opacity: excludedScholarships.has(
+                                      scholarship
+                                    )
+                                      ? 0.6
+                                      : 1,
+                                    fontSize: "0.75rem",
+                                    "&:hover": {
+                                      bgcolor: excludedScholarships.has(
+                                        scholarship
+                                      )
+                                        ? "error.main"
+                                        : "grey.300",
+                                    },
+                                  }}
+                                >
+                                  {scholarship} ({count})
+                                </Box>
+                              ))
+                            ) : (
+                              <Typography variant="caption">Hiçbiri</Typography>
+                            );
+                          })()}
+                        </Box>
+                      </Box>
+                    )}
                     {topCitiesLimit > 0 && cityPreferencesData.length > 0 && (
-                      <Typography variant="body2" sx={{ mt: 1 }}>
-                        <strong>Dahil Edilen Şehirler:</strong>{" "}
-                        {(() => {
-                          const cityTotals = {};
-                          cityPreferencesData.forEach((row) => {
-                            if (row.yop_kodu === selectedProgram.yop_kodu) {
-                              const city = row.il;
-                              cityTotals[city] =
-                                (cityTotals[city] || 0) + row.tercih_sayisi;
-                            }
-                          });
-                          const filteredCities = Object.entries(cityTotals)
-                            .filter(([_, count]) =>
-                              topCitiesReversed
-                                ? count <= topCitiesLimit
-                                : count >= topCitiesLimit
-                            )
-                            .sort((a, b) => b[1] - a[1])
-                            .map(([city, count]) => `${city} (${count})`);
-                          return filteredCities.length > 0
-                            ? filteredCities.join(", ")
-                            : "Hiçbiri";
-                        })()}
-                      </Typography>
+                      <Box sx={{ mt: 1 }}>
+                        <Typography variant="body2">
+                          <strong>Dahil Edilen Şehirler:</strong>{" "}
+                          <Typography variant="caption" color="text.secondary">
+                            (Hariç tutmak için tıklayın)
+                          </Typography>
+                        </Typography>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexWrap: "wrap",
+                            gap: 0.5,
+                            mt: 0.5,
+                          }}
+                        >
+                          {(() => {
+                            const cityTotals = {};
+                            cityPreferencesData.forEach((row) => {
+                              if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                const city = row.il;
+                                cityTotals[city] =
+                                  (cityTotals[city] || 0) + row.tercih_sayisi;
+                              }
+                            });
+                            const filteredCities = Object.entries(cityTotals)
+                              .filter(([_, count]) =>
+                                topCitiesReversed
+                                  ? count <= topCitiesLimit
+                                  : count >= topCitiesLimit
+                              )
+                              .sort((a, b) => b[1] - a[1]);
+                            return filteredCities.length > 0 ? (
+                              filteredCities.map(([city, count]) => (
+                                <Box
+                                  key={city}
+                                  onClick={() => toggleExcludedCity(city)}
+                                  sx={{
+                                    cursor: "pointer",
+                                    px: 1,
+                                    py: 0.25,
+                                    borderRadius: 1,
+                                    bgcolor: excludedCities.has(city)
+                                      ? "error.light"
+                                      : "grey.200",
+                                    textDecoration: excludedCities.has(city)
+                                      ? "line-through"
+                                      : "none",
+                                    opacity: excludedCities.has(city) ? 0.6 : 1,
+                                    fontSize: "0.75rem",
+                                    "&:hover": {
+                                      bgcolor: excludedCities.has(city)
+                                        ? "error.main"
+                                        : "grey.300",
+                                    },
+                                  }}
+                                >
+                                  {city} ({count})
+                                </Box>
+                              ))
+                            ) : (
+                              <Typography variant="caption">Hiçbiri</Typography>
+                            );
+                          })()}
+                        </Box>
+                      </Box>
                     )}
                     {minUniversityCount > 0 &&
                       universityPreferencesData.length > 0 && (
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          <strong>
-                            Bu Programa Başvuranların Tercih Ettiği
-                            Üniversiteler (
-                            {universityCountReversed
-                              ? `Max ${minUniversityCount}`
-                              : `Min ${minUniversityCount}`}{" "}
-                            tercih):
-                          </strong>{" "}
-                          {(() => {
-                            const universityTotals = {};
-                            // Only count preferences for THIS specific program
-                            universityPreferencesData.forEach((row) => {
-                              if (row.yop_kodu === selectedProgram.yop_kodu) {
-                                const uni = row.universite;
-                                if (uni !== university.name) {
-                                  universityTotals[uni] =
-                                    (universityTotals[uni] || 0) +
-                                    row.tercih_sayisi;
+                        <Box sx={{ mt: 1 }}>
+                          <Typography variant="body2">
+                            <strong>
+                              Bu Programa Başvuranların Tercih Ettiği
+                              Üniversiteler (
+                              {universityCountReversed
+                                ? `Max ${minUniversityCount}`
+                                : `Min ${minUniversityCount}`}{" "}
+                              tercih):
+                            </strong>{" "}
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              (Hariç tutmak için tıklayın)
+                            </Typography>
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 0.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {(() => {
+                              const universityTotals = {};
+                              universityPreferencesData.forEach((row) => {
+                                if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                  const uni = row.universite;
+                                  if (uni !== university.name) {
+                                    universityTotals[uni] =
+                                      (universityTotals[uni] || 0) +
+                                      row.tercih_sayisi;
+                                  }
                                 }
-                              }
-                            });
-                            const filteredUniversities = Object.entries(
-                              universityTotals
-                            )
-                              .filter(([_, count]) =>
-                                universityCountReversed
-                                  ? count <= minUniversityCount
-                                  : count >= minUniversityCount
+                              });
+                              const filteredUniversities = Object.entries(
+                                universityTotals
                               )
-                              .sort((a, b) => b[1] - a[1])
-                              .map(([uni, count]) => `${uni} (${count})`);
-                            return filteredUniversities.length > 0
-                              ? filteredUniversities.join(", ")
-                              : "Hiçbiri";
-                          })()}
-                        </Typography>
+                                .filter(([_, count]) =>
+                                  universityCountReversed
+                                    ? count <= minUniversityCount
+                                    : count >= minUniversityCount
+                                )
+                                .sort((a, b) => b[1] - a[1]);
+                              return filteredUniversities.length > 0 ? (
+                                filteredUniversities.map(([uni, count]) => (
+                                  <Box
+                                    key={uni}
+                                    onClick={() =>
+                                      toggleExcludedUniversity(uni)
+                                    }
+                                    sx={{
+                                      cursor: "pointer",
+                                      px: 1,
+                                      py: 0.25,
+                                      borderRadius: 1,
+                                      bgcolor: excludedUniversities.has(uni)
+                                        ? "error.light"
+                                        : "grey.200",
+                                      textDecoration: excludedUniversities.has(
+                                        uni
+                                      )
+                                        ? "line-through"
+                                        : "none",
+                                      opacity: excludedUniversities.has(uni)
+                                        ? 0.6
+                                        : 1,
+                                      fontSize: "0.75rem",
+                                      "&:hover": {
+                                        bgcolor: excludedUniversities.has(uni)
+                                          ? "error.main"
+                                          : "grey.300",
+                                      },
+                                    }}
+                                  >
+                                    {uni} ({count})
+                                  </Box>
+                                ))
+                              ) : (
+                                <Typography variant="caption">
+                                  Hiçbiri
+                                </Typography>
+                              );
+                            })()}
+                          </Box>
+                        </Box>
                       )}
                     {minProgramCount > 0 &&
                       programPreferencesData.length > 0 && (
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          <strong>
-                            Bu Programa Başvuranların Tercih Ettiği Programlar (
-                            {programCountReversed
-                              ? `Max ${minProgramCount}`
-                              : `Min ${minProgramCount}`}{" "}
-                            tercih):
-                          </strong>{" "}
-                          {(() => {
-                            const programTotals = {};
-                            // Only count preferences for THIS specific program
-                            programPreferencesData.forEach((row) => {
-                              if (row.yop_kodu === selectedProgram.yop_kodu) {
-                                const prog = row.program;
-                                programTotals[prog] =
-                                  (programTotals[prog] || 0) +
-                                  row.tercih_sayisi;
-                              }
-                            });
-                            const filteredPrograms = Object.entries(
-                              programTotals
-                            )
-                              .filter(([_, count]) =>
-                                programCountReversed
-                                  ? count <= minProgramCount
-                                  : count >= minProgramCount
+                        <Box sx={{ mt: 1 }}>
+                          <Typography variant="body2">
+                            <strong>
+                              Bu Programa Başvuranların Tercih Ettiği Programlar
+                              (
+                              {programCountReversed
+                                ? `Max ${minProgramCount}`
+                                : `Min ${minProgramCount}`}{" "}
+                              tercih):
+                            </strong>{" "}
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              (Hariç tutmak için tıklayın)
+                            </Typography>
+                          </Typography>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              flexWrap: "wrap",
+                              gap: 0.5,
+                              mt: 0.5,
+                            }}
+                          >
+                            {(() => {
+                              const programTotals = {};
+                              programPreferencesData.forEach((row) => {
+                                if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                  const prog = row.program;
+                                  programTotals[prog] =
+                                    (programTotals[prog] || 0) +
+                                    row.tercih_sayisi;
+                                }
+                              });
+                              const filteredPrograms = Object.entries(
+                                programTotals
                               )
-                              .sort((a, b) => b[1] - a[1])
-                              .map(([prog, count]) => `${prog} (${count})`);
-                            return filteredPrograms.length > 0
-                              ? filteredPrograms.join(", ")
-                              : "Hiçbiri";
-                          })()}
-                        </Typography>
+                                .filter(([_, count]) =>
+                                  programCountReversed
+                                    ? count <= minProgramCount
+                                    : count >= minProgramCount
+                                )
+                                .sort((a, b) => b[1] - a[1]);
+                              return filteredPrograms.length > 0 ? (
+                                filteredPrograms.map(([prog, count]) => (
+                                  <Box
+                                    key={prog}
+                                    onClick={() => toggleExcludedProgram(prog)}
+                                    sx={{
+                                      cursor: "pointer",
+                                      px: 1,
+                                      py: 0.25,
+                                      borderRadius: 1,
+                                      bgcolor: excludedPrograms.has(prog)
+                                        ? "error.light"
+                                        : "grey.200",
+                                      textDecoration: excludedPrograms.has(prog)
+                                        ? "line-through"
+                                        : "none",
+                                      opacity: excludedPrograms.has(prog)
+                                        ? 0.6
+                                        : 1,
+                                      fontSize: "0.75rem",
+                                      "&:hover": {
+                                        bgcolor: excludedPrograms.has(prog)
+                                          ? "error.main"
+                                          : "grey.300",
+                                      },
+                                    }}
+                                  >
+                                    {prog} ({count})
+                                  </Box>
+                                ))
+                              ) : (
+                                <Typography variant="caption">
+                                  Hiçbiri
+                                </Typography>
+                              );
+                            })()}
+                          </Box>
+                        </Box>
                       )}
                     {metric === "score" ? (
                       <>
