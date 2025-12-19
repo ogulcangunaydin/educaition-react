@@ -31,6 +31,7 @@ const ProgramRivalAnalysis = () => {
   const [rivalData, setRivalData] = useState([]);
   const [orderBy, setOrderBy] = useState("tercih_edilme");
   const [order, setOrder] = useState("asc");
+  const [hiddenColumns, setHiddenColumns] = useState(new Set());
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -450,6 +451,7 @@ const ProgramRivalAnalysis = () => {
               program_detail: program.program_detail || "",
               scholarship: program.scholarship || "",
               puan_type: program.puan_type,
+              kontenjan: kontenjan,
               tercihEdilme: csvData.ortalama_tercih_edilme,
               yerlesenTercih: csvData.ortalama_yerlesen_tercih,
               markaEtkinlik: csvData.marka_etkinlik,
@@ -525,6 +527,10 @@ const ProgramRivalAnalysis = () => {
           aValue = a.tercihEdilme;
           bValue = b.tercihEdilme;
           break;
+        case "kontenjan":
+          aValue = a.kontenjan || 0;
+          bValue = b.kontenjan || 0;
+          break;
         case "yerlesen_tercih":
           aValue = a.yerlesenTercih;
           bValue = b.yerlesenTercih;
@@ -598,6 +604,60 @@ const ProgramRivalAnalysis = () => {
   // Check if prices are available for the selected year
   const showPrices = selectedYear === "2024" || selectedYear === "2025";
 
+  // Column definitions for visibility toggle
+  const allColumns = [
+    { id: "university", label: "Üniversite", alwaysVisible: true },
+    { id: "city", label: "Şehir" },
+    { id: "program", label: "Program", alwaysVisible: true },
+    { id: "detail", label: "Detay" },
+    { id: "scholarship", label: "Burs" },
+    { id: "puan_type", label: "Tür" },
+    { id: "kontenjan", label: "Kontenjan" },
+    { id: "tercih_edilme", label: "Ort. Tercih Edilme Sırası" },
+    { id: "yerlesen_tercih", label: "Ort. Yerleşen Tercih Sırası" },
+    { id: "bir_kontenjana_talip", label: "Bir Kont. Talip" },
+    { id: "ilk_uc_sirada_tercih_eden_sayisi", label: "İlk 3 Tercih Eden" },
+    { id: "ilk_uc_sirada_tercih_eden_orani", label: "İlk 3 Tercih Oranı (%)" },
+    { id: "ilk_uc_tercih_olarak_yerlesen_sayisi", label: "İlk 3 Yerleşen" },
+    {
+      id: "ilk_uc_tercih_olarak_yerlesen_orani",
+      label: "İlk 3 Yerleşen Oranı (%)",
+    },
+    { id: "ust_uc_cekim_farki", label: "Üst Üç Çekim Farkı" },
+    { id: "kullanilan_tercih", label: "Kullanılan Tercih" },
+    { id: "bos_birakilan_tercih", label: "Boş Bırakılan Tercih" },
+    { id: "ortalama_kullanilan_tercih", label: "Ort. Kullanılan Tercih" },
+    { id: "price", label: "Fiyat (₺)", priceOnly: true },
+    { id: "price_index", label: "Fiyat Endeksi", priceOnly: true },
+    { id: "occupancy_rate", label: "Doluluk Oranı (%)", priceOnly: true },
+    { id: "price_evaluation", label: "Fiyat Değerlendirme", priceOnly: true },
+  ];
+
+  // Get visible columns based on hiddenColumns and showPrices
+  const visibleColumns = allColumns.filter((col) => {
+    if (col.priceOnly && !showPrices) return false;
+    return true;
+  });
+
+  // Toggle column visibility
+  const toggleColumn = (columnId) => {
+    const column = allColumns.find((c) => c.id === columnId);
+    if (column?.alwaysVisible) return; // Don't allow hiding always-visible columns
+
+    setHiddenColumns((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(columnId)) {
+        newSet.delete(columnId);
+      } else {
+        newSet.add(columnId);
+      }
+      return newSet;
+    });
+  };
+
+  // Check if column is visible
+  const isColumnVisible = (columnId) => !hiddenColumns.has(columnId);
+
   // Download as CSV
   const handleDownload = () => {
     const baseHeaders = [
@@ -608,6 +668,7 @@ const ProgramRivalAnalysis = () => {
       "Detay",
       "Burs",
       "Puan Türü",
+      "Kontenjan",
       "Ort. Tercih Edilme Sırası",
       "Ort. Yerleşen Tercih Sırası",
       // Tercih İstatistikleri
@@ -643,6 +704,7 @@ const ProgramRivalAnalysis = () => {
         row.program_detail,
         row.scholarship,
         row.puan_type,
+        row.kontenjan || "-",
         row.tercihEdilme.toFixed(2),
         row.yerlesenTercih.toFixed(2),
         // Tercih İstatistikleri
@@ -808,444 +870,588 @@ const ProgramRivalAnalysis = () => {
               görebilirsiniz.
             </Typography>
           </Alert>
+
+          {/* Column visibility toggles */}
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="body2" sx={{ mb: 1 }}>
+              <strong>Görünür Sütunlar:</strong>{" "}
+              <Typography variant="caption" color="text.secondary">
+                (Gizlemek/göstermek için tıklayın)
+              </Typography>
+            </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 0.5,
+              }}
+            >
+              {visibleColumns.map((col) => (
+                <Box
+                  key={col.id}
+                  onClick={() => toggleColumn(col.id)}
+                  sx={{
+                    cursor: col.alwaysVisible ? "default" : "pointer",
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: 1,
+                    bgcolor: hiddenColumns.has(col.id)
+                      ? "error.light"
+                      : col.alwaysVisible
+                      ? "primary.light"
+                      : "grey.200",
+                    textDecoration: hiddenColumns.has(col.id)
+                      ? "line-through"
+                      : "none",
+                    opacity: hiddenColumns.has(col.id) ? 0.6 : 1,
+                    fontSize: "0.75rem",
+                    "&:hover": col.alwaysVisible
+                      ? {}
+                      : {
+                          bgcolor: hiddenColumns.has(col.id)
+                            ? "error.main"
+                            : "grey.300",
+                        },
+                  }}
+                >
+                  {col.label}
+                </Box>
+              ))}
+            </Box>
+          </Box>
         </Paper>
 
         <TableContainer component={Paper}>
           <Table size="small">
             <TableHead>
               <TableRow>
-                <TableCell>
-                  <TableSortLabel
-                    active={orderBy === "university"}
-                    direction={orderBy === "university" ? order : "asc"}
-                    onClick={() => handleSort("university")}
-                  >
-                    Üniversite
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={orderBy === "city"}
-                    direction={orderBy === "city" ? order : "asc"}
-                    onClick={() => handleSort("city")}
-                  >
-                    Şehir
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>
-                  <TableSortLabel
-                    active={orderBy === "program"}
-                    direction={orderBy === "program" ? order : "asc"}
-                    onClick={() => handleSort("program")}
-                  >
-                    Program
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell>Detay</TableCell>
-                <TableCell>Burs</TableCell>
-                <TableCell>Tür</TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "tercih_edilme"}
-                    direction={orderBy === "tercih_edilme" ? order : "asc"}
-                    onClick={() => handleSort("tercih_edilme")}
-                  >
-                    Ort. Tercih Edilme Sırası
-                  </TableSortLabel>
-                </TableCell>
-                <TableCell align="right">
-                  <TableSortLabel
-                    active={orderBy === "yerlesen_tercih"}
-                    direction={orderBy === "yerlesen_tercih" ? order : "asc"}
-                    onClick={() => handleSort("yerlesen_tercih")}
-                  >
-                    Ort. Yerleşen Tercih Sırası
-                  </TableSortLabel>
-                </TableCell>
+                {isColumnVisible("university") && (
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "university"}
+                      direction={orderBy === "university" ? order : "asc"}
+                      onClick={() => handleSort("university")}
+                    >
+                      Üniversite
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {isColumnVisible("city") && (
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "city"}
+                      direction={orderBy === "city" ? order : "asc"}
+                      onClick={() => handleSort("city")}
+                    >
+                      Şehir
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {isColumnVisible("program") && (
+                  <TableCell>
+                    <TableSortLabel
+                      active={orderBy === "program"}
+                      direction={orderBy === "program" ? order : "asc"}
+                      onClick={() => handleSort("program")}
+                    >
+                      Program
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {isColumnVisible("detail") && <TableCell>Detay</TableCell>}
+                {isColumnVisible("scholarship") && <TableCell>Burs</TableCell>}
+                {isColumnVisible("puan_type") && <TableCell>Tür</TableCell>}
+                {isColumnVisible("kontenjan") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "kontenjan"}
+                      direction={orderBy === "kontenjan" ? order : "asc"}
+                      onClick={() => handleSort("kontenjan")}
+                    >
+                      Kontenjan
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {isColumnVisible("tercih_edilme") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "tercih_edilme"}
+                      direction={orderBy === "tercih_edilme" ? order : "asc"}
+                      onClick={() => handleSort("tercih_edilme")}
+                    >
+                      Ort. Tercih Edilme Sırası
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {isColumnVisible("yerlesen_tercih") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "yerlesen_tercih"}
+                      direction={orderBy === "yerlesen_tercih" ? order : "asc"}
+                      onClick={() => handleSort("yerlesen_tercih")}
+                    >
+                      Ort. Yerleşen Tercih Sırası
+                    </TableSortLabel>
+                  </TableCell>
+                )}
                 {/* Tercih İstatistikleri Columns */}
-                <Tooltip title="Bir Kontenjana Talip Olan Aday Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "bir_kontenjana_talip"}
-                      direction={
-                        orderBy === "bir_kontenjana_talip" ? order : "asc"
-                      }
-                      onClick={() => handleSort("bir_kontenjana_talip")}
-                    >
-                      Bir Kont. Talip
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="İlk Üç Sırada Tercih Eden Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
-                      direction={
-                        orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
-                          ? order
-                          : "asc"
-                      }
-                      onClick={() =>
-                        handleSort("ilk_uc_sirada_tercih_eden_sayisi")
-                      }
-                    >
-                      İlk 3 Tercih Eden
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="İlk Üç Sırada Tercih Eden Oranı (%)" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
-                      direction={
-                        orderBy === "ilk_uc_sirada_tercih_eden_orani"
-                          ? order
-                          : "asc"
-                      }
-                      onClick={() =>
-                        handleSort("ilk_uc_sirada_tercih_eden_orani")
-                      }
-                    >
-                      İlk 3 Tercih Oranı (%)
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="İlk Üç Tercih Olarak Yerleşen Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={
-                        orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
-                      }
-                      direction={
-                        orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
-                          ? order
-                          : "asc"
-                      }
-                      onClick={() =>
-                        handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
-                      }
-                    >
-                      İlk 3 Yerleşen
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="İlk Üç Tercih Olarak Yerleşen Oranı (%)" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"}
-                      direction={
-                        orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
-                          ? order
-                          : "asc"
-                      }
-                      onClick={() =>
-                        handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
-                      }
-                    >
-                      İlk 3 Yerleşen Oranı (%)
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip
-                  title="İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın çekim gücünün yüksek olduğunu gösterir."
-                  arrow
-                >
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "ust_uc_cekim_farki"}
-                      direction={
-                        orderBy === "ust_uc_cekim_farki" ? order : "asc"
-                      }
-                      onClick={() => handleSort("ust_uc_cekim_farki")}
-                    >
-                      Üst Üç Çekim Farkı
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
+                {isColumnVisible("bir_kontenjana_talip") && (
+                  <Tooltip title="Bir Kontenjana Talip Olan Aday Sayısı" arrow>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "bir_kontenjana_talip"}
+                        direction={
+                          orderBy === "bir_kontenjana_talip" ? order : "asc"
+                        }
+                        onClick={() => handleSort("bir_kontenjana_talip")}
+                      >
+                        Bir Kont. Talip
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ilk_uc_sirada_tercih_eden_sayisi") && (
+                  <Tooltip title="İlk Üç Sırada Tercih Eden Sayısı" arrow>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
+                        direction={
+                          orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
+                            ? order
+                            : "asc"
+                        }
+                        onClick={() =>
+                          handleSort("ilk_uc_sirada_tercih_eden_sayisi")
+                        }
+                      >
+                        İlk 3 Tercih Eden
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ilk_uc_sirada_tercih_eden_orani") && (
+                  <Tooltip title="İlk Üç Sırada Tercih Eden Oranı (%)" arrow>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
+                        direction={
+                          orderBy === "ilk_uc_sirada_tercih_eden_orani"
+                            ? order
+                            : "asc"
+                        }
+                        onClick={() =>
+                          handleSort("ilk_uc_sirada_tercih_eden_orani")
+                        }
+                      >
+                        İlk 3 Tercih Oranı (%)
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ilk_uc_tercih_olarak_yerlesen_sayisi") && (
+                  <Tooltip title="İlk Üç Tercih Olarak Yerleşen Sayısı" arrow>
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
+                        }
+                        direction={
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
+                            ? order
+                            : "asc"
+                        }
+                        onClick={() =>
+                          handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
+                        }
+                      >
+                        İlk 3 Yerleşen
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ilk_uc_tercih_olarak_yerlesen_orani") && (
+                  <Tooltip
+                    title="İlk Üç Tercih Olarak Yerleşen Oranı (%)"
+                    arrow
+                  >
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
+                        }
+                        direction={
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
+                            ? order
+                            : "asc"
+                        }
+                        onClick={() =>
+                          handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
+                        }
+                      >
+                        İlk 3 Yerleşen Oranı (%)
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ust_uc_cekim_farki") && (
+                  <Tooltip
+                    title="İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın çekim gücünün yüksek olduğunu gösterir."
+                    arrow
+                  >
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "ust_uc_cekim_farki"}
+                        direction={
+                          orderBy === "ust_uc_cekim_farki" ? order : "asc"
+                        }
+                        onClick={() => handleSort("ust_uc_cekim_farki")}
+                      >
+                        Üst Üç Çekim Farkı
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
+                )}
                 {/* Tercih Kullanma Columns */}
-                <Tooltip title="Kullanılan Tercih Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "kullanilan_tercih"}
-                      direction={
-                        orderBy === "kullanilan_tercih" ? order : "asc"
-                      }
-                      onClick={() => handleSort("kullanilan_tercih")}
-                    >
-                      Kullanılan Tercih
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="Boş Bırakılan Tercih Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "bos_birakilan_tercih"}
-                      direction={
-                        orderBy === "bos_birakilan_tercih" ? order : "asc"
-                      }
-                      onClick={() => handleSort("bos_birakilan_tercih")}
-                    >
-                      Boş Bırakılan Tercih
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                <Tooltip title="Ortalama Kullanılan Tercih Sayısı" arrow>
-                  <TableCell align="right">
-                    <TableSortLabel
-                      active={orderBy === "ortalama_kullanilan_tercih"}
-                      direction={
-                        orderBy === "ortalama_kullanilan_tercih" ? order : "asc"
-                      }
-                      onClick={() => handleSort("ortalama_kullanilan_tercih")}
-                    >
-                      Ort. Kullanılan Tercih
-                    </TableSortLabel>
-                  </TableCell>
-                </Tooltip>
-                {showPrices && (
-                  <>
+                {isColumnVisible("kullanilan_tercih") && (
+                  <Tooltip title="Kullanılan Tercih Sayısı" arrow>
                     <TableCell align="right">
                       <TableSortLabel
-                        active={orderBy === "price"}
-                        direction={orderBy === "price" ? order : "asc"}
-                        onClick={() => handleSort("price")}
+                        active={orderBy === "kullanilan_tercih"}
+                        direction={
+                          orderBy === "kullanilan_tercih" ? order : "asc"
+                        }
+                        onClick={() => handleSort("kullanilan_tercih")}
                       >
-                        Fiyat (₺)
+                        Kullanılan Tercih
                       </TableSortLabel>
                     </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("bos_birakilan_tercih") && (
+                  <Tooltip title="Boş Bırakılan Tercih Sayısı" arrow>
                     <TableCell align="right">
                       <TableSortLabel
-                        active={orderBy === "price_index"}
-                        direction={orderBy === "price_index" ? order : "asc"}
-                        onClick={() => handleSort("price_index")}
+                        active={orderBy === "bos_birakilan_tercih"}
+                        direction={
+                          orderBy === "bos_birakilan_tercih" ? order : "asc"
+                        }
+                        onClick={() => handleSort("bos_birakilan_tercih")}
                       >
-                        Fiyat Endeksi
+                        Boş Bırakılan Tercih
                       </TableSortLabel>
                     </TableCell>
+                  </Tooltip>
+                )}
+                {isColumnVisible("ortalama_kullanilan_tercih") && (
+                  <Tooltip title="Ortalama Kullanılan Tercih Sayısı" arrow>
                     <TableCell align="right">
                       <TableSortLabel
-                        active={orderBy === "occupancy_rate"}
-                        direction={orderBy === "occupancy_rate" ? order : "asc"}
-                        onClick={() => handleSort("occupancy_rate")}
+                        active={orderBy === "ortalama_kullanilan_tercih"}
+                        direction={
+                          orderBy === "ortalama_kullanilan_tercih"
+                            ? order
+                            : "asc"
+                        }
+                        onClick={() => handleSort("ortalama_kullanilan_tercih")}
                       >
-                        Doluluk Oranı (%)
+                        Ort. Kullanılan Tercih
                       </TableSortLabel>
                     </TableCell>
-                    <Tooltip
-                      title="Fiyat Endeksi × Doluluk Oranı. ≤1 ise fiyat sorunu yok, >1 ise fiyat yüksek veya marka yatırımı yetersiz"
-                      arrow
+                  </Tooltip>
+                )}
+                {showPrices && isColumnVisible("price") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "price"}
+                      direction={orderBy === "price" ? order : "asc"}
+                      onClick={() => handleSort("price")}
                     >
-                      <TableCell align="right">
-                        <TableSortLabel
-                          active={orderBy === "price_evaluation"}
-                          direction={
-                            orderBy === "price_evaluation" ? order : "asc"
-                          }
-                          onClick={() => handleSort("price_evaluation")}
-                        >
-                          Fiyat Değerlendirme
-                        </TableSortLabel>
-                      </TableCell>
-                    </Tooltip>
-                  </>
+                      Fiyat (₺)
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {showPrices && isColumnVisible("price_index") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "price_index"}
+                      direction={orderBy === "price_index" ? order : "asc"}
+                      onClick={() => handleSort("price_index")}
+                    >
+                      Fiyat Endeksi
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {showPrices && isColumnVisible("occupancy_rate") && (
+                  <TableCell align="right">
+                    <TableSortLabel
+                      active={orderBy === "occupancy_rate"}
+                      direction={orderBy === "occupancy_rate" ? order : "asc"}
+                      onClick={() => handleSort("occupancy_rate")}
+                    >
+                      Doluluk Oranı (%)
+                    </TableSortLabel>
+                  </TableCell>
+                )}
+                {showPrices && isColumnVisible("price_evaluation") && (
+                  <Tooltip
+                    title="Fiyat Endeksi × Doluluk Oranı. ≤1 ise fiyat sorunu yok, >1 ise fiyat yüksek veya marka yatırımı yetersiz"
+                    arrow
+                  >
+                    <TableCell align="right">
+                      <TableSortLabel
+                        active={orderBy === "price_evaluation"}
+                        direction={
+                          orderBy === "price_evaluation" ? order : "asc"
+                        }
+                        onClick={() => handleSort("price_evaluation")}
+                      >
+                        Fiyat Değerlendirme
+                      </TableSortLabel>
+                    </TableCell>
+                  </Tooltip>
                 )}
               </TableRow>
             </TableHead>
             <TableBody>
               {getSortedData().map((row, index) => (
                 <TableRow key={`${row.yop_kodu}-${index}`}>
-                  <TableCell>
-                    <Typography
-                      variant="body2"
-                      sx={{
-                        fontWeight: isOwnUniversityName(row.university)
-                          ? "bold"
-                          : "normal",
-                      }}
-                    >
-                      {row.university}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{row.city}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">{row.program}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2" color="text.secondary">
-                      {row.program_detail || "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Typography variant="body2">
-                      {row.scholarship || "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={row.puan_type.toUpperCase()}
-                      size="small"
-                      variant="outlined"
-                    />
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.tercihEdilme.toFixed(2)}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.yerlesenTercih.toFixed(2)}
-                    </Typography>
-                  </TableCell>
-                  {/* Tercih İstatistikleri Data */}
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.birKontenjanaTalip !== null &&
-                      row.birKontenjanaTalip !== undefined
-                        ? row.birKontenjanaTalip.toFixed(1)
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.ilkUcSiradaTercihEdenSayisi !== null &&
-                      row.ilkUcSiradaTercihEdenSayisi !== undefined
-                        ? row.ilkUcSiradaTercihEdenSayisi
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.ilkUcSiradaTercihEdenOrani !== null &&
-                      row.ilkUcSiradaTercihEdenOrani !== undefined
-                        ? `${row.ilkUcSiradaTercihEdenOrani.toFixed(1)}%`
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.ilkUcTercihOlarakYerlesenSayisi !== null &&
-                      row.ilkUcTercihOlarakYerlesenSayisi !== undefined
-                        ? row.ilkUcTercihOlarakYerlesenSayisi
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.ilkUcTercihOlarakYerlesenOrani !== null &&
-                      row.ilkUcTercihOlarakYerlesenOrani !== undefined
-                        ? `${row.ilkUcTercihOlarakYerlesenOrani.toFixed(1)}%`
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    {row.ustUcCekimFarki !== null &&
-                    row.ustUcCekimFarki !== undefined ? (
+                  {isColumnVisible("university") && (
+                    <TableCell>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: isOwnUniversityName(row.university)
+                            ? "bold"
+                            : "normal",
+                        }}
+                      >
+                        {row.university}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("city") && (
+                    <TableCell>
+                      <Typography variant="body2">{row.city}</Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("program") && (
+                    <TableCell>
+                      <Typography variant="body2">{row.program}</Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("detail") && (
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {row.program_detail || "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("scholarship") && (
+                    <TableCell>
+                      <Typography variant="body2">
+                        {row.scholarship || "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("puan_type") && (
+                    <TableCell>
                       <Chip
-                        label={`${row.ustUcCekimFarki.toFixed(1)}%`}
+                        label={row.puan_type.toUpperCase()}
                         size="small"
-                        color={row.ustUcCekimFarki >= 0 ? "success" : "error"}
+                        variant="outlined"
                       />
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("kontenjan") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.kontenjan || "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("tercih_edilme") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.tercihEdilme.toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("yerlesen_tercih") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.yerlesenTercih.toFixed(2)}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {/* Tercih İstatistikleri Data */}
+                  {isColumnVisible("bir_kontenjana_talip") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.birKontenjanaTalip !== null &&
+                        row.birKontenjanaTalip !== undefined
+                          ? row.birKontenjanaTalip.toFixed(1)
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ilk_uc_sirada_tercih_eden_sayisi") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.ilkUcSiradaTercihEdenSayisi !== null &&
+                        row.ilkUcSiradaTercihEdenSayisi !== undefined
+                          ? row.ilkUcSiradaTercihEdenSayisi
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ilk_uc_sirada_tercih_eden_orani") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.ilkUcSiradaTercihEdenOrani !== null &&
+                        row.ilkUcSiradaTercihEdenOrani !== undefined
+                          ? `${row.ilkUcSiradaTercihEdenOrani.toFixed(1)}%`
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ilk_uc_tercih_olarak_yerlesen_sayisi") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.ilkUcTercihOlarakYerlesenSayisi !== null &&
+                        row.ilkUcTercihOlarakYerlesenSayisi !== undefined
+                          ? row.ilkUcTercihOlarakYerlesenSayisi
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ilk_uc_tercih_olarak_yerlesen_orani") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.ilkUcTercihOlarakYerlesenOrani !== null &&
+                        row.ilkUcTercihOlarakYerlesenOrani !== undefined
+                          ? `${row.ilkUcTercihOlarakYerlesenOrani.toFixed(1)}%`
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ust_uc_cekim_farki") && (
+                    <TableCell align="right">
+                      {row.ustUcCekimFarki !== null &&
+                      row.ustUcCekimFarki !== undefined ? (
+                        <Chip
+                          label={`${row.ustUcCekimFarki.toFixed(1)}%`}
+                          size="small"
+                          color={row.ustUcCekimFarki >= 0 ? "success" : "error"}
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                  )}
                   {/* Tercih Kullanma Data */}
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.kullanilanTercih !== null &&
-                      row.kullanilanTercih !== undefined
-                        ? row.kullanilanTercih
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.bosBirakilanTercih !== null &&
-                      row.bosBirakilanTercih !== undefined
-                        ? row.bosBirakilanTercih
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2">
-                      {row.ortalamaKullanilanTercih !== null &&
-                      row.ortalamaKullanilanTercih !== undefined
-                        ? row.ortalamaKullanilanTercih
-                        : "-"}
-                    </Typography>
-                  </TableCell>
-                  {showPrices && (
-                    <>
-                      <TableCell align="right">
-                        {row.price !== null ? (
-                          <Typography variant="body2">
-                            {row.price.toLocaleString("tr-TR")} ₺
-                          </Typography>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.priceIndex !== null ? (
+                  {isColumnVisible("kullanilan_tercih") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.kullanilanTercih !== null &&
+                        row.kullanilanTercih !== undefined
+                          ? row.kullanilanTercih
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("bos_birakilan_tercih") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.bosBirakilanTercih !== null &&
+                        row.bosBirakilanTercih !== undefined
+                          ? row.bosBirakilanTercih
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {isColumnVisible("ortalama_kullanilan_tercih") && (
+                    <TableCell align="right">
+                      <Typography variant="body2">
+                        {row.ortalamaKullanilanTercih !== null &&
+                        row.ortalamaKullanilanTercih !== undefined
+                          ? row.ortalamaKullanilanTercih
+                          : "-"}
+                      </Typography>
+                    </TableCell>
+                  )}
+                  {showPrices && isColumnVisible("price") && (
+                    <TableCell align="right">
+                      {row.price !== null ? (
+                        <Typography variant="body2">
+                          {row.price.toLocaleString("tr-TR")} ₺
+                        </Typography>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                  )}
+                  {showPrices && isColumnVisible("price_index") && (
+                    <TableCell align="right">
+                      {row.priceIndex !== null ? (
+                        <Chip
+                          label={row.priceIndex.toFixed(2)}
+                          size="small"
+                          color={
+                            row.priceIndex <= 1
+                              ? "success"
+                              : row.priceIndex <= 1.2
+                              ? "warning"
+                              : "error"
+                          }
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                  )}
+                  {showPrices && isColumnVisible("occupancy_rate") && (
+                    <TableCell align="right">
+                      {row.occupancyRate !== null ? (
+                        <Chip
+                          label={`${row.occupancyRate.toFixed(1)}%`}
+                          size="small"
+                          color={
+                            row.occupancyRate >= 90
+                              ? "success"
+                              : row.occupancyRate >= 70
+                              ? "primary"
+                              : row.occupancyRate >= 50
+                              ? "warning"
+                              : "error"
+                          }
+                        />
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
+                  )}
+                  {showPrices && isColumnVisible("price_evaluation") && (
+                    <TableCell align="right">
+                      {row.priceEvaluationScore !== null ? (
+                        <Tooltip
+                          title={row.priceEvaluation}
+                          arrow
+                          placement="top"
+                        >
                           <Chip
-                            label={row.priceIndex.toFixed(2)}
+                            label={row.priceEvaluationScore.toFixed(2)}
                             size="small"
                             color={
-                              row.priceIndex <= 1
+                              row.priceEvaluationScore <= 1
                                 ? "success"
-                                : row.priceIndex <= 1.2
-                                ? "warning"
                                 : "error"
                             }
                           />
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.occupancyRate !== null ? (
-                          <Chip
-                            label={`${row.occupancyRate.toFixed(1)}%`}
-                            size="small"
-                            color={
-                              row.occupancyRate >= 90
-                                ? "success"
-                                : row.occupancyRate >= 70
-                                ? "primary"
-                                : row.occupancyRate >= 50
-                                ? "warning"
-                                : "error"
-                            }
-                          />
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.priceEvaluationScore !== null ? (
-                          <Tooltip
-                            title={row.priceEvaluation}
-                            arrow
-                            placement="top"
-                          >
-                            <Chip
-                              label={row.priceEvaluationScore.toFixed(2)}
-                              size="small"
-                              color={
-                                row.priceEvaluationScore <= 1
-                                  ? "success"
-                                  : "error"
-                              }
-                            />
-                          </Tooltip>
-                        ) : (
-                          "-"
-                        )}
-                      </TableCell>
-                    </>
+                        </Tooltip>
+                      ) : (
+                        "-"
+                      )}
+                    </TableCell>
                   )}
                 </TableRow>
               ))}
