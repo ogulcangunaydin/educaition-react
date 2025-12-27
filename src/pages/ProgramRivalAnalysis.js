@@ -418,7 +418,8 @@ const ProgramRivalAnalysis = () => {
             let priceEvaluationScore = null;
             let priceEvaluation = "-";
             if (priceIndex !== null && occupancyRate !== null) {
-              priceEvaluationScore = priceIndex * (occupancyRate / 100);
+              priceEvaluationScore =
+                Math.pow(priceIndex, 2) * (occupancyRate / 100);
               if (priceEvaluationScore <= 1) {
                 priceEvaluation = "Fiyat sorunu yok";
               } else {
