@@ -103,13 +103,42 @@ const ProgramRivalAnalysis = () => {
           allLines.push(...lines2.slice(1)); // Skip header
         }
 
+        // Helper to parse Turkish decimal format
+        const parseTurkishDecimal = (value) => {
+          if (!value || value === "") return null;
+          // Remove quotes if present
+          const cleaned = value.toString().replace(/"/g, "").replace(",", ".");
+          const parsed = parseFloat(cleaned);
+          return isNaN(parsed) ? null : parsed;
+        };
+
+        // Helper to parse CSV line with quoted fields containing commas
+        const parseCSVLine = (line) => {
+          const result = [];
+          let current = "";
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === "," && !inQuotes) {
+              result.push(current.trim());
+              current = "";
+            } else {
+              current += char;
+            }
+          }
+          result.push(current.trim());
+          return result;
+        };
+
         // Parse price data
         const priceMap = new Map();
         if (priceResponse.ok) {
           const priceText = await priceResponse.text();
           const priceLines = priceText.trim().split("\n");
           for (let i = 1; i < priceLines.length; i++) {
-            const parts = priceLines[i].split(",");
+            const parts = parseCSVLine(priceLines[i]);
             if (parts.length >= 9) {
               const yop_kodu = parts[0]?.trim();
               const scholarship_pct = parseFloat(parts[4]);
@@ -142,35 +171,6 @@ const ProgramRivalAnalysis = () => {
 
         // Parse tercih istatistikleri data (bir_kontenjana_talip, ilk_uc_sirada_tercih_eden, ilk_uc_tercih_olarak_yerlesen)
         const tercihIstatMap = new Map();
-
-        // Helper to parse Turkish decimal format
-        const parseTurkishDecimal = (value) => {
-          if (!value || value === "") return null;
-          // Remove quotes if present
-          const cleaned = value.toString().replace(/"/g, "").replace(",", ".");
-          const parsed = parseFloat(cleaned);
-          return isNaN(parsed) ? null : parsed;
-        };
-
-        // Helper to parse CSV line with quoted fields containing commas
-        const parseCSVLine = (line) => {
-          const result = [];
-          let current = "";
-          let inQuotes = false;
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === "," && !inQuotes) {
-              result.push(current.trim());
-              current = "";
-            } else {
-              current += char;
-            }
-          }
-          result.push(current.trim());
-          return result;
-        };
 
         // Parse 2022-2024 data from data folder
         if (tercihIstatResponse1.ok) {

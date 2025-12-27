@@ -402,9 +402,30 @@ const UniversityComparison = () => {
         }
 
         // Parse price data CSV (new format with 2024 and 2025 prices)
+        // Helper to parse CSV line with quoted fields containing commas
+        const parseCSVLine = (line) => {
+          const result = [];
+          let current = "";
+          let inQuotes = false;
+          for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            if (char === '"') {
+              inQuotes = !inQuotes;
+            } else if (char === "," && !inQuotes) {
+              result.push(current.trim());
+              current = "";
+            } else {
+              current += char;
+            }
+          }
+          result.push(current.trim());
+          return result;
+        };
+
         const priceLines = priceText.trim().split("\n");
         const parsedPriceData = [];
         for (let i = 1; i < priceLines.length; i++) {
+          const parts = parseCSVLine(priceLines[i]);
           const [
             yop_kodu,
             university,
@@ -415,7 +436,7 @@ const UniversityComparison = () => {
             full_price_2025,
             discounted_price_2024,
             discounted_price_2025,
-          ] = priceLines[i].split(",");
+          ] = parts;
           parsedPriceData.push({
             yop_kodu: yop_kodu?.trim(),
             university: university?.trim(),
