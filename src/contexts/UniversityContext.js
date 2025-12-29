@@ -24,6 +24,36 @@ export const UNIVERSITY_CONFIG = {
     gradientEnd: "#0029e8",
     dataPrefix: "ibnhaldun", // Used for loading data files like ibnhaldun_programs.csv
   },
+  fsm: {
+    id: "fsm",
+    name: "FATİH SULTAN MEHMET VAKIF ÜNİVERSİTESİ",
+    displayName: "Fatih Sultan Mehmet Vakıf Üniversitesi",
+    logo: "/halic_universitesi_logo.svg", // Always use Haliç logo
+    primaryColor: "#001bc3",
+    gradientStart: "#001bc3",
+    gradientEnd: "#0029e8",
+    dataPrefix: "fsm", // Used for loading data files like fsm_programs.csv
+  },
+  izu: {
+    id: "izu",
+    name: "İSTANBUL SABAHATTİN ZAİM ÜNİVERSİTESİ",
+    displayName: "İstanbul Sabahattin Zaim Üniversitesi",
+    logo: "/halic_universitesi_logo.svg", // Always use Haliç logo
+    primaryColor: "#001bc3",
+    gradientStart: "#001bc3",
+    gradientEnd: "#0029e8",
+    dataPrefix: "izu", // Used for loading data files like izu_programs.csv
+  },
+  mayis: {
+    id: "mayis",
+    name: "İSTANBUL 29 MAYIS ÜNİVERSİTESİ",
+    displayName: "İstanbul 29 Mayıs Üniversitesi",
+    logo: "/halic_universitesi_logo.svg", // Always use Haliç logo
+    primaryColor: "#001bc3",
+    gradientStart: "#001bc3",
+    gradientEnd: "#0029e8",
+    dataPrefix: "mayis", // Used for loading data files like mayis_programs.csv
+  },
 };
 
 export const useUniversity = () => {
@@ -47,6 +77,12 @@ export const parseUniversityFromUsername = (username) => {
 
   if (lastPart === "ibnhaldun") {
     return "ibnhaldun";
+  } else if (lastPart === "fsm") {
+    return "fsm";
+  } else if (lastPart === "izu") {
+    return "izu";
+  } else if (lastPart === "29mayis") {
+    return "mayis";
   }
 
   // Default to halic for any other case (including .halic suffix or no suffix)
