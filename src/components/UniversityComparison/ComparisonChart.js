@@ -24,6 +24,46 @@ import {
 import { Bar } from "react-chartjs-2";
 import { useUniversity } from "../../contexts/UniversityContext";
 
+// Plugin to adjust bar width based on capacity tiers
+const varyingBarWidthPlugin = {
+  id: "varyingBarWidth",
+  beforeDraw: (chart) => {
+    const datasetIndex = 0; // Target the first dataset (main bars)
+    const meta = chart.getDatasetMeta(datasetIndex);
+    const dataset = chart.data.datasets[datasetIndex];
+
+    if (!meta.data || meta.data.length === 0 || !dataset || !dataset.capacities)
+      return;
+
+    const capacities = dataset.capacities;
+    const xScale = chart.scales.x;
+
+    // Calculate the maximum width available for a single category
+    const categoryWidth = xScale.width / (chart.data.labels.length || 1);
+
+    // Use 90% of category width as the base maximum bar width
+    const maxWidth = categoryWidth * 0.9;
+
+    meta.data.forEach((bar, index) => {
+      const cap = capacities[index] || 0;
+      let factor = 1.0;
+
+      if (cap < 5) {
+        factor = 0.1; // Very small
+      } else if (cap < 20) {
+        factor = 0.3; // Small
+      } else if (cap < 40) {
+        factor = 0.5; // Medium-Small
+      } else {
+        factor = 0.6; // Very Large
+      }
+
+      // Override the width calculated by Chart.js
+      bar.width = maxWidth * factor;
+    });
+  },
+};
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -138,6 +178,9 @@ const ComparisonChart = ({
   // Only show price data for 2024 and 2025
   const showPrices = year === "2024" || year === "2025";
 
+  // Calculate capacity ranges for bar width logic
+  const capacities = chartData.dataPoints.map((d) => d.capacity || 0);
+
   // Prepare data for floating bar chart showing only min-max ranges
   // Plus a second dataset for price bars on secondary Y-axis (only for 2024/2025)
   const datasets = [
@@ -156,6 +199,8 @@ const ComparisonChart = ({
           chartData.dataPoints[index].fulfillmentRate || 100;
         return createGradientBackground(ctx, chartArea, color, fulfillmentRate);
       },
+      // Attach capacities to dataset to ensure access in plugin
+      capacities: capacities,
       borderColor: chartData.colors.map((c) => c.replace("0.6", "1")),
       borderWidth: 2,
       borderSkipped: false,
@@ -452,7 +497,7 @@ const ComparisonChart = ({
         />
       </Box>
       <Box sx={{ height: 500 }}>
-        <Bar options={options} data={data} />
+        <Bar options={options} data={data} plugins={[varyingBarWidthPlugin]} />
       </Box>
       <Box sx={{ mt: 2, p: 2, bgcolor: "grey.100", borderRadius: 1 }}>
         <Typography variant="subtitle2" gutterBottom>
