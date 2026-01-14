@@ -24,7 +24,8 @@ import {
 import { Bar } from "react-chartjs-2";
 import { useUniversity } from "../../contexts/UniversityContext";
 
-// Plugin to adjust bar width based on capacity tiers
+// Plugin to adjust bar width based on capacity using square root scaling
+// This prevents overflow while still showing relative capacity differences
 const varyingBarWidthPlugin = {
   id: "varyingBarWidth",
   beforeDraw: (chart) => {
@@ -43,23 +44,35 @@ const varyingBarWidthPlugin = {
     const baseCapacity = capacities[0] > 0 ? capacities[0] : 1;
 
     // Calculate the maximum width available for a single category
-    const categoryWidth = xScale.width / numberOfBars;
+    // Use the distance between two bars if possible for accuracy
+    let categoryWidth;
+    if (numberOfBars > 1 && meta.data[0] && meta.data[1]) {
+      const x0 = meta.data[0].x;
+      const x1 = meta.data[1].x;
+      categoryWidth = Math.abs(x1 - x0);
+    } else {
+      categoryWidth = xScale.width / numberOfBars;
+    }
 
-    // Define "Width as 1" for the base program.
-    // Set base program width to 50% of category width
-    const baseWidthPixel = categoryWidth * 0.5;
-    const maxBarWidth = categoryWidth * 0.95;
-    const minBarWidth = categoryWidth * 0.1; // Prevent invisible bars
+    // Set strict limits to prevent any overflow
+    const maxBarWidth = categoryWidth * 0.75; // Max 75% of category
+    const minBarWidth = categoryWidth * 0.15; // Min 15% of category
+    const baseWidthPixel = categoryWidth * 0.4; // Base at 40% of category
+
+    // Use square root scaling for capacity ratio
+    // This gives a more balanced visual: sqrt(42/7) = ~2.45x instead of 6x
+    const baseSqrt = Math.sqrt(baseCapacity);
 
     meta.data.forEach((bar, index) => {
-      const cap = capacities[index] || 0;
+      const cap = capacities[index] || 1;
 
-      // Calculate width relative to the first program
-      let w = baseWidthPixel * (cap / baseCapacity);
+      // Calculate width using square root of capacity ratio
+      // This dampens extreme differences while still showing relative size
+      const capSqrt = Math.sqrt(cap);
+      let w = baseWidthPixel * (capSqrt / baseSqrt);
 
-      // Clamp width limits
-      if (w > maxBarWidth) w = maxBarWidth;
-      if (w < minBarWidth) w = minBarWidth;
+      // Apply strict clamping to absolutely prevent overflow
+      w = Math.max(minBarWidth, Math.min(maxBarWidth, w));
 
       // Override the width calculated by Chart.js
       bar.width = w;

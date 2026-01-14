@@ -740,7 +740,8 @@ const UniversityComparison = () => {
         metric,
         priceData,
         chartSortBy,
-        university.name
+        university.name,
+        selectedProgram
       );
       setChartData(chart);
     } else {

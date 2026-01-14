@@ -138,6 +138,7 @@ export const groupProgramsByUniversity = (programs) => {
  * @param {Array} priceData - Price data array
  * @param {string} sortBy - Sort method
  * @param {string} ownUniversityName - The user's own university name to highlight (e.g., "HALİÇ ÜNİVERSİTESİ")
+ * @param {Object} selectedProgram - The selected base program to show first in the chart
  */
 export const prepareChartData = (
   programs,
@@ -145,7 +146,8 @@ export const prepareChartData = (
   metric,
   priceData = [],
   sortBy = "spread",
-  ownUniversityName = "HALİÇ ÜNİVERSİTESİ"
+  ownUniversityName = "HALİÇ ÜNİVERSİTESİ",
+  selectedProgram = null
 ) => {
   if (!programs || programs.length === 0) return null;
 
@@ -297,12 +299,18 @@ export const prepareChartData = (
     item.price = showPrices ? priceMap.get(priceKey) || 0 : 0;
   });
 
-  // Sort: Own university first, then by selected sort method
-  departmentItems.sort((a, b) => {
-    if (a.university === ownUniversityName) return -1;
-    if (b.university === ownUniversityName) return 1;
+  // Sort: Selected program first, then by selected sort method
+  // Other programs from ownUniversityName are sorted normally but colored differently
+  const selectedYopKodu = selectedProgram?.yop_kodu;
 
-    // Apply sorting based on sortBy parameter
+  departmentItems.sort((a, b) => {
+    // Selected program always comes first
+    if (selectedYopKodu) {
+      if (a.program.yop_kodu === selectedYopKodu) return -1;
+      if (b.program.yop_kodu === selectedYopKodu) return 1;
+    }
+
+    // Apply sorting based on sortBy parameter for all other programs
     switch (sortBy) {
       case "price":
         return b.price - a.price; // Higher price first
