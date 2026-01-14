@@ -37,29 +37,32 @@ const varyingBarWidthPlugin = {
 
     const capacities = dataset.capacities;
     const xScale = chart.scales.x;
+    const numberOfBars = chart.data.labels.length || 1;
+
+    // Base capacity from the first program (assumed to be index 0)
+    const baseCapacity = capacities[0] > 0 ? capacities[0] : 1;
 
     // Calculate the maximum width available for a single category
-    const categoryWidth = xScale.width / (chart.data.labels.length || 1);
+    const categoryWidth = xScale.width / numberOfBars;
 
-    // Use 90% of category width as the base maximum bar width
-    const maxWidth = categoryWidth * 0.9;
+    // Define "Width as 1" for the base program.
+    // Set base program width to 50% of category width
+    const baseWidthPixel = categoryWidth * 0.5;
+    const maxBarWidth = categoryWidth * 0.95;
+    const minBarWidth = categoryWidth * 0.1; // Prevent invisible bars
 
     meta.data.forEach((bar, index) => {
       const cap = capacities[index] || 0;
-      let factor = 1.0;
 
-      if (cap < 5) {
-        factor = 0.1; // Very small
-      } else if (cap < 20) {
-        factor = 0.3; // Small
-      } else if (cap < 40) {
-        factor = 0.5; // Medium-Small
-      } else {
-        factor = 0.6; // Very Large
-      }
+      // Calculate width relative to the first program
+      let w = baseWidthPixel * (cap / baseCapacity);
+
+      // Clamp width limits
+      if (w > maxBarWidth) w = maxBarWidth;
+      if (w < minBarWidth) w = minBarWidth;
 
       // Override the width calculated by Chart.js
-      bar.width = maxWidth * factor;
+      bar.width = w;
     });
   },
 };
