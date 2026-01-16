@@ -664,12 +664,12 @@ const UniversityComparison = () => {
               ? count <= minProgramCount
               : count >= minProgramCount
           )
-          .map(([prog]) => prog);
+          .map(([prog]) => prog.toLowerCase());
 
         filteredByProgramCount = filteredByUniversityCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
-          // Try to match program name
-          const programName = p.program || p.department || "";
+          // Try to match program name (case-insensitive)
+          const programName = (p.program || p.department || "").toLowerCase();
           return allowedPrograms.includes(programName);
         });
       }
@@ -678,8 +678,12 @@ const UniversityComparison = () => {
       if (excludedPrograms.size > 0) {
         filteredByProgramCount = filteredByProgramCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
-          const programName = p.program || p.department || "";
-          return !excludedPrograms.has(programName);
+          const programName = (p.program || p.department || "").toLowerCase();
+          // Check case-insensitive by converting excluded programs to lowercase
+          const excludedLower = new Set(
+            [...excludedPrograms].map((s) => s.toLowerCase())
+          );
+          return !excludedLower.has(programName);
         });
       }
 
