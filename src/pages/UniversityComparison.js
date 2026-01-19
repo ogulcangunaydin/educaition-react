@@ -1403,30 +1403,59 @@ const UniversityComparison = () => {
             {/* Right Panel - Results */}
             <Grid item xs={12} md={8}>
               {selectedProgram && year ? (
-                <>
-                  <ComparisonChart
-                    chartData={chartData}
-                    selectedProgram={selectedProgram}
-                    year={year}
-                    metric={metric}
-                    totalPrograms={similarPrograms.length}
-                    onExpandRange={handleExpandRange}
-                    currentRangeMin={customRangeMin}
-                    currentRangeMax={customRangeMax}
-                    onResetRange={handleResetRange}
-                    recordLimit={recordLimit}
-                    onRecordLimitChange={setRecordLimit}
-                    sortBy={chartSortBy}
-                    onSortChange={setChartSortBy}
-                  />
+                selectedProgram[`yerlesen_${year}`] === 0 ||
+                !selectedProgram[`yerlesen_${year}`] ? (
+                  <Paper sx={{ p: 3 }}>
+                    <Alert severity="info" sx={{ mb: 2 }}>
+                      <Typography variant="body1">
+                        <strong>
+                          {selectedProgram.program ||
+                            selectedProgram.department}
+                        </strong>{" "}
+                        programına {year} yılında yerleşen öğrenci
+                        bulunmamaktadır.
+                      </Typography>
+                      <Typography variant="body2" sx={{ mt: 1 }}>
+                        Bu nedenle karşılaştırma grafiği ve benzer programlar
+                        listesi görüntülenememektedir.
+                        {selectedProgram[`kontenjan_${year}`] > 0 && (
+                          <span>
+                            {" "}
+                            Programın {year} yılı kontenjanı:{" "}
+                            <strong>
+                              {selectedProgram[`kontenjan_${year}`]}
+                            </strong>
+                          </span>
+                        )}
+                      </Typography>
+                    </Alert>
+                  </Paper>
+                ) : (
+                  <>
+                    <ComparisonChart
+                      chartData={chartData}
+                      selectedProgram={selectedProgram}
+                      year={year}
+                      metric={metric}
+                      totalPrograms={similarPrograms.length}
+                      onExpandRange={handleExpandRange}
+                      currentRangeMin={customRangeMin}
+                      currentRangeMax={customRangeMax}
+                      onResetRange={handleResetRange}
+                      recordLimit={recordLimit}
+                      onRecordLimitChange={setRecordLimit}
+                      sortBy={chartSortBy}
+                      onSortChange={setChartSortBy}
+                    />
 
-                  <DepartmentList
-                    programs={similarPrograms}
-                    year={year}
-                    metric={metric}
-                    priceData={priceData}
-                  />
-                </>
+                    <DepartmentList
+                      programs={similarPrograms}
+                      year={year}
+                      metric={metric}
+                      priceData={priceData}
+                    />
+                  </>
+                )
               ) : (
                 <div> </div>
               )}
