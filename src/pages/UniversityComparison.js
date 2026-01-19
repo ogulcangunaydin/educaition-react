@@ -127,47 +127,47 @@ const UniversityComparison = () => {
 
   // Calculate program frequency data for the selected program
   const programFrequencyData = useMemo(() => {
-    if (!selectedProgram || programPreferencesData.length === 0) {
+    if (!selectedProgram || !year || programPreferencesData.length === 0) {
       return [];
     }
 
     const programTotals = {};
     programPreferencesData.forEach((row) => {
-      if (row.yop_kodu === selectedProgram.yop_kodu) {
+      if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
         const prog = row.program;
         programTotals[prog] = (programTotals[prog] || 0) + row.tercih_sayisi;
       }
     });
 
     return Object.entries(programTotals).sort((a, b) => b[1] - a[1]);
-  }, [selectedProgram, programPreferencesData]);
+  }, [selectedProgram, year, programPreferencesData]);
 
   // Calculate city frequency data for the selected program
   const cityFrequencyData = useMemo(() => {
-    if (!selectedProgram || cityPreferencesData.length === 0) {
+    if (!selectedProgram || !year || cityPreferencesData.length === 0) {
       return [];
     }
 
     const cityTotals = {};
     cityPreferencesData.forEach((row) => {
-      if (row.yop_kodu === selectedProgram.yop_kodu) {
+      if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
         const city = row.il;
         cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
       }
     });
 
     return Object.entries(cityTotals).sort((a, b) => b[1] - a[1]);
-  }, [selectedProgram, cityPreferencesData]);
+  }, [selectedProgram, year, cityPreferencesData]);
 
   // Calculate university frequency data for the selected program
   const universityFrequencyData = useMemo(() => {
-    if (!selectedProgram || universityPreferencesData.length === 0) {
+    if (!selectedProgram || !year || universityPreferencesData.length === 0) {
       return [];
     }
 
     const universityTotals = {};
     universityPreferencesData.forEach((row) => {
-      if (row.yop_kodu === selectedProgram.yop_kodu) {
+      if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
         const uni = row.universite;
         if (uni !== university.name) {
           universityTotals[uni] =
@@ -177,7 +177,7 @@ const UniversityComparison = () => {
     });
 
     return Object.entries(universityTotals).sort((a, b) => b[1] - a[1]);
-  }, [selectedProgram, universityPreferencesData, university.name]);
+  }, [selectedProgram, year, universityPreferencesData, university.name]);
 
   // Calculate fulfillment rate frequency data for similar programs
   const fulfillmentFrequencyData = useMemo(() => {
@@ -572,10 +572,10 @@ const UniversityComparison = () => {
       // Filter by top cities if limit is set
       let filteredByCity = filteredByType;
       if (topCitiesLimit > 0 && cityPreferencesData.length > 0) {
-        // Calculate total preferences per city for THIS specific program
+        // Calculate total preferences per city for THIS specific program and year
         const cityTotals = {};
         cityPreferencesData.forEach((row) => {
-          if (row.yop_kodu === selectedProgram.yop_kodu) {
+          if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
             const city = row.il;
             cityTotals[city] = (cityTotals[city] || 0) + row.tercih_sayisi;
           }
@@ -607,11 +607,11 @@ const UniversityComparison = () => {
       // Filter by minimum university count (exclude own university from count check)
       let filteredByUniversityCount = filteredByCity;
       if (minUniversityCount > 0 && universityPreferencesData.length > 0) {
-        // Calculate total preferences per university for THIS specific own university program only
+        // Calculate total preferences per university for THIS specific own university program and year
         const universityTotals = {};
         universityPreferencesData.forEach((row) => {
-          // Only count preferences for the selected own university program
-          if (row.yop_kodu === selectedProgram.yop_kodu) {
+          // Only count preferences for the selected own university program and year
+          if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
             const uni = row.universite;
             if (uni !== university.name) {
               universityTotals[uni] =
@@ -646,11 +646,11 @@ const UniversityComparison = () => {
       // Filter by minimum program count
       let filteredByProgramCount = filteredByUniversityCount;
       if (minProgramCount > 0 && programPreferencesData.length > 0) {
-        // Calculate total preferences per program for THIS specific own university program only
+        // Calculate total preferences per program for THIS specific own university program and year
         const programTotals = {};
         programPreferencesData.forEach((row) => {
-          // Only count preferences for the selected own university program
-          if (row.yop_kodu === selectedProgram.yop_kodu) {
+          // Only count preferences for the selected own university program and year
+          if (row.yop_kodu === selectedProgram.yop_kodu && row.year === year) {
             const prog = row.program;
             programTotals[prog] =
               (programTotals[prog] || 0) + row.tercih_sayisi;
@@ -664,12 +664,16 @@ const UniversityComparison = () => {
               ? count <= minProgramCount
               : count >= minProgramCount
           )
-          .map(([prog]) => prog.toLowerCase());
+          .map(([prog]) => prog.toLocaleLowerCase("tr-TR"));
 
         filteredByProgramCount = filteredByUniversityCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
-          // Try to match program name (case-insensitive)
-          const programName = (p.program || p.department || "").toLowerCase();
+          // Try to match program name (case-insensitive with Turkish locale)
+          const programName = (
+            p.program ||
+            p.department ||
+            ""
+          ).toLocaleLowerCase("tr-TR");
           return allowedPrograms.includes(programName);
         });
       }
@@ -678,10 +682,14 @@ const UniversityComparison = () => {
       if (excludedPrograms.size > 0) {
         filteredByProgramCount = filteredByProgramCount.filter((p) => {
           if (p.yop_kodu === selectedProgram.yop_kodu) return true;
-          const programName = (p.program || p.department || "").toLowerCase();
-          // Check case-insensitive by converting excluded programs to lowercase
+          const programName = (
+            p.program ||
+            p.department ||
+            ""
+          ).toLocaleLowerCase("tr-TR");
+          // Check case-insensitive by converting excluded programs to lowercase with Turkish locale
           const excludedLower = new Set(
-            [...excludedPrograms].map((s) => s.toLowerCase())
+            [...excludedPrograms].map((s) => s.toLocaleLowerCase("tr-TR"))
           );
           return !excludedLower.has(programName);
         });
@@ -1107,7 +1115,10 @@ const UniversityComparison = () => {
                           {(() => {
                             const cityTotals = {};
                             cityPreferencesData.forEach((row) => {
-                              if (row.yop_kodu === selectedProgram.yop_kodu) {
+                              if (
+                                row.yop_kodu === selectedProgram.yop_kodu &&
+                                row.year === year
+                              ) {
                                 const city = row.il;
                                 cityTotals[city] =
                                   (cityTotals[city] || 0) + row.tercih_sayisi;
@@ -1185,7 +1196,10 @@ const UniversityComparison = () => {
                             {(() => {
                               const universityTotals = {};
                               universityPreferencesData.forEach((row) => {
-                                if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                if (
+                                  row.yop_kodu === selectedProgram.yop_kodu &&
+                                  row.year === year
+                                ) {
                                   const uni = row.universite;
                                   if (uni !== university.name) {
                                     universityTotals[uni] =
@@ -1276,7 +1290,10 @@ const UniversityComparison = () => {
                             {(() => {
                               const programTotals = {};
                               programPreferencesData.forEach((row) => {
-                                if (row.yop_kodu === selectedProgram.yop_kodu) {
+                                if (
+                                  row.yop_kodu === selectedProgram.yop_kodu &&
+                                  row.year === year
+                                ) {
                                   const prog = row.program;
                                   programTotals[prog] =
                                     (programTotals[prog] || 0) +
