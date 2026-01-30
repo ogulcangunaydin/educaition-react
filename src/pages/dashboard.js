@@ -35,6 +35,19 @@ const Dashboard = () => {
         >
           Üniversite Karşılaştırma
         </Button>
+        <Button
+          variant="contained"
+          sx={{
+            margin: "10px 0",
+            backgroundColor: "#9c27b0",
+            "&:hover": {
+              backgroundColor: "#7b1fa2",
+            },
+          }}
+          onClick={() => navigate("/high-school-rooms")}
+        >
+          Program Öneri Sistemi (Lise Odaları)
+        </Button>
       </CenteredContainer>
     </>
   );

@@ -19,6 +19,10 @@ import UniversityComparison from "./pages/UniversityComparison";
 import HighSchoolAnalysis from "./pages/HighSchoolAnalysis";
 import RivalAnalysis from "./pages/RivalAnalysis";
 import ProgramRivalAnalysis from "./pages/ProgramRivalAnalysis";
+import HighSchoolRooms from "./pages/HighSchoolRooms";
+import HighSchoolRoomDetail from "./pages/HighSchoolRoomDetail";
+import ProgramSuggestionTest from "./pages/ProgramSuggestionTest";
+import ProgramTestResult from "./pages/ProgramTestResult";
 
 function App() {
   const accessToken = localStorage.getItem("access_token");
@@ -60,6 +64,20 @@ function App() {
         <Route
           path="/program-rival-analysis"
           element={<ProgramRivalAnalysis />}
+        />
+        {/* High School Rooms - Program Suggestion System */}
+        <Route path="/high-school-rooms" element={<HighSchoolRooms />} />
+        <Route
+          path="/high-school-room/:roomId"
+          element={<HighSchoolRoomDetail />}
+        />
+        <Route
+          path="/program-test/:roomId"
+          element={<ProgramSuggestionTest />}
+        />
+        <Route
+          path="/program-test-result/:studentId"
+          element={<ProgramTestResult />}
         />
         <Route
           path="/"

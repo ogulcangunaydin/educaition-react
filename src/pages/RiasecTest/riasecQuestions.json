@@ -1,0 +1,74 @@
+{
+  "realistic": [
+    { "id": 1, "text": "Mutfak dolapları yapmak", "type": "R" },
+    { "id": 14, "text": "Tuğla veya fayans döşemek", "type": "R" },
+    { "id": 26, "text": "Ev aletlerini tamir etmek", "type": "R" },
+    { "id": 49, "text": "Bir balık üretim tesisinde balık yetiştirmek", "type": "R" },
+    { "id": 61, "text": "Elektronik parçaları birleştirmek", "type": "R" },
+    { "id": 62, "text": "Ofislere ve evlere paket teslim etmek için kamyon kullanmak", "type": "R" },
+    { "id": 146, "text": "Sevkiyat öncesinde parçaların kalitesini test etmek", "type": "R" },
+    { "id": 158, "text": "Kilitleri tamir etmek ve monte etmek", "type": "R" },
+    { "id": 169, "text": "Ürün üretmek için makineleri kurmak ve çalıştırmak", "type": "R" },
+    { "id": 170, "text": "Orman yangınlarını söndürmek", "type": "R" }
+  ],
+  "investigative": [
+    { "id": 27, "text": "Yeni bir ilaç geliştirmek", "type": "I" },
+    { "id": 39, "text": "Su kirliliğini azaltmanın yollarını araştırmak", "type": "I" },
+    { "id": 75, "text": "Kimyasal deneyler yapmak", "type": "I" },
+    { "id": 100, "text": "Gezegenlerin hareketlerini incelemek", "type": "I" },
+    { "id": 111, "text": "Mikroskop kullanarak kan örneklerini incelemek", "type": "I" },
+    { "id": 112, "text": "Bir yangının nedenini araştırmak", "type": "I" },
+    { "id": 135, "text": "Hava durumunu daha iyi tahmin etmenin bir yolunu geliştirmek", "type": "I" },
+    { "id": 136, "text": "Bir biyoloji laboratuvarında çalışmak", "type": "I" },
+    { "id": 147, "text": "Şeker yerine kullanılabilecek bir alternatif icat etmek", "type": "I" },
+    { "id": 171, "text": "Hastalıkları tespit etmek için laboratuvar testleri yapmak", "type": "I" }
+  ],
+  "artistic": [
+    { "id": 29, "text": "Kitap veya tiyatro oyunu yazmak", "type": "A" },
+    { "id": 30, "text": "Bir müzik enstrümanı çalmak", "type": "A" },
+    { "id": 54, "text": "Müzik bestelemek veya düzenlemek", "type": "A" },
+    { "id": 77, "text": "Resim çizmek", "type": "A" },
+    { "id": 90, "text": "Filmler için özel efektler oluşturmak", "type": "A" },
+    { "id": 113, "text": "Tiyatro oyunları için dekor boyamak", "type": "A" },
+    { "id": 137, "text": "Film veya televizyon dizileri için senaryo yazmak", "type": "A" },
+    { "id": 149, "text": "Caz yapmak veya tap dansı yapmak", "type": "A" },
+    { "id": 161, "text": "Bir müzik grubunda şarkı söylemek", "type": "A" },
+    { "id": 173, "text": "Film montajı yapmak", "type": "A" }
+  ],
+  "social": [
+    { "id": 7, "text": "Bir kişiye egzersiz programı öğretmek", "type": "S" },
+    { "id": 20, "text": "Kişisel veya duygusal sorunları olan insanlara yardımcı olmak", "type": "S" },
+    { "id": 44, "text": "İnsanlara kariyer danışmanlığı yapmak", "type": "S" },
+    { "id": 67, "text": "Rehabilitasyon terapisi uygulamak", "type": "S" },
+    { "id": 68, "text": "Bir sivil toplum kuruluşunda gönüllü çalışmak", "type": "S" },
+    { "id": 80, "text": "Çocuklara spor yapmayı öğretmek", "type": "S" },
+    { "id": 92, "text": "İşitme engelli bireylere işaret dili öğretmek", "type": "S" },
+    { "id": 104, "text": "Bir grup terapi oturumunun yürütülmesine yardımcı olmak", "type": "S" },
+    { "id": 151, "text": "Bir kreşte çocuklarla ilgilenmek", "type": "S" },
+    { "id": 176, "text": "Lisede ders vermek", "type": "S" }
+  ],
+  "enterprising": [
+    { "id": 9, "text": "Hisse senedi ve tahvil alım satımı yapmak", "type": "E" },
+    { "id": 10, "text": "Bir perakende mağazasını yönetmek", "type": "E" },
+    { "id": 22, "text": "Bir güzellik salonu veya berber işletmek", "type": "E" },
+    { "id": 93, "text": "Büyük bir şirkette bir departmanı yönetmek", "type": "E" },
+    { "id": 117, "text": "Kendi işini kurmak", "type": "E" },
+    { "id": 118, "text": "Ticari sözleşmeler üzerinde pazarlık yapmak", "type": "E" },
+    { "id": 129, "text": "Bir davada müvekkili temsil etmek", "type": "E" },
+    { "id": 142, "text": "Yeni bir giyim koleksiyonunun pazarlamasını yapmak", "type": "E" },
+    { "id": 154, "text": "Bir mağazada ürün satmak", "type": "E" },
+    { "id": 166, "text": "Bir giyim mağazasını yönetmek", "type": "E" }
+  ],
+  "conventional": [
+    { "id": 11, "text": "Bilgisayar programı kullanarak elektronik tablo hazırlamak", "type": "C" },
+    { "id": 12, "text": "Kayıtları veya formları kontrol edip düzeltmek", "type": "C" },
+    { "id": 36, "text": "Bir yazılımı büyük bir bilgisayar ağına yüklemek", "type": "C" },
+    { "id": 60, "text": "Hesap makinesi kullanmak", "type": "C" },
+    { "id": 96, "text": "Gelen ve giden ürün kayıtlarını tutmak", "type": "C" },
+    { "id": 107, "text": "Çalışanların maaşlarını hesaplamak", "type": "C" },
+    { "id": 120, "text": "El tipi bir cihazla stok sayımı yapmak", "type": "C" },
+    { "id": 155, "text": "Kira ödemelerini kaydetmek", "type": "C" },
+    { "id": 167, "text": "Stok kayıtlarını tutmak", "type": "C" },
+    { "id": 179, "text": "Bir kurum için postaları damgalamak, ayırmak ve dağıtmak", "type": "C" }
+  ]
+}

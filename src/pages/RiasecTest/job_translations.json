@@ -1,0 +1,3694 @@
+[
+  {
+    "en": "Chief Executives",
+    "tr": "İcra Müdürü"
+  },
+  {
+    "en": "Chief Sustainability Officers",
+    "tr": "Sürdürülebilirlik Müdürü"
+  },
+  {
+    "en": "General and Operations Managers",
+    "tr": "Genel ve Operasyon Müdürü"
+  },
+  {
+    "en": "Legislators",
+    "tr": "Yasama Üyesi"
+  },
+  {
+    "en": "Advertising and Promotions Managers",
+    "tr": "Reklam ve Tanıtım Müdürü"
+  },
+  {
+    "en": "Marketing Managers",
+    "tr": "Pazarlama Müdürü"
+  },
+  {
+    "en": "Sales Managers",
+    "tr": "Satış Müdürü"
+  },
+  {
+    "en": "Public Relations Managers",
+    "tr": "Halkla İlişkiler Müdürü"
+  },
+  {
+    "en": "Fundraising Managers",
+    "tr": "Bağış Toplama Müdürü"
+  },
+  {
+    "en": "Administrative Services Managers",
+    "tr": "İdari Hizmetler Müdürü"
+  },
+  {
+    "en": "Facilities Managers",
+    "tr": "Tesis Müdürü"
+  },
+  {
+    "en": "Security Managers",
+    "tr": "Güvenlik Müdürü"
+  },
+  {
+    "en": "Computer and Information Systems Managers",
+    "tr": "Bilgisayar ve Bilgi Sistemleri Müdürü"
+  },
+  {
+    "en": "Financial Managers",
+    "tr": "Finans Müdürü"
+  },
+  {
+    "en": "Treasurers and Controllers",
+    "tr": "Mali İşler Müdürü"
+  },
+  {
+    "en": "Investment Fund Managers",
+    "tr": "Yatırım Fonu Müdürü"
+  },
+  {
+    "en": "Industrial Production Managers",
+    "tr": "Endüstriyel Üretim Müdürü"
+  },
+  {
+    "en": "Quality Control Systems Managers",
+    "tr": "Kalite Kontrol Sistemleri Müdürü"
+  },
+  {
+    "en": "Geothermal Production Managers",
+    "tr": "Jeotermal Üretim Müdürü"
+  },
+  {
+    "en": "Biofuels Production Managers",
+    "tr": "Biyoyakıt Üretim Müdürü"
+  },
+  {
+    "en": "Biomass Power Plant Managers",
+    "tr": "Biyokütle Santrali Müdürü"
+  },
+  {
+    "en": "Hydroelectric Production Managers",
+    "tr": "Hidroelektrik Üretim Müdürü"
+  },
+  {
+    "en": "Purchasing Managers",
+    "tr": "Satın Alma Müdürü"
+  },
+  {
+    "en": "Transportation, Storage, and Distribution Managers",
+    "tr": "Taşımacılık, Depolama ve Dağıtım Müdürü"
+  },
+  {
+    "en": "Supply Chain Managers",
+    "tr": "Tedarik Zinciri Müdürü"
+  },
+  {
+    "en": "Compensation and Benefits Managers",
+    "tr": "Ücret ve Yan Haklar Müdürü"
+  },
+  {
+    "en": "Human Resources Managers",
+    "tr": "İnsan Kaynakları Müdürü"
+  },
+  {
+    "en": "Training and Development Managers",
+    "tr": "Eğitim ve Gelişim Müdürü"
+  },
+  {
+    "en": "Farmers, Ranchers, and Other Agricultural Managers",
+    "tr": "Çiftçi ve Tarım Müdürü"
+  },
+  {
+    "en": "Construction Managers",
+    "tr": "İnşaat Müdürü"
+  },
+  {
+    "en": "Education and Childcare Administrators, Preschool and Daycare",
+    "tr": "Eğitim ve Çocuk Bakımı Müdürü, Anaokulu ve Kreş"
+  },
+  {
+    "en": "Education Administrators, Kindergarten through Secondary",
+    "tr": "Eğitim Müdürü, Anaokulundan Ortaöğretime"
+  },
+  {
+    "en": "Education Administrators, Postsecondary",
+    "tr": "Eğitim Müdürü, Yükseköğretim"
+  },
+  {
+    "en": "Architectural and Engineering Managers",
+    "tr": "Mimarlık ve Mühendislik Müdürü"
+  },
+  {
+    "en": "Biofuels/Biodiesel Technology and Product Development Managers",
+    "tr": "Biyoyakıt/Biyodizel Teknolojisi ve Ürün Geliştirme Müdürü"
+  },
+  {
+    "en": "Food Service Managers",
+    "tr": "Yiyecek Hizmetleri Müdürü"
+  },
+  {
+    "en": "Gambling Managers",
+    "tr": "Kumar Müdürü"
+  },
+  {
+    "en": "Entertainment and Recreation Managers, Except Gambling",
+    "tr": "Eğlence ve Rekreasyon Müdürü, Kumar Hariç"
+  },
+  {
+    "en": "Lodging Managers",
+    "tr": "Konaklama Müdürü"
+  },
+  {
+    "en": "Medical and Health Services Managers",
+    "tr": "Tıbbi ve Sağlık Hizmetleri Müdürü"
+  },
+  {
+    "en": "Natural Sciences Managers",
+    "tr": "Doğa Bilimleri Müdürü"
+  },
+  {
+    "en": "Clinical Research Coordinators",
+    "tr": "Klinik Araştırma Koordinatörü"
+  },
+  {
+    "en": "Water Resource Specialists",
+    "tr": "Su Kaynakları Uzmanı"
+  },
+  {
+    "en": "Postmasters and Mail Superintendents",
+    "tr": "Posta Müdürü ve Posta Şefi"
+  },
+  {
+    "en": "Property, Real Estate, and Community Association Managers",
+    "tr": "Gayrimenkul ve Topluluk Derneği Müdürü"
+  },
+  {
+    "en": "Social and Community Service Managers",
+    "tr": "Sosyal ve Toplum Hizmetleri Müdürü"
+  },
+  {
+    "en": "Emergency Management Directors",
+    "tr": "Acil Durum Yönetimi Müdürü"
+  },
+  {
+    "en": "Funeral Home Managers",
+    "tr": "Cenaze Evi Müdürü"
+  },
+  {
+    "en": "Fitness and Wellness Coordinators",
+    "tr": "Fitness ve Sağlık Koordinatörü"
+  },
+  {
+    "en": "Spa Managers",
+    "tr": "Spa Müdürü"
+  },
+  {
+    "en": "Regulatory Affairs Managers",
+    "tr": "Regülasyon İşleri Müdürü"
+  },
+  {
+    "en": "Compliance Managers",
+    "tr": "Uyum Müdürü"
+  },
+  {
+    "en": "Loss Prevention Managers",
+    "tr": "Kayıp Önleme Müdürü"
+  },
+  {
+    "en": "Wind Energy Operations Managers",
+    "tr": "Rüzgar Enerjisi Operasyon Müdürü"
+  },
+  {
+    "en": "Wind Energy Development Managers",
+    "tr": "Rüzgar Enerjisi Geliştirme Müdürü"
+  },
+  {
+    "en": "Brownfield Redevelopment Specialists and Site Managers",
+    "tr": "Brownfield Yeniden Geliştirme Uzmanı ve Alan Müdürü"
+  },
+  {
+    "en": "Agents and Business Managers of Artists, Performers, and Athletes",
+    "tr": "Sanatçı, Performansçı ve Sporcu Ajanı ve İş Müdürü"
+  },
+  {
+    "en": "Buyers and Purchasing Agents, Farm Products",
+    "tr": "Alımcı ve Satın Alma Temsilcisi, Tarım Ürünleri"
+  },
+  {
+    "en": "Wholesale and Retail Buyers, Except Farm Products",
+    "tr": "Toptan ve Perakende Alımcı, Tarım Ürünleri Hariç"
+  },
+  {
+    "en": "Purchasing Agents, Except Wholesale, Retail, and Farm Products",
+    "tr": "Satın Alma Temsilcisi, Toptan, Perakende ve Tarım Ürünleri Hariç"
+  },
+  {
+    "en": "Claims Adjusters, Examiners, and Investigators",
+    "tr": "Hasar Değerlendiricisi, İnceleyicisi ve Araştırmacısı"
+  },
+  {
+    "en": "Insurance Appraisers, Auto Damage",
+    "tr": "Sigorta Değerlendiricisi, Araç Hasarı"
+  },
+  {
+    "en": "Compliance Officers",
+    "tr": "Uyum Görevlisi"
+  },
+  {
+    "en": "Environmental Compliance Inspectors",
+    "tr": "Çevresel Uyum Müfettişi"
+  },
+  {
+    "en": "Equal Opportunity Representatives and Officers",
+    "tr": "Eşit Fırsat Temsilcisi ve Görevlisi"
+  },
+  {
+    "en": "Government Property Inspectors and Investigators",
+    "tr": "Devlet Malı Müfettişi ve Araştırmacısı"
+  },
+  {
+    "en": "Coroners",
+    "tr": "Adli Tıp Uzmanı"
+  },
+  {
+    "en": "Regulatory Affairs Specialists",
+    "tr": "Regülatif İşler Uzmanı"
+  },
+  {
+    "en": "Customs Brokers",
+    "tr": "Gümrük Müşaviri"
+  },
+  {
+    "en": "Cost Estimators",
+    "tr": "Maliyet Tahmincisi"
+  },
+  {
+    "en": "Human Resources Specialists",
+    "tr": "İnsan Kaynakları Uzmanı"
+  },
+  {
+    "en": "Farm Labor Contractors",
+    "tr": "Tarım İşgücü Yüklenicisi"
+  },
+  {
+    "en": "Labor Relations Specialists",
+    "tr": "İş İlişkileri Uzmanı"
+  },
+  {
+    "en": "Logisticians",
+    "tr": "Lojistik Uzmanı"
+  },
+  {
+    "en": "Logistics Engineers",
+    "tr": "Lojistik Mühendisi"
+  },
+  {
+    "en": "Logistics Analysts",
+    "tr": "Lojistik Analisti"
+  },
+  {
+    "en": "Project Management Specialists",
+    "tr": "Proje Yönetimi Uzmanı"
+  },
+  {
+    "en": "Management Analysts",
+    "tr": "Yönetim Analisti"
+  },
+  {
+    "en": "Meeting, Convention, and Event Planners",
+    "tr": "Toplantı, Kongre ve Etkinlik Planlayıcısı"
+  },
+  {
+    "en": "Fundraisers",
+    "tr": "Bağış Toplayıcısı"
+  },
+  {
+    "en": "Compensation, Benefits, and Job Analysis Specialists",
+    "tr": "Ücret, Yan Haklar ve İş Analizi Uzmanı"
+  },
+  {
+    "en": "Training and Development Specialists",
+    "tr": "Eğitim ve Gelişim Uzmanı"
+  },
+  {
+    "en": "Market Research Analysts and Marketing Specialists",
+    "tr": "Pazar Araştırma Analisti ve Pazarlama Uzmanı"
+  },
+  {
+    "en": "Search Marketing Strategists",
+    "tr": "Arama Pazarlama Stratejisti"
+  },
+  {
+    "en": "Business Continuity Planners",
+    "tr": "İş Sürekliliği Planlayıcısı"
+  },
+  {
+    "en": "Sustainability Specialists",
+    "tr": "Sürdürülebilirlik Uzmanı"
+  },
+  {
+    "en": "Online Merchants",
+    "tr": "Çevrimiçi Tüccar"
+  },
+  {
+    "en": "Security Management Specialists",
+    "tr": "Güvenlik Yönetimi Uzmanı"
+  },
+  {
+    "en": "Accountants and Auditors",
+    "tr": "Muhasebeci ve Denetçisi"
+  },
+  {
+    "en": "Appraisers of Personal and Business Property",
+    "tr": "Kişisel ve İş Mülkü Değerlendiricisi"
+  },
+  {
+    "en": "Appraisers and Assessors of Real Estate",
+    "tr": "Gayrimenkul Değerleme ve Değerlendirme Uzmanı"
+  },
+  {
+    "en": "Budget Analysts",
+    "tr": "Bütçe Analisti"
+  },
+  {
+    "en": "Credit Analysts",
+    "tr": "Kredi Analisti"
+  },
+  {
+    "en": "Financial and Investment Analysts",
+    "tr": "Finans ve Yatırım Analisti"
+  },
+  {
+    "en": "Personal Financial Advisors",
+    "tr": "Kişisel Finans Danışmanı"
+  },
+  {
+    "en": "Insurance Underwriters",
+    "tr": "Sigorta Uzmanı"
+  },
+  {
+    "en": "Financial Risk Specialists",
+    "tr": "Finansal Risk Uzmanı"
+  },
+  {
+    "en": "Financial Examiners",
+    "tr": "Finansal Denetçisi"
+  },
+  {
+    "en": "Credit Counselors",
+    "tr": "Kredi Danışmanı"
+  },
+  {
+    "en": "Loan Officers",
+    "tr": "Kredi Görevlisi"
+  },
+  {
+    "en": "Tax Examiners and Collectors, and Revenue Agents",
+    "tr": "Vergi Denetçisi ve Tahsildarı, ve Gelir Ajanı"
+  },
+  {
+    "en": "Tax Preparers",
+    "tr": "Vergi Hazırlayıcısı"
+  },
+  {
+    "en": "Financial Quantitative Analysts",
+    "tr": "Finansal Nicel Analisti"
+  },
+  {
+    "en": "Fraud Examiners, Investigators and Analysts",
+    "tr": "Dolandırıcılık Denetçisi, Araştırmacısı ve Analisti"
+  },
+  {
+    "en": "Computer Systems Analysts",
+    "tr": "Bilgisayar Sistemleri Analisti"
+  },
+  {
+    "en": "Health Informatics Specialists",
+    "tr": "Sağlık Bilişimi Uzmanı"
+  },
+  {
+    "en": "Information Security Analysts",
+    "tr": "Bilgi Güvenliği Analisti"
+  },
+  {
+    "en": "Computer and Information Research Scientists",
+    "tr": "Bilgisayar ve Bilgi Araştırma Bilimcisi"
+  },
+  {
+    "en": "Computer Network Support Specialists",
+    "tr": "Bilgisayar Ağı Destek Uzmanı"
+  },
+  {
+    "en": "Computer User Support Specialists",
+    "tr": "Bilgisayar Kullanıcı Destek Uzmanı"
+  },
+  {
+    "en": "Computer Network Architects",
+    "tr": "Bilgisayar Ağı Mimarisi"
+  },
+  {
+    "en": "Telecommunications Engineering Specialists",
+    "tr": "Telekomünikasyon Mühendisliği Uzmanı"
+  },
+  {
+    "en": "Database Administrators",
+    "tr": "Veritabanı Yöneticisi"
+  },
+  {
+    "en": "Database Architects",
+    "tr": "Veritabanı Mimarisi"
+  },
+  {
+    "en": "Data Warehousing Specialists",
+    "tr": "Veri Ambarı Uzmanı"
+  },
+  {
+    "en": "Network and Computer Systems Administrators",
+    "tr": "Ağ ve Bilgisayar Sistemleri Yöneticisi"
+  },
+  {
+    "en": "Computer Programmers",
+    "tr": "Bilgisayar Programcısı"
+  },
+  {
+    "en": "Software Developers",
+    "tr": "Yazılım Geliştiricisi"
+  },
+  {
+    "en": "Software Quality Assurance Analysts and Testers",
+    "tr": "Yazılım Kalite Güvence Analisti ve Testçisi"
+  },
+  {
+    "en": "Web Developers",
+    "tr": "Web Geliştiricisi"
+  },
+  {
+    "en": "Web and Digital Interface Designers",
+    "tr": "Web ve Dijital Arayüz Tasarımcısı"
+  },
+  {
+    "en": "Video Game Designers",
+    "tr": "Video Oyun Tasarımcısı"
+  },
+  {
+    "en": "Web Administrators",
+    "tr": "Web Yöneticisi"
+  },
+  {
+    "en": "Geographic Information Systems Technologists and Technicians",
+    "tr": "Coğrafi Bilgi Sistemleri Teknoloğu ve Teknisyeni"
+  },
+  {
+    "en": "Document Management Specialists",
+    "tr": "Doküman Yönetimi Uzmanı"
+  },
+  {
+    "en": "Penetration Testers",
+    "tr": "Sızma Testi Uzmanı"
+  },
+  {
+    "en": "Information Security Engineers",
+    "tr": "Bilgi Güvenliği Mühendisi"
+  },
+  {
+    "en": "Digital Forensics Analysts",
+    "tr": "Dijital Adli Bilimler Analisti"
+  },
+  {
+    "en": "Blockchain Engineers",
+    "tr": "Blockchain Mühendisi"
+  },
+  {
+    "en": "Computer Systems Engineers/Architects",
+    "tr": "Bilgisayar Sistemleri Mühendisi"
+  },
+  {
+    "en": "Information Technology Project Managers",
+    "tr": "Bilgi Teknolojileri Proje Müdürü"
+  },
+  {
+    "en": "Actuaries",
+    "tr": "Aktüeri"
+  },
+  {
+    "en": "Mathematicians",
+    "tr": "Matematikçi"
+  },
+  {
+    "en": "Operations Research Analysts",
+    "tr": "Operasyon Araştırma Analisti"
+  },
+  {
+    "en": "Statisticians",
+    "tr": "İstatistikçi"
+  },
+  {
+    "en": "Biostatisticians",
+    "tr": "Biyoistatistikçi"
+  },
+  {
+    "en": "Data Scientists",
+    "tr": "Veri Bilimcisi"
+  },
+  {
+    "en": "Business Intelligence Analysts",
+    "tr": "İş Zekası Analisti"
+  },
+  {
+    "en": "Clinical Data Managers",
+    "tr": "Klinik Veri Müdürü"
+  },
+  {
+    "en": "Bioinformatics Technicians",
+    "tr": "Biyoinformatik Teknisyeni"
+  },
+  {
+    "en": "Architects, Except Landscape and Naval",
+    "tr": "Mimar, Peyzaj ve Deniz Mimarları Hariç"
+  },
+  {
+    "en": "Landscape Architects",
+    "tr": "Peyzaj Mimarları"
+  },
+  {
+    "en": "Cartographers and Photogrammetrists",
+    "tr": "Haritacı ve Fotogrametrist"
+  },
+  {
+    "en": "Surveyors",
+    "tr": "Müteahhit"
+  },
+  {
+    "en": "Geodetic Surveyors",
+    "tr": "Jeodezi Mühendisi"
+  },
+  {
+    "en": "Aerospace Engineers",
+    "tr": "Havacılık Mühendisi"
+  },
+  {
+    "en": "Agricultural Engineers",
+    "tr": "Tarım Mühendisi"
+  },
+  {
+    "en": "Bioengineers and Biomedical Engineers",
+    "tr": "Biyo mühendis ve Biyomedikal Mühendisi"
+  },
+  {
+    "en": "Chemical Engineers",
+    "tr": "Kimya Mühendisi"
+  },
+  {
+    "en": "Civil Engineers",
+    "tr": "İnşaat Mühendisi"
+  },
+  {
+    "en": "Transportation Engineers",
+    "tr": "Ulaşım Mühendisi"
+  },
+  {
+    "en": "Water/Wastewater Engineers",
+    "tr": "Su/Atık Su Mühendisi"
+  },
+  {
+    "en": "Computer Hardware Engineers",
+    "tr": "Bilgisayar Donanım Mühendisi"
+  },
+  {
+    "en": "Electrical Engineers",
+    "tr": "Elektrik Mühendisi"
+  },
+  {
+    "en": "Electronics Engineers, Except Computer",
+    "tr": "Elektronik Mühendisi Hariç Bilgisayar"
+  },
+  {
+    "en": "Radio Frequency Identification Device Specialists",
+    "tr": "Radyo Frekansı Tanımlama Cihazı Uzmanı"
+  },
+  {
+    "en": "Environmental Engineers",
+    "tr": "Çevre Mühendisi"
+  },
+  {
+    "en": "Health and Safety Engineers, Except Mining Safety Engineers and Inspectors",
+    "tr": "Sağlık ve Güvenlik Mühendisi Hariç Madencilik Güvenliği Mühendisi ve Müfettişleri"
+  },
+  {
+    "en": "Fire-Prevention and Protection Engineers",
+    "tr": "Yangın Öncesi ve Koruma Mühendisi"
+  },
+  {
+    "en": "Industrial Engineers",
+    "tr": "Endüstri Mühendisi"
+  },
+  {
+    "en": "Human Factors Engineers and Ergonomists",
+    "tr": "İnsan Faktörleri Mühendisi ve Ergonomist"
+  },
+  {
+    "en": "Validation Engineers",
+    "tr": "Doğrulama Mühendisi"
+  },
+  {
+    "en": "Manufacturing Engineers",
+    "tr": "Üretim Mühendisi"
+  },
+  {
+    "en": "Marine Engineers and Naval Architects",
+    "tr": "Deniz Mühendisi ve Gemi Mühendisi"
+  },
+  {
+    "en": "Materials Engineers",
+    "tr": "Malzeme Mühendisi"
+  },
+  {
+    "en": "Mechanical Engineers",
+    "tr": "Makine Mühendisi"
+  },
+  {
+    "en": "Fuel Cell Engineers",
+    "tr": "Yakıt Hücresi Mühendisi"
+  },
+  {
+    "en": "Automotive Engineers",
+    "tr": "Otomotiv Mühendisi"
+  },
+  {
+    "en": "Mining and Geological Engineers, Including Mining Safety Engineers",
+    "tr": "Madencilik ve Jeoloji Mühendisi, Madencilik Güvenliği Mühendisleri Dahil"
+  },
+  {
+    "en": "Nuclear Engineers",
+    "tr": "Nükleer Mühendisi"
+  },
+  {
+    "en": "Petroleum Engineers",
+    "tr": "Petrol Mühendisi"
+  },
+  {
+    "en": "Energy Engineers, Except Wind and Solar",
+    "tr": "Enerji Mühendisi Hariç Rüzgar ve Güneş"
+  },
+  {
+    "en": "Mechatronics Engineers",
+    "tr": "Mekatronik Mühendisi"
+  },
+  {
+    "en": "Microsystems Engineers",
+    "tr": "Mikrosistem Mühendisi"
+  },
+  {
+    "en": "Photonics Engineers",
+    "tr": "Fotonik Mühendisi"
+  },
+  {
+    "en": "Robotics Engineers",
+    "tr": "Robot Mühendisi"
+  },
+  {
+    "en": "Nanosystems Engineers",
+    "tr": "Nanosistem Mühendisi"
+  },
+  {
+    "en": "Wind Energy Engineers",
+    "tr": "Rüzgar Enerjisi Mühendisi"
+  },
+  {
+    "en": "Solar Energy Systems Engineers",
+    "tr": "Güneş Enerjisi Sistemleri Mühendisi"
+  },
+  {
+    "en": "Architectural and Civil Drafters",
+    "tr": "Mimari ve İnşaat Çizim Elemanı"
+  },
+  {
+    "en": "Electrical and Electronics Drafters",
+    "tr": "Elektrik ve Elektronik Çizimcisi"
+  },
+  {
+    "en": "Mechanical Drafters",
+    "tr": "Mekanik Çizimcisi"
+  },
+  {
+    "en": "Aerospace Engineering and Operations Technologists and Technicians",
+    "tr": "Havacılık Mühendisliği ve Operasyon Teknoloğu"
+  },
+  {
+    "en": "Civil Engineering Technologists and Technicians",
+    "tr": "İnşaat Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Electrical and Electronic Engineering Technologists and Technicians",
+    "tr": "Elektrik ve Elektronik Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Electro-Mechanical and Mechatronics Technologists and Technicians",
+    "tr": "Elektromekanik ve Mekatronik Teknoloğu ve Teknisyeni"
+  },
+  {
+    "en": "Robotics Technicians",
+    "tr": "Robotik Teknisyeni"
+  },
+  {
+    "en": "Environmental Engineering Technologists and Technicians",
+    "tr": "Çevre Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Industrial Engineering Technologists and Technicians",
+    "tr": "Endüstri Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Nanotechnology Engineering Technologists and Technicians",
+    "tr": "Nanoteknoloji Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Mechanical Engineering Technologists and Technicians",
+    "tr": "Mekanik Mühendisliği Teknoloğu"
+  },
+  {
+    "en": "Automotive Engineering Technicians",
+    "tr": "Otomotiv Mühendisliği Teknisyeni"
+  },
+  {
+    "en": "Calibration Technologists and Technicians",
+    "tr": "Kalibrasyon Teknoloğu ve Teknisyeni"
+  },
+  {
+    "en": "Non-Destructive Testing Specialists",
+    "tr": "Yıkıcı Olmayan Test Uzmanı"
+  },
+  {
+    "en": "Photonics Technicians",
+    "tr": "Fotonik Teknisyeni"
+  },
+  {
+    "en": "Surveying and Mapping Technicians",
+    "tr": "Harita ve Kadastro Teknisyeni"
+  },
+  {
+    "en": "Animal Scientists",
+    "tr": "Hayvan Bilimcisi"
+  },
+  {
+    "en": "Food Scientists and Technologists",
+    "tr": "Gıda Bilimci"
+  },
+  {
+    "en": "Soil and Plant Scientists",
+    "tr": "Toprak ve Bitki Bilimcisi"
+  },
+  {
+    "en": "Biochemists and Biophysicists",
+    "tr": "Biyokimyacı"
+  },
+  {
+    "en": "Microbiologists",
+    "tr": "Mikrobiyolog"
+  },
+  {
+    "en": "Zoologists and Wildlife Biologists",
+    "tr": "Zoolog ve Yaban Hayatı Biyoloğu"
+  },
+  {
+    "en": "Bioinformatics Scientists",
+    "tr": "Biyoinformatik Bilimcisi"
+  },
+  {
+    "en": "Molecular and Cellular Biologists",
+    "tr": "Moleküler ve Hücresel Biyolog"
+  },
+  {
+    "en": "Geneticists",
+    "tr": "Genetikçi"
+  },
+  {
+    "en": "Biologists",
+    "tr": "Biyolog"
+  },
+  {
+    "en": "Conservation Scientists",
+    "tr": "Koruma Bilimcisi"
+  },
+  {
+    "en": "Range Managers",
+    "tr": "Meralar Müdürü"
+  },
+  {
+    "en": "Park Naturalists",
+    "tr": "Park Doğa Bilimci"
+  },
+  {
+    "en": "Foresters",
+    "tr": "Ormancı"
+  },
+  {
+    "en": "Epidemiologists",
+    "tr": "Epidemiyolog"
+  },
+  {
+    "en": "Medical Scientists, Except Epidemiologists",
+    "tr": "Tıp Bilimcileri, Epidemiyologlar Hariç"
+  },
+  {
+    "en": "Astronomers",
+    "tr": "Astronom"
+  },
+  {
+    "en": "Physicists",
+    "tr": "Fizikçileri"
+  },
+  {
+    "en": "Atmospheric and Space Scientists",
+    "tr": "Atmosfer ve Uzay Bilimcisi"
+  },
+  {
+    "en": "Chemists",
+    "tr": "Kimyager"
+  },
+  {
+    "en": "Materials Scientists",
+    "tr": "Malzeme Bilimcisi"
+  },
+  {
+    "en": "Environmental Scientists and Specialists, Including Health",
+    "tr": "Çevre Bilimcisi ve Uzmanı, Sağlık Dahil"
+  },
+  {
+    "en": "Climate Change Policy Analysts",
+    "tr": "İklim Değişikliği Politika Analisti"
+  },
+  {
+    "en": "Environmental Restoration Planners",
+    "tr": "Çevresel Yenileme Planlayıcısı"
+  },
+  {
+    "en": "Industrial Ecologists",
+    "tr": "Endüstriyel Ekolog"
+  },
+  {
+    "en": "Geoscientists, Except Hydrologists and Geographers",
+    "tr": "Jeobilimcileri, Hidrologlar ve Coğrafyacılar Hariç"
+  },
+  {
+    "en": "Hydrologists",
+    "tr": "Hidrolog"
+  },
+  {
+    "en": "Remote Sensing Scientists and Technologists",
+    "tr": "Uzaktan Algılama Bilimcisi ve Teknologu"
+  },
+  {
+    "en": "Economists",
+    "tr": "Ekonomisti"
+  },
+  {
+    "en": "Environmental Economists",
+    "tr": "Çevre Ekonomistleri"
+  },
+  {
+    "en": "Survey Researchers",
+    "tr": "Anket Araştırmacısı"
+  },
+  {
+    "en": "Industrial-Organizational Psychologists",
+    "tr": "Endüstriyel-Örgüt Psikoloğu"
+  },
+  {
+    "en": "Clinical and Counseling Psychologists",
+    "tr": "Klinik ve Danışmanlık Psikoloğu"
+  },
+  {
+    "en": "School Psychologists",
+    "tr": "Okul Psikoloğu"
+  },
+  {
+    "en": "Neuropsychologists",
+    "tr": "Nöropsikolog"
+  },
+  {
+    "en": "Clinical Neuropsychologists",
+    "tr": "Klinik Nöropsikoloğu"
+  },
+  {
+    "en": "Sociologists",
+    "tr": "Sosyolog"
+  },
+  {
+    "en": "Urban and Regional Planners",
+    "tr": "Kentsel ve Bölgesel Planlayıcısı"
+  },
+  {
+    "en": "Anthropologists and Archeologists",
+    "tr": "Antropolog ve Arkeolog"
+  },
+  {
+    "en": "Geographers",
+    "tr": "Coğrafyacı"
+  },
+  {
+    "en": "Historians",
+    "tr": "Tarihçi"
+  },
+  {
+    "en": "Political Scientists",
+    "tr": "Siyasal Bilimci"
+  },
+  {
+    "en": "Transportation Planners",
+    "tr": "Ulaşım Planlayıcısı"
+  },
+  {
+    "en": "Agricultural Technicians",
+    "tr": "Tarım Teknisyeni"
+  },
+  {
+    "en": "Precision Agriculture Technicians",
+    "tr": "Hassas Tarım Teknisyeni"
+  },
+  {
+    "en": "Food Science Technicians",
+    "tr": "Gıda Bilimi Teknisyeni"
+  },
+  {
+    "en": "Biological Technicians",
+    "tr": "Biyolojik Teknisyeni"
+  },
+  {
+    "en": "Chemical Technicians",
+    "tr": "Kimyasal Teknisyeni"
+  },
+  {
+    "en": "Environmental Science and Protection Technicians, Including Health",
+    "tr": "Çevre Bilimi ve Koruma Teknisyeni, Sağlık Hariç"
+  },
+  {
+    "en": "Geological Technicians, Except Hydrologic Technicians",
+    "tr": "Jeolojik Teknisyeni, Hidrolik Teknisyeni Hariç"
+  },
+  {
+    "en": "Hydrologic Technicians",
+    "tr": "Hidrolik Teknisyeni"
+  },
+  {
+    "en": "Nuclear Technicians",
+    "tr": "Nükleer Teknisyeni"
+  },
+  {
+    "en": "Nuclear Monitoring Technicians",
+    "tr": "Nükleer İzleme Teknisyeni"
+  },
+  {
+    "en": "Social Science Research Assistants",
+    "tr": "Sosyal Bilimler Araştırma Asistanı"
+  },
+  {
+    "en": "Forest and Conservation Technicians",
+    "tr": "Orman ve Koruma Teknisyeni"
+  },
+  {
+    "en": "Forensic Science Technicians",
+    "tr": "Adli Bilim Teknisyeni"
+  },
+  {
+    "en": "Quality Control Analysts",
+    "tr": "Kalite Kontrol Analisti"
+  },
+  {
+    "en": "Remote Sensing Technicians",
+    "tr": "Uzaktan Algılama Teknisyeni"
+  },
+  {
+    "en": "Occupational Health and Safety Specialists",
+    "tr": "İş Sağlığı ve Güvenliği Uzmanı"
+  },
+  {
+    "en": "Occupational Health and Safety Technicians",
+    "tr": "İş Sağlığı ve Güvenliği Teknisyeni"
+  },
+  {
+    "en": "Substance Abuse and Behavioral Disorder Counselors",
+    "tr": "Madde Bağımlılığı ve Davranış Bozukluğu Danışmanı"
+  },
+  {
+    "en": "Educational, Guidance, and Career Counselors and Advisors",
+    "tr": "Eğitim, Rehberlik ve Kariyer Danışmanı"
+  },
+  {
+    "en": "Marriage and Family Therapists",
+    "tr": "Evlilik ve Aile Terapisti"
+  },
+  {
+    "en": "Mental Health Counselors",
+    "tr": "Ruh Sağlığı Danışmanı"
+  },
+  {
+    "en": "Rehabilitation Counselors",
+    "tr": "Rehabilitasyon Danışmanı"
+  },
+  {
+    "en": "Child, Family, and School Social Workers",
+    "tr": "Çocuk, Aile ve Okul Sosyal Çalışanı"
+  },
+  {
+    "en": "Healthcare Social Workers",
+    "tr": "Sağlık Sosyal Çalışanı"
+  },
+  {
+    "en": "Mental Health and Substance Abuse Social Workers",
+    "tr": "Ruh Sağlığı ve Madde Bağımlılığı Sosyal Çalışanı"
+  },
+  {
+    "en": "Health Education Specialists",
+    "tr": "Sağlık Eğitimi Uzmanı"
+  },
+  {
+    "en": "Probation Officers and Correctional Treatment Specialists",
+    "tr": "Denetimli Serbestlik Görevlisi ve Ceza İnfaz Uzmanı"
+  },
+  {
+    "en": "Social and Human Service Assistants",
+    "tr": "Sosyal ve İnsan Hizmetleri Asistanı"
+  },
+  {
+    "en": "Community Health Workers",
+    "tr": "Toplum Sağlığı Çalışanı"
+  },
+  {
+    "en": "Clergy",
+    "tr": "Din Görevlisi"
+  },
+  {
+    "en": "Directors, Religious Activities and Education",
+    "tr": "Din Faaliyetleri ve Eğitimi Müdürü"
+  },
+  {
+    "en": "Lawyers",
+    "tr": "Avukatı"
+  },
+  {
+    "en": "Judicial Law Clerks",
+    "tr": "Mahkeme Yazmanı"
+  },
+  {
+    "en": "Administrative Law Judges, Adjudicators, and Hearing Officers",
+    "tr": "İdare Mahkemesi Hakimi, Hakem ve Duruşma Görevlisi"
+  },
+  {
+    "en": "Arbitrators, Mediators, and Conciliators",
+    "tr": "Arabulucu, Uzlaştırıcı ve Arabulucu"
+  },
+  {
+    "en": "Judges, Magistrate Judges, and Magistrates",
+    "tr": "Hakim, Sulh Hakimi ve Mahkeme Hakimi"
+  },
+  {
+    "en": "Paralegals and Legal Assistants",
+    "tr": "Hukuk Asistanı"
+  },
+  {
+    "en": "Title Examiners, Abstractors, and Searchers",
+    "tr": "Tapu Uzmanı"
+  },
+  {
+    "en": "Business Teachers, Postsecondary",
+    "tr": "İş Öğretmeni"
+  },
+  {
+    "en": "Computer Science Teachers, Postsecondary",
+    "tr": "Bilgisayar Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Mathematical Science Teachers, Postsecondary",
+    "tr": "Matematik Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Architecture Teachers, Postsecondary",
+    "tr": "Mimarlık Öğretmeni"
+  },
+  {
+    "en": "Engineering Teachers, Postsecondary",
+    "tr": "Mühendislik Öğretmeni"
+  },
+  {
+    "en": "Agricultural Sciences Teachers, Postsecondary",
+    "tr": "Tarım Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Biological Science Teachers, Postsecondary",
+    "tr": "Biyoloji Öğretmeni"
+  },
+  {
+    "en": "Forestry and Conservation Science Teachers, Postsecondary",
+    "tr": "Ormancılık Öğretmeni"
+  },
+  {
+    "en": "Atmospheric, Earth, Marine, and Space Sciences Teachers, Postsecondary",
+    "tr": "Fiziksel Coğrafya Öğretmeni"
+  },
+  {
+    "en": "Chemistry Teachers, Postsecondary",
+    "tr": "Kimya Öğretmeni"
+  },
+  {
+    "en": "Environmental Science Teachers, Postsecondary",
+    "tr": "Çevre Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Physics Teachers, Postsecondary",
+    "tr": "Fizik Öğretmeni"
+  },
+  {
+    "en": "Anthropology and Archeology Teachers, Postsecondary",
+    "tr": "Antropoloji Öğretmeni"
+  },
+  {
+    "en": "Area, Ethnic, and Cultural Studies Teachers, Postsecondary",
+    "tr": "Kültürel Çalışmalar Öğretmeni"
+  },
+  {
+    "en": "Economics Teachers, Postsecondary",
+    "tr": "İktisat Öğretmeni"
+  },
+  {
+    "en": "Geography Teachers, Postsecondary",
+    "tr": "Coğrafya Öğretmeni"
+  },
+  {
+    "en": "Political Science Teachers, Postsecondary",
+    "tr": "Siyaset Bilimi Öğretmeni"
+  },
+  {
+    "en": "Psychology Teachers, Postsecondary",
+    "tr": "Psikoloji Öğretmeni"
+  },
+  {
+    "en": "Sociology Teachers, Postsecondary",
+    "tr": "Sosyoloji Öğretmeni"
+  },
+  {
+    "en": "Health Specialties Teachers, Postsecondary",
+    "tr": "Sağlık Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Nursing Instructors and Teachers, Postsecondary",
+    "tr": "Hemşirelik Öğretmeni"
+  },
+  {
+    "en": "Education Teachers, Postsecondary",
+    "tr": "Eğitim Öğretmeni"
+  },
+  {
+    "en": "Library Science Teachers, Postsecondary",
+    "tr": "Kütüphanecilik Öğretmeni"
+  },
+  {
+    "en": "Criminal Justice and Law Enforcement Teachers, Postsecondary",
+    "tr": "Ceza Adaleti ve Hukuk Uygulama Öğretmeni"
+  },
+  {
+    "en": "Law Teachers, Postsecondary",
+    "tr": "Hukuk Öğretmeni"
+  },
+  {
+    "en": "Social Work Teachers, Postsecondary",
+    "tr": "Sosyal Hizmet Öğretmeni"
+  },
+  {
+    "en": "Art, Drama, and Music Teachers, Postsecondary",
+    "tr": "Sanat, Drama ve Müzik Öğretmeni"
+  },
+  {
+    "en": "Communications Teachers, Postsecondary",
+    "tr": "İletişim Öğretmeni"
+  },
+  {
+    "en": "English Language and Literature Teachers, Postsecondary",
+    "tr": "İngiliz Dili ve Edebiyatı Öğretmeni"
+  },
+  {
+    "en": "Foreign Language and Literature Teachers, Postsecondary",
+    "tr": "Yabancı Dil ve Edebiyatı Öğretmeni"
+  },
+  {
+    "en": "History Teachers, Postsecondary",
+    "tr": "Tarih Öğretmeni"
+  },
+  {
+    "en": "Philosophy and Religion Teachers, Postsecondary",
+    "tr": "Felsefe ve Din Öğretmeni"
+  },
+  {
+    "en": "Family and Consumer Sciences Teachers, Postsecondary",
+    "tr": "Aile ve Tüketici Bilimleri Öğretmeni"
+  },
+  {
+    "en": "Recreation and Fitness Studies Teachers, Postsecondary",
+    "tr": "Rekreasyon ve Fitness Çalışmaları Öğretmeni"
+  },
+  {
+    "en": "Career/Technical Education Teachers, Postsecondary",
+    "tr": "Mesleki Eğitim Öğretmeni"
+  },
+  {
+    "en": "Preschool Teachers, Except Special Education",
+    "tr": "Anaokulu Öğretmeni"
+  },
+  {
+    "en": "Kindergarten Teachers, Except Special Education",
+    "tr": "Anaokulu Öğretmeni"
+  },
+  {
+    "en": "Elementary School Teachers, Except Special Education",
+    "tr": "İlkokul Öğretmeni"
+  },
+  {
+    "en": "Middle School Teachers, Except Special and Career/Technical Education",
+    "tr": "Ortaokul Öğretmeni"
+  },
+  {
+    "en": "Career/Technical Education Teachers, Middle School",
+    "tr": "Mesleki Eğitim Öğretmeni"
+  },
+  {
+    "en": "Secondary School Teachers, Except Special and Career/Technical Education",
+    "tr": "Lise Öğretmeni"
+  },
+  {
+    "en": "Career/Technical Education Teachers, Secondary School",
+    "tr": "Mesleki Eğitim Öğretmeni"
+  },
+  {
+    "en": "Special Education Teachers, Preschool",
+    "tr": "Özel Eğitim Öğretmeni"
+  },
+  {
+    "en": "Special Education Teachers, Kindergarten",
+    "tr": "Özel Eğitim Öğretmeni"
+  },
+  {
+    "en": "Special Education Teachers, Elementary School",
+    "tr": "Özel Eğitim Öğretmeni"
+  },
+  {
+    "en": "Special Education Teachers, Middle School",
+    "tr": "Özel Eğitim Öğretmeni"
+  },
+  {
+    "en": "Special Education Teachers, Secondary School",
+    "tr": "Özel Eğitim Öğretmeni"
+  },
+  {
+    "en": "Adapted Physical Education Specialists",
+    "tr": "Uyarlanmış Beden Eğitimi Uzmanı"
+  },
+  {
+    "en": "Adult Basic Education, Adult Secondary Education, and English as a Second Language Instructors",
+    "tr": "Yetişkin Temel Eğitimi, Yetişkin Orta Eğitimi ve İkinci Dil Olarak İngilizce Eğitmeni"
+  },
+  {
+    "en": "Self-Enrichment Teachers",
+    "tr": "Kişisel Gelişim Öğretmeni"
+  },
+  {
+    "en": "Substitute Teachers, Short-Term",
+    "tr": "Geçici Öğretmen"
+  },
+  {
+    "en": "Tutors",
+    "tr": "Özel Ders Veren"
+  },
+  {
+    "en": "Archivists",
+    "tr": "Arşivci"
+  },
+  {
+    "en": "Curators",
+    "tr": "Küratörü"
+  },
+  {
+    "en": "Museum Technicians and Conservators",
+    "tr": "Müze Teknisyeni ve Koruyucusu"
+  },
+  {
+    "en": "Librarians and Media Collections Specialists",
+    "tr": "Kütüphaneci ve Medya Koleksiyonları Uzmanı"
+  },
+  {
+    "en": "Library Technicians",
+    "tr": "Kütüphane Teknisyeni"
+  },
+  {
+    "en": "Farm and Home Management Educators",
+    "tr": "Tarım ve Ev Yönetimi Eğitmeni"
+  },
+  {
+    "en": "Instructional Coordinators",
+    "tr": "Eğitim Koordinatörü"
+  },
+  {
+    "en": "Teaching Assistants, Preschool, Elementary, Middle, and Secondary School, Except Special Education",
+    "tr": "Öğretim Asistanı, Anaokulu, İlkokul, Ortaokul ve Lise, Özel Eğitim Hariç"
+  },
+  {
+    "en": "Teaching Assistants, Special Education",
+    "tr": "Öğretim Asistanı, Özel Eğitim"
+  },
+  {
+    "en": "Teaching Assistants, Postsecondary",
+    "tr": "Öğretim Asistanı, Yükseköğretim"
+  },
+  {
+    "en": "Art Directors",
+    "tr": "Sanat Direktörü"
+  },
+  {
+    "en": "Craft Artists",
+    "tr": "El Sanatları Sanatçısı"
+  },
+  {
+    "en": "Fine Artists, Including Painters, Sculptors, and Illustrators",
+    "tr": "Güzel Sanatlar Sanatçısı, Ressam, Heykeltıraş ve İllüstratör Dahil"
+  },
+  {
+    "en": "Special Effects Artists and Animators",
+    "tr": "Özel Efekt Sanatçısı ve Animatör"
+  },
+  {
+    "en": "Commercial and Industrial Designers",
+    "tr": "Ticari ve Endüstriyel Tasarımcı"
+  },
+  {
+    "en": "Fashion Designers",
+    "tr": "Moda Tasarımcısı"
+  },
+  {
+    "en": "Floral Designers",
+    "tr": "Çiçek Tasarımcısı"
+  },
+  {
+    "en": "Graphic Designers",
+    "tr": "Grafik Tasarımcısı"
+  },
+  {
+    "en": "Interior Designers",
+    "tr": "İç Mekan Tasarımcısı"
+  },
+  {
+    "en": "Merchandise Displayers and Window Trimmers",
+    "tr": "Ürün Sergileyici ve Vitrin Düzenleyicisi"
+  },
+  {
+    "en": "Set and Exhibit Designers",
+    "tr": "Set ve Sergi Tasarımcısı"
+  },
+  {
+    "en": "Actors",
+    "tr": "Aktör"
+  },
+  {
+    "en": "Producers and Directors",
+    "tr": "Yapımcı ve Yönetmen"
+  },
+  {
+    "en": "Media Programming Directors",
+    "tr": "Medya Programlama Direktörü"
+  },
+  {
+    "en": "Talent Directors",
+    "tr": "Yetenek Direktörü"
+  },
+  {
+    "en": "Media Technical Directors/Managers",
+    "tr": "Medya Teknik Direktörü"
+  },
+  {
+    "en": "Athletes and Sports Competitors",
+    "tr": "Sporcu ve Spor Yarışmacısı"
+  },
+  {
+    "en": "Coaches and Scouts",
+    "tr": "Antrenör ve Gözlemci"
+  },
+  {
+    "en": "Umpires, Referees, and Other Sports Officials",
+    "tr": "Hakem, Gözlemci ve Diğer Spor Görevlileri"
+  },
+  {
+    "en": "Dancers",
+    "tr": "Dansçı"
+  },
+  {
+    "en": "Choreographers",
+    "tr": "Koreograf"
+  },
+  {
+    "en": "Music Directors and Composers",
+    "tr": "Müzik Direktörü ve Bestecisi"
+  },
+  {
+    "en": "Musicians and Singers",
+    "tr": "Müzisyen ve Şarkıcısı"
+  },
+  {
+    "en": "Disc Jockeys, Except Radio",
+    "tr": "DJ, Hariç Radyo"
+  },
+  {
+    "en": "Broadcast Announcers and Radio Disc Jockeys",
+    "tr": "Radyo Sunucusu ve DJ"
+  },
+  {
+    "en": "News Analysts, Reporters, and Journalists",
+    "tr": "Haber Analisti, Muhabir ve Gazeteci"
+  },
+  {
+    "en": "Public Relations Specialists",
+    "tr": "Halkla İlişkiler Uzmanı"
+  },
+  {
+    "en": "Editors",
+    "tr": "Editörü"
+  },
+  {
+    "en": "Technical Writers",
+    "tr": "Teknik Yazarı"
+  },
+  {
+    "en": "Writers and Authors",
+    "tr": "Yazar"
+  },
+  {
+    "en": "Poets, Lyricists and Creative Writers",
+    "tr": "Şair, Şarkı Yazarı ve Yaratıcı Yazarı"
+  },
+  {
+    "en": "Interpreters and Translators",
+    "tr": "Tercüman ve Çevirmen"
+  },
+  {
+    "en": "Court Reporters and Simultaneous Captioners",
+    "tr": "Mahkeme Muhabiri ve Eş Zamanlı Yazıcı"
+  },
+  {
+    "en": "Audio and Video Technicians",
+    "tr": "Ses ve Görüntü Teknisyeni"
+  },
+  {
+    "en": "Broadcast Technicians",
+    "tr": "Yayın Teknisyeni"
+  },
+  {
+    "en": "Sound Engineering Technicians",
+    "tr": "Ses Mühendisliği Teknisyeni"
+  },
+  {
+    "en": "Lighting Technicians",
+    "tr": "Aydınlatma Teknisyeni"
+  },
+  {
+    "en": "Photographers",
+    "tr": "Fotoğrafçısı"
+  },
+  {
+    "en": "Camera Operators, Television, Video, and Film",
+    "tr": "Kamera Operatörü, Televizyon, Video ve Film"
+  },
+  {
+    "en": "Film and Video Editors",
+    "tr": "Film ve Video Editörü"
+  },
+  {
+    "en": "Chiropractors",
+    "tr": "Kiropraktör"
+  },
+  {
+    "en": "Dentists, General",
+    "tr": "Diş Hekimi"
+  },
+  {
+    "en": "Oral and Maxillofacial Surgeons",
+    "tr": "Ağız ve Çene Cerrahı"
+  },
+  {
+    "en": "Orthodontists",
+    "tr": "Ortodontist"
+  },
+  {
+    "en": "Prosthodontists",
+    "tr": "Protez Diş Hekimi"
+  },
+  {
+    "en": "Dietitians and Nutritionists",
+    "tr": "Diyetisyen ve Beslenme Uzmanı"
+  },
+  {
+    "en": "Optometrists",
+    "tr": "Gözlükçü"
+  },
+  {
+    "en": "Pharmacists",
+    "tr": "Eczacı"
+  },
+  {
+    "en": "Physician Assistants",
+    "tr": "Doktor Asistanı"
+  },
+  {
+    "en": "Anesthesiologist Assistants",
+    "tr": "Anestezi Uzmanı Asistanı"
+  },
+  {
+    "en": "Podiatrists",
+    "tr": "Ayak Sağlığı Uzmanı"
+  },
+  {
+    "en": "Occupational Therapists",
+    "tr": "Mesleki Terapist"
+  },
+  {
+    "en": "Low Vision Therapists, Orientation and Mobility Specialists, and Vision Rehabilitation Therapists",
+    "tr": "Düşük Görme Terapisti, Yönlendirme ve Hareket Uzmanı ve Görme Rehabilitasyon Terapisti"
+  },
+  {
+    "en": "Physical Therapists",
+    "tr": "Fizik Tedavi Uzmanı"
+  },
+  {
+    "en": "Radiation Therapists",
+    "tr": "Radyasyon Onkolojisi Uzmanı"
+  },
+  {
+    "en": "Recreational Therapists",
+    "tr": "Rekreasyon Terapisti"
+  },
+  {
+    "en": "Respiratory Therapists",
+    "tr": "Solunum Terapisti"
+  },
+  {
+    "en": "Speech-Language Pathologists",
+    "tr": "Konuşma-Dil Patoloğu"
+  },
+  {
+    "en": "Exercise Physiologists",
+    "tr": "Egzersiz Fizyoloğu"
+  },
+  {
+    "en": "Art Therapists",
+    "tr": "Sanat Terapisti"
+  },
+  {
+    "en": "Music Therapists",
+    "tr": "Müzik Terapisti"
+  },
+  {
+    "en": "Veterinarians",
+    "tr": "Veteriner Hekimi"
+  },
+  {
+    "en": "Registered Nurses",
+    "tr": "Hemşire"
+  },
+  {
+    "en": "Acute Care Nurses",
+    "tr": "Acil Bakım Hemşiresi"
+  },
+  {
+    "en": "Advanced Practice Psychiatric Nurses",
+    "tr": "İleri Düzey Psikiyatri Hemşiresi"
+  },
+  {
+    "en": "Critical Care Nurses",
+    "tr": "Kritik Bakım Hemşiresi"
+  },
+  {
+    "en": "Clinical Nurse Specialists",
+    "tr": "Klinik Uzman Hemşire"
+  },
+  {
+    "en": "Nurse Anesthetists",
+    "tr": "Anestezi Hemşiresi"
+  },
+  {
+    "en": "Nurse Midwives",
+    "tr": "Ebe Hemşire"
+  },
+  {
+    "en": "Nurse Practitioners",
+    "tr": "Hemşire"
+  },
+  {
+    "en": "Audiologists",
+    "tr": "İşitme Uzmanı"
+  },
+  {
+    "en": "Anesthesiologists",
+    "tr": "Anestezi Uzmanı"
+  },
+  {
+    "en": "Cardiologists",
+    "tr": "Kardiyolog"
+  },
+  {
+    "en": "Dermatologists",
+    "tr": "Dermatolog"
+  },
+  {
+    "en": "Emergency Medicine Physicians",
+    "tr": "Acil Tıp Hekimleri"
+  },
+  {
+    "en": "Family Medicine Physicians",
+    "tr": "Aile Hekimi"
+  },
+  {
+    "en": "General Internal Medicine Physicians",
+    "tr": "Genel İç Hastalıkları Hekimi"
+  },
+  {
+    "en": "Neurologists",
+    "tr": "Nörolog"
+  },
+  {
+    "en": "Obstetricians and Gynecologists",
+    "tr": "Kadın Hastalıkları ve Doğum Uzmanı"
+  },
+  {
+    "en": "Pediatricians, General",
+    "tr": "Çocuk Doktoru"
+  },
+  {
+    "en": "Physicians, Pathologists",
+    "tr": "Patolog"
+  },
+  {
+    "en": "Psychiatrists",
+    "tr": "Psikiyatrist"
+  },
+  {
+    "en": "Radiologists",
+    "tr": "Radyolog"
+  },
+  {
+    "en": "Allergists and Immunologists",
+    "tr": "Alerji ve İmmünoloji Uzmanı"
+  },
+  {
+    "en": "Hospitalists",
+    "tr": "Hastane Hekimi"
+  },
+  {
+    "en": "Urologists",
+    "tr": "Ürolog"
+  },
+  {
+    "en": "Physical Medicine and Rehabilitation Physicians",
+    "tr": "Fiziksel Tıp ve Rehabilitasyon Hekimi"
+  },
+  {
+    "en": "Preventive Medicine Physicians",
+    "tr": "Halk Sağlığı Hekimi"
+  },
+  {
+    "en": "Sports Medicine Physicians",
+    "tr": "Spor Hekimi"
+  },
+  {
+    "en": "Ophthalmologists, Except Pediatric",
+    "tr": "Pediatrik olmayan oftalmologlar"
+  },
+  {
+    "en": "Orthopedic Surgeons, Except Pediatric",
+    "tr": "Pediatrik olmayan ortopedi cerrahları"
+  },
+  {
+    "en": "Pediatric Surgeons",
+    "tr": "Pediatri Cerrahı"
+  },
+  {
+    "en": "Acupuncturists",
+    "tr": "Akupunktur Uzmanı"
+  },
+  {
+    "en": "Dental Hygienists",
+    "tr": "Diş Hijyenisti"
+  },
+  {
+    "en": "Naturopathic Physicians",
+    "tr": "Naturopati Hekimi"
+  },
+  {
+    "en": "Orthoptists",
+    "tr": "Ortoptistler (göz kası ve şaşılık tedavisi uzmanları)"
+  },
+  {
+    "en": "Medical and Clinical Laboratory Technologists",
+    "tr": "Tıbbi ve Klinik Laboratuvar Teknisyeni"
+  },
+  {
+    "en": "Cytogenetic Technologists",
+    "tr": "Sitojenetik Teknisyeni"
+  },
+  {
+    "en": "Cytotechnologists",
+    "tr": "Sitoteknolog"
+  },
+  {
+    "en": "Histotechnologists",
+    "tr": "Histoteknolog"
+  },
+  {
+    "en": "Medical and Clinical Laboratory Technicians",
+    "tr": "Tıbbi Laboratuvar Teknisyeni"
+  },
+  {
+    "en": "Histology Technicians",
+    "tr": "Histoloji Teknisyeni"
+  },
+  {
+    "en": "Cardiovascular Technologists and Technicians",
+    "tr": "Kardiyovasküler Teknoloğu ve Teknisyeni"
+  },
+  {
+    "en": "Diagnostic Medical Sonographers",
+    "tr": "Tanısal Tıbbi Ultrason Teknisyeni"
+  },
+  {
+    "en": "Nuclear Medicine Technologists",
+    "tr": "Nükleer Tıp Teknoloğu"
+  },
+  {
+    "en": "Radiologic Technologists and Technicians",
+    "tr": "Radyolojik Teknisyeni"
+  },
+  {
+    "en": "Magnetic Resonance Imaging Technologists",
+    "tr": "Manyetik Rezonans Görüntüleme Teknoloğu"
+  },
+  {
+    "en": "Medical Dosimetrists",
+    "tr": "Tıbbi Dozimetrist"
+  },
+  {
+    "en": "Emergency Medical Technicians",
+    "tr": "Acil Tıp Teknisyeni"
+  },
+  {
+    "en": "Paramedics",
+    "tr": "Paramedik"
+  },
+  {
+    "en": "Dietetic Technicians",
+    "tr": "Diyet Teknisyeni"
+  },
+  {
+    "en": "Pharmacy Technicians",
+    "tr": "Eczane Teknisyeni"
+  },
+  {
+    "en": "Psychiatric Technicians",
+    "tr": "Psikiyatri Teknisyeni"
+  },
+  {
+    "en": "Surgical Technologists",
+    "tr": "Cerrahi Teknisyeni"
+  },
+  {
+    "en": "Veterinary Technologists and Technicians",
+    "tr": "Veteriner Teknisyeni"
+  },
+  {
+    "en": "Ophthalmic Medical Technicians",
+    "tr": "Göz Sağlığı Teknisyeni"
+  },
+  {
+    "en": "Licensed Practical and Licensed Vocational Nurses",
+    "tr": "Lisanslı Pratik Hemşire"
+  },
+  {
+    "en": "Medical Records Specialists",
+    "tr": "Tıbbi Kayıt Uzmanı"
+  },
+  {
+    "en": "Opticians, Dispensing",
+    "tr": "Gözlükçü"
+  },
+  {
+    "en": "Orthotists and Prosthetists",
+    "tr": "Ortez ve Protez Uzmanı"
+  },
+  {
+    "en": "Hearing Aid Specialists",
+    "tr": "İşitme Cihazı Uzmanı"
+  },
+  {
+    "en": "Neurodiagnostic Technologists",
+    "tr": "Nörodiagnostik Teknoloğu"
+  },
+  {
+    "en": "Ophthalmic Medical Technologists",
+    "tr": "Göz Sağlığı Teknoloğu"
+  },
+  {
+    "en": "Patient Representatives",
+    "tr": "Hasta Temsilcisi"
+  },
+  {
+    "en": "Health Information Technologists and Medical Registrars",
+    "tr": "Sağlık Bilgisi Teknoloğu ve Tıbbi Kayıt Görevlisi"
+  },
+  {
+    "en": "Athletic Trainers",
+    "tr": "Spor Eğitmeni"
+  },
+  {
+    "en": "Genetic Counselors",
+    "tr": "Genetik Danışmanı"
+  },
+  {
+    "en": "Surgical Assistants",
+    "tr": "Cerrahi Asistanı"
+  },
+  {
+    "en": "Midwives",
+    "tr": "Ebe"
+  },
+  {
+    "en": "Home Health Aides",
+    "tr": "Evde Sağlık Yardımcısı"
+  },
+  {
+    "en": "Personal Care Aides",
+    "tr": "Kişisel Bakım Yardımcısı"
+  },
+  {
+    "en": "Nursing Assistants",
+    "tr": "Hemşirelik Asistanı"
+  },
+  {
+    "en": "Orderlies",
+    "tr": "Temizlik Görevlisi"
+  },
+  {
+    "en": "Psychiatric Aides",
+    "tr": "Psikiyatri Yardımcısı"
+  },
+  {
+    "en": "Occupational Therapy Assistants",
+    "tr": "Mesleki Terapi Yardımcısı"
+  },
+  {
+    "en": "Occupational Therapy Aides",
+    "tr": "Mesleki Terapi Yardımcısı"
+  },
+  {
+    "en": "Physical Therapist Assistants",
+    "tr": "Fizik Tedavi Yardımcısı"
+  },
+  {
+    "en": "Physical Therapist Aides",
+    "tr": "Fizik Tedavi Yardımcısı"
+  },
+  {
+    "en": "Massage Therapists",
+    "tr": "Masaj Terapisti"
+  },
+  {
+    "en": "Dental Assistants",
+    "tr": "Diş Hekimi Asistanı"
+  },
+  {
+    "en": "Medical Assistants",
+    "tr": "Tıbbi Asistanı"
+  },
+  {
+    "en": "Medical Equipment Preparers",
+    "tr": "Tıbbi Cihaz Hazırlayıcısı"
+  },
+  {
+    "en": "Medical Transcriptionists",
+    "tr": "Tıbbi Transkripsiyon Uzmanı"
+  },
+  {
+    "en": "Pharmacy Aides",
+    "tr": "Eczane Yardımcısı"
+  },
+  {
+    "en": "Veterinary Assistants and Laboratory Animal Caretakers",
+    "tr": "Veteriner Yardımcısı ve Laboratuvar Hayvanı Bakıcısı"
+  },
+  {
+    "en": "Phlebotomists",
+    "tr": "Flebotomist"
+  },
+  {
+    "en": "Speech-Language Pathology Assistants",
+    "tr": "Konuşma-Dil Patolojisi Yardımcısı"
+  },
+  {
+    "en": "Endoscopy Technicians",
+    "tr": "Endoskopi Teknisyeni"
+  },
+  {
+    "en": "First-Line Supervisors of Correctional Officers",
+    "tr": "Birinci Kademe Şefi (Cezaevi Görevlisi)"
+  },
+  {
+    "en": "First-Line Supervisors of Police and Detectives",
+    "tr": "Birinci Kademe Şefi, Polis ve Dedektif"
+  },
+  {
+    "en": "First-Line Supervisors of Firefighting and Prevention Workers",
+    "tr": "Birinci Kademe Şefi (İtfaiye ve Önleme Çalışanı)"
+  },
+  {
+    "en": "First-Line Supervisors of Security Workers",
+    "tr": "Birinci Kademe Şefi (Güvenlik Çalışanı)"
+  },
+  {
+    "en": "Firefighters",
+    "tr": "İtfaiyeci"
+  },
+  {
+    "en": "Fire Inspectors and Investigators",
+    "tr": "İtfaiye Müfettişi ve Soruşturmacısı"
+  },
+  {
+    "en": "Forest Fire Inspectors and Prevention Specialists",
+    "tr": "Orman Yangını Müfettişi ve Önleme Uzmanı"
+  },
+  {
+    "en": "Bailiffs",
+    "tr": "İcra Memuru"
+  },
+  {
+    "en": "Correctional Officers and Jailers",
+    "tr": "Cezaevi Görevlisi ve Gardiyan"
+  },
+  {
+    "en": "Detectives and Criminal Investigators",
+    "tr": "Dedektif ve Suç Soruşturmacısı"
+  },
+  {
+    "en": "Police Identification and Records Officers",
+    "tr": "Polis Kimlik ve Kayıt Görevlisi"
+  },
+  {
+    "en": "Intelligence Analysts",
+    "tr": "İstihbarat Analisti"
+  },
+  {
+    "en": "Fish and Game Wardens",
+    "tr": "Balık ve Av Koruma Görevlisi"
+  },
+  {
+    "en": "Parking Enforcement Workers",
+    "tr": "Otopark Denetim Çalışanı"
+  },
+  {
+    "en": "Police and Sheriff's Patrol Officers",
+    "tr": "Polis ve Şerif Devriye Görevlisi"
+  },
+  {
+    "en": "Customs and Border Protection Officers",
+    "tr": "Gümrük ve Sınır Koruma Görevlisi"
+  },
+  {
+    "en": "Transit and Railroad Police",
+    "tr": "Ulaşım ve Demiryolu Polisi"
+  },
+  {
+    "en": "Animal Control Workers",
+    "tr": "Hayvan Kontrol Çalışanı"
+  },
+  {
+    "en": "Private Detectives and Investigators",
+    "tr": "Özel Dedektif ve Soruşturmacı"
+  },
+  {
+    "en": "Gambling Surveillance Officers and Gambling Investigators",
+    "tr": "Kumar Gözetim Görevlisi ve Kumar Soruşturmacısı"
+  },
+  {
+    "en": "Security Guards",
+    "tr": "Güvenlik Görevlisi"
+  },
+  {
+    "en": "Crossing Guards and Flaggers",
+    "tr": "Geçiş Görevlisi ve Bayrakçı"
+  },
+  {
+    "en": "Lifeguards, Ski Patrol, and Other Recreational Protective Service Workers",
+    "tr": "Can Kurtaran, Kayak Patroul ve Diğer Rekreasyonel Koruyucu Hizmet Çalışanı"
+  },
+  {
+    "en": "Transportation Security Screeners",
+    "tr": "Ulaşım Güvenliği Görevlisi"
+  },
+  {
+    "en": "School Bus Monitors",
+    "tr": "Okul Servisi Görevlisi"
+  },
+  {
+    "en": "Retail Loss Prevention Specialists",
+    "tr": "Perakende Kayıp Önleme Uzmanı"
+  },
+  {
+    "en": "Chefs and Head Cooks",
+    "tr": "Şef ve Aşçı"
+  },
+  {
+    "en": "First-Line Supervisors of Food Preparation and Serving Workers",
+    "tr": "Birinci Kademe Şefi, Gıda Hazırlama ve Servis Çalışanları"
+  },
+  {
+    "en": "Cooks, Fast Food",
+    "tr": "Hızlı Servis Aşçısı"
+  },
+  {
+    "en": "Cooks, Institution and Cafeteria",
+    "tr": "Kurum ve Kafeterya Aşçısı"
+  },
+  {
+    "en": "Cooks, Private Household",
+    "tr": "Özel Ev Aşçısı"
+  },
+  {
+    "en": "Cooks, Restaurant",
+    "tr": "Restoran Aşçısı"
+  },
+  {
+    "en": "Cooks, Short Order",
+    "tr": "Acelesi Olan Aşçı"
+  },
+  {
+    "en": "Food Preparation Workers",
+    "tr": "Gıda Hazırlama Çalışanı"
+  },
+  {
+    "en": "Bartenders",
+    "tr": "Barmen"
+  },
+  {
+    "en": "Fast Food and Counter Workers",
+    "tr": "Hızlı Servis ve Tezgah Çalışanı"
+  },
+  {
+    "en": "Baristas",
+    "tr": "Barista"
+  },
+  {
+    "en": "Waiters and Waitresses",
+    "tr": "Garson"
+  },
+  {
+    "en": "Food Servers, Nonrestaurant",
+    "tr": "Gıda Servis Elemanı, Restoran Dışı"
+  },
+  {
+    "en": "Dining Room and Cafeteria Attendants and Bartender Helpers",
+    "tr": "Yemek Salonu ve Kafeterya Görevlisi ile Barmen Yardımcısı"
+  },
+  {
+    "en": "Dishwashers",
+    "tr": "Bulaşıkçı"
+  },
+  {
+    "en": "Hosts and Hostesses, Restaurant, Lounge, and Coffee Shop",
+    "tr": "Mekan Görevlisi, Restoran, Lounge ve Kahve Dükkanı"
+  },
+  {
+    "en": "First-Line Supervisors of Housekeeping and Janitorial Workers",
+    "tr": "Birinci Kademe Amiri, Temizlik ve Bakım Çalışanları"
+  },
+  {
+    "en": "First-Line Supervisors of Landscaping, Lawn Service, and Groundskeeping Workers",
+    "tr": "Birinci Kademe Amiri, Peyzaj, Çim Hizmeti ve Bahçe Bakım Çalışanları"
+  },
+  {
+    "en": "Janitors and Cleaners, Except Maids and Housekeeping Cleaners",
+    "tr": "Temizlikçi, Hizmetçi ve Ev Temizlikçileri Hariç"
+  },
+  {
+    "en": "Maids and Housekeeping Cleaners",
+    "tr": "Hizmetçi ve Ev Temizlikçisi"
+  },
+  {
+    "en": "Pest Control Workers",
+    "tr": "Zararlı Kontrol Çalışanı"
+  },
+  {
+    "en": "Landscaping and Groundskeeping Workers",
+    "tr": "Peyzaj ve Bahçe Bakım Çalışanı"
+  },
+  {
+    "en": "Pesticide Handlers, Sprayers, and Applicators, Vegetation",
+    "tr": "Pestisit Kullanıcısı, Spreyleyici ve Uygulayıcı, Bitki"
+  },
+  {
+    "en": "Tree Trimmers and Pruners",
+    "tr": "Ağaç Budayıcı"
+  },
+  {
+    "en": "First-Line Supervisors of Gambling Services Workers",
+    "tr": "Birinci Kademe Amiri, Kumar Hizmetleri Çalışanları"
+  },
+  {
+    "en": "First-Line Supervisors of Entertainment and Recreation Workers, Except Gambling Services",
+    "tr": "Birinci Kademe Amiri, Eğlence ve Rekreasyon Çalışanları Hariç Kumar Hizmetleri"
+  },
+  {
+    "en": "First-Line Supervisors of Personal Service Workers",
+    "tr": "Birinci Kademe Amiri, Kişisel Hizmet Çalışanları"
+  },
+  {
+    "en": "Animal Trainers",
+    "tr": "Hayvan Eğitmeni"
+  },
+  {
+    "en": "Animal Caretakers",
+    "tr": "Hayvan Bakıcısı"
+  },
+  {
+    "en": "Gambling Dealers",
+    "tr": "Kumar Satıcısı"
+  },
+  {
+    "en": "Gambling and Sports Book Writers and Runners",
+    "tr": "Kumar ve Spor Bahis Yazarı ve Koşucusu"
+  },
+  {
+    "en": "Motion Picture Projectionists",
+    "tr": "Film Gösterimcisi"
+  },
+  {
+    "en": "Ushers, Lobby Attendants, and Ticket Takers",
+    "tr": "Gösterim Görevlisi, Lobi Görevlisi ve Bilet Kontrol Görevlisi"
+  },
+  {
+    "en": "Amusement and Recreation Attendants",
+    "tr": "Eğlence ve Rekreasyon Görevlisi"
+  },
+  {
+    "en": "Costume Attendants",
+    "tr": "Kostüm Görevlisi"
+  },
+  {
+    "en": "Locker Room, Coatroom, and Dressing Room Attendants",
+    "tr": "Soyunma Odası, Palto Odası ve Giysi Odası Görevlisi"
+  },
+  {
+    "en": "Embalmers",
+    "tr": "Mumyalayıcı"
+  },
+  {
+    "en": "Crematory Operators",
+    "tr": "Krematoryum Operatörü"
+  },
+  {
+    "en": "Funeral Attendants",
+    "tr": "Cenaze Görevlisi"
+  },
+  {
+    "en": "Morticians, Undertakers, and Funeral Arrangers",
+    "tr": "Ölümcüler, Cenaze İşlemecisi ve Cenaze Düzenleyicisi"
+  },
+  {
+    "en": "Barbers",
+    "tr": "Berber"
+  },
+  {
+    "en": "Hairdressers, Hairstylists, and Cosmetologists",
+    "tr": "Kuaför"
+  },
+  {
+    "en": "Makeup Artists, Theatrical and Performance",
+    "tr": "Makyaj Sanatçısı"
+  },
+  {
+    "en": "Manicurists and Pedicurists",
+    "tr": "Manikürcü ve Pedikürcü"
+  },
+  {
+    "en": "Shampooers",
+    "tr": "Şampuanlayıcı"
+  },
+  {
+    "en": "Skincare Specialists",
+    "tr": "Cilt Bakım Uzmanı"
+  },
+  {
+    "en": "Baggage Porters and Bellhops",
+    "tr": "Bagaj Taşıyıcısı ve Kapıcı"
+  },
+  {
+    "en": "Concierges",
+    "tr": "Kapıcı"
+  },
+  {
+    "en": "Tour Guides and Escorts",
+    "tr": "Tur Rehberi ve Refakatçi"
+  },
+  {
+    "en": "Travel Guides",
+    "tr": "Seyahat Rehberi"
+  },
+  {
+    "en": "Childcare Workers",
+    "tr": "Çocuk Bakım Çalışanı"
+  },
+  {
+    "en": "Nannies",
+    "tr": "Dadı"
+  },
+  {
+    "en": "Exercise Trainers and Group Fitness Instructors",
+    "tr": "Egzersiz Eğitmeni ve Grup Fitness Eğitmeni"
+  },
+  {
+    "en": "Recreation Workers",
+    "tr": "Rekreasyon Çalışanı"
+  },
+  {
+    "en": "Residential Advisors",
+    "tr": "Yurt Danışmanı"
+  },
+  {
+    "en": "First-Line Supervisors of Retail Sales Workers",
+    "tr": "Perakende Satış Çalışanları Birinci Kademe Şefi"
+  },
+  {
+    "en": "First-Line Supervisors of Non-Retail Sales Workers",
+    "tr": "Perakende Dışı Satış Çalışanları Birinci Kademe Şefi"
+  },
+  {
+    "en": "Cashiers",
+    "tr": "Kasiyer"
+  },
+  {
+    "en": "Gambling Change Persons and Booth Cashiers",
+    "tr": "Kumar Değişim Görevlisi ve Kulübe Kasiyeri"
+  },
+  {
+    "en": "Counter and Rental Clerks",
+    "tr": "Tezgah Görevlisi ve Kiralama Görevlisi"
+  },
+  {
+    "en": "Parts Salespersons",
+    "tr": "Parça Satış Elemanı"
+  },
+  {
+    "en": "Retail Salespersons",
+    "tr": "Perakende Satış Elemanı"
+  },
+  {
+    "en": "Advertising Sales Agents",
+    "tr": "Reklam Satış Temsilcisi"
+  },
+  {
+    "en": "Insurance Sales Agents",
+    "tr": "Sigorta Satış Temsilcisi"
+  },
+  {
+    "en": "Securities, Commodities, and Financial Services Sales Agents",
+    "tr": "Sermaye Piyasası, Eşya ve Finansal Hizmetler Satış Temsilcisi"
+  },
+  {
+    "en": "Travel Agents",
+    "tr": "Seyahat Acentası"
+  },
+  {
+    "en": "Sales Representatives of Services, Except Advertising, Insurance, Financial Services, and Travel",
+    "tr": "Hizmet Satış Temsilcisi, Reklam, Sigorta, Finansal Hizmetler ve Seyahat Hariç"
+  },
+  {
+    "en": "Sales Representatives, Wholesale and Manufacturing, Technical and Scientific Products",
+    "tr": "Toptan ve İmalat, Teknik ve Bilimsel Ürünler Satış Temsilcisi"
+  },
+  {
+    "en": "Solar Sales Representatives and Assessors",
+    "tr": "Güneş Enerjisi Satış Temsilcisi ve Değerlendiricisi"
+  },
+  {
+    "en": "Sales Representatives, Wholesale and Manufacturing, Except Technical and Scientific Products",
+    "tr": "Toptan ve İmalat, Teknik ve Bilimsel Ürünler Hariç Satış Temsilcisi"
+  },
+  {
+    "en": "Demonstrators and Product Promoters",
+    "tr": "Demonstratör ve Ürün Tanıtımcısı"
+  },
+  {
+    "en": "Models",
+    "tr": "Model"
+  },
+  {
+    "en": "Real Estate Brokers",
+    "tr": "Gayrimenkul Danışmanı"
+  },
+  {
+    "en": "Real Estate Sales Agents",
+    "tr": "Gayrimenkul Satış Temsilcisi"
+  },
+  {
+    "en": "Sales Engineers",
+    "tr": "Satış Mühendisi"
+  },
+  {
+    "en": "Telemarketers",
+    "tr": "Telepazarlamacı"
+  },
+  {
+    "en": "Door-to-Door Sales Workers, News and Street Vendors, and Related Workers",
+    "tr": "Kapıdan Kapıya Satış Elemanı, Gazete ve Sokak Satıcısı ve İlgili Çalışanlar"
+  },
+  {
+    "en": "First-Line Supervisors of Office and Administrative Support Workers",
+    "tr": "Birinci Kademe Şefi, Ofis ve İdari Destek Çalışanı"
+  },
+  {
+    "en": "Switchboard Operators, Including Answering Service",
+    "tr": "Santral Operatörü, Çağrı Karşılama Hizmeti Dahil"
+  },
+  {
+    "en": "Telephone Operators",
+    "tr": "Telefon Operatörü"
+  },
+  {
+    "en": "Bill and Account Collectors",
+    "tr": "Fatura ve Hesap Tahsilatçısı"
+  },
+  {
+    "en": "Billing and Posting Clerks",
+    "tr": "Fatura ve Kayıt Görevlisi"
+  },
+  {
+    "en": "Bookkeeping, Accounting, and Auditing Clerks",
+    "tr": "Muhasebe, Defter Tutma ve Denetim Görevlisi"
+  },
+  {
+    "en": "Gambling Cage Workers",
+    "tr": "Kumar Kafesi Çalışanı"
+  },
+  {
+    "en": "Payroll and Timekeeping Clerks",
+    "tr": "Maaş ve Zaman Takibi Görevlisi"
+  },
+  {
+    "en": "Procurement Clerks",
+    "tr": "Satın Alma Görevlisi"
+  },
+  {
+    "en": "Tellers",
+    "tr": "Hesap Görevlisi"
+  },
+  {
+    "en": "Brokerage Clerks",
+    "tr": "Aracılık Görevlisi"
+  },
+  {
+    "en": "Correspondence Clerks",
+    "tr": "Yazışma Görevlisi"
+  },
+  {
+    "en": "Court, Municipal, and License Clerks",
+    "tr": "Mahkeme, Belediye ve Lisans Görevlisi"
+  },
+  {
+    "en": "Credit Authorizers, Checkers, and Clerks",
+    "tr": "Kredi Yetkilisi, Kontrolcü ve Görevlisi"
+  },
+  {
+    "en": "Customer Service Representatives",
+    "tr": "Müşteri Hizmetleri Temsilcisi"
+  },
+  {
+    "en": "Eligibility Interviewers, Government Programs",
+    "tr": "Uygunluk Görüşmecisi, Devlet Programları"
+  },
+  {
+    "en": "File Clerks",
+    "tr": "Dosya Görevlisi"
+  },
+  {
+    "en": "Hotel, Motel, and Resort Desk Clerks",
+    "tr": "Otel, Motel ve Tatil Köyü Görevlisi"
+  },
+  {
+    "en": "Interviewers, Except Eligibility and Loan",
+    "tr": "Görüşmeci, Uygunluk ve Kredi Hariç"
+  },
+  {
+    "en": "Library Assistants, Clerical",
+    "tr": "Kütüphane Asistanı"
+  },
+  {
+    "en": "Loan Interviewers and Clerks",
+    "tr": "Kredi Görüşmecisi ve Görevlisi"
+  },
+  {
+    "en": "New Accounts Clerks",
+    "tr": "Yeni Hesap Görevlisi"
+  },
+  {
+    "en": "Order Clerks",
+    "tr": "Sipariş Görevlisi"
+  },
+  {
+    "en": "Human Resources Assistants, Except Payroll and Timekeeping",
+    "tr": "İnsan Kaynakları Asistanı, Maaş ve Zaman Takibi Hariç"
+  },
+  {
+    "en": "Receptionists and Information Clerks",
+    "tr": "Karşılama Görevlisi ve Bilgi Görevlisi"
+  },
+  {
+    "en": "Reservation and Transportation Ticket Agents and Travel Clerks",
+    "tr": "Rezervasyon ve Ulaşım Bilet Acentesi ve Seyahat Görevlisi"
+  },
+  {
+    "en": "Cargo and Freight Agents",
+    "tr": "Kargo ve Nakliye Acentası"
+  },
+  {
+    "en": "Freight Forwarders",
+    "tr": "Nakliye Aracıları"
+  },
+  {
+    "en": "Couriers and Messengers",
+    "tr": "Kurye ve Mesajcı"
+  },
+  {
+    "en": "Public Safety Telecommunicators",
+    "tr": "Kamu Güvenliği Telekomünikasyon Görevlisi"
+  },
+  {
+    "en": "Dispatchers, Except Police, Fire, and Ambulance",
+    "tr": "Gönderici, Polis, İtfaiye ve Ambulans Hariç"
+  },
+  {
+    "en": "Meter Readers, Utilities",
+    "tr": "Sayaç Okuyucusu, Kamu Hizmetleri"
+  },
+  {
+    "en": "Postal Service Clerks",
+    "tr": "Posta Servisi Görevlisi"
+  },
+  {
+    "en": "Postal Service Mail Carriers",
+    "tr": "Posta Servisi Postacısı"
+  },
+  {
+    "en": "Postal Service Mail Sorters, Processors, and Processing Machine Operators",
+    "tr": "Posta Servisi Posta Sıralayıcıları, İşleyicileri ve İşleme Makinesi Operatörü"
+  },
+  {
+    "en": "Production, Planning, and Expediting Clerks",
+    "tr": "Üretim, Planlama ve Hızlandırma Görevlisi"
+  },
+  {
+    "en": "Shipping, Receiving, and Inventory Clerks",
+    "tr": "Gönderim, Alma ve Envanter Görevlisi"
+  },
+  {
+    "en": "Weighers, Measurers, Checkers, and Samplers, Recordkeeping",
+    "tr": "Ağırlık Ölçer, Ölçücü, Kontrolcü ve Numune Alıcı, Kayıt Tutma"
+  },
+  {
+    "en": "Executive Secretaries and Executive Administrative Assistants",
+    "tr": "İdari Sekreter ve İdari Asistan"
+  },
+  {
+    "en": "Legal Secretaries and Administrative Assistants",
+    "tr": "Hukuk Sekreteri ve İdari Asistanı"
+  },
+  {
+    "en": "Medical Secretaries and Administrative Assistants",
+    "tr": "Tıbbi Sekreterler ve İdari Asistanlar"
+  },
+  {
+    "en": "Secretaries and Administrative Assistants, Except Legal, Medical, and Executive",
+    "tr": "Sekreterler ve İdari Asistanlar, Hukuki, Tıbbi ve İdari Hariç"
+  },
+  {
+    "en": "Data Entry Keyers",
+    "tr": "Veri Giriş Elemanı"
+  },
+  {
+    "en": "Word Processors and Typists",
+    "tr": "Metin İşlemciler ve Daktilocular"
+  },
+  {
+    "en": "Desktop Publishers",
+    "tr": "Masaüstü Yayıncıları"
+  },
+  {
+    "en": "Insurance Claims and Policy Processing Clerks",
+    "tr": "Sigorta Talepleri ve Poliçe İşleme Görevlisi"
+  },
+  {
+    "en": "Mail Clerks and Mail Machine Operators, Except Postal Service",
+    "tr": "Posta Görevlisi ve Posta Makinesi Operatörü, Hariç Posta Servisi"
+  },
+  {
+    "en": "Office Clerks, General",
+    "tr": "Ofis Görevlisi"
+  },
+  {
+    "en": "Office Machine Operators, Except Computer",
+    "tr": "Ofis Makinesi Operatörü, Hariç Bilgisayar"
+  },
+  {
+    "en": "Proofreaders and Copy Markers",
+    "tr": "Düzeltmenler ve Kopya İşaretleyicileri"
+  },
+  {
+    "en": "Statistical Assistants",
+    "tr": "İstatistik Asistanı"
+  },
+  {
+    "en": "First-Line Supervisors of Farming, Fishing, and Forestry Workers",
+    "tr": "Birinci Kademe Şefi, Tarım, Balıkçılık ve Orman İşçileri"
+  },
+  {
+    "en": "Agricultural Inspectors",
+    "tr": "Tarım Müfettişi"
+  },
+  {
+    "en": "Animal Breeders",
+    "tr": "Hayvan Yetiştiricisi"
+  },
+  {
+    "en": "Graders and Sorters, Agricultural Products",
+    "tr": "Sınıflandırıcılar ve Ayırıcılar, Tarım Ürünleri"
+  },
+  {
+    "en": "Agricultural Equipment Operators",
+    "tr": "Tarım Ekipmanı Operatörü"
+  },
+  {
+    "en": "Farmworkers and Laborers, Crop, Nursery, and Greenhouse",
+    "tr": "Tarım İşçileri ve İşçiler, Tarla, Fide ve Seralar"
+  },
+  {
+    "en": "Farmworkers, Farm, Ranch, and Aquacultural Animals",
+    "tr": "Tarım İşçileri, Çiftlik, Çiftlik Hayvanları ve Su Ürünleri"
+  },
+  {
+    "en": "Fishing and Hunting Workers",
+    "tr": "Balıkçılık ve Avcılık İşçileri"
+  },
+  {
+    "en": "Forest and Conservation Workers",
+    "tr": "Orman ve Koruma İşçileri"
+  },
+  {
+    "en": "Fallers",
+    "tr": "Ağaç Kesiciler"
+  },
+  {
+    "en": "Logging Equipment Operators",
+    "tr": "Ağaç Kesme Ekipmanı Operatörü"
+  },
+  {
+    "en": "Log Graders and Scalers",
+    "tr": "Kütük Sınıflandırıcıları ve Ölçücüleri"
+  },
+  {
+    "en": "First-Line Supervisors of Construction Trades and Extraction Workers",
+    "tr": "Birinci Kademe Şefi, İnşaat Meslekleri ve Çıkarma İşçileri"
+  },
+  {
+    "en": "Solar Energy Installation Managers",
+    "tr": "Güneş Enerjisi Kurulum Müdürü"
+  },
+  {
+    "en": "Boilermakers",
+    "tr": "Buhar Kazanı Yapımcısı"
+  },
+  {
+    "en": "Brickmasons and Blockmasons",
+    "tr": "Tuğla Ustası ve Blok Ustası"
+  },
+  {
+    "en": "Stonemasons",
+    "tr": "Taş Ustası"
+  },
+  {
+    "en": "Carpenters",
+    "tr": "Marangoz"
+  },
+  {
+    "en": "Carpet Installers",
+    "tr": "Halı Montajcısı"
+  },
+  {
+    "en": "Floor Layers, Except Carpet, Wood, and Hard Tiles",
+    "tr": "Zemin Kaplamacıları, Halı, Ahşap ve Sert Fayans Hariç"
+  },
+  {
+    "en": "Floor Sanders and Finishers",
+    "tr": "Zemin Zımparacıları ve Bitiricileri"
+  },
+  {
+    "en": "Tile and Stone Setters",
+    "tr": "Fayans ve Taş Ustası"
+  },
+  {
+    "en": "Cement Masons and Concrete Finishers",
+    "tr": "Çimento Ustası ve Beton Bitiricisi"
+  },
+  {
+    "en": "Terrazzo Workers and Finishers",
+    "tr": "Terrazzo İşçisi ve Bitiricisi"
+  },
+  {
+    "en": "Construction Laborers",
+    "tr": "İnşaat İşçisi"
+  },
+  {
+    "en": "Paving, Surfacing, and Tamping Equipment Operators",
+    "tr": "Asfalt, Kaplama ve Sıkıştırma Ekipmanı Operatörü"
+  },
+  {
+    "en": "Pile Driver Operators",
+    "tr": "Kazık Koyma Operatörü"
+  },
+  {
+    "en": "Operating Engineers and Other Construction Equipment Operators",
+    "tr": "İşletme Mühendisi ve Diğer İnşaat Ekipmanı Operatörleri"
+  },
+  {
+    "en": "Drywall and Ceiling Tile Installers",
+    "tr": "Alçıpan ve Tavan Fayansı Montajcısı"
+  },
+  {
+    "en": "Tapers",
+    "tr": "Bandajcılar"
+  },
+  {
+    "en": "Electricians",
+    "tr": "Elektrikçi"
+  },
+  {
+    "en": "Glaziers",
+    "tr": "Camcı"
+  },
+  {
+    "en": "Insulation Workers, Floor, Ceiling, and Wall",
+    "tr": "Yalıtım İşçisi, Zemin, Tavan ve Duvar"
+  },
+  {
+    "en": "Insulation Workers, Mechanical",
+    "tr": "Mekanik Yalıtım İşçisi"
+  },
+  {
+    "en": "Painters, Construction and Maintenance",
+    "tr": "Boyacı, İnşaat ve Bakım"
+  },
+  {
+    "en": "Paperhangers",
+    "tr": "Duvar Kağıdı Ustası"
+  },
+  {
+    "en": "Pipelayers",
+    "tr": "Borucu"
+  },
+  {
+    "en": "Plumbers, Pipefitters, and Steamfitters",
+    "tr": "Tesisatçı, Boru Montajcısı ve Buhar Tesisatçısı"
+  },
+  {
+    "en": "Solar Thermal Installers and Technicians",
+    "tr": "Güneş Enerjisi Termal Montajcısı ve Teknisyeni"
+  },
+  {
+    "en": "Plasterers and Stucco Masons",
+    "tr": "Sıvacı ve Sıva Ustası"
+  },
+  {
+    "en": "Reinforcing Iron and Rebar Workers",
+    "tr": "Demir Donatı ve Tel Bar İşçisi"
+  },
+  {
+    "en": "Roofers",
+    "tr": "Çatı Ustası"
+  },
+  {
+    "en": "Sheet Metal Workers",
+    "tr": "Sac Metal İşçisi"
+  },
+  {
+    "en": "Structural Iron and Steel Workers",
+    "tr": "Yapısal Demir ve Çelik İşçisi"
+  },
+  {
+    "en": "Solar Photovoltaic Installers",
+    "tr": "Güneş Fotovoltaik Montajcısı"
+  },
+  {
+    "en": "Helpers--Brickmasons, Blockmasons, Stonemasons, and Tile and Marble Setters",
+    "tr": "Yardımcı--Tuğla Ustası, Blok Ustası, Taş Ustası ve Fayans ve Mermer Ustası"
+  },
+  {
+    "en": "Helpers--Carpenters",
+    "tr": "Yardımcı--Marangoz"
+  },
+  {
+    "en": "Helpers--Electricians",
+    "tr": "Yardımcı--Elektrikçi"
+  },
+  {
+    "en": "Helpers--Painters, Paperhangers, Plasterers, and Stucco Masons",
+    "tr": "Yardımcı--Boyacı, Duvar Kağıdı Ustası, Sıvacı ve Sıva Ustası"
+  },
+  {
+    "en": "Helpers--Pipelayers, Plumbers, Pipefitters, and Steamfitters",
+    "tr": "Borucu, Sıhhi Tesisatçı, Boru Montajcısı ve Buhar Tesisatçısı Yardımcısı"
+  },
+  {
+    "en": "Helpers--Roofers",
+    "tr": "Çatı Ustası Yardımcısı"
+  },
+  {
+    "en": "Construction and Building Inspectors",
+    "tr": "İnşaat ve Bina Müfettişi"
+  },
+  {
+    "en": "Energy Auditors",
+    "tr": "Enerji Denetçisi"
+  },
+  {
+    "en": "Elevator and Escalator Installers and Repairers",
+    "tr": "Asansör ve Yürüyen Merdiven Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Fence Erectors",
+    "tr": "Çit Montajcısı"
+  },
+  {
+    "en": "Hazardous Materials Removal Workers",
+    "tr": "Tehlikeli Madde Temizleme İşçisi"
+  },
+  {
+    "en": "Highway Maintenance Workers",
+    "tr": "Karayolu Bakım İşçisi"
+  },
+  {
+    "en": "Rail-Track Laying and Maintenance Equipment Operators",
+    "tr": "Demiryolu Rayı Döşeme ve Bakım Ekipman Operatörü"
+  },
+  {
+    "en": "Septic Tank Servicers and Sewer Pipe Cleaners",
+    "tr": "Septik Tank Servis Elemanı ve Kanalizasyon Borusu Temizleyici"
+  },
+  {
+    "en": "Segmental Pavers",
+    "tr": "Segmentli Pave İşçisi"
+  },
+  {
+    "en": "Weatherization Installers and Technicians",
+    "tr": "İklimlendirme Montajcısı ve Teknisyeni"
+  },
+  {
+    "en": "Derrick Operators, Oil and Gas",
+    "tr": "Kule Operatörü, Petrol ve Gaz"
+  },
+  {
+    "en": "Rotary Drill Operators, Oil and Gas",
+    "tr": "Dönme Matkap Operatörü, Petrol ve Gaz"
+  },
+  {
+    "en": "Service Unit Operators, Oil and Gas",
+    "tr": "Servis Ünitesi Operatörü, Petrol ve Gaz"
+  },
+  {
+    "en": "Excavating and Loading Machine and Dragline Operators, Surface Mining",
+    "tr": "Kazı ve Yükleme Makinesi ve Dragline Operatörü, Yüzey Madenciliği"
+  },
+  {
+    "en": "Earth Drillers, Except Oil and Gas",
+    "tr": "Toprak Matkapçısı, Petrol ve Gaz Hariç"
+  },
+  {
+    "en": "Explosives Workers, Ordnance Handling Experts, and Blasters",
+    "tr": "Patlayıcı İşçisi, Mühimmat Taşıma Uzmanı ve Patlayıcıcı"
+  },
+  {
+    "en": "Continuous Mining Machine Operators",
+    "tr": "Sürekli Madencilik Makinesi Operatörü"
+  },
+  {
+    "en": "Roof Bolters, Mining",
+    "tr": "Çatı Vida Montajcısı, Madencilik"
+  },
+  {
+    "en": "Loading and Moving Machine Operators, Underground Mining",
+    "tr": "Yükleme ve Taşıma Makinesi Operatörü, Yeraltı Madenciliği"
+  },
+  {
+    "en": "Rock Splitters, Quarry",
+    "tr": "Kaya Bölücü, Taş Ocağı"
+  },
+  {
+    "en": "Roustabouts, Oil and Gas",
+    "tr": "Genel İşçi, Petrol ve Gaz"
+  },
+  {
+    "en": "Helpers--Extraction Workers",
+    "tr": "Çıkarma İşçisi Yardımcısı"
+  },
+  {
+    "en": "First-Line Supervisors of Mechanics, Installers, and Repairers",
+    "tr": "Birinci Kademe Şefi, Mekanikler, Montajcılar ve Tamirciler"
+  },
+  {
+    "en": "Computer, Automated Teller, and Office Machine Repairers",
+    "tr": "Bilgisayar, Otomatik Vezne ve Ofis Makinesi Tamircisi"
+  },
+  {
+    "en": "Radio, Cellular, and Tower Equipment Installers and Repairers",
+    "tr": "Radyo, Hücresel ve Kule Ekipmanı Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Telecommunications Equipment Installers and Repairers, Except Line Installers",
+    "tr": "Telekomünikasyon Ekipmanı Montajcısı ve Tamircisi, Hat Montajcıları Hariç"
+  },
+  {
+    "en": "Avionics Technicians",
+    "tr": "Havacılık Elektroniği Teknisyeni"
+  },
+  {
+    "en": "Electric Motor, Power Tool, and Related Repairers",
+    "tr": "Elektrik Motoru, Güç Aleti ve İlgili Tamircisi"
+  },
+  {
+    "en": "Electrical and Electronics Installers and Repairers, Transportation Equipment",
+    "tr": "Elektrik ve Elektronik Montajcısı ve Tamircisi, Taşıma Ekipmanları"
+  },
+  {
+    "en": "Electrical and Electronics Repairers, Commercial and Industrial Equipment",
+    "tr": "Ticari ve Endüstriyel Ekipman Elektrik ve Elektronik Tamircisi"
+  },
+  {
+    "en": "Electrical and Electronics Repairers, Powerhouse, Substation, and Relay",
+    "tr": "Santral, Trafo ve Röle Elektrik ve Elektronik Tamircisi"
+  },
+  {
+    "en": "Electronic Equipment Installers and Repairers, Motor Vehicles",
+    "tr": "Elektronik Ekipman Montajcısı ve Tamircisi, Motorlu Araçlar"
+  },
+  {
+    "en": "Audiovisual Equipment Installers and Repairers",
+    "tr": "Görüntü ve Ses Ekipmanları Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Security and Fire Alarm Systems Installers",
+    "tr": "Güvenlik ve Yangın Alarm Sistemleri Montajcısı"
+  },
+  {
+    "en": "Aircraft Mechanics and Service Technicians",
+    "tr": "Uçak Bakım Teknisyeni"
+  },
+  {
+    "en": "Automotive Body and Related Repairers",
+    "tr": "Otomotiv Gövde ve İlgili Tamircisi"
+  },
+  {
+    "en": "Automotive Glass Installers and Repairers",
+    "tr": "Otomotiv Cam Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Automotive Service Technicians and Mechanics",
+    "tr": "Otomotiv Servis Teknisyeni ve Mekanikleri"
+  },
+  {
+    "en": "Bus and Truck Mechanics and Diesel Engine Specialists",
+    "tr": "Otobüs ve Kamyon Mekanikleri ve Dizel Motor Uzmanı"
+  },
+  {
+    "en": "Farm Equipment Mechanics and Service Technicians",
+    "tr": "Tarım Ekipmanları Mekanikleri ve Servis Teknisyenleri"
+  },
+  {
+    "en": "Mobile Heavy Equipment Mechanics, Except Engines",
+    "tr": "Mobil Ağır Ekipman Tamircisi, Motorlar Hariç"
+  },
+  {
+    "en": "Rail Car Repairers",
+    "tr": "Raylı Araç Tamircisi"
+  },
+  {
+    "en": "Motorboat Mechanics and Service Technicians",
+    "tr": "Motorlu Bot Mekanikleri ve Servis Teknisyenleri"
+  },
+  {
+    "en": "Motorcycle Mechanics",
+    "tr": "Motosiklet Mekaniği"
+  },
+  {
+    "en": "Outdoor Power Equipment and Other Small Engine Mechanics",
+    "tr": "Açık Alan Güç Ekipmanları ve Diğer Küçük Motor Tamircisi"
+  },
+  {
+    "en": "Bicycle Repairers",
+    "tr": "Bisiklet Tamircisi"
+  },
+  {
+    "en": "Recreational Vehicle Service Technicians",
+    "tr": "Tatil Araçları Servis Teknisyeni"
+  },
+  {
+    "en": "Tire Repairers and Changers",
+    "tr": "Lastik Tamircisi ve Değiştiricisi"
+  },
+  {
+    "en": "Mechanical Door Repairers",
+    "tr": "Mekanik Kapı Tamircisi"
+  },
+  {
+    "en": "Control and Valve Installers and Repairers, Except Mechanical Door",
+    "tr": "Kontrol ve Vana Montajcısı ve Tamircisi, Mekanik Kapı Hariç"
+  },
+  {
+    "en": "Heating, Air Conditioning, and Refrigeration Mechanics and Installers",
+    "tr": "Isıtma, Klima ve Soğutma Tamircisi ve Montajcısı"
+  },
+  {
+    "en": "Home Appliance Repairers",
+    "tr": "Beyaz Eşya Tamircisi"
+  },
+  {
+    "en": "Industrial Machinery Mechanics",
+    "tr": "Endüstriyel Makine Mekanikleri"
+  },
+  {
+    "en": "Maintenance Workers, Machinery",
+    "tr": "Bakım İşçisi, Makineler"
+  },
+  {
+    "en": "Millwrights",
+    "tr": "Değirmenci"
+  },
+  {
+    "en": "Refractory Materials Repairers, Except Brickmasons",
+    "tr": "Refrakter Malzeme Tamircisi, Tuğla Ustası Hariç"
+  },
+  {
+    "en": "Electrical Power-Line Installers and Repairers",
+    "tr": "Elektrik Enerji Hattı Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Telecommunications Line Installers and Repairers",
+    "tr": "Telekomünikasyon Hattı Montajcısı ve Tamircisi"
+  },
+  {
+    "en": "Camera and Photographic Equipment Repairers",
+    "tr": "Kamera ve Fotoğraf Ekipmanları Tamircisi"
+  },
+  {
+    "en": "Medical Equipment Repairers",
+    "tr": "Tıbbi Ekipman Tamircisi"
+  },
+  {
+    "en": "Musical Instrument Repairers and Tuners",
+    "tr": "Müzik Aleti Tamircisi ve Akortçusu"
+  },
+  {
+    "en": "Watch and Clock Repairers",
+    "tr": "Saat ve Duvar Saati Tamircisi"
+  },
+  {
+    "en": "Maintenance and Repair Workers, General",
+    "tr": "Bakım ve Onarım İşçisi"
+  },
+  {
+    "en": "Wind Turbine Service Technicians",
+    "tr": "Rüzgar Türbini Servis Teknisyeni"
+  },
+  {
+    "en": "Coin, Vending, and Amusement Machine Servicers and Repairers",
+    "tr": "Jeton, Otomat ve Eğlence Makinesi Servis Elemanı ve Tamircisi"
+  },
+  {
+    "en": "Commercial Divers",
+    "tr": "Ticari Dalgıç"
+  },
+  {
+    "en": "Locksmiths and Safe Repairers",
+    "tr": "Çilingir ve Kasa Tamircisi"
+  },
+  {
+    "en": "Manufactured Building and Mobile Home Installers",
+    "tr": "Prefabrik Yapı ve Mobil Ev Montajcısı"
+  },
+  {
+    "en": "Riggers",
+    "tr": "Halterci"
+  },
+  {
+    "en": "Signal and Track Switch Repairers",
+    "tr": "Sinyal ve Ray Anahtarı Tamircisi"
+  },
+  {
+    "en": "Helpers--Installation, Maintenance, and Repair Workers",
+    "tr": "Yardımcı--Montaj, Bakım ve Onarım İşçisi"
+  },
+  {
+    "en": "Geothermal Technicians",
+    "tr": "Jeotermal Teknisyeni"
+  },
+  {
+    "en": "First-Line Supervisors of Production and Operating Workers",
+    "tr": "Birinci Kademe Şefi"
+  },
+  {
+    "en": "Aircraft Structure, Surfaces, Rigging, and Systems Assemblers",
+    "tr": "Uçak Yapısı, Yüzeyleri, Halatları ve Sistemleri Montajcısı"
+  },
+  {
+    "en": "Coil Winders, Tapers, and Finishers",
+    "tr": "Bobin Sarıcı, Sarmalayıcı ve Bitirici"
+  },
+  {
+    "en": "Electrical and Electronic Equipment Assemblers",
+    "tr": "Elektrik ve Elektronik Ekipmanları Montajcısı"
+  },
+  {
+    "en": "Electromechanical Equipment Assemblers",
+    "tr": "Elektromekanik Ekipman Montajcısı"
+  },
+  {
+    "en": "Engine and Other Machine Assemblers",
+    "tr": "Motor ve Diğer Makine Montajcısı"
+  },
+  {
+    "en": "Structural Metal Fabricators and Fitters",
+    "tr": "Yapısal Metal İmalatçısı ve Montajcısı"
+  },
+  {
+    "en": "Fiberglass Laminators and Fabricators",
+    "tr": "Fiberglas Laminatçısı ve İmalatçısı"
+  },
+  {
+    "en": "Timing Device Assemblers and Adjusters",
+    "tr": "Zamanlama Cihazı Montajcısı ve Ayarlayıcısı"
+  },
+  {
+    "en": "Team Assemblers",
+    "tr": "Takım Montajcısı"
+  },
+  {
+    "en": "Bakers",
+    "tr": "Fırıncı"
+  },
+  {
+    "en": "Butchers and Meat Cutters",
+    "tr": "Kasap ve Et Kesim Elemanı"
+  },
+  {
+    "en": "Meat, Poultry, and Fish Cutters and Trimmers",
+    "tr": "Et, Tavuk ve Balık Kesim Elemanı ve Temizleyici"
+  },
+  {
+    "en": "Slaughterers and Meat Packers",
+    "tr": "Kesimci ve Et Ambalajcısı"
+  },
+  {
+    "en": "Food and Tobacco Roasting, Baking, and Drying Machine Operators and Tenders",
+    "tr": "Gıda ve Tütün Kızartma, Pişirme ve Kurutma Makinesi Operatörü"
+  },
+  {
+    "en": "Food Batchmakers",
+    "tr": "Gıda Parti Üreticisi"
+  },
+  {
+    "en": "Food Cooking Machine Operators and Tenders",
+    "tr": "Gıda Pişirme Makinesi Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Extruding and Drawing Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Ekstrüzyon ve Çekme Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Forging Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Sıcak Haddeleme Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Rolling Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Rulo Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Cutting, Punching, and Press Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Kesme, Delme ve Pres Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Drilling and Boring Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Delik Açma ve Kılavuz Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Grinding, Lapping, Polishing, and Buffing Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Taşlama, Yüzey İşleme, Parlatma ve Cila Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Lathe and Turning Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Torna ve Dönme Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Milling and Planing Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Frezleme ve Planlama Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Machinists",
+    "tr": "Torna Tezgahı Operatörü"
+  },
+  {
+    "en": "Metal-Refining Furnace Operators and Tenders",
+    "tr": "Metal Arıtma Ocakları Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Pourers and Casters, Metal",
+    "tr": "Dökümcü, Metal"
+  },
+  {
+    "en": "Model Makers, Metal and Plastic",
+    "tr": "Model Yapımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Patternmakers, Metal and Plastic",
+    "tr": "Kalıp Yapımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Foundry Mold and Coremakers",
+    "tr": "Döküm Kalıp ve Çekirdek Yapımcısı"
+  },
+  {
+    "en": "Molding, Coremaking, and Casting Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Kalıplama, Çekirdek Yapımı ve Döküm Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Multiple Machine Tool Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Çoklu Makine Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Tool and Die Makers",
+    "tr": "Alet ve Kalıp Yapımcısı"
+  },
+  {
+    "en": "Welders, Cutters, Solderers, and Brazers",
+    "tr": "Kaynakçı, Kesici, Lehimci ve Brezilya"
+  },
+  {
+    "en": "Welding, Soldering, and Brazing Machine Setters, Operators, and Tenders",
+    "tr": "Kaynak, Lehimleme ve Brezilya Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Heat Treating Equipment Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Isıl İşlem Ekipmanı Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Layout Workers, Metal and Plastic",
+    "tr": "Düzen İşçisi, Metal ve Plastik"
+  },
+  {
+    "en": "Plating Machine Setters, Operators, and Tenders, Metal and Plastic",
+    "tr": "Kaplama Makinesi Ayarlayıcısı, Operatörü ve Bakımcısı, Metal ve Plastik"
+  },
+  {
+    "en": "Tool Grinders, Filers, and Sharpeners",
+    "tr": "Alet Taşlayıcı, Dosyalayıcı ve Keskinleştirici"
+  },
+  {
+    "en": "Prepress Technicians and Workers",
+    "tr": "Ön Baskı Teknisyeni ve İşçisi"
+  },
+  {
+    "en": "Printing Press Operators",
+    "tr": "Baskı Makinesi Operatörü"
+  },
+  {
+    "en": "Print Binding and Finishing Workers",
+    "tr": "Baskı Ciltleme ve Tamamlama İşçisi"
+  },
+  {
+    "en": "Laundry and Dry-Cleaning Workers",
+    "tr": "Çamaşırhane ve Kuru Temizleme İşçisi"
+  },
+  {
+    "en": "Pressers, Textile, Garment, and Related Materials",
+    "tr": "Baskı İşçisi, Tekstil, Giysi ve İlgili Malzemeler"
+  },
+  {
+    "en": "Sewing Machine Operators",
+    "tr": "Dikiş Makinesi Operatörü"
+  },
+  {
+    "en": "Shoe and Leather Workers and Repairers",
+    "tr": "Ayakkabı ve Deri İşçileri ve Tamircileri"
+  },
+  {
+    "en": "Shoe Machine Operators and Tenders",
+    "tr": "Ayakkabı Makinesi Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Sewers, Hand",
+    "tr": "Eldiven Dikişçisi"
+  },
+  {
+    "en": "Tailors, Dressmakers, and Custom Sewers",
+    "tr": "Terzi, Elbise Dikimcisi ve Özel Dikişçi"
+  },
+  {
+    "en": "Textile Bleaching and Dyeing Machine Operators and Tenders",
+    "tr": "Tekstil Beyazlatma ve Boyama Makinesi Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Textile Cutting Machine Setters, Operators, and Tenders",
+    "tr": "Tekstil Kesim Makinesi Ayarlayıcı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Textile Knitting and Weaving Machine Setters, Operators, and Tenders",
+    "tr": "Tekstil Örgü ve Dokuma Makinesi Ayarlayıcı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Textile Winding, Twisting, and Drawing Out Machine Setters, Operators, and Tenders",
+    "tr": "Tekstil Sarma, Bükme ve Çekme Makinesi Ayarlayıcı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Extruding and Forming Machine Setters, Operators, and Tenders, Synthetic and Glass Fibers",
+    "tr": "Ekstrüzyon ve Şekillendirme Makinesi Ayarlayıcı, Operatörü ve Bakımcısı, Sentetik ve Cam Elyaf"
+  },
+  {
+    "en": "Fabric and Apparel Patternmakers",
+    "tr": "Kumaş ve Giysi Kalıpçıları"
+  },
+  {
+    "en": "Upholsterers",
+    "tr": "Kaplamacısı"
+  },
+  {
+    "en": "Cabinetmakers and Bench Carpenters",
+    "tr": "Mobilya Yapımcısı ve Tezgah Marangozu"
+  },
+  {
+    "en": "Furniture Finishers",
+    "tr": "Mobilya Cilalayıcıları"
+  },
+  {
+    "en": "Model Makers, Wood",
+    "tr": "Model Yapımcısı, Ahşap"
+  },
+  {
+    "en": "Patternmakers, Wood",
+    "tr": "Kalıpçı, Ahşap"
+  },
+  {
+    "en": "Sawing Machine Setters, Operators, and Tenders, Wood",
+    "tr": "Testere Makinesi Ayarlayıcı, Operatörü ve Bakımcısı, Ahşap"
+  },
+  {
+    "en": "Woodworking Machine Setters, Operators, and Tenders, Except Sawing",
+    "tr": "Ahşap İşleme Makinesi Ayarlayıcı, Operatörü ve Bakımcısı, Hariç Testere"
+  },
+  {
+    "en": "Nuclear Power Reactor Operators",
+    "tr": "Nükleer Enerji Reaktörü Operatörü"
+  },
+  {
+    "en": "Power Distributors and Dispatchers",
+    "tr": "Enerji Dağıtımcısı ve Dağıtım Görevlisi"
+  },
+  {
+    "en": "Power Plant Operators",
+    "tr": "Enerji Santrali Operatörü"
+  },
+  {
+    "en": "Biomass Plant Technicians",
+    "tr": "Biyokütle Santrali Teknisyeni"
+  },
+  {
+    "en": "Hydroelectric Plant Technicians",
+    "tr": "Hidroelektrik Santrali Teknisyeni"
+  },
+  {
+    "en": "Stationary Engineers and Boiler Operators",
+    "tr": "Sabit Mühendis ve Kazan Operatörü"
+  },
+  {
+    "en": "Water and Wastewater Treatment Plant and System Operators",
+    "tr": "Su ve Atık Su Arıtma Tesisi ve Sistem Operatörü"
+  },
+  {
+    "en": "Chemical Plant and System Operators",
+    "tr": "Kimya Tesisi ve Sistem Operatörü"
+  },
+  {
+    "en": "Gas Plant Operators",
+    "tr": "Gaz Tesisi Operatörü"
+  },
+  {
+    "en": "Petroleum Pump System Operators, Refinery Operators, and Gaugers",
+    "tr": "Petrol Pompa Sistemi Operatörü, Rafineri Operatörü ve Ölçümcüsü"
+  },
+  {
+    "en": "Biofuels Processing Technicians",
+    "tr": "Biyoyakıt İşleme Teknisyeni"
+  },
+  {
+    "en": "Chemical Equipment Operators and Tenders",
+    "tr": "Kimyasal Ekipman Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Separating, Filtering, Clarifying, Precipitating, and Still Machine Setters, Operators, and Tenders",
+    "tr": "Ayrıştırma, Filtreleme, Arıtma, Çöktürme ve Damıtma Makinesi Ayarlayıcı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Crushing, Grinding, and Polishing Machine Setters, Operators, and Tenders",
+    "tr": "Kırma, Öğütme ve Parlatma Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Grinding and Polishing Workers, Hand",
+    "tr": "Elde Öğütme ve Parlatma İşçisi"
+  },
+  {
+    "en": "Mixing and Blending Machine Setters, Operators, and Tenders",
+    "tr": "Karıştırma ve Harmanlama Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Cutters and Trimmers, Hand",
+    "tr": "Elde Kesme ve Kısaltma İşçisi"
+  },
+  {
+    "en": "Cutting and Slicing Machine Setters, Operators, and Tenders",
+    "tr": "Kesme ve Dilimleme Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Extruding, Forming, Pressing, and Compacting Machine Setters, Operators, and Tenders",
+    "tr": "Ekstrüzyon, Şekillendirme, Presleme ve Sıkıştırma Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Furnace, Kiln, Oven, Drier, and Kettle Operators and Tenders",
+    "tr": "Fırın, Ocak, Kurutucu ve Kaynatıcı Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Inspectors, Testers, Sorters, Samplers, and Weighers",
+    "tr": "Müfettiş, Testçi, Sıralayıcı, Numune Alıcı ve Tartıcı"
+  },
+  {
+    "en": "Jewelers and Precious Stone and Metal Workers",
+    "tr": "Mücevherat ve Değerli Taş ve Metal İşçisi"
+  },
+  {
+    "en": "Gem and Diamond Workers",
+    "tr": "Taş ve Elmas İşçisi"
+  },
+  {
+    "en": "Dental Laboratory Technicians",
+    "tr": "Diş Laboratuvarı Teknisyeni"
+  },
+  {
+    "en": "Medical Appliance Technicians",
+    "tr": "Tıbbi Cihaz Teknisyeni"
+  },
+  {
+    "en": "Ophthalmic Laboratory Technicians",
+    "tr": "Göz Laboratuvarı Teknisyeni"
+  },
+  {
+    "en": "Packaging and Filling Machine Operators and Tenders",
+    "tr": "Ambalajlama ve Doldurma Makinesi Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Painting, Coating, and Decorating Workers",
+    "tr": "Boyama, Kaplama ve Süsleme İşçisi"
+  },
+  {
+    "en": "Coating, Painting, and Spraying Machine Setters, Operators, and Tenders",
+    "tr": "Kaplama, Boyama ve Spreyleme Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Semiconductor Processing Technicians",
+    "tr": "Yarı İletken İşleme Teknisyeni"
+  },
+  {
+    "en": "Photographic Process Workers and Processing Machine Operators",
+    "tr": "Fotoğraf İşleme İşçisi ve İşleme Makinesi Operatörü"
+  },
+  {
+    "en": "Computer Numerically Controlled Tool Operators",
+    "tr": "Bilgisayar Sayısal Kontrol Araç Operatörü"
+  },
+  {
+    "en": "Computer Numerically Controlled Tool Programmers",
+    "tr": "Bilgisayar Sayısal Kontrol Araç Programcısı"
+  },
+  {
+    "en": "Adhesive Bonding Machine Operators and Tenders",
+    "tr": "Yapıştırıcı Bağlama Makinesi Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Cleaning, Washing, and Metal Pickling Equipment Operators and Tenders",
+    "tr": "Temizleme, Yıkama ve Metal Asitleme Ekipmanı Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Cooling and Freezing Equipment Operators and Tenders",
+    "tr": "Soğutma ve Dondurma Ekipmanı Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Etchers and Engravers",
+    "tr": "Asitli ve Gravür İşçisi"
+  },
+  {
+    "en": "Molders, Shapers, and Casters, Except Metal and Plastic",
+    "tr": "Şekillendirici, Kalıpçı ve Dökümcü, Metal ve Plastik Hariç"
+  },
+  {
+    "en": "Stone Cutters and Carvers, Manufacturing",
+    "tr": "Taş Kesici ve Oymacı, İmalat"
+  },
+  {
+    "en": "Glass Blowers, Molders, Benders, and Finishers",
+    "tr": "Cam Üflemesi, Kalıpçısı, Bükücüsü ve Bitiricisi"
+  },
+  {
+    "en": "Potters, Manufacturing",
+    "tr": "Seramikçi, İmalat"
+  },
+  {
+    "en": "Paper Goods Machine Setters, Operators, and Tenders",
+    "tr": "Kağıt Ürünleri Makinesi Montajcısı, Operatörü ve Bakımcısı"
+  },
+  {
+    "en": "Tire Builders",
+    "tr": "Lastik Üretim İşçisi"
+  },
+  {
+    "en": "Helpers--Production Workers",
+    "tr": "Yardımcılar--Üretim İşçileri"
+  },
+  {
+    "en": "Aircraft Cargo Handling Supervisors",
+    "tr": "Uçak Kargo Taşıma Şefi"
+  },
+  {
+    "en": "First-Line Supervisors of Helpers, Laborers, and Material Movers, Hand",
+    "tr": "Birinci Kademe Şefi Yardımcılar, İşçiler ve El ile Mal Taşıyanlar"
+  },
+  {
+    "en": "Recycling Coordinators",
+    "tr": "Geri Dönüşüm Koordinatörü"
+  },
+  {
+    "en": "First-Line Supervisors of Material-Moving Machine and Vehicle Operators",
+    "tr": "Birinci Kademe Şefi Mal Taşıma Makinesi ve Araç Operatörleri"
+  },
+  {
+    "en": "First-Line Supervisors of Passenger Attendants",
+    "tr": "Birinci Kademe Şefi Yolcu Görevlileri"
+  },
+  {
+    "en": "Airline Pilots, Copilots, and Flight Engineers",
+    "tr": "Havayolu Pilotu, İkinci Pilot ve Uçuş Mühendisi"
+  },
+  {
+    "en": "Commercial Pilots",
+    "tr": "Ticari Pilot"
+  },
+  {
+    "en": "Air Traffic Controllers",
+    "tr": "Hava Trafik Kontrolörü"
+  },
+  {
+    "en": "Airfield Operations Specialists",
+    "tr": "Havaalanı Operasyon Uzmanı"
+  },
+  {
+    "en": "Flight Attendants",
+    "tr": "Uçuş Görevlisi"
+  },
+  {
+    "en": "Ambulance Drivers and Attendants, Except Emergency Medical Technicians",
+    "tr": "Ambulans Sürücüleri ve Görevlileri, Acil Tıp Teknisyenleri Hariç"
+  },
+  {
+    "en": "Driver/Sales Workers",
+    "tr": "Sürücü/Satış Elemanı"
+  },
+  {
+    "en": "Heavy and Tractor-Trailer Truck Drivers",
+    "tr": "Ağır ve Treylör Kamyon Sürücüsü"
+  },
+  {
+    "en": "Light Truck Drivers",
+    "tr": "Hafif Kamyon Sürücüsü"
+  },
+  {
+    "en": "Bus Drivers, School",
+    "tr": "Okul Otobüsü Sürücüsü"
+  },
+  {
+    "en": "Bus Drivers, Transit and Intercity",
+    "tr": "Şehir İçi ve Şehirlerarası Otobüs Sürücüsü"
+  },
+  {
+    "en": "Shuttle Drivers and Chauffeurs",
+    "tr": "Servis Sürücüleri ve Şoförleri"
+  },
+  {
+    "en": "Taxi Drivers",
+    "tr": "Taksi Şoförü"
+  },
+  {
+    "en": "Locomotive Engineers",
+    "tr": "Lokomotif Mühendisi"
+  },
+  {
+    "en": "Rail Yard Engineers, Dinkey Operators, and Hostlers",
+    "tr": "Demiryolu Yüzü Mühendisi, Dinkey Operatörü ve Lokomotif Bakımcıları"
+  },
+  {
+    "en": "Railroad Brake, Signal, and Switch Operators and Locomotive Firers",
+    "tr": "Demiryolu Fren, Sinyal ve Anahtar Operatörü ve Lokomotif Ateşçisi"
+  },
+  {
+    "en": "Railroad Conductors and Yardmasters",
+    "tr": "Demiryolu Konduktörü ve Yüz Amiri"
+  },
+  {
+    "en": "Subway and Streetcar Operators",
+    "tr": "Metro ve Tramvay Operatörü"
+  },
+  {
+    "en": "Sailors and Marine Oilers",
+    "tr": "Denizciler ve Deniz Yağıcıları"
+  },
+  {
+    "en": "Captains, Mates, and Pilots of Water Vessels",
+    "tr": "Su Araçları Kaptanı, Yardımcıları ve Pilotları"
+  },
+  {
+    "en": "Motorboat Operators",
+    "tr": "Motorbot Operatörü"
+  },
+  {
+    "en": "Ship Engineers",
+    "tr": "Gemi Mühendisi"
+  },
+  {
+    "en": "Bridge and Lock Tenders",
+    "tr": "Köprü ve Kilit Bakımcısı"
+  },
+  {
+    "en": "Parking Attendants",
+    "tr": "Otopark Görevlisi"
+  },
+  {
+    "en": "Automotive and Watercraft Service Attendants",
+    "tr": "Otomotiv ve Su Araçları Hizmet Görevlisi"
+  },
+  {
+    "en": "Aircraft Service Attendants",
+    "tr": "Uçak Hizmet Görevlisi"
+  },
+  {
+    "en": "Traffic Technicians",
+    "tr": "Trafik Teknisyeni"
+  },
+  {
+    "en": "Transportation Inspectors",
+    "tr": "Taşımacılık Müfettişi"
+  },
+  {
+    "en": "Aviation Inspectors",
+    "tr": "Havacılık Müfettişi"
+  },
+  {
+    "en": "Transportation Vehicle, Equipment and Systems Inspectors, Except Aviation",
+    "tr": "Taşımacılık Araçları, Ekipman ve Sistem Müfettişi Hariç Havacılık"
+  },
+  {
+    "en": "Passenger Attendants",
+    "tr": "Yolcu Görevlisi"
+  },
+  {
+    "en": "Conveyor Operators and Tenders",
+    "tr": "Bant Operatörü ve Bakımcı"
+  },
+  {
+    "en": "Crane and Tower Operators",
+    "tr": "Vinç ve Kule Operatörü"
+  },
+  {
+    "en": "Dredge Operators",
+    "tr": "Dredger Operatörü"
+  },
+  {
+    "en": "Hoist and Winch Operators",
+    "tr": "Kaldırıcı ve Makaralı Operatörü"
+  },
+  {
+    "en": "Industrial Truck and Tractor Operators",
+    "tr": "Endüstriyel Kamyon ve Traktör Operatörü"
+  },
+  {
+    "en": "Cleaners of Vehicles and Equipment",
+    "tr": "Araç ve Ekipman Temizlikçisi"
+  },
+  {
+    "en": "Laborers and Freight, Stock, and Material Movers, Hand",
+    "tr": "İşçi ve Yük, Stok ve Mal Taşıyıcıları, Elle"
+  },
+  {
+    "en": "Recycling and Reclamation Workers",
+    "tr": "Geri Dönüşüm ve Kurtarma İşçisi"
+  },
+  {
+    "en": "Machine Feeders and Offbearers",
+    "tr": "Makine Besleyicisi ve Boşaltıcısı"
+  },
+  {
+    "en": "Packers and Packagers, Hand",
+    "tr": "Ambalajcı"
+  },
+  {
+    "en": "Stockers and Order Fillers",
+    "tr": "Stok Görevlisi ve Sipariş Doldurucu"
+  },
+  {
+    "en": "Gas Compressor and Gas Pumping Station Operators",
+    "tr": "Gaz Kompresörü ve Gaz Pompa İstasyonu Operatörü"
+  },
+  {
+    "en": "Pump Operators, Except Wellhead Pumpers",
+    "tr": "Pompa Operatörü Hariç Kuyudan Pompalayan"
+  },
+  {
+    "en": "Wellhead Pumpers",
+    "tr": "Kuyu Pompalayıcı"
+  },
+  {
+    "en": "Refuse and Recyclable Material Collectors",
+    "tr": "Atık ve Geri Dönüşüm Malzemesi Toplayıcısı"
+  },
+  {
+    "en": "Tank Car, Truck, and Ship Loaders",
+    "tr": "Tank Vagonu, Kamyon ve Gemi Yükleyicisi"
+  }
+]

@@ -2,13 +2,34 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useUniversity } from "../contexts/UniversityContext";
+import {
+  useUniversity,
+  UNIVERSITY_CONFIG,
+} from "../contexts/UniversityContext";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
 const HALIC_PRIMARY_COLOR = "#001bc3";
 const HALIC_GRADIENT_START = "#001bc3";
 const HALIC_GRADIENT_END = "#0029e8";
+
+// List of valid university extensions
+const VALID_UNIVERSITY_EXTENSIONS = Object.keys(UNIVERSITY_CONFIG).filter(
+  (key) => key !== "halic",
+);
+
+/**
+ * Check if username has a valid university extension
+ * @param {string} username
+ * @returns {boolean}
+ */
+const hasUniversityExtension = (username) => {
+  if (!username) return false;
+  const parts = username.toLowerCase().split(".");
+  if (parts.length < 2) return false;
+  const lastPart = parts[parts.length - 1];
+  return VALID_UNIVERSITY_EXTENSIONS.includes(lastPart) || lastPart === "halic";
+};
 
 // Styled components
 const LoginContainer = styled(Box)({
@@ -68,7 +89,7 @@ function Login() {
         {
           method: "POST",
           body: formData,
-        }
+        },
       );
 
       if (!response.ok) {
@@ -83,7 +104,13 @@ function Login() {
       // Set university based on username suffix
       setUniversityFromUsername(username);
 
-      navigate("/university-comparison");
+      // Check if user has a university extension
+      if (hasUniversityExtension(username)) {
+        navigate("/university-comparison");
+      } else {
+        // Users without extension go to dashboard
+        navigate("/dashboard");
+      }
     } catch (error) {
       alert("Login failed: " + error.message);
     }
