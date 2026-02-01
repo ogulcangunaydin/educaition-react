@@ -76,10 +76,8 @@ const DissonanceTest = () => {
   const [participant, setParticipant] = useState(null);
   const [showFakeError, setShowFakeError] = useState(false);
 
-  const [comfortQuestionFirstAnswer, setComfortQuestionFirstAnswer] =
-    useState(0);
-  const [comfortQuestionSecondAnswer, setComfortQuestionSecondAnswer] =
-    useState(0);
+  const [comfortQuestionFirstAnswer, setComfortQuestionFirstAnswer] = useState(0);
+  const [comfortQuestionSecondAnswer, setComfortQuestionSecondAnswer] = useState(0);
   const [fareQuestionFirstAnswer, setFareQuestionFirstAnswer] = useState(0);
   const [fareQuestionSecondAnswer, setFareQuestionSecondAnswer] = useState(0);
 
@@ -96,9 +94,7 @@ const DissonanceTest = () => {
 
   useEffect(() => {
     if (step === 4) {
-      const comfortAvg = getRandomAverage(
-        parseInt(comfortQuestionFirstAnswer, 10)
-      );
+      const comfortAvg = getRandomAverage(parseInt(comfortQuestionFirstAnswer, 10));
       const fareAvg = getRandomAverage(parseInt(fareQuestionFirstAnswer, 10));
       setComfortQuestionAverage(comfortAvg);
       setFareQuestionAverage(fareAvg);
@@ -192,19 +188,10 @@ const DissonanceTest = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            comfort_question_second_answer: parseInt(
-              comfortQuestionSecondAnswer,
-              10
-            ),
+            comfort_question_second_answer: parseInt(comfortQuestionSecondAnswer, 10),
             fare_question_second_answer: parseInt(fareQuestionSecondAnswer, 10),
-            comfort_question_displayed_average: parseFloat(
-              comfortQuestionAverage,
-              10
-            ),
-            fare_question_displayed_average: parseFloat(
-              fareQuestionAverage,
-              10
-            ),
+            comfort_question_displayed_average: parseFloat(comfortQuestionAverage, 10),
+            fare_question_displayed_average: parseFloat(fareQuestionAverage, 10),
           }),
         }
       );
@@ -246,8 +233,7 @@ const DissonanceTest = () => {
       10: [4, 5, 6, 7],
     };
 
-    const randomValue =
-      ranges[answer][Math.floor(Math.random() * ranges[answer].length)];
+    const randomValue = ranges[answer][Math.floor(Math.random() * ranges[answer].length)];
     const randomDigit = (Math.random() * 0.49 + 0.51).toFixed(2).slice(2);
     return `${randomValue}.${randomDigit}`;
   };
@@ -276,30 +262,22 @@ const DissonanceTest = () => {
                     }}
                   />
                   <Typography variant="h6" gutterBottom>
-                    Kariyer yolculuğunuz için eğlenceli bir keşfe çıkın!
-                    Yaşınız, kişilik özellikleriniz ve burcunuzdan yola çıkarak,
-                    size en uygun meslekler üzerine beyin fırtınası yapacak,
-                    keyifli bir plan oluşturacağız! Unutmayın, sonuçlar ilham
-                    verici ancak iddialı değil!
+                    Kariyer yolculuğunuz için eğlenceli bir keşfe çıkın! Yaşınız, kişilik
+                    özellikleriniz ve burcunuzdan yola çıkarak, size en uygun meslekler üzerine
+                    beyin fırtınası yapacak, keyifli bir plan oluşturacağız! Unutmayın, sonuçlar
+                    ilham verici ancak iddialı değil!
                   </Typography>
                 </Box>
                 <Typography variant="h6">
                   Sizce İstanbul'daki taksi sorunu ne kadar önemli?
                 </Typography>
-                <RadioGroup
-                  row
-                  value={sentiment}
-                  onChange={(e) => setSentiment(e.target.value)}
-                >
+                <RadioGroup row value={sentiment} onChange={(e) => setSentiment(e.target.value)}>
                   {[...Array(10).keys()].map((num) => (
                     <FormControlLabel
                       key={num + 1}
                       value={(num + 1).toString()}
                       control={
-                        <Radio
-                          icon={sentimentIcons[num]}
-                          checkedIcon={sentimentIcons[num]}
-                        />
+                        <Radio icon={sentimentIcons[num]} checkedIcon={sentimentIcons[num]} />
                       }
                       label={num + 1}
                     />
@@ -338,11 +316,7 @@ const DissonanceTest = () => {
                 />
 
                 <Typography variant="h6">Cinsiyetiniz:</Typography>
-                <TextField
-                  fullWidth
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                />
+                <TextField fullWidth value={gender} onChange={(e) => setGender(e.target.value)} />
 
                 <Typography variant="h6">Eğitim durumunuz:</Typography>
                 <FormControl fullWidth>
@@ -473,9 +447,7 @@ const DissonanceTest = () => {
                 <Typography variant="h6">{TAXI_COMFORT_QUESTION}</Typography>
                 <Slider
                   value={comfortQuestionFirstAnswer}
-                  onChange={(e, newValue) =>
-                    setComfortQuestionFirstAnswer(Number(newValue))
-                  }
+                  onChange={(e, newValue) => setComfortQuestionFirstAnswer(Number(newValue))}
                   aria-labelledby="comfort-question-slider"
                   valueLabelDisplay="auto"
                   step={1}
@@ -486,9 +458,7 @@ const DissonanceTest = () => {
                 <Typography variant="h6">{TAXI_FARES_QUESTION}</Typography>
                 <Slider
                   value={fareQuestionFirstAnswer}
-                  onChange={(e, newValue) =>
-                    setFareQuestionFirstAnswer(Number(newValue))
-                  }
+                  onChange={(e, newValue) => setFareQuestionFirstAnswer(Number(newValue))}
                   aria-labelledby="fare-question-slider"
                   valueLabelDisplay="auto"
                   step={1}
@@ -501,11 +471,7 @@ const DissonanceTest = () => {
                     type="submit"
                     variant="contained"
                     color="primary"
-                    disabled={
-                      loading ||
-                      !comfortQuestionFirstAnswer ||
-                      !fareQuestionFirstAnswer
-                    }
+                    disabled={loading || !comfortQuestionFirstAnswer || !fareQuestionFirstAnswer}
                   >
                     Kaydet
                   </Button>
@@ -516,29 +482,15 @@ const DissonanceTest = () => {
             {step === 4 && (
               <>
                 <Box textAlign="center" mt={4}>
-                  <Typography variant="h6">
-                    Katılımınız için teşekkür ederiz!
-                  </Typography>
+                  <Typography variant="h6">Katılımınız için teşekkür ederiz!</Typography>
                   <Box mt={2} mb={2}>
-                    <Typography
-                      variant="h4"
-                      color="primary"
-                      style={{ fontWeight: "bold" }}
-                    >
+                    <Typography variant="h4" color="primary" style={{ fontWeight: "bold" }}>
                       Cevap ortalamaları:
                     </Typography>
-                    <Typography
-                      variant="h5"
-                      color="primary"
-                      style={{ fontWeight: "bold" }}
-                    >
+                    <Typography variant="h5" color="primary" style={{ fontWeight: "bold" }}>
                       Taksi Hizmeti Konforu: {comfortQuestionAverage} (102 oy)
                     </Typography>
-                    <Typography
-                      variant="h5"
-                      color="primary"
-                      style={{ fontWeight: "bold" }}
-                    >
+                    <Typography variant="h5" color="primary" style={{ fontWeight: "bold" }}>
                       Taksi Ücret Dengesi: {fareQuestionAverage} (102 oy)
                     </Typography>
                   </Box>
@@ -562,23 +514,15 @@ const DissonanceTest = () => {
                         marginBottom: "20px",
                       }}
                     />
-                    <Typography variant="h6">
-                      {TAXI_COMFORT_QUESTION}
-                    </Typography>
+                    <Typography variant="h6">{TAXI_COMFORT_QUESTION}</Typography>
                     <Box textAlign="center" mb={2}>
-                      <Typography
-                        variant="h5"
-                        color="primary"
-                        style={{ fontWeight: "bold" }}
-                      >
+                      <Typography variant="h5" color="primary" style={{ fontWeight: "bold" }}>
                         Ortalama: {comfortQuestionAverage} (102 oy)
                       </Typography>
                     </Box>
                     <Slider
                       value={comfortQuestionSecondAnswer}
-                      onChange={(e, newValue) =>
-                        setComfortQuestionSecondAnswer(Number(newValue))
-                      }
+                      onChange={(e, newValue) => setComfortQuestionSecondAnswer(Number(newValue))}
                       aria-labelledby="comfort-question-second-slider"
                       valueLabelDisplay="auto"
                       step={1}
@@ -592,19 +536,13 @@ const DissonanceTest = () => {
                     />
                     <Typography variant="h6">{TAXI_FARES_QUESTION}</Typography>
                     <Box textAlign="center" mb={2}>
-                      <Typography
-                        variant="h5"
-                        color="primary"
-                        style={{ fontWeight: "bold" }}
-                      >
+                      <Typography variant="h5" color="primary" style={{ fontWeight: "bold" }}>
                         Ortalama: {fareQuestionAverage} (102 oy)
                       </Typography>
                     </Box>
                     <Slider
                       value={fareQuestionSecondAnswer}
-                      onChange={(e, newValue) =>
-                        setFareQuestionSecondAnswer(Number(newValue))
-                      }
+                      onChange={(e, newValue) => setFareQuestionSecondAnswer(Number(newValue))}
                       aria-labelledby="fare-question-second-slider"
                       valueLabelDisplay="auto"
                       step={1}
@@ -621,10 +559,7 @@ const DissonanceTest = () => {
                         variant="contained"
                         color="primary"
                         onClick={handleSecondSubmit}
-                        disabled={
-                          !comfortQuestionSecondAnswer ||
-                          !fareQuestionSecondAnswer
-                        }
+                        disabled={!comfortQuestionSecondAnswer || !fareQuestionSecondAnswer}
                       >
                         Submit
                       </Button>
@@ -645,8 +580,7 @@ const DissonanceTest = () => {
                     </Box>
                     <Box mt={4}>
                       <Typography variant="h5" color="textPrimary">
-                        Server ilk sorunuzun cevabını kaydedemedi. Tekrar
-                        cevaplandırabilir misiniz?
+                        Server ilk sorunuzun cevabını kaydedemedi. Tekrar cevaplandırabilir misiniz?
                       </Typography>
                     </Box>
                   </>
@@ -656,16 +590,12 @@ const DissonanceTest = () => {
 
             {step === 6 && (
               <>
-                <Typography variant="h6">
-                  Cevaplarınız doğru şekilde kaydedildi.
-                </Typography>
+                <Typography variant="h6">Cevaplarınız doğru şekilde kaydedildi.</Typography>
                 <Box mt={2}>
                   <Button
                     variant="contained"
                     color="primary"
-                    onClick={() =>
-                      navigate(`/personalitytest/participant/${participant.id}`)
-                    }
+                    onClick={() => navigate(`/personalitytest/participant/${participant.id}`)}
                   >
                     Kişilik testini çözmek için tıklayın
                   </Button>

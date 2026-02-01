@@ -33,8 +33,7 @@ const varyingBarWidthPlugin = {
     const meta = chart.getDatasetMeta(datasetIndex);
     const dataset = chart.data.datasets[datasetIndex];
 
-    if (!meta.data || meta.data.length === 0 || !dataset || !dataset.capacities)
-      return;
+    if (!meta.data || meta.data.length === 0 || !dataset || !dataset.capacities) return;
 
     const capacities = dataset.capacities;
     const xScale = chart.scales.x;
@@ -80,14 +79,7 @@ const varyingBarWidthPlugin = {
   },
 };
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend
-);
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 const ComparisonChart = ({
   chartData,
@@ -105,9 +97,7 @@ const ComparisonChart = ({
   onSortChange,
 }) => {
   const { university } = useUniversity();
-  const [bufferStep, setBufferStep] = useState(
-    metric === "ranking" ? 25000 : 50
-  );
+  const [bufferStep, setBufferStep] = useState(metric === "ranking" ? 25000 : 50);
 
   // Update buffer step when metric changes
   React.useEffect(() => {
@@ -211,8 +201,7 @@ const ComparisonChart = ({
         const { ctx, chartArea } = chart;
         const index = context.dataIndex;
         const color = chartData.colors[index];
-        const fulfillmentRate =
-          chartData.dataPoints[index].fulfillmentRate || 100;
+        const fulfillmentRate = chartData.dataPoints[index].fulfillmentRate || 100;
         return createGradientBackground(ctx, chartArea, color, fulfillmentRate);
       },
       // Attach capacities to dataset to ensure access in plugin
@@ -389,9 +378,7 @@ const ComparisonChart = ({
       >
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <TextField
-            label={`Aralık Adımı (${
-              metric === "ranking" ? "Sıralama" : "Puan"
-            })`}
+            label={`Aralık Adımı (${metric === "ranking" ? "Sıralama" : "Puan"})`}
             type="number"
             value={bufferStep}
             onChange={(e) => setBufferStep(Number(e.target.value))}
@@ -446,16 +433,12 @@ const ComparisonChart = ({
               <Typography variant="body2" fontWeight="bold">
                 Mevcut Aralık:
               </Typography>
-              <Typography
-                variant="body2"
-                color={isCustomRange ? "primary.main" : "text.primary"}
-              >
+              <Typography variant="body2" color={isCustomRange ? "primary.main" : "text.primary"}>
                 {formatValue(displayMin)} - {formatValue(displayMax)}
               </Typography>
               {isCustomRange && (
                 <Typography variant="caption" color="text.secondary">
-                  (Orijinal: {formatValue(originalMin)} -{" "}
-                  {formatValue(originalMax)})
+                  (Orijinal: {formatValue(originalMin)} - {formatValue(originalMax)})
                 </Typography>
               )}
             </Box>
@@ -480,11 +463,7 @@ const ComparisonChart = ({
         </Box>
         <FormControl size="small" sx={{ minWidth: 200 }}>
           <InputLabel>Sıralama</InputLabel>
-          <Select
-            value={sortBy}
-            label="Sıralama"
-            onChange={(e) => onSortChange(e.target.value)}
-          >
+          <Select value={sortBy} label="Sıralama" onChange={(e) => onSortChange(e.target.value)}>
             <MenuItem value="spread">Aralık Büyüklüğü</MenuItem>
             <MenuItem value="price">Ücret</MenuItem>
             <MenuItem value="fulfillment">Doluluk Oranı</MenuItem>
@@ -523,26 +502,16 @@ const ComparisonChart = ({
           <strong>Üniversite:</strong> {selectedProgram?.university}
         </Typography>
         <Typography variant="body2">
-          <strong>Program:</strong> {selectedProgram?.program}{" "}
-          {selectedProgram?.program_detail}
+          <strong>Program:</strong> {selectedProgram?.program} {selectedProgram?.program_detail}
         </Typography>
         <Typography variant="body2">
           <strong>Burs Türü:</strong> {selectedProgram?.scholarship}
         </Typography>
         {totalPrograms &&
-          totalPrograms >
-            chartData.dataPoints.reduce(
-              (sum, d) => sum + d.programs.length,
-              0
-            ) && (
+          totalPrograms > chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0) && (
             <Typography variant="body2" color="warning.main">
-              <strong>Toplam Eşleşen:</strong> {totalPrograms} program (Grafikte
-              ilk{" "}
-              {chartData.dataPoints.reduce(
-                (sum, d) => sum + d.programs.length,
-                0
-              )}{" "}
-              gösteriliyor)
+              <strong>Toplam Eşleşen:</strong> {totalPrograms} program (Grafikte ilk{" "}
+              {chartData.dataPoints.reduce((sum, d) => sum + d.programs.length, 0)} gösteriliyor)
             </Typography>
           )}
       </Box>

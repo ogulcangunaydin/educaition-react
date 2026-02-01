@@ -9,12 +9,7 @@
  * Converts "358,17297" to 358.17297
  */
 export const parseScore = (scoreStr) => {
-  if (
-    !scoreStr ||
-    scoreStr === "" ||
-    scoreStr === "Dolmadı" ||
-    scoreStr === "0"
-  ) {
+  if (!scoreStr || scoreStr === "" || scoreStr === "Dolmadı" || scoreStr === "0") {
     return null;
   }
   // Remove quotes and convert comma to dot for decimal
@@ -29,12 +24,7 @@ export const parseScore = (scoreStr) => {
  * Converts "92.887" to 92887 and "1.383.482" to 1383482
  */
 export const parseRanking = (rankingStr) => {
-  if (
-    !rankingStr ||
-    rankingStr === "" ||
-    rankingStr === "Dolmadı" ||
-    rankingStr === "0"
-  ) {
+  if (!rankingStr || rankingStr === "" || rankingStr === "Dolmadı" || rankingStr === "0") {
     return null;
   }
   // Remove all dots (thousand separators)

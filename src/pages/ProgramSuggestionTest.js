@@ -143,7 +143,7 @@ function ProgramSuggestionTest() {
     const loadUniversities = async () => {
       try {
         const response = await fetch(
-          "/assets/data_2025/lise_by_university/_university_mapping.json",
+          "/assets/data_2025/lise_by_university/_university_mapping.json"
         );
         const data = await response.json();
         const uniList = Object.keys(data).map((name) => ({
@@ -162,9 +162,7 @@ function ProgramSuggestionTest() {
   useEffect(() => {
     const loadScoreDistribution = async () => {
       try {
-        const response = await fetch(
-          "/assets/data_2025/score_ranking_distribution.json",
-        );
+        const response = await fetch("/assets/data_2025/score_ranking_distribution.json");
         const data = await response.json();
         setScoreDistribution(data);
       } catch (error) {
@@ -195,7 +193,7 @@ function ProgramSuggestionTest() {
     const fetchExistingStudent = async (existingStudentId) => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`,
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`
         );
 
         if (response.ok) {
@@ -225,27 +223,20 @@ function ProgramSuggestionTest() {
             averageGrade: data.average_grade || "",
             area: data.area || "",
             wantsForeignLanguage: data.wants_foreign_language || false,
-            expectedScoreRange: [
-              data.expected_score_min || 200,
-              data.expected_score_max || 400,
-            ],
+            expectedScoreRange: [data.expected_score_min || 200, data.expected_score_max || 400],
             expectedDistribution: data.expected_score_distribution || "medium",
             alternativeArea: data.alternative_area || "",
             alternativeScoreRange: [
               data.alternative_score_min || 200,
               data.alternative_score_max || 400,
             ],
-            alternativeDistribution:
-              data.alternative_score_distribution || "medium",
+            alternativeDistribution: data.alternative_score_distribution || "medium",
             preferredLanguage: data.preferred_language || "",
             desiredCities: data.desired_cities || [],
           }));
 
           // Store university names to be resolved once universities are loaded
-          if (
-            data.desired_universities &&
-            data.desired_universities.length > 0
-          ) {
+          if (data.desired_universities && data.desired_universities.length > 0) {
             setPendingUniversityNames(data.desired_universities);
           }
 
@@ -254,10 +245,7 @@ function ProgramSuggestionTest() {
             setRiasecAnswers(data.riasec_answers);
             // Find where they left off
             const answeredCount = Object.keys(data.riasec_answers).length;
-            if (
-              answeredCount > 0 &&
-              answeredCount < riasecQuestionsList.length
-            ) {
+            if (answeredCount > 0 && answeredCount < riasecQuestionsList.length) {
               setCurrentQuestionIndex(answeredCount);
             }
           }
@@ -300,7 +288,7 @@ function ProgramSuggestionTest() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ high_school_room_id: parseInt(roomId) }),
-          },
+          }
         );
 
         if (response.ok) {
@@ -309,9 +297,7 @@ function ProgramSuggestionTest() {
           // Save to localStorage for future visits
           localStorage.setItem(storageKey, data.id.toString());
         } else {
-          setError(
-            "Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.",
-          );
+          setError("Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.");
         }
       } catch (error) {
         console.error("Error creating student:", error);
@@ -388,7 +374,7 @@ function ProgramSuggestionTest() {
               birth_year: parseInt(formData.birthYear),
               gender: formData.gender,
             }),
-          },
+          }
         );
       } else if (activeStep === 1) {
         // Save Step 2
@@ -400,13 +386,11 @@ function ProgramSuggestionTest() {
             body: JSON.stringify({
               class_year: formData.classYear,
               will_take_exam: formData.willTakeExam,
-              average_grade: formData.averageGrade
-                ? parseFloat(formData.averageGrade)
-                : null,
+              average_grade: formData.averageGrade ? parseFloat(formData.averageGrade) : null,
               area: formData.area,
               wants_foreign_language: formData.wantsForeignLanguage,
             }),
-          },
+          }
         );
       } else if (activeStep === 2) {
         // Save Step 3
@@ -430,7 +414,7 @@ function ProgramSuggestionTest() {
                 ? formData.alternativeDistribution
                 : null,
             }),
-          },
+          }
         );
       } else if (activeStep === 3) {
         // Save Step 4
@@ -452,7 +436,7 @@ function ProgramSuggestionTest() {
               desired_universities: uniqueUniversities,
               desired_cities: formData.desiredCities,
             }),
-          },
+          }
         );
       }
 
@@ -486,7 +470,7 @@ function ProgramSuggestionTest() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ riasec_answers: newAnswers }),
-          },
+          }
         );
 
         if (response.ok) {
@@ -535,9 +519,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Ad Soyad</FormLabel>
               <TextField
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Adınızı ve soyadınızı girin"
                 fullWidth
               />
@@ -548,9 +530,7 @@ function ProgramSuggestionTest() {
               <Autocomplete
                 options={BIRTH_YEARS}
                 value={formData.birthYear || null}
-                onChange={(e, value) =>
-                  setFormData({ ...formData, birthYear: value })
-                }
+                onChange={(e, value) => setFormData({ ...formData, birthYear: value })}
                 renderInput={(params) => (
                   <TextField {...params} placeholder="Doğum yılınızı seçin" />
                 )}
@@ -562,20 +542,10 @@ function ProgramSuggestionTest() {
               <FormLabel>Cinsiyet</FormLabel>
               <RadioGroup
                 value={formData.gender}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
               >
-                <FormControlLabel
-                  value="erkek"
-                  control={<Radio />}
-                  label="Erkek"
-                />
-                <FormControlLabel
-                  value="kadın"
-                  control={<Radio />}
-                  label="Kadın"
-                />
+                <FormControlLabel value="erkek" control={<Radio />} label="Erkek" />
+                <FormControlLabel value="kadın" control={<Radio />} label="Kadın" />
                 <FormControlLabel
                   value="belirtilmedi"
                   control={<Radio />}
@@ -595,9 +565,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Sınıf</FormLabel>
               <RadioGroup
                 value={formData.classYear}
-                onChange={(e) =>
-                  setFormData({ ...formData, classYear: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
               >
                 {CLASS_YEARS.map((cy) => (
                   <FormControlLabel
@@ -621,16 +589,8 @@ function ProgramSuggestionTest() {
                   })
                 }
               >
-                <FormControlLabel
-                  value="yes"
-                  control={<Radio />}
-                  label="Evet"
-                />
-                <FormControlLabel
-                  value="no"
-                  control={<Radio />}
-                  label="Hayır"
-                />
+                <FormControlLabel value="yes" control={<Radio />} label="Evet" />
+                <FormControlLabel value="no" control={<Radio />} label="Hayır" />
               </RadioGroup>
             </FormControl>
 
@@ -640,10 +600,7 @@ function ProgramSuggestionTest() {
               value={formData.averageGrade}
               onChange={(e) => {
                 const value = e.target.value;
-                if (
-                  value === "" ||
-                  (Number(value) >= 0 && Number(value) <= 100)
-                ) {
+                if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
                   setFormData({ ...formData, averageGrade: value });
                 }
               }}
@@ -655,9 +612,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Alan Seçimi</FormLabel>
               <RadioGroup
                 value={formData.area}
-                onChange={(e) =>
-                  setFormData({ ...formData, area: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, area: e.target.value })}
               >
                 {AREAS.map((area) => (
                   <FormControlLabel
@@ -675,16 +630,14 @@ function ProgramSuggestionTest() {
       case 2:
         const scoreBounds = getScoreBounds(formData.area);
         const midScore = Math.round(
-          (formData.expectedScoreRange[0] + formData.expectedScoreRange[1]) / 2,
+          (formData.expectedScoreRange[0] + formData.expectedScoreRange[1]) / 2
         );
         const estimatedRanking = estimateRanking(midScore, formData.area);
         const altScoreBounds = formData.alternativeArea
           ? getScoreBounds(formData.alternativeArea)
           : { min: 100, max: 560 };
         const altMidScore = Math.round(
-          (formData.alternativeScoreRange[0] +
-            formData.alternativeScoreRange[1]) /
-            2,
+          (formData.alternativeScoreRange[0] + formData.alternativeScoreRange[1]) / 2
         );
         const altEstimatedRanking = formData.alternativeArea
           ? estimateRanking(altMidScore, formData.alternativeArea)
@@ -695,14 +648,10 @@ function ProgramSuggestionTest() {
             <Typography variant="h6">1.3 Puan Beklentisi</Typography>
 
             <Box>
-              <FormLabel>
-                Beklediğiniz Puan Aralığı ({formData.area.toUpperCase()})
-              </FormLabel>
+              <FormLabel>Beklediğiniz Puan Aralığı ({formData.area.toUpperCase()})</FormLabel>
               <Slider
                 value={formData.expectedScoreRange}
-                onChange={(e, value) =>
-                  setFormData({ ...formData, expectedScoreRange: value })
-                }
+                onChange={(e, value) => setFormData({ ...formData, expectedScoreRange: value })}
                 min={scoreBounds.min}
                 max={scoreBounds.max}
                 step={5}
@@ -711,9 +660,7 @@ function ProgramSuggestionTest() {
                   { value: scoreBounds.min, label: String(scoreBounds.min) },
                   {
                     value: Math.round((scoreBounds.min + scoreBounds.max) / 2),
-                    label: String(
-                      Math.round((scoreBounds.min + scoreBounds.max) / 2),
-                    ),
+                    label: String(Math.round((scoreBounds.min + scoreBounds.max) / 2)),
                   },
                   { value: scoreBounds.max, label: String(scoreBounds.max) },
                 ]}
@@ -739,21 +686,17 @@ function ProgramSuggestionTest() {
                   {formatRanking(estimatedRanking)}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan
-                  aralığının ortasına denk gelen tahmini sıralamadır.
+                  Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan aralığının ortasına denk
+                  gelen tahmini sıralamadır.
                 </Typography>
               </Paper>
             </Box>
 
             <FormControl component="fieldset">
-              <FormLabel>
-                Alternatif bir alanda tercih yapmak ister misiniz?
-              </FormLabel>
+              <FormLabel>Alternatif bir alanda tercih yapmak ister misiniz?</FormLabel>
               <RadioGroup
                 value={formData.alternativeArea}
-                onChange={(e) =>
-                  setFormData({ ...formData, alternativeArea: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, alternativeArea: e.target.value })}
               >
                 <FormControlLabel value="" control={<Radio />} label="Hayır" />
                 {AREAS.filter((a) => a.value !== formData.area).map((area) => (
@@ -770,8 +713,7 @@ function ProgramSuggestionTest() {
             {formData.alternativeArea && (
               <Box>
                 <FormLabel>
-                  Alternatif Alan Puan Aralığı (
-                  {formData.alternativeArea.toUpperCase()})
+                  Alternatif Alan Puan Aralığı ({formData.alternativeArea.toUpperCase()})
                 </FormLabel>
                 <Slider
                   value={formData.alternativeScoreRange}
@@ -788,14 +730,8 @@ function ProgramSuggestionTest() {
                       label: String(altScoreBounds.min),
                     },
                     {
-                      value: Math.round(
-                        (altScoreBounds.min + altScoreBounds.max) / 2,
-                      ),
-                      label: String(
-                        Math.round(
-                          (altScoreBounds.min + altScoreBounds.max) / 2,
-                        ),
-                      ),
+                      value: Math.round((altScoreBounds.min + altScoreBounds.max) / 2),
+                      label: String(Math.round((altScoreBounds.min + altScoreBounds.max) / 2)),
                     },
                     {
                       value: altScoreBounds.max,
@@ -817,23 +753,15 @@ function ProgramSuggestionTest() {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
                     Tahmini Sıralama (Orta puan: {altMidScore})
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color="secondary.main"
-                    fontWeight="bold"
-                  >
+                  <Typography variant="h5" color="secondary.main" fontWeight="bold">
                     {formatRanking(altEstimatedRanking)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan
-                    aralığının ortasına denk gelen tahmini sıralamadır.
+                    Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan aralığının ortasına
+                    denk gelen tahmini sıralamadır.
                   </Typography>
                 </Paper>
               </Box>
@@ -873,9 +801,7 @@ function ProgramSuggestionTest() {
               options={universities}
               getOptionLabel={(option) => option.name}
               value={formData.desiredUniversities}
-              onChange={(e, value) =>
-                setFormData({ ...formData, desiredUniversities: value })
-              }
+              onChange={(e, value) => setFormData({ ...formData, desiredUniversities: value })}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -886,9 +812,7 @@ function ProgramSuggestionTest() {
               filterOptions={(options, { inputValue }) => {
                 const searchTerm = inputValue.toLocaleLowerCase("tr-TR");
                 return options
-                  .filter((option) =>
-                    option.name.toLocaleLowerCase("tr-TR").includes(searchTerm),
-                  )
+                  .filter((option) => option.name.toLocaleLowerCase("tr-TR").includes(searchTerm))
                   .slice(0, 30);
               }}
             />
@@ -906,17 +830,12 @@ function ProgramSuggestionTest() {
                           if (e.target.checked) {
                             setFormData({
                               ...formData,
-                              desiredCities: [
-                                ...formData.desiredCities,
-                                city.value,
-                              ],
+                              desiredCities: [...formData.desiredCities, city.value],
                             });
                           } else {
                             setFormData({
                               ...formData,
-                              desiredCities: formData.desiredCities.filter(
-                                (c) => c !== city.value,
-                              ),
+                              desiredCities: formData.desiredCities.filter((c) => c !== city.value),
                             });
                           }
                         }}
@@ -932,8 +851,7 @@ function ProgramSuggestionTest() {
 
       case 4:
         const currentQuestion = riasecQuestionsList[currentQuestionIndex];
-        const progress =
-          ((currentQuestionIndex + 1) / riasecQuestionsList.length) * 100;
+        const progress = ((currentQuestionIndex + 1) / riasecQuestionsList.length) * 100;
 
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -952,11 +870,7 @@ function ProgramSuggestionTest() {
 
             <Card sx={{ p: 3 }}>
               <CardContent>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  sx={{ textAlign: "center" }}
-                >
+                <Typography variant="h5" gutterBottom sx={{ textAlign: "center" }}>
                   {currentQuestion.text}
                 </Typography>
 
@@ -986,9 +900,7 @@ function ProgramSuggestionTest() {
                     <Button
                       key={option.value}
                       variant="outlined"
-                      onClick={() =>
-                        handleRiasecAnswer(currentQuestion.id, option.value)
-                      }
+                      onClick={() => handleRiasecAnswer(currentQuestion.id, option.value)}
                       sx={{
                         py: 1.5,
                         borderColor: option.color,
@@ -1040,11 +952,7 @@ function ProgramSuggestionTest() {
       }}
     >
       <Paper sx={{ maxWidth: 700, margin: "0 auto", p: 4 }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ textAlign: "center", mb: 4 }}
-        >
+        <Typography variant="h4" gutterBottom sx={{ textAlign: "center", mb: 4 }}>
           Program Öneri Testi
         </Typography>
 
@@ -1071,17 +979,11 @@ function ProgramSuggestionTest() {
             {renderStep()}
 
             {activeStep < 4 && (
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
-              >
+              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
                 <Button disabled={activeStep === 0} onClick={handleBack}>
                   Geri
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  disabled={!isStepValid()}
-                >
+                <Button variant="contained" onClick={handleNext} disabled={!isStepValid()}>
                   {activeStep === 3 ? "RIASEC Testine Başla" : "Devam Et"}
                 </Button>
               </Box>

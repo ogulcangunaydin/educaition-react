@@ -28,9 +28,7 @@ const PersonalityTest = () => {
   const [answers, setAnswers] = useState([]);
   const [playerId, setPlayerId] = useState(null);
   const { type, id } = useParams(); // Get type and id from params
-  const [isPlayerInfoSaved, setIsPlayerInfoSaved] = useState(
-    type === "participant"
-  ); // Set isPlayerInfoSaved to true if type is participant
+  const [isPlayerInfoSaved, setIsPlayerInfoSaved] = useState(type === "participant"); // Set isPlayerInfoSaved to true if type is participant
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [loading, setLoading] = useState(false); // Loading state for form submission
 
@@ -96,9 +94,7 @@ const PersonalityTest = () => {
         }
       );
       if (!createPlayerResponse.ok) {
-        throw new Error(
-          "Player Name is already taken. Please choose a different name."
-        );
+        throw new Error("Player Name is already taken. Please choose a different name.");
       }
 
       const data = await createPlayerResponse.json();
@@ -178,28 +174,14 @@ const PersonalityTest = () => {
                 justifyContent="center"
                 marginBottom={isSmallScreen ? "10px" : "20px"}
               >
-                <Typography
-                  variant={isSmallScreen ? "h6" : "h5"}
-                  component="h2"
-                >
+                <Typography variant={isSmallScreen ? "h6" : "h5"} component="h2">
                   {questions[currentQuestionIndex]}
                 </Typography>
               </Box>
-              <Grid
-                container
-                alignItems="center"
-                spacing={isSmallScreen ? 1 : 2}
-              >
-                <Grid
-                  item
-                  xs={12}
-                  sm={2}
-                  style={{ display: "flex", justifyContent: "flex-start" }}
-                >
+              <Grid container alignItems="center" spacing={isSmallScreen ? 1 : 2}>
+                <Grid item xs={12} sm={2} style={{ display: "flex", justifyContent: "flex-start" }}>
                   <Typography align="left">
-                    {type === "room"
-                      ? "Strongly Disagree"
-                      : "Tamamen Katılmıyorum"}
+                    {type === "room" ? "Strongly Disagree" : "Tamamen Katılmıyorum"}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sm={8}>
@@ -210,10 +192,7 @@ const PersonalityTest = () => {
                       name={`question-${currentQuestionIndex}`}
                       value={answers[currentQuestionIndex] || ""}
                       onChange={(event) =>
-                        handleOptionChange(
-                          currentQuestionIndex,
-                          event.target.value
-                        )
+                        handleOptionChange(currentQuestionIndex, event.target.value)
                       }
                       style={{
                         justifyContent: "center",
@@ -232,12 +211,7 @@ const PersonalityTest = () => {
                     </RadioGroup>
                   </Box>
                 </Grid>
-                <Grid
-                  item
-                  xs={12}
-                  sm={2}
-                  style={{ display: "flex", justifyContent: "flex-end" }}
-                >
+                <Grid item xs={12} sm={2} style={{ display: "flex", justifyContent: "flex-end" }}>
                   <Typography align="right">
                     {type === "room" ? "Strongly Agree" : "Tamamen Katılıyorum"}
                   </Typography>
@@ -264,11 +238,7 @@ const PersonalityTest = () => {
                     </Button>
                   )
                 : answers[currentQuestionIndex] && (
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={handleNext}
-                    >
+                    <Button variant="contained" color="primary" onClick={handleNext}>
                       Sonraki
                     </Button>
                   )}

@@ -5,7 +5,11 @@
     { "id": 26, "text": "Ev aletlerini tamir etmek", "type": "R" },
     { "id": 49, "text": "Bir balık üretim tesisinde balık yetiştirmek", "type": "R" },
     { "id": 61, "text": "Elektronik parçaları birleştirmek", "type": "R" },
-    { "id": 62, "text": "Ofislere ve evlere paket teslim etmek için kamyon kullanmak", "type": "R" },
+    {
+      "id": 62,
+      "text": "Ofislere ve evlere paket teslim etmek için kamyon kullanmak",
+      "type": "R"
+    },
     { "id": 146, "text": "Sevkiyat öncesinde parçaların kalitesini test etmek", "type": "R" },
     { "id": 158, "text": "Kilitleri tamir etmek ve monte etmek", "type": "R" },
     { "id": 169, "text": "Ürün üretmek için makineleri kurmak ve çalıştırmak", "type": "R" },
@@ -18,7 +22,11 @@
     { "id": 100, "text": "Gezegenlerin hareketlerini incelemek", "type": "I" },
     { "id": 111, "text": "Mikroskop kullanarak kan örneklerini incelemek", "type": "I" },
     { "id": 112, "text": "Bir yangının nedenini araştırmak", "type": "I" },
-    { "id": 135, "text": "Hava durumunu daha iyi tahmin etmenin bir yolunu geliştirmek", "type": "I" },
+    {
+      "id": 135,
+      "text": "Hava durumunu daha iyi tahmin etmenin bir yolunu geliştirmek",
+      "type": "I"
+    },
     { "id": 136, "text": "Bir biyoloji laboratuvarında çalışmak", "type": "I" },
     { "id": 147, "text": "Şeker yerine kullanılabilecek bir alternatif icat etmek", "type": "I" },
     { "id": 171, "text": "Hastalıkları tespit etmek için laboratuvar testleri yapmak", "type": "I" }
@@ -37,7 +45,11 @@
   ],
   "social": [
     { "id": 7, "text": "Bir kişiye egzersiz programı öğretmek", "type": "S" },
-    { "id": 20, "text": "Kişisel veya duygusal sorunları olan insanlara yardımcı olmak", "type": "S" },
+    {
+      "id": 20,
+      "text": "Kişisel veya duygusal sorunları olan insanlara yardımcı olmak",
+      "type": "S"
+    },
     { "id": 44, "text": "İnsanlara kariyer danışmanlığı yapmak", "type": "S" },
     { "id": 67, "text": "Rehabilitasyon terapisi uygulamak", "type": "S" },
     { "id": 68, "text": "Bir sivil toplum kuruluşunda gönüllü çalışmak", "type": "S" },

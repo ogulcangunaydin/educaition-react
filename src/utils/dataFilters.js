@@ -12,8 +12,7 @@ export const getUniversityProgramsForYear = (data, year, universityName) => {
   if (!data || !year || !universityName) return [];
 
   return data.filter(
-    (program) =>
-      program[`has_${year}`] === true && program.university === universityName
+    (program) => program[`has_${year}`] === true && program.university === universityName
   );
 };
 
@@ -50,10 +49,8 @@ export const findSimilarPrograms = (
   const maxColumn = metric === "ranking" ? `tbs_${year}` : `tavan_${year}`;
 
   // Get min and max values from selected program or use custom range
-  const selectedMin =
-    customRangeMin !== null ? customRangeMin : selectedProgram[minColumn];
-  const selectedMax =
-    customRangeMax !== null ? customRangeMax : selectedProgram[maxColumn];
+  const selectedMin = customRangeMin !== null ? customRangeMin : selectedProgram[minColumn];
+  const selectedMax = customRangeMax !== null ? customRangeMax : selectedProgram[maxColumn];
 
   if (selectedMin === null || selectedMax === null) {
     return [];
@@ -175,8 +172,8 @@ export const prepareChartData = (
       year === "2024"
         ? price.discounted_price_2024
         : year === "2025"
-        ? price.discounted_price_2025
-        : null;
+          ? price.discounted_price_2025
+          : null;
     if (yearPrice !== null && !isNaN(yearPrice)) {
       priceMap.set(key, yearPrice);
     }
@@ -243,9 +240,7 @@ export const prepareChartData = (
     .filter((item) => item !== null);
 
   // Calculate the overall data range to determine appropriate minimum bar size
-  const allSpreads = departmentItems
-    .map((item) => item.spread)
-    .filter((s) => s > 0);
+  const allSpreads = departmentItems.map((item) => item.spread).filter((s) => s > 0);
   const maxSpread = Math.max(...allSpreads);
 
   // Set minimum visible bar size as 3% of the maximum spread (or at least 1)
@@ -262,8 +257,7 @@ export const prepareChartData = (
     // Calculate fulfillment rate
     const kontenjan = item.program[`kontenjan_${year}`];
     const yerlesen = item.program[`yerlesen_${year}`];
-    item.fulfillmentRate =
-      kontenjan && yerlesen ? (yerlesen / kontenjan) * 100 : 100;
+    item.fulfillmentRate = kontenjan && yerlesen ? (yerlesen / kontenjan) * 100 : 100;
 
     // Get price for sorting
     let yopKodu = item.program.yop_kodu;
@@ -282,10 +276,7 @@ export const prepareChartData = (
       scholarshipPct = 100;
     } else if (scholarship.includes("75")) {
       scholarshipPct = 75;
-    } else if (
-      scholarship.includes("50") ||
-      scholarship.includes("Yarım Burslu")
-    ) {
+    } else if (scholarship.includes("50") || scholarship.includes("Yarım Burslu")) {
       scholarshipPct = 50;
     } else if (scholarship.includes("25")) {
       scholarshipPct = 25;

@@ -26,9 +26,7 @@ const ProgramSelector = ({ programs, value, onChange, disabled = false }) => {
         value={value || ""}
         label={labelText}
         onChange={(e) => {
-          const selected = sortedPrograms.find(
-            (p) => p.yop_kodu === e.target.value
-          );
+          const selected = sortedPrograms.find((p) => p.yop_kodu === e.target.value);
           onChange(selected);
         }}
         disabled={disabled || !sortedPrograms || sortedPrograms.length === 0}

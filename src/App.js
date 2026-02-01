@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  Navigate,
-} from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import Playground from "./pages/PlayGround";
 import Login from "./pages/Login";
 import GameRoom from "./pages/GameRoom";
@@ -34,59 +29,25 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/rooms" element={<GameRoom />} />
         <Route path="/playground/:roomId" element={<Playground />} />
-        <Route
-          path="/tacticpreparation/:roomId"
-          element={<TacticPreparation />}
-        />
+        <Route path="/tacticpreparation/:roomId" element={<TacticPreparation />} />
         <Route path="/leaderboard/:sessionId" element={<Leaderboard />} />
-        <Route
-          path="/personalitytest/:type/:id"
-          element={<PersonalityTest />}
-        />
-        <Route
-          path="/dissonanceTestParticipantList"
-          element={<DissonanceTestParticipantList />}
-        />
-        <Route
-          path="/dissonanceTest/:currentUserId"
-          element={<DissonanceTest />}
-        />
-        <Route
-          path="/dissonanceTestResult/:participantId"
-          element={<DissonanceTestResult />}
-        />
-        <Route
-          path="/university-comparison"
-          element={<UniversityComparison />}
-        />
+        <Route path="/personalitytest/:type/:id" element={<PersonalityTest />} />
+        <Route path="/dissonanceTestParticipantList" element={<DissonanceTestParticipantList />} />
+        <Route path="/dissonanceTest/:currentUserId" element={<DissonanceTest />} />
+        <Route path="/dissonanceTestResult/:participantId" element={<DissonanceTestResult />} />
+        <Route path="/university-comparison" element={<UniversityComparison />} />
         <Route path="/highschool-analysis" element={<HighSchoolAnalysis />} />
         <Route path="/rival-analysis" element={<RivalAnalysis />} />
-        <Route
-          path="/program-rival-analysis"
-          element={<ProgramRivalAnalysis />}
-        />
+        <Route path="/program-rival-analysis" element={<ProgramRivalAnalysis />} />
         {/* High School Rooms - Program Suggestion System */}
         <Route path="/high-school-rooms" element={<HighSchoolRooms />} />
-        <Route
-          path="/high-school-room/:roomId"
-          element={<HighSchoolRoomDetail />}
-        />
-        <Route
-          path="/program-test/:roomId"
-          element={<ProgramSuggestionTest />}
-        />
-        <Route
-          path="/program-test-result/:studentId"
-          element={<ProgramTestResult />}
-        />
+        <Route path="/high-school-room/:roomId" element={<HighSchoolRoomDetail />} />
+        <Route path="/program-test/:roomId" element={<ProgramSuggestionTest />} />
+        <Route path="/program-test-result/:studentId" element={<ProgramTestResult />} />
         <Route
           path="/"
           element={
-            accessToken ? (
-              <Navigate to="/university-comparison" />
-            ) : (
-              <Navigate to="/login" />
-            )
+            accessToken ? <Navigate to="/university-comparison" /> : <Navigate to="/login" />
           }
         />
       </Routes>

@@ -36,12 +36,9 @@ const ProgramRivalAnalysis = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
-          {
-            method: "GET",
-          }
-        );
+        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
+          method: "GET",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -80,13 +77,10 @@ const ProgramRivalAnalysis = () => {
           fetch("/assets/data/all_universities_tercih_istatistikleri.csv"),
           fetch("/assets/data_2025/all_universities_tercih_istatistikleri.csv"),
           fetch("/assets/data/all_universities_tercih_kullanma_oranlari.csv"),
-          fetch(
-            "/assets/data_2025/all_universities_tercih_kullanma_oranlari.csv"
-          ),
+          fetch("/assets/data_2025/all_universities_tercih_kullanma_oranlari.csv"),
         ]);
 
-        if (!response1.ok && !response2.ok)
-          throw new Error("Failed to load rival data");
+        if (!response1.ok && !response2.ok) throw new Error("Failed to load rival data");
 
         const allLines = [];
 
@@ -157,11 +151,7 @@ const ProgramRivalAnalysis = () => {
 
               const key = `${normalizedYopKodu}_${scholarship_pct}`;
               const price =
-                selectedYear === "2024"
-                  ? price_2024
-                  : selectedYear === "2025"
-                  ? price_2025
-                  : null;
+                selectedYear === "2024" ? price_2024 : selectedYear === "2025" ? price_2025 : null;
               if (price !== null && !isNaN(price)) {
                 priceMap.set(key, price);
               }
@@ -185,25 +175,17 @@ const ProgramRivalAnalysis = () => {
                 selectedYear === "2022"
                   ? 0
                   : selectedYear === "2023"
-                  ? 1
-                  : selectedYear === "2024"
-                  ? 2
-                  : -1;
+                    ? 1
+                    : selectedYear === "2024"
+                      ? 2
+                      : -1;
               if (yearIndex >= 0) {
                 tercihIstatMap.set(yop_kodu, {
                   birKontenjanaTalip: parseTurkishDecimal(parts[1 + yearIndex]),
-                  ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(
-                    parts[4 + yearIndex]
-                  ),
-                  ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(
-                    parts[7 + yearIndex]
-                  ),
-                  ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(
-                    parts[10 + yearIndex]
-                  ),
-                  ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(
-                    parts[13 + yearIndex]
-                  ),
+                  ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(parts[4 + yearIndex]),
+                  ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(parts[7 + yearIndex]),
+                  ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(parts[10 + yearIndex]),
+                  ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(parts[13 + yearIndex]),
                 });
               }
             }
@@ -245,17 +227,15 @@ const ProgramRivalAnalysis = () => {
                 selectedYear === "2022"
                   ? 0
                   : selectedYear === "2023"
-                  ? 1
-                  : selectedYear === "2024"
-                  ? 2
-                  : -1;
+                    ? 1
+                    : selectedYear === "2024"
+                      ? 2
+                      : -1;
               if (yearIndex >= 0) {
                 tercihKullanmaMap.set(yop_kodu, {
                   kullanilanTercih: parseTurkishDecimal(parts[1 + yearIndex]),
                   bosBirakilanTercih: parseTurkishDecimal(parts[4 + yearIndex]),
-                  ortalamaKullanilanTercih: parseTurkishDecimal(
-                    parts[7 + yearIndex]
-                  ),
+                  ortalamaKullanilanTercih: parseTurkishDecimal(parts[7 + yearIndex]),
                 });
               }
             }
@@ -283,14 +263,8 @@ const ProgramRivalAnalysis = () => {
 
         console.log("[ProgramRivalAnalysis] Total CSV lines:", lines.length);
         console.log("[ProgramRivalAnalysis] Selected year:", selectedYear);
-        console.log(
-          "[ProgramRivalAnalysis] Selected programs:",
-          selectedPrograms.length
-        );
-        console.log(
-          "[ProgramRivalAnalysis] First selected program:",
-          selectedPrograms[0]
-        );
+        console.log("[ProgramRivalAnalysis] Selected programs:", selectedPrograms.length);
+        console.log("[ProgramRivalAnalysis] First selected program:", selectedPrograms[0]);
 
         // Parse CSV data into a map for quick lookup by yop_kodu
         const csvDataMap = new Map();
@@ -311,10 +285,7 @@ const ProgramRivalAnalysis = () => {
           }
         }
 
-        console.log(
-          "[ProgramRivalAnalysis] CSV data map size:",
-          csvDataMap.size
-        );
+        console.log("[ProgramRivalAnalysis] CSV data map size:", csvDataMap.size);
         console.log(
           "[ProgramRivalAnalysis] First program yop_kodu:",
           selectedPrograms[0]?.yop_kodu
@@ -358,13 +329,8 @@ const ProgramRivalAnalysis = () => {
           }
         }
         const ownUniversityAvgPrice =
-          ownUniversityPriceCount > 0
-            ? ownUniversityTotalPrice / ownUniversityPriceCount
-            : null;
-        console.log(
-          "[ProgramRivalAnalysis] Own university avg price:",
-          ownUniversityAvgPrice
-        );
+          ownUniversityPriceCount > 0 ? ownUniversityTotalPrice / ownUniversityPriceCount : null;
+        console.log("[ProgramRivalAnalysis] Own university avg price:", ownUniversityAvgPrice);
 
         // Create a row for each selected program using yop_kodu as primary key
         const programData = [];
@@ -398,8 +364,7 @@ const ProgramRivalAnalysis = () => {
             // Get kontenjan and yerlesen for occupancy rate
             const kontenjan = program[`kontenjan_${selectedYear}`] || 0;
             const yerlesen = program[`yerlesen_${selectedYear}`] || 0;
-            const occupancyRate =
-              kontenjan > 0 ? (yerlesen / kontenjan) * 100 : null;
+            const occupancyRate = kontenjan > 0 ? (yerlesen / kontenjan) * 100 : null;
 
             // Calculate price_index
             const isOwnUniversity = isOwnUniversityName(program.university);
@@ -418,20 +383,17 @@ const ProgramRivalAnalysis = () => {
             let priceEvaluationScore = null;
             let priceEvaluation = "-";
             if (priceIndex !== null && occupancyRate !== null) {
-              priceEvaluationScore =
-                Math.pow(priceIndex, 2) * (occupancyRate / 100);
+              priceEvaluationScore = Math.pow(priceIndex, 2) * (occupancyRate / 100);
               if (priceEvaluationScore <= 1) {
                 priceEvaluation = "Fiyat sorunu yok";
               } else {
-                priceEvaluation =
-                  "Fiyat çok yüksek veya marka yatırımı yetersiz";
+                priceEvaluation = "Fiyat çok yüksek veya marka yatırımı yetersiz";
               }
             }
 
             // Get tercih istatistikleri data
             const tercihIstat = tercihIstatMap.get(program.yop_kodu) || {};
-            const tercihKullanma =
-              tercihKullanmaMap.get(program.yop_kodu) || {};
+            const tercihKullanma = tercihKullanmaMap.get(program.yop_kodu) || {};
 
             // Calculate Üst Üç Çekim Farkı = ilk_uc_tercih_olarak_yerlesen_orani - ilk_uc_sirada_tercih_eden_orani
             let ustUcCekimFarki = null;
@@ -440,8 +402,7 @@ const ProgramRivalAnalysis = () => {
               tercihIstat.ilkUcSiradaTercihEdenOrani !== null
             ) {
               ustUcCekimFarki =
-                tercihIstat.ilkUcTercihOlarakYerlesenOrani -
-                tercihIstat.ilkUcSiradaTercihEdenOrani;
+                tercihIstat.ilkUcTercihOlarakYerlesenOrani - tercihIstat.ilkUcSiradaTercihEdenOrani;
             }
 
             programData.push({
@@ -463,14 +424,10 @@ const ProgramRivalAnalysis = () => {
               priceEvaluation,
               // New tercih istatistikleri fields
               birKontenjanaTalip: tercihIstat.birKontenjanaTalip,
-              ilkUcSiradaTercihEdenSayisi:
-                tercihIstat.ilkUcSiradaTercihEdenSayisi,
-              ilkUcSiradaTercihEdenOrani:
-                tercihIstat.ilkUcSiradaTercihEdenOrani,
-              ilkUcTercihOlarakYerlesenSayisi:
-                tercihIstat.ilkUcTercihOlarakYerlesenSayisi,
-              ilkUcTercihOlarakYerlesenOrani:
-                tercihIstat.ilkUcTercihOlarakYerlesenOrani,
+              ilkUcSiradaTercihEdenSayisi: tercihIstat.ilkUcSiradaTercihEdenSayisi,
+              ilkUcSiradaTercihEdenOrani: tercihIstat.ilkUcSiradaTercihEdenOrani,
+              ilkUcTercihOlarakYerlesenSayisi: tercihIstat.ilkUcTercihOlarakYerlesenSayisi,
+              ilkUcTercihOlarakYerlesenOrani: tercihIstat.ilkUcTercihOlarakYerlesenOrani,
               // Calculated field
               ustUcCekimFarki,
               // Tercih kullanma fields
@@ -686,12 +643,7 @@ const ProgramRivalAnalysis = () => {
     ];
 
     const priceHeaders = showPrices
-      ? [
-          "Fiyat (₺)",
-          "Fiyat Endeksi",
-          "Doluluk Oranı (%)",
-          "Fiyat Değerlendirme Skoru",
-        ]
+      ? ["Fiyat (₺)", "Fiyat Endeksi", "Doluluk Oranı (%)", "Fiyat Değerlendirme Skoru"]
       : [];
 
     const headers = [...baseHeaders, ...priceHeaders];
@@ -712,12 +664,10 @@ const ProgramRivalAnalysis = () => {
         row.birKontenjanaTalip !== null && row.birKontenjanaTalip !== undefined
           ? row.birKontenjanaTalip.toFixed(1)
           : "-",
-        row.ilkUcSiradaTercihEdenSayisi !== null &&
-        row.ilkUcSiradaTercihEdenSayisi !== undefined
+        row.ilkUcSiradaTercihEdenSayisi !== null && row.ilkUcSiradaTercihEdenSayisi !== undefined
           ? row.ilkUcSiradaTercihEdenSayisi
           : "-",
-        row.ilkUcSiradaTercihEdenOrani !== null &&
-        row.ilkUcSiradaTercihEdenOrani !== undefined
+        row.ilkUcSiradaTercihEdenOrani !== null && row.ilkUcSiradaTercihEdenOrani !== undefined
           ? row.ilkUcSiradaTercihEdenOrani.toFixed(1)
           : "-",
         row.ilkUcTercihOlarakYerlesenSayisi !== null &&
@@ -738,8 +688,7 @@ const ProgramRivalAnalysis = () => {
         row.bosBirakilanTercih !== null && row.bosBirakilanTercih !== undefined
           ? row.bosBirakilanTercih
           : "-",
-        row.ortalamaKullanilanTercih !== null &&
-        row.ortalamaKullanilanTercih !== undefined
+        row.ortalamaKullanilanTercih !== null && row.ortalamaKullanilanTercih !== undefined
           ? row.ortalamaKullanilanTercih
           : "-",
       ];
@@ -749,9 +698,7 @@ const ProgramRivalAnalysis = () => {
             row.price !== null ? row.price.toLocaleString("tr-TR") : "-",
             row.priceIndex !== null ? row.priceIndex.toFixed(2) : "-",
             row.occupancyRate !== null ? row.occupancyRate.toFixed(1) : "-",
-            row.priceEvaluationScore !== null
-              ? row.priceEvaluationScore.toFixed(2)
-              : "-",
+            row.priceEvaluationScore !== null ? row.priceEvaluationScore.toFixed(2) : "-",
           ]
         : [];
 
@@ -776,12 +723,7 @@ const ProgramRivalAnalysis = () => {
       <>
         <Header title="Program Rakip Analizi" />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-          <Box
-            display="flex"
-            justifyContent="center"
-            alignItems="center"
-            minHeight="60vh"
-          >
+          <Box display="flex" justifyContent="center" alignItems="center" minHeight="60vh">
             <CircularProgress />
           </Box>
         </Container>
@@ -796,8 +738,7 @@ const ProgramRivalAnalysis = () => {
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Paper sx={{ p: 3 }}>
             <Alert severity="warning" sx={{ mb: 2 }}>
-              Program seçilmemiş. Lütfen önce Üniversite Karşılaştırma
-              sayfasından program seçiniz.
+              Program seçilmemiş. Lütfen önce Üniversite Karşılaştırma sayfasından program seçiniz.
             </Alert>
           </Paper>
         </Container>
@@ -834,16 +775,11 @@ const ProgramRivalAnalysis = () => {
                 Program Rakip Analizi - {selectedYear}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Seçili {selectedPrograms.length} program için bireysel rakip
-                analizi
+                Seçili {selectedPrograms.length} program için bireysel rakip analizi
               </Typography>
             </Box>
             <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                variant="contained"
-                startIcon={<Download />}
-                onClick={handleDownload}
-              >
+              <Button variant="contained" startIcon={<Download />} onClick={handleDownload}>
                 CSV İndir
               </Button>
             </Box>
@@ -851,24 +787,18 @@ const ProgramRivalAnalysis = () => {
 
           <Alert severity="info" sx={{ mb: 2 }}>
             <Typography variant="body2" sx={{ mb: 1 }}>
-              <strong>Üst Üç Çekim Farkı:</strong> İlk Üç Tercih Olarak Yerleşen
-              Oranı - İlk Üç Sırada Tercih Eden Oranı. Pozitif değer programın
-              çekim gücünün yüksek olduğunu gösterir.
+              <strong>Üst Üç Çekim Farkı:</strong> İlk Üç Tercih Olarak Yerleşen Oranı - İlk Üç
+              Sırada Tercih Eden Oranı. Pozitif değer programın çekim gücünün yüksek olduğunu
+              gösterir.
             </Typography>
             {showPrices && (
               <Typography variant="body2" sx={{ mb: 1 }}>
-                <strong>Fiyat Değerlendirme:</strong> Fiyat Endeksi x Doluluk
-                Oranı. ≤1 ise fiyat sorunu yok, &gt;1 ise fiyat yüksek veya
-                marka yatırımı yetersiz.
+                <strong>Fiyat Değerlendirme:</strong> Fiyat Endeksi x Doluluk Oranı. ≤1 ise fiyat
+                sorunu yok, &gt;1 ise fiyat yüksek veya marka yatırımı yetersiz.
               </Typography>
             )}
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 1, fontStyle: "italic" }}
-            >
-              💡 Kısaltılmış sütun adlarının üzerine geldiğinizde tam adlarını
-              görebilirsiniz.
+            <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: "italic" }}>
+              💡 Kısaltılmış sütun adlarının üzerine geldiğinizde tam adlarını görebilirsiniz.
             </Typography>
           </Alert>
 
@@ -899,19 +829,15 @@ const ProgramRivalAnalysis = () => {
                     bgcolor: hiddenColumns.has(col.id)
                       ? "error.light"
                       : col.alwaysVisible
-                      ? "primary.light"
-                      : "grey.200",
-                    textDecoration: hiddenColumns.has(col.id)
-                      ? "line-through"
-                      : "none",
+                        ? "primary.light"
+                        : "grey.200",
+                    textDecoration: hiddenColumns.has(col.id) ? "line-through" : "none",
                     opacity: hiddenColumns.has(col.id) ? 0.6 : 1,
                     fontSize: "0.75rem",
                     "&:hover": col.alwaysVisible
                       ? {}
                       : {
-                          bgcolor: hiddenColumns.has(col.id)
-                            ? "error.main"
-                            : "grey.300",
+                          bgcolor: hiddenColumns.has(col.id) ? "error.main" : "grey.300",
                         },
                   }}
                 >
@@ -1001,9 +927,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "bir_kontenjana_talip"}
-                        direction={
-                          orderBy === "bir_kontenjana_talip" ? order : "asc"
-                        }
+                        direction={orderBy === "bir_kontenjana_talip" ? order : "asc"}
                         onClick={() => handleSort("bir_kontenjana_talip")}
                       >
                         Bir Kont. Talip
@@ -1016,14 +940,8 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "ilk_uc_sirada_tercih_eden_sayisi"}
-                        direction={
-                          orderBy === "ilk_uc_sirada_tercih_eden_sayisi"
-                            ? order
-                            : "asc"
-                        }
-                        onClick={() =>
-                          handleSort("ilk_uc_sirada_tercih_eden_sayisi")
-                        }
+                        direction={orderBy === "ilk_uc_sirada_tercih_eden_sayisi" ? order : "asc"}
+                        onClick={() => handleSort("ilk_uc_sirada_tercih_eden_sayisi")}
                       >
                         İlk 3 Tercih Eden
                       </TableSortLabel>
@@ -1035,14 +953,8 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "ilk_uc_sirada_tercih_eden_orani"}
-                        direction={
-                          orderBy === "ilk_uc_sirada_tercih_eden_orani"
-                            ? order
-                            : "asc"
-                        }
-                        onClick={() =>
-                          handleSort("ilk_uc_sirada_tercih_eden_orani")
-                        }
+                        direction={orderBy === "ilk_uc_sirada_tercih_eden_orani" ? order : "asc"}
+                        onClick={() => handleSort("ilk_uc_sirada_tercih_eden_orani")}
                       >
                         İlk 3 Tercih Oranı (%)
                       </TableSortLabel>
@@ -1053,17 +965,11 @@ const ProgramRivalAnalysis = () => {
                   <Tooltip title="İlk Üç Tercih Olarak Yerleşen Sayısı" arrow>
                     <TableCell align="right">
                       <TableSortLabel
-                        active={
-                          orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
-                        }
+                        active={orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"}
                         direction={
-                          orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi"
-                            ? order
-                            : "asc"
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_sayisi" ? order : "asc"
                         }
-                        onClick={() =>
-                          handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")
-                        }
+                        onClick={() => handleSort("ilk_uc_tercih_olarak_yerlesen_sayisi")}
                       >
                         İlk 3 Yerleşen
                       </TableSortLabel>
@@ -1071,23 +977,14 @@ const ProgramRivalAnalysis = () => {
                   </Tooltip>
                 )}
                 {isColumnVisible("ilk_uc_tercih_olarak_yerlesen_orani") && (
-                  <Tooltip
-                    title="İlk Üç Tercih Olarak Yerleşen Oranı (%)"
-                    arrow
-                  >
+                  <Tooltip title="İlk Üç Tercih Olarak Yerleşen Oranı (%)" arrow>
                     <TableCell align="right">
                       <TableSortLabel
-                        active={
-                          orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
-                        }
+                        active={orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"}
                         direction={
-                          orderBy === "ilk_uc_tercih_olarak_yerlesen_orani"
-                            ? order
-                            : "asc"
+                          orderBy === "ilk_uc_tercih_olarak_yerlesen_orani" ? order : "asc"
                         }
-                        onClick={() =>
-                          handleSort("ilk_uc_tercih_olarak_yerlesen_orani")
-                        }
+                        onClick={() => handleSort("ilk_uc_tercih_olarak_yerlesen_orani")}
                       >
                         İlk 3 Yerleşen Oranı (%)
                       </TableSortLabel>
@@ -1102,9 +999,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "ust_uc_cekim_farki"}
-                        direction={
-                          orderBy === "ust_uc_cekim_farki" ? order : "asc"
-                        }
+                        direction={orderBy === "ust_uc_cekim_farki" ? order : "asc"}
                         onClick={() => handleSort("ust_uc_cekim_farki")}
                       >
                         Üst Üç Çekim Farkı
@@ -1118,9 +1013,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "kullanilan_tercih"}
-                        direction={
-                          orderBy === "kullanilan_tercih" ? order : "asc"
-                        }
+                        direction={orderBy === "kullanilan_tercih" ? order : "asc"}
                         onClick={() => handleSort("kullanilan_tercih")}
                       >
                         Kullanılan Tercih
@@ -1133,9 +1026,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "bos_birakilan_tercih"}
-                        direction={
-                          orderBy === "bos_birakilan_tercih" ? order : "asc"
-                        }
+                        direction={orderBy === "bos_birakilan_tercih" ? order : "asc"}
                         onClick={() => handleSort("bos_birakilan_tercih")}
                       >
                         Boş Bırakılan Tercih
@@ -1148,11 +1039,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "ortalama_kullanilan_tercih"}
-                        direction={
-                          orderBy === "ortalama_kullanilan_tercih"
-                            ? order
-                            : "asc"
-                        }
+                        direction={orderBy === "ortalama_kullanilan_tercih" ? order : "asc"}
                         onClick={() => handleSort("ortalama_kullanilan_tercih")}
                       >
                         Ort. Kullanılan Tercih
@@ -1201,9 +1088,7 @@ const ProgramRivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "price_evaluation"}
-                        direction={
-                          orderBy === "price_evaluation" ? order : "asc"
-                        }
+                        direction={orderBy === "price_evaluation" ? order : "asc"}
                         onClick={() => handleSort("price_evaluation")}
                       >
                         Fiyat Değerlendirme
@@ -1221,9 +1106,7 @@ const ProgramRivalAnalysis = () => {
                       <Typography
                         variant="body2"
                         sx={{
-                          fontWeight: isOwnUniversityName(row.university)
-                            ? "bold"
-                            : "normal",
+                          fontWeight: isOwnUniversityName(row.university) ? "bold" : "normal",
                         }}
                       >
                         {row.university}
@@ -1249,47 +1132,34 @@ const ProgramRivalAnalysis = () => {
                   )}
                   {isColumnVisible("scholarship") && (
                     <TableCell>
-                      <Typography variant="body2">
-                        {row.scholarship || "-"}
-                      </Typography>
+                      <Typography variant="body2">{row.scholarship || "-"}</Typography>
                     </TableCell>
                   )}
                   {isColumnVisible("puan_type") && (
                     <TableCell>
-                      <Chip
-                        label={row.puan_type.toUpperCase()}
-                        size="small"
-                        variant="outlined"
-                      />
+                      <Chip label={row.puan_type.toUpperCase()} size="small" variant="outlined" />
                     </TableCell>
                   )}
                   {isColumnVisible("kontenjan") && (
                     <TableCell align="right">
-                      <Typography variant="body2">
-                        {row.kontenjan || "-"}
-                      </Typography>
+                      <Typography variant="body2">{row.kontenjan || "-"}</Typography>
                     </TableCell>
                   )}
                   {isColumnVisible("tercih_edilme") && (
                     <TableCell align="right">
-                      <Typography variant="body2">
-                        {row.tercihEdilme.toFixed(2)}
-                      </Typography>
+                      <Typography variant="body2">{row.tercihEdilme.toFixed(2)}</Typography>
                     </TableCell>
                   )}
                   {isColumnVisible("yerlesen_tercih") && (
                     <TableCell align="right">
-                      <Typography variant="body2">
-                        {row.yerlesenTercih.toFixed(2)}
-                      </Typography>
+                      <Typography variant="body2">{row.yerlesenTercih.toFixed(2)}</Typography>
                     </TableCell>
                   )}
                   {/* Tercih İstatistikleri Data */}
                   {isColumnVisible("bir_kontenjana_talip") && (
                     <TableCell align="right">
                       <Typography variant="body2">
-                        {row.birKontenjanaTalip !== null &&
-                        row.birKontenjanaTalip !== undefined
+                        {row.birKontenjanaTalip !== null && row.birKontenjanaTalip !== undefined
                           ? row.birKontenjanaTalip.toFixed(1)
                           : "-"}
                       </Typography>
@@ -1337,8 +1207,7 @@ const ProgramRivalAnalysis = () => {
                   )}
                   {isColumnVisible("ust_uc_cekim_farki") && (
                     <TableCell align="right">
-                      {row.ustUcCekimFarki !== null &&
-                      row.ustUcCekimFarki !== undefined ? (
+                      {row.ustUcCekimFarki !== null && row.ustUcCekimFarki !== undefined ? (
                         <Chip
                           label={`${row.ustUcCekimFarki.toFixed(1)}%`}
                           size="small"
@@ -1353,8 +1222,7 @@ const ProgramRivalAnalysis = () => {
                   {isColumnVisible("kullanilan_tercih") && (
                     <TableCell align="right">
                       <Typography variant="body2">
-                        {row.kullanilanTercih !== null &&
-                        row.kullanilanTercih !== undefined
+                        {row.kullanilanTercih !== null && row.kullanilanTercih !== undefined
                           ? row.kullanilanTercih
                           : "-"}
                       </Typography>
@@ -1363,8 +1231,7 @@ const ProgramRivalAnalysis = () => {
                   {isColumnVisible("bos_birakilan_tercih") && (
                     <TableCell align="right">
                       <Typography variant="body2">
-                        {row.bosBirakilanTercih !== null &&
-                        row.bosBirakilanTercih !== undefined
+                        {row.bosBirakilanTercih !== null && row.bosBirakilanTercih !== undefined
                           ? row.bosBirakilanTercih
                           : "-"}
                       </Typography>
@@ -1401,8 +1268,8 @@ const ProgramRivalAnalysis = () => {
                             row.priceIndex <= 1
                               ? "success"
                               : row.priceIndex <= 1.2
-                              ? "warning"
-                              : "error"
+                                ? "warning"
+                                : "error"
                           }
                         />
                       ) : (
@@ -1420,10 +1287,10 @@ const ProgramRivalAnalysis = () => {
                             row.occupancyRate >= 90
                               ? "success"
                               : row.occupancyRate >= 70
-                              ? "primary"
-                              : row.occupancyRate >= 50
-                              ? "warning"
-                              : "error"
+                                ? "primary"
+                                : row.occupancyRate >= 50
+                                  ? "warning"
+                                  : "error"
                           }
                         />
                       ) : (
@@ -1434,19 +1301,11 @@ const ProgramRivalAnalysis = () => {
                   {showPrices && isColumnVisible("price_evaluation") && (
                     <TableCell align="right">
                       {row.priceEvaluationScore !== null ? (
-                        <Tooltip
-                          title={row.priceEvaluation}
-                          arrow
-                          placement="top"
-                        >
+                        <Tooltip title={row.priceEvaluation} arrow placement="top">
                           <Chip
                             label={row.priceEvaluationScore.toFixed(2)}
                             size="small"
-                            color={
-                              row.priceEvaluationScore <= 1
-                                ? "success"
-                                : "error"
-                            }
+                            color={row.priceEvaluationScore <= 1 ? "success" : "error"}
                           />
                         </Tooltip>
                       ) : (

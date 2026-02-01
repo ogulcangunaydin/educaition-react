@@ -13,11 +13,7 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import fetchWithAuth from "../utils/fetchWithAuth";
-import {
-  CenteredContainer,
-  StyledButton,
-  RoomCreationModalStyle,
-} from "../styles/CommonStyles";
+import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "../styles/CommonStyles";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
 
@@ -25,9 +21,7 @@ import { useNavigate } from "react-router-dom";
 // CSV format: lise_adi,sehir,lise_id
 const loadHighSchools = async () => {
   try {
-    const response = await fetch(
-      "/assets/data_2025/lise_mapping_canonical.csv",
-    );
+    const response = await fetch("/assets/data_2025/lise_mapping_canonical.csv");
     const text = await response.text();
     const lines = text.split("\n").slice(1); // Skip header
     const highSchools = lines
@@ -62,7 +56,7 @@ function HighSchoolRooms() {
       try {
         const response = await fetchWithAuth(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/`,
-          { method: "GET" },
+          { method: "GET" }
         );
 
         if (!response.ok) {
@@ -107,16 +101,13 @@ function HighSchoolRooms() {
       formBody.append("high_school_name", selectedHighSchool.name);
       formBody.append("high_school_code", selectedHighSchool.code || "");
 
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          method: "POST",
-          body: formBody,
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
         },
-      );
+        method: "POST",
+        body: formBody,
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -144,7 +135,7 @@ function HighSchoolRooms() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("access_token")}`,
           },
-        },
+        }
       );
 
       if (!response.ok) {
@@ -171,11 +162,7 @@ function HighSchoolRooms() {
   return (
     <>
       <Header title="Lise Odaları - Program Öneri Sistemi">
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleBackToDashboard}
-        >
+        <Button variant="contained" color="primary" onClick={handleBackToDashboard}>
           Dashboard'a Dön
         </Button>
       </Header>
@@ -185,16 +172,12 @@ function HighSchoolRooms() {
         ) : (
           <>
             <Typography variant="h6" sx={{ mb: 2 }}>
-              Öğrencilerin program öneri testini yapabilmesi için bir lise odası
-              oluşturun.
+              Öğrencilerin program öneri testini yapabilmesi için bir lise odası oluşturun.
             </Typography>
             <List sx={{ width: "100%", maxWidth: 600 }}>
               {rooms && rooms.length > 0 ? (
                 rooms.map((room, index) => (
-                  <Box
-                    key={room.id}
-                    sx={{ display: "flex", alignItems: "center", mb: 1 }}
-                  >
+                  <Box key={room.id} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <ListItemButton
                       component="a"
                       onClick={() => handleRedirect(room)}
@@ -221,43 +204,24 @@ function HighSchoolRooms() {
                   </Box>
                 ))
               ) : (
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ textAlign: "center" }}
-                >
-                  Henüz oda oluşturulmamış. Yeni bir oda oluşturmak için
-                  aşağıdaki butona tıklayın.
+                <Typography variant="body1" color="text.secondary" sx={{ textAlign: "center" }}>
+                  Henüz oda oluşturulmamış. Yeni bir oda oluşturmak için aşağıdaki butona tıklayın.
                 </Typography>
               )}
             </List>
-            <Button
-              onClick={handleOpenModal}
-              variant="contained"
-              color="primary"
-              sx={{ mt: 3 }}
-            >
+            <Button onClick={handleOpenModal} variant="contained" color="primary" sx={{ mt: 3 }}>
               Yeni Lise Odası Oluştur
             </Button>
           </>
         )}
-        <Modal
-          open={openModal}
-          onClose={handleCloseModal}
-          aria-labelledby="create-room-modal"
-        >
+        <Modal open={openModal} onClose={handleCloseModal} aria-labelledby="create-room-modal">
           <Box
             sx={{
               ...RoomCreationModalStyle,
               width: 500,
             }}
           >
-            <Typography
-              id="create-room-modal-title"
-              variant="h6"
-              component="h2"
-              sx={{ mb: 2 }}
-            >
+            <Typography id="create-room-modal-title" variant="h6" component="h2" sx={{ mb: 2 }}>
               Yeni Lise Odası Oluştur
             </Typography>
             <form onSubmit={handleCreateRoom}>
@@ -302,12 +266,8 @@ function HighSchoolRooms() {
                   return options
                     .filter(
                       (option) =>
-                        option.name
-                          .toLocaleLowerCase("tr-TR")
-                          .includes(searchTerm) ||
-                        option.city
-                          .toLocaleLowerCase("tr-TR")
-                          .includes(searchTerm),
+                        option.name.toLocaleLowerCase("tr-TR").includes(searchTerm) ||
+                        option.city.toLocaleLowerCase("tr-TR").includes(searchTerm)
                     )
                     .slice(0, 50); // Limit to 50 results for performance
                 }}

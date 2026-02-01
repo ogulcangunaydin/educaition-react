@@ -2,10 +2,7 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {
-  useUniversity,
-  UNIVERSITY_CONFIG,
-} from "../contexts/UniversityContext";
+import { useUniversity, UNIVERSITY_CONFIG } from "../contexts/UniversityContext";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
@@ -14,9 +11,7 @@ const HALIC_GRADIENT_START = "#001bc3";
 const HALIC_GRADIENT_END = "#0029e8";
 
 // List of valid university extensions
-const VALID_UNIVERSITY_EXTENSIONS = Object.keys(UNIVERSITY_CONFIG).filter(
-  (key) => key !== "halic",
-);
+const VALID_UNIVERSITY_EXTENSIONS = Object.keys(UNIVERSITY_CONFIG).filter((key) => key !== "halic");
 
 /**
  * Check if username has a valid university extension
@@ -84,13 +79,10 @@ function Login() {
     formData.append("password", password);
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/authenticate`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/authenticate`, {
+        method: "POST",
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -137,9 +129,7 @@ function Login() {
       <BackgroundLogo />
       <LoginForm elevation={8}>
         <Logo src={HALIC_LOGO} alt="Haliç Üniversitesi" />
-        <h2 style={{ margin: "0 0 30px 0", color: HALIC_PRIMARY_COLOR }}>
-          Welcome to Educaition
-        </h2>
+        <h2 style={{ margin: "0 0 30px 0", color: HALIC_PRIMARY_COLOR }}>Welcome to Educaition</h2>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <StyledTextField
             fullWidth
@@ -166,12 +156,7 @@ function Login() {
               shrink: true,
             }}
           />
-          <StyledButton
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-          >
+          <StyledButton type="submit" variant="contained" color="primary" fullWidth>
             Login
           </StyledButton>
         </form>

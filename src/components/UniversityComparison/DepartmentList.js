@@ -24,12 +24,9 @@ import { useUniversity } from "../../contexts/UniversityContext";
 
 const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
   const { isOwnUniversityName } = useUniversity();
-  const [orderBy, setOrderBy] = useState(
-    metric === "ranking" ? "tavan_bs" : "tavan"
-  );
+  const [orderBy, setOrderBy] = useState(metric === "ranking" ? "tavan_bs" : "tavan");
   const [order, setOrder] = useState(metric === "ranking" ? "asc" : "desc");
-  const { toggleProgram, isSelected, selectedPrograms, setYear, clearBasket } =
-    useBasket();
+  const { toggleProgram, isSelected, selectedPrograms, setYear, clearBasket } = useBasket();
 
   // Only show prices for 2024 and 2025
   const showPrices = year === "2024" || year === "2025";
@@ -41,11 +38,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
 
     priceData.forEach((p) => {
       let priceYopKodu = p.yop_kodu;
-      if (
-        priceYopKodu &&
-        typeof priceYopKodu === "string" &&
-        priceYopKodu.includes(".")
-      ) {
+      if (priceYopKodu && typeof priceYopKodu === "string" && priceYopKodu.includes(".")) {
         const numValue = parseFloat(priceYopKodu);
         if (!isNaN(numValue)) {
           priceYopKodu = Math.round(numValue).toString();
@@ -53,8 +46,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
       }
       const key = `${priceYopKodu}_${p.scholarship_pct}`;
       // Use year-specific price
-      const yearPrice =
-        year === "2024" ? p.discounted_price_2024 : p.discounted_price_2025;
+      const yearPrice = year === "2024" ? p.discounted_price_2024 : p.discounted_price_2025;
       if (yearPrice !== null && yearPrice !== undefined && !isNaN(yearPrice)) {
         map.set(key, yearPrice);
       }
@@ -175,10 +167,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
       scholarshipPct = 100;
     } else if (scholarship.includes("75")) {
       scholarshipPct = 75;
-    } else if (
-      scholarship.includes("50") ||
-      scholarship.includes("Yarım Burslu")
-    ) {
+    } else if (scholarship.includes("50") || scholarship.includes("Yarım Burslu")) {
       scholarshipPct = 50;
     } else if (scholarship.includes("25")) {
       scholarshipPct = 25;
@@ -206,9 +195,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
 
   const handleSelectAll = () => {
     // Check if any program from the current list is selected
-    const anySelected = programs.some((program) =>
-      isSelected(program.yop_kodu)
-    );
+    const anySelected = programs.some((program) => isSelected(program.yop_kodu));
 
     if (anySelected) {
       // Deselect all programs in the current list
@@ -257,12 +244,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                 variant="outlined"
               />
               <Tooltip title="Sepeti Temizle" arrow>
-                <IconButton
-                  size="small"
-                  color="error"
-                  onClick={clearBasket}
-                  sx={{ ml: -1 }}
-                >
+                <IconButton size="small" color="error" onClick={clearBasket} sx={{ ml: -1 }}>
                   <ClearIcon fontSize="small" />
                 </IconButton>
               </Tooltip>
@@ -435,10 +417,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
           </TableHead>
           <TableBody>
             {getSortedPrograms().map((program, index) => (
-              <TableRow
-                key={`${program.yop_kodu}-${index}`}
-                onClick={() => toggleProgram(program)}
-              >
+              <TableRow key={`${program.yop_kodu}-${index}`} onClick={() => toggleProgram(program)}>
                 <TableCell padding="checkbox">
                   <Checkbox
                     checked={isSelected(program.yop_kodu)}
@@ -451,9 +430,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                     <Typography
                       variant="body2"
                       sx={{
-                        fontWeight: isOwnUniversityName(program.university)
-                          ? "bold"
-                          : "normal",
+                        fontWeight: isOwnUniversityName(program.university) ? "bold" : "normal",
                       }}
                     >
                       {program.university}
@@ -470,19 +447,13 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                   <Typography variant="body2">{program.city || "-"}</Typography>
                 </TableCell>
                 <TableCell>
-                  <Typography variant="body2">
-                    {formatProgramName(program)}
-                  </Typography>
+                  <Typography variant="body2">{formatProgramName(program)}</Typography>
                   <Typography variant="caption" color="text.secondary">
                     {program.faculty}
                   </Typography>
                 </TableCell>
                 <TableCell>
-                  <Chip
-                    label={program.puan_type.toUpperCase()}
-                    size="small"
-                    variant="outlined"
-                  />
+                  <Chip label={program.puan_type.toUpperCase()} size="small" variant="outlined" />
                 </TableCell>
                 {metric === "score" && (
                   <>
@@ -497,10 +468,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                       >
                         {formatScore(program[`taban_${year}`])}
                         {program[`taban_${year}_filled`] && (
-                          <Tooltip
-                            title="Dolmadı - Tavan puanı gösteriliyor"
-                            arrow
-                          >
+                          <Tooltip title="Dolmadı - Tavan puanı gösteriliyor" arrow>
                             <Typography
                               component="span"
                               sx={{
@@ -516,9 +484,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                         )}
                       </Box>
                     </TableCell>
-                    <TableCell align="right">
-                      {formatScore(program[`tavan_${year}`])}
-                    </TableCell>
+                    <TableCell align="right">{formatScore(program[`tavan_${year}`])}</TableCell>
                   </>
                 )}
                 {metric === "ranking" && (
@@ -534,10 +500,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                       >
                         {formatRanking(program[`tbs_${year}`])}
                         {program[`tbs_${year}_filled`] && (
-                          <Tooltip
-                            title="Dolmadı - Tavan sıralama gösteriliyor"
-                            arrow
-                          >
+                          <Tooltip title="Dolmadı - Tavan sıralama gösteriliyor" arrow>
                             <Typography
                               component="span"
                               sx={{
@@ -562,9 +525,7 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                   <Typography variant="body2">
                     {program[`kontenjan_${year}`] && program[`yerlesen_${year}`]
                       ? `${Math.round(
-                          (program[`yerlesen_${year}`] /
-                            program[`kontenjan_${year}`]) *
-                            100
+                          (program[`yerlesen_${year}`] / program[`kontenjan_${year}`]) * 100
                         )}%`
                       : "-"}
                   </Typography>
@@ -574,22 +535,16 @@ const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
                     <Typography variant="body2">
                       {(() => {
                         const price = getProgramPrice(program);
-                        return price > 0
-                          ? `${price.toLocaleString("tr-TR")} ₺`
-                          : "-";
+                        return price > 0 ? `${price.toLocaleString("tr-TR")} ₺` : "-";
                       })()}
                     </Typography>
                   </TableCell>
                 )}
                 <TableCell align="right">
-                  <Typography variant="body2">
-                    {program[`yerlesen_${year}`] || "-"}
-                  </Typography>
+                  <Typography variant="body2">{program[`yerlesen_${year}`] || "-"}</Typography>
                 </TableCell>
                 <TableCell align="right">
-                  <Typography variant="body2">
-                    {program[`kontenjan_${year}`] || "-"}
-                  </Typography>
+                  <Typography variant="body2">{program[`kontenjan_${year}`] || "-"}</Typography>
                 </TableCell>
               </TableRow>
             ))}

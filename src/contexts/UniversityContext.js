@@ -101,8 +101,7 @@ export const UniversityProvider = ({ children }) => {
   });
 
   // Get the full university configuration
-  const university =
-    UNIVERSITY_CONFIG[universityKey] || UNIVERSITY_CONFIG.halic;
+  const university = UNIVERSITY_CONFIG[universityKey] || UNIVERSITY_CONFIG.halic;
 
   // Save to localStorage whenever universityKey changes
   useEffect(() => {

@@ -36,12 +36,7 @@ function Header({ title, children }) {
         </Typography>
         <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {children}
-          <Button
-            color="inherit"
-            startIcon={<LogoutIcon />}
-            onClick={handleLogout}
-            sx={{ ml: 2 }}
-          >
+          <Button color="inherit" startIcon={<LogoutIcon />} onClick={handleLogout} sx={{ ml: 2 }}>
             Çıkış
           </Button>
         </Box>

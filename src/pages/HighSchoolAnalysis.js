@@ -55,12 +55,9 @@ const HighSchoolAnalysis = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
-          {
-            method: "GET",
-          }
-        );
+        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
+          method: "GET",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -81,8 +78,7 @@ const HighSchoolAnalysis = () => {
           fetch("/assets/data_2025/lise_mapping.csv"),
         ]);
 
-        if (!response1.ok && !response2.ok)
-          throw new Error("Failed to load lise mapping");
+        if (!response1.ok && !response2.ok) throw new Error("Failed to load lise mapping");
 
         const mapping = {};
 
@@ -133,11 +129,8 @@ const HighSchoolAnalysis = () => {
   useEffect(() => {
     const loadUniversityMapping = async () => {
       try {
-        const dataFolder =
-          selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
-        const response = await fetch(
-          `${dataFolder}/lise_by_university/_university_mapping.json`
-        );
+        const dataFolder = selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
+        const response = await fetch(`${dataFolder}/lise_by_university/_university_mapping.json`);
 
         if (response.ok) {
           const mapping = await response.json();
@@ -161,10 +154,7 @@ const HighSchoolAnalysis = () => {
         return;
       }
 
-      if (
-        Object.keys(liseMapping).length === 0 ||
-        Object.keys(universityMapping).length === 0
-      ) {
+      if (Object.keys(liseMapping).length === 0 || Object.keys(universityMapping).length === 0) {
         return; // Wait for mappings to load
       }
 
@@ -172,24 +162,14 @@ const HighSchoolAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        const dataFolder =
-          selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
+        const dataFolder = selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
 
         console.log("[HighSchoolAnalysis] Selected year:", selectedYear);
-        console.log(
-          "[HighSchoolAnalysis] Selected programs:",
-          selectedPrograms.length
-        );
+        console.log("[HighSchoolAnalysis] Selected programs:", selectedPrograms.length);
 
         // Get unique universities from selected programs
-        const universities = [
-          ...new Set(selectedPrograms.map((p) => p.university)),
-        ];
-        console.log(
-          "[HighSchoolAnalysis] Unique universities:",
-          universities.length,
-          universities
-        );
+        const universities = [...new Set(selectedPrograms.map((p) => p.university))];
+        console.log("[HighSchoolAnalysis] Unique universities:", universities.length, universities);
 
         // Create program map
         const programMap = new Map();
@@ -278,10 +258,7 @@ const HighSchoolAnalysis = () => {
           }
         }
 
-        console.log(
-          "[HighSchoolAnalysis] Total matched records:",
-          totalMatched
-        );
+        console.log("[HighSchoolAnalysis] Total matched records:", totalMatched);
         console.log("[HighSchoolAnalysis] Data rows:", allData.length);
 
         setHighSchoolData(allData);
@@ -331,9 +308,7 @@ const HighSchoolAnalysis = () => {
     });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `lise_analizi_${
-      new Date().toISOString().split("T")[0]
-    }.csv`;
+    link.download = `lise_analizi_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
   };
 
@@ -343,9 +318,7 @@ const HighSchoolAnalysis = () => {
         <Header title="Lise Analizi" />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Alert severity="info">
-            <Typography>
-              Lise analizi için önce program seçmeniz gerekiyor.
-            </Typography>
+            <Typography>Lise analizi için önce program seçmeniz gerekiyor.</Typography>
           </Alert>
         </Container>
       </>
@@ -365,11 +338,7 @@ const HighSchoolAnalysis = () => {
           }}
         >
           <Box>
-            <Chip
-              label={`${selectedPrograms.length} program`}
-              color="primary"
-              sx={{ mr: 2 }}
-            />
+            <Chip label={`${selectedPrograms.length} program`} color="primary" sx={{ mr: 2 }} />
             <Button
               variant="contained"
               startIcon={<Download />}
@@ -389,9 +358,7 @@ const HighSchoolAnalysis = () => {
             {selectedPrograms.map((program) => (
               <Chip
                 key={program.yop_kodu}
-                label={`${program.university} - ${
-                  program.program || program.department
-                }${
+                label={`${program.university} - ${program.program || program.department}${
                   program.scholarship ? ` (Burs: ${program.scholarship})` : ""
                 }`}
                 size="small"
@@ -410,8 +377,7 @@ const HighSchoolAnalysis = () => {
         ) : (
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Yerleşen Öğrencilerin Liseleri - {selectedYear} (
-              {highSchoolData.length} kayıt)
+              Yerleşen Öğrencilerin Liseleri - {selectedYear} ({highSchoolData.length} kayıt)
             </Typography>
 
             <TableContainer sx={{ maxHeight: 600, mt: 2 }}>
@@ -439,11 +405,7 @@ const HighSchoolAnalysis = () => {
                       <TableCell>{row.lise_sehir}</TableCell>
                       <TableCell align="right">{row.yerlesen_sayisi}</TableCell>
                       <TableCell>
-                        <Chip
-                          label={row.school_type_label}
-                          size="small"
-                          variant="outlined"
-                        />
+                        <Chip label={row.school_type_label} size="small" variant="outlined" />
                       </TableCell>
                     </TableRow>
                   ))}

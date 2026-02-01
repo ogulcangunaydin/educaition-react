@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Typography,
-  Box,
-  CircularProgress,
-  Button,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
+import { Typography, Box, CircularProgress, Button, useMediaQuery, useTheme } from "@mui/material";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -22,14 +15,7 @@ import ReactMarkdown from "react-markdown";
 import Header from "../components/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
 
-ChartJS.register(
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip,
-  Legend
-);
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
 const DissonanceTestResult = () => {
   const { participantId } = useParams();
@@ -63,14 +49,11 @@ const DissonanceTestResult = () => {
 
     const checkAuth = async () => {
       try {
-        const authResponse = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/auth`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        );
+        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
@@ -103,13 +86,7 @@ const DissonanceTestResult = () => {
   }
 
   const data = {
-    labels: [
-      "Dışadönüklük",
-      "Uyumluluk",
-      "Sorumluluk",
-      "Olumsuz Duygusallık",
-      "Açık Fikirlilik",
-    ],
+    labels: ["Dışadönüklük", "Uyumluluk", "Sorumluluk", "Olumsuz Duygusallık", "Açık Fikirlilik"],
     datasets: [
       {
         label: "Kişilik Özellikleri",
@@ -199,9 +176,7 @@ const DissonanceTestResult = () => {
           </Box>
         </Box>
         <Box mt={4} ml={isSmallScreen ? 1 : 2} mr={isSmallScreen ? 1 : 2}>
-          <Typography variant="h6">
-            Burç Kişilik Testi Uyumluluk Analizi
-          </Typography>
+          <Typography variant="h6">Burç Kişilik Testi Uyumluluk Analizi</Typography>
           <Box mt={2}>
             <ReactMarkdown>{participant.compatibility_analysis}</ReactMarkdown>
           </Box>
