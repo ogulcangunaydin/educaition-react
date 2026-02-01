@@ -28,6 +28,11 @@ import { CenteredContainer } from "../styles/CommonStyles";
 import taxiImage from "../assets/taxi.png";
 import { useNavigate, useParams } from "react-router-dom";
 import careerImage from "../assets/career.jpeg";
+import {
+  saveParticipantSession,
+  fetchWithParticipantAuth,
+  SESSION_TYPES,
+} from "../services/participantSessionService";
 
 const DissonanceTest = () => {
   const TAXI_COMFORT_QUESTION =
@@ -160,6 +165,7 @@ const DissonanceTest = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(participantData),
+          credentials: "include", // Important for receiving HttpOnly cookie
         }
       );
 
@@ -169,7 +175,14 @@ const DissonanceTest = () => {
 
       const data = await response.json();
 
-      setParticipant(data);
+      // Save participant session metadata
+      saveParticipantSession(SESSION_TYPES.DISSONANCE_TEST, {
+        participant_id: data.participant.id,
+        room_id: parseInt(currentUserId, 10), // user_id is used as pseudo room_id
+        expires_in: data.expires_in,
+      });
+
+      setParticipant(data.participant);
 
       handleNext();
     } catch (error) {
@@ -180,7 +193,8 @@ const DissonanceTest = () => {
 
   const handleSecondSubmit = async () => {
     try {
-      const response = await fetch(
+      const response = await fetchWithParticipantAuth(
+        SESSION_TYPES.DISSONANCE_TEST,
         `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participant.id}`,
         {
           method: "POST",

@@ -20,6 +20,11 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
+import {
+  saveParticipantSession,
+  fetchWithParticipantAuth,
+  SESSION_TYPES,
+} from "../../services/participantSessionService";
 
 const PersonalityTest = () => {
   const [name, setName] = useState("");
@@ -91,6 +96,7 @@ const PersonalityTest = () => {
         {
           method: "POST",
           body: createPlayerForm,
+          credentials: "include", // Important for receiving HttpOnly cookie
         }
       );
       if (!createPlayerResponse.ok) {
@@ -98,7 +104,15 @@ const PersonalityTest = () => {
       }
 
       const data = await createPlayerResponse.json();
-      setPlayerId(data.id);
+
+      // Save participant session metadata
+      saveParticipantSession(SESSION_TYPES.PLAYER, {
+        participant_id: data.player.id,
+        room_id: parseInt(id),
+        expires_in: data.expires_in,
+      });
+
+      setPlayerId(data.player.id);
       setIsPlayerInfoSaved(true);
     } catch (error) {
       if (error.message.includes("Player Name")) {
@@ -114,13 +128,17 @@ const PersonalityTest = () => {
       formBody.append("answers", JSON.stringify(answers));
 
       let endpoint;
+      let sessionType;
       if (type === "room") {
         endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/personality`;
+        sessionType = SESSION_TYPES.PLAYER;
       } else if (type === "participant") {
         endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${id}/personality`;
+        sessionType = SESSION_TYPES.DISSONANCE_TEST;
       }
 
-      const response = await fetch(endpoint, {
+      // Use fetchWithParticipantAuth for authenticated requests
+      const response = await fetchWithParticipantAuth(sessionType, endpoint, {
         method: "POST",
         body: formBody,
       });

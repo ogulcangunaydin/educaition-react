@@ -3,6 +3,7 @@ import { TextField, Button, Container } from "@mui/material";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import PrisonersDilemmaInstructions from "../components/PrisonersDilemmaInstructions";
+import { fetchWithParticipantAuth, SESSION_TYPES } from "../services/participantSessionService";
 
 const TacticPreparation = () => {
   const [tactic, setTactic] = useState("");
@@ -21,7 +22,8 @@ const TacticPreparation = () => {
       const updateTacticForm = new FormData();
       updateTacticForm.append("player_tactic", tactic);
 
-      const saveTacticResponse = await fetch(
+      const saveTacticResponse = await fetchWithParticipantAuth(
+        SESSION_TYPES.PLAYER,
         `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/tactic`,
         {
           method: "POST",

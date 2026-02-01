@@ -14,6 +14,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import Header from "../components/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
+import { fetchWithParticipantAuth, SESSION_TYPES } from "../services/participantSessionService";
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -29,7 +30,8 @@ const DissonanceTestResult = () => {
   useEffect(() => {
     const fetchParticipant = async () => {
       try {
-        const response = await fetch(
+        const response = await fetchWithParticipantAuth(
+          SESSION_TYPES.DISSONANCE_TEST,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`,
           {
             method: "GET",
