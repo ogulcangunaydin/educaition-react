@@ -12,9 +12,6 @@ const HALIC_PRIMARY_COLOR = "#001bc3";
 const HALIC_GRADIENT_START = "#001bc3";
 const HALIC_GRADIENT_END = "#0029e8";
 
-// Roles that should be redirected to university comparison
-const VIEWER_ROLES = ["viewer", "teacher", "admin"];
-
 // Styled components
 const LoginContainer = styled(Box)({
   display: "flex",
@@ -79,12 +76,26 @@ function Login() {
         setUniversityKey(university);
       }
 
-      // Check if user role allows access to university comparison
-      if (role && VIEWER_ROLES.includes(role.toLowerCase())) {
-        navigate("/university-comparison");
-      } else {
-        // Students and other roles go to dashboard
-        navigate("/dashboard");
+      // Role-based navigation
+      // - Viewers: Read-only access to university comparison
+      // - Students: Should not login here (they participate anonymously in tests)
+      // - Admin/Teacher: Full dashboard access
+      switch (role?.toLowerCase()) {
+        case "viewer":
+          navigate("/university-comparison");
+          break;
+        case "student":
+          // Students shouldn't login here - redirect to a test page or show message
+          alert(
+            "Students should access tests directly through the test links provided by their teachers."
+          );
+          navigate("/login");
+          break;
+        case "admin":
+        case "teacher":
+        default:
+          navigate("/dashboard");
+          break;
       }
     } catch (error) {
       alert("Login failed: " + error.message);

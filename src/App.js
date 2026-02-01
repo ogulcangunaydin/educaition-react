@@ -19,13 +19,49 @@ import HighSchoolRoomDetail from "./pages/HighSchoolRoomDetail";
 import ProgramSuggestionTest from "./pages/ProgramSuggestionTest";
 import ProgramTestResult from "./pages/ProgramTestResult";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { getUserRole } from "./services/authService";
+
+// Role-based access configuration
+const ROLE_ACCESS = {
+  admin: ["dashboard", "rooms", "all"], // Full access
+  teacher: ["dashboard", "rooms", "all"], // Full access
+  viewer: ["university-comparison"], // Read-only university comparison
+  student: ["tests"], // Only test participation
+};
+
+/**
+ * Get the default redirect path for a role
+ */
+function getDefaultPathForRole(role) {
+  switch (role?.toLowerCase()) {
+    case "viewer":
+      return "/university-comparison";
+    case "student":
+      return "/program-test"; // Students go to test area
+    case "admin":
+    case "teacher":
+    default:
+      return "/dashboard";
+  }
+}
+
+/**
+ * Check if a role has access to a specific route type
+ */
+function hasAccess(role, routeType) {
+  const roleKey = role?.toLowerCase() || "student";
+  const allowedRoutes = ROLE_ACCESS[roleKey] || ROLE_ACCESS.student;
+  return allowedRoutes.includes("all") || allowedRoutes.includes(routeType);
+}
 
 /**
  * Protected Route wrapper
  * Redirects to login if not authenticated
+ * Optionally checks for required role access
  */
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, requiredAccess = null }) {
   const { isAuthenticated, isLoading } = useAuth();
+  const role = getUserRole();
 
   if (isLoading) {
     // Show nothing while checking auth state (or could show a spinner)
@@ -36,22 +72,53 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/login" replace />;
   }
 
+  // Check role-based access if specified
+  if (requiredAccess && !hasAccess(role, requiredAccess)) {
+    // Redirect to appropriate page for their role
+    return <Navigate to={getDefaultPathForRole(role)} replace />;
+  }
+
+  return children;
+}
+
+/**
+ * Viewer-only route - only accessible by viewers
+ */
+function ViewerRoute({ children }) {
+  const { isAuthenticated, isLoading } = useAuth();
+  const role = getUserRole();
+
+  if (isLoading) {
+    return null;
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Viewers can access, admins and teachers can also access
+  const allowedRoles = ["viewer", "admin", "teacher"];
+  if (!allowedRoles.includes(role?.toLowerCase())) {
+    return <Navigate to={getDefaultPathForRole(role)} replace />;
+  }
+
   return children;
 }
 
 /**
  * Public Route wrapper
- * Redirects authenticated users away from login
+ * Redirects authenticated users to their appropriate page based on role
  */
 function PublicRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
+  const role = getUserRole();
 
   if (isLoading) {
     return null;
   }
 
   if (isAuthenticated) {
-    return <Navigate to="/university-comparison" replace />;
+    return <Navigate to={getDefaultPathForRole(role)} replace />;
   }
 
   return children;
@@ -73,11 +140,11 @@ function AppRoutes() {
         }
       />
 
-      {/* Protected routes */}
+      {/* Admin/Teacher only routes - Dashboard and management */}
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <Dashboard />
           </ProtectedRoute>
         }
@@ -85,7 +152,7 @@ function AppRoutes() {
       <Route
         path="/rooms"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="rooms">
             <GameRoom />
           </ProtectedRoute>
         }
@@ -93,7 +160,7 @@ function AppRoutes() {
       <Route
         path="/playground/:roomId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="rooms">
             <Playground />
           </ProtectedRoute>
         }
@@ -101,7 +168,7 @@ function AppRoutes() {
       <Route
         path="/tacticpreparation/:roomId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="rooms">
             <TacticPreparation />
           </ProtectedRoute>
         }
@@ -109,7 +176,7 @@ function AppRoutes() {
       <Route
         path="/leaderboard/:sessionId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="rooms">
             <Leaderboard />
           </ProtectedRoute>
         }
@@ -117,7 +184,7 @@ function AppRoutes() {
       <Route
         path="/personalitytest/:type/:id"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="rooms">
             <PersonalityTest />
           </ProtectedRoute>
         }
@@ -125,7 +192,7 @@ function AppRoutes() {
       <Route
         path="/dissonanceTestParticipantList"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <DissonanceTestParticipantList />
           </ProtectedRoute>
         }
@@ -133,7 +200,7 @@ function AppRoutes() {
       <Route
         path="/dissonanceTest/:currentUserId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <DissonanceTest />
           </ProtectedRoute>
         }
@@ -141,49 +208,51 @@ function AppRoutes() {
       <Route
         path="/dissonanceTestResult/:participantId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <DissonanceTestResult />
           </ProtectedRoute>
         }
       />
+
+      {/* University comparison - Viewers, Admins, and Teachers */}
       <Route
         path="/university-comparison"
         element={
-          <ProtectedRoute>
+          <ViewerRoute>
             <UniversityComparison />
-          </ProtectedRoute>
+          </ViewerRoute>
         }
       />
       <Route
         path="/highschool-analysis"
         element={
-          <ProtectedRoute>
+          <ViewerRoute>
             <HighSchoolAnalysis />
-          </ProtectedRoute>
+          </ViewerRoute>
         }
       />
       <Route
         path="/rival-analysis"
         element={
-          <ProtectedRoute>
+          <ViewerRoute>
             <RivalAnalysis />
-          </ProtectedRoute>
+          </ViewerRoute>
         }
       />
       <Route
         path="/program-rival-analysis"
         element={
-          <ProtectedRoute>
+          <ViewerRoute>
             <ProgramRivalAnalysis />
-          </ProtectedRoute>
+          </ViewerRoute>
         }
       />
 
-      {/* High School Rooms - Program Suggestion System (public for participants) */}
+      {/* High School Rooms - Admin/Teacher only */}
       <Route
         path="/high-school-rooms"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <HighSchoolRooms />
           </ProtectedRoute>
         }
@@ -191,12 +260,14 @@ function AppRoutes() {
       <Route
         path="/high-school-room/:roomId"
         element={
-          <ProtectedRoute>
+          <ProtectedRoute requiredAccess="dashboard">
             <HighSchoolRoomDetail />
           </ProtectedRoute>
         }
       />
-      {/* Program test routes are public - accessed by anonymous participants */}
+
+      {/* Public test routes - accessed by anonymous participants (students) */}
+      {/* These don't require login - participants enter their name when starting */}
       <Route path="/program-test/:roomId" element={<ProgramSuggestionTest />} />
       <Route path="/program-test-result/:studentId" element={<ProgramTestResult />} />
 
