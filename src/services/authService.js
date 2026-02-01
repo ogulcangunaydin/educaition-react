@@ -19,12 +19,15 @@ const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 const STORAGE_KEYS = {
   USERNAME: "username",
   UNIVERSITY_KEY: "universityKey",
+  USER_ROLE: "userRole",
 };
 
 // In-memory token storage for legacy compatibility
 // This is a singleton - shared across all imports
 let inMemoryAccessToken = null;
 let inMemoryUserId = null;
+let inMemoryRole = null;
+let inMemoryUniversity = null;
 
 /**
  * Store username in localStorage (non-sensitive, for UI convenience)
@@ -61,6 +64,20 @@ export const getUserId = () => {
 };
 
 /**
+ * Get user role from memory or localStorage.
+ */
+export const getUserRole = () => {
+  return inMemoryRole || localStorage.getItem(STORAGE_KEYS.USER_ROLE);
+};
+
+/**
+ * Get user university from memory or localStorage.
+ */
+export const getUserUniversity = () => {
+  return inMemoryUniversity || localStorage.getItem(STORAGE_KEYS.UNIVERSITY_KEY);
+};
+
+/**
  * Check if user is authenticated (has access token in memory).
  *
  * For React components, prefer using useAuth().isAuthenticated.
@@ -76,17 +93,30 @@ export const isAuthenticated = () => {
 export const clearAuthData = () => {
   inMemoryAccessToken = null;
   inMemoryUserId = null;
+  inMemoryRole = null;
+  inMemoryUniversity = null;
   localStorage.removeItem(STORAGE_KEYS.USERNAME);
   localStorage.removeItem(STORAGE_KEYS.UNIVERSITY_KEY);
+  localStorage.removeItem(STORAGE_KEYS.USER_ROLE);
 };
 
 /**
  * Store auth data in memory (called by AuthContext or login)
  * @internal Used by AuthContext, not for direct use
  */
-export const setAuthData = (accessToken, userId) => {
+export const setAuthData = (accessToken, userId, role = null, university = null) => {
   inMemoryAccessToken = accessToken;
   inMemoryUserId = userId;
+  inMemoryRole = role;
+  inMemoryUniversity = university;
+
+  // Also store role and university in localStorage for persistence
+  if (role) {
+    localStorage.setItem(STORAGE_KEYS.USER_ROLE, role);
+  }
+  if (university) {
+    localStorage.setItem(STORAGE_KEYS.UNIVERSITY_KEY, university);
+  }
 };
 
 /**
@@ -114,12 +144,22 @@ export const login = async (username, password) => {
 
   const data = await response.json();
 
-  // Store access token in memory only
+  // Store access token and user info in memory
   inMemoryAccessToken = data.access_token;
   inMemoryUserId = data.current_user_id;
+  inMemoryRole = data.role;
+  inMemoryUniversity = data.university;
   // Refresh token is automatically stored in HttpOnly cookie by backend
 
   storeUsername(username);
+
+  // Store role and university in localStorage for persistence
+  if (data.role) {
+    localStorage.setItem(STORAGE_KEYS.USER_ROLE, data.role);
+  }
+  if (data.university) {
+    localStorage.setItem(STORAGE_KEYS.UNIVERSITY_KEY, data.university);
+  }
 
   return data;
 };
@@ -215,6 +255,8 @@ const authService = {
   refreshAccessToken,
   getAccessToken,
   getUserId,
+  getUserRole,
+  getUserUniversity,
   getUsername,
   isAuthenticated,
   clearAuthData,

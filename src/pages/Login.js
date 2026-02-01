@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useUniversity, UNIVERSITY_CONFIG } from "../contexts/UniversityContext";
+import { useUniversity } from "../contexts/UniversityContext";
 import { useAuth } from "../contexts/AuthContext";
-import { storeUsername } from "../services/authService";
+import { storeUsername, getUserRole, getUserUniversity } from "../services/authService";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
@@ -12,21 +12,8 @@ const HALIC_PRIMARY_COLOR = "#001bc3";
 const HALIC_GRADIENT_START = "#001bc3";
 const HALIC_GRADIENT_END = "#0029e8";
 
-// List of valid university extensions
-const VALID_UNIVERSITY_EXTENSIONS = Object.keys(UNIVERSITY_CONFIG).filter((key) => key !== "halic");
-
-/**
- * Check if username has a valid university extension
- * @param {string} username
- * @returns {boolean}
- */
-const hasUniversityExtension = (username) => {
-  if (!username) return false;
-  const parts = username.toLowerCase().split(".");
-  if (parts.length < 2) return false;
-  const lastPart = parts[parts.length - 1];
-  return VALID_UNIVERSITY_EXTENSIONS.includes(lastPart) || lastPart === "halic";
-};
+// Roles that should be redirected to university comparison
+const VIEWER_ROLES = ["viewer", "teacher", "admin"];
 
 // Styled components
 const LoginContainer = styled(Box)({
@@ -71,7 +58,7 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUniversityFromUsername } = useUniversity();
+  const { setUniversityKey } = useUniversity();
   const { login } = useAuth();
 
   const handleSubmit = async (event) => {
@@ -83,14 +70,20 @@ function Login() {
       // Store username for UI convenience (non-sensitive)
       storeUsername(username);
 
-      // Set university based on username suffix
-      setUniversityFromUsername(username);
+      // Get role and university from backend response (stored by authService)
+      const role = getUserRole();
+      const university = getUserUniversity();
 
-      // Check if user has a university extension
-      if (hasUniversityExtension(username)) {
+      // Set university from backend response
+      if (university) {
+        setUniversityKey(university);
+      }
+
+      // Check if user role allows access to university comparison
+      if (role && VIEWER_ROLES.includes(role.toLowerCase())) {
         navigate("/university-comparison");
       } else {
-        // Users without extension go to dashboard
+        // Students and other roles go to dashboard
         navigate("/dashboard");
       }
     } catch (error) {

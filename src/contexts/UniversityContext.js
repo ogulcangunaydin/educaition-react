@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { getUserUniversity } from "../services/authService";
 
 const UniversityContext = createContext();
 
@@ -64,36 +65,14 @@ export const useUniversity = () => {
   return context;
 };
 
-/**
- * Parse username to extract university suffix
- * @param {string} username - The username (e.g., "john.halic", "john.ibnhaldun", "john")
- * @returns {string} - University key ("halic" or "ibnhaldun")
- */
-export const parseUniversityFromUsername = (username) => {
-  if (!username) return "halic";
-
-  const parts = username.toLowerCase().split(".");
-  const lastPart = parts[parts.length - 1];
-
-  if (lastPart === "ibnhaldun") {
-    return "ibnhaldun";
-  } else if (lastPart === "fsm") {
-    return "fsm";
-  } else if (lastPart === "izu") {
-    return "izu";
-  } else if (lastPart === "29mayis") {
-    return "mayis";
-  }
-
-  // Default to halic for any other case (including .halic suffix or no suffix)
-  return "halic";
-};
-
 export const UniversityProvider = ({ children }) => {
   const [universityKey, setUniversityKey] = useState(() => {
     try {
+      // First try to get from localStorage (set by authService on login)
       const saved = localStorage.getItem("universityKey");
-      return saved || "halic";
+      // Also check the backend-provided university
+      const backendUniversity = getUserUniversity();
+      return backendUniversity || saved || "halic";
     } catch (error) {
       console.error("Error loading universityKey from localStorage:", error);
       return "halic";
@@ -132,18 +111,15 @@ export const UniversityProvider = ({ children }) => {
     return universityName.toUpperCase() === university.name;
   };
 
-  /**
-   * Set university from username (called after login)
-   * @param {string} username - The username
-   */
-  const setUniversityFromUsername = (username) => {
-    const key = parseUniversityFromUsername(username);
-    setUniversityKey(key);
+  const setUniversityKey_direct = (key) => {
+    if (UNIVERSITY_CONFIG[key]) {
+      setUniversityKey(key);
+    } else {
+      console.warn(`Unknown university key: ${key}, defaulting to halic`);
+      setUniversityKey("halic");
+    }
   };
 
-  /**
-   * Clear university data (for logout)
-   */
   const clearUniversity = () => {
     setUniversityKey("halic");
     localStorage.removeItem("universityKey");
@@ -156,7 +132,7 @@ export const UniversityProvider = ({ children }) => {
         university,
         isOwnUniversity,
         isOwnUniversityName,
-        setUniversityFromUsername,
+        setUniversityKey: setUniversityKey_direct,
         clearUniversity,
         UNIVERSITY_CONFIG,
       }}
