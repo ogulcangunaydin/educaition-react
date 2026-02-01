@@ -3,6 +3,7 @@ import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUniversity, UNIVERSITY_CONFIG } from "../contexts/UniversityContext";
+import { login } from "../services/authService";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
@@ -74,24 +75,8 @@ function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-
     try {
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/authenticate`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("current_user_id", data.current_user_id);
-      localStorage.setItem("username", username);
+      await login(username, password);
 
       // Set university based on username suffix
       setUniversityFromUsername(username);

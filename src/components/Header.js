@@ -7,15 +7,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../services/authService";
 
 function Header({ title, children }) {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("current_user_id");
-    localStorage.removeItem("username");
-    localStorage.removeItem("universityKey");
+  const handleLogout = async () => {
+    await logout();
     navigate("/login");
   };
 

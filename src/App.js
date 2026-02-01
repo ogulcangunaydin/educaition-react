@@ -18,9 +18,10 @@ import HighSchoolRooms from "./pages/HighSchoolRooms";
 import HighSchoolRoomDetail from "./pages/HighSchoolRoomDetail";
 import ProgramSuggestionTest from "./pages/ProgramSuggestionTest";
 import ProgramTestResult from "./pages/ProgramTestResult";
+import { isAuthenticated } from "./services/authService";
 
 function App() {
-  const accessToken = localStorage.getItem("access_token");
+  const isLoggedIn = isAuthenticated();
 
   return (
     <Router>
@@ -46,9 +47,7 @@ function App() {
         <Route path="/program-test-result/:studentId" element={<ProgramTestResult />} />
         <Route
           path="/"
-          element={
-            accessToken ? <Navigate to="/university-comparison" /> : <Navigate to="/login" />
-          }
+          element={isLoggedIn ? <Navigate to="/university-comparison" /> : <Navigate to="/login" />}
         />
       </Routes>
     </Router>
