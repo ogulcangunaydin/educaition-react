@@ -7,10 +7,11 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 
 function Header({ title, children }) {
   const navigate = useNavigate();
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();

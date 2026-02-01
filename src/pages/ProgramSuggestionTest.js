@@ -25,6 +25,13 @@ import {
   Alert,
 } from "@mui/material";
 import riasecQuestions from "./RiasecTest/riasecQuestions.json";
+import {
+  saveParticipantSession,
+  getParticipantSession,
+  fetchWithParticipantAuth,
+  clearParticipantSession,
+  SESSION_TYPES,
+} from "../services/participantSessionService";
 
 const SCORE_MAP = {
   strongly_like: 2,
@@ -188,11 +195,14 @@ function ProgramSuggestionTest() {
 
   // Create student when component mounts OR restore existing student
   useEffect(() => {
-    const storageKey = `program_suggestion_student_${roomId}`;
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
-    const fetchExistingStudent = async (existingStudentId) => {
+    const fetchExistingStudent = async (existingStudentId, hasValidToken) => {
       try {
-        const response = await fetch(
+        // Use authenticated fetch if we have a token
+        const fetchFn = hasValidToken ? (url) => fetchWithParticipantAuth(sessionType, url) : fetch;
+
+        const response = await fetchFn(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`
         );
 
@@ -203,8 +213,8 @@ function ProgramSuggestionTest() {
           if (data.status === "completed") {
             // Set flag to prevent creating new student
             isNavigatingRef.current = true;
-            // Clear localStorage so next student can start fresh
-            localStorage.removeItem(storageKey);
+            // Clear session so next student can start fresh
+            clearParticipantSession(sessionType);
             // Navigate to results
             navigate(`/program-test-result/${existingStudentId}`);
             return;
@@ -262,9 +272,9 @@ function ProgramSuggestionTest() {
 
           const resumeStep = statusToStep[data.status] ?? 0;
           setActiveStep(resumeStep);
-        } else if (response.status === 404) {
-          // Student not found, remove from storage and create new
-          localStorage.removeItem(storageKey);
+        } else if (response.status === 404 || response.status === 401) {
+          // Student not found or session invalid, clear and create new
+          clearParticipantSession(sessionType);
           createNewStudent();
         } else {
           setError("Test bilgileri yüklenemedi. Lütfen sayfayı yenileyin.");
@@ -293,9 +303,15 @@ function ProgramSuggestionTest() {
 
         if (response.ok) {
           const data = await response.json();
-          setStudentId(data.id);
-          // Save to localStorage for future visits
-          localStorage.setItem(storageKey, data.id.toString());
+          // New API returns session_token and student object
+          if (data.session_token && data.student) {
+            setStudentId(data.student.id);
+            // Save session with token for future requests
+            saveParticipantSession(sessionType, data);
+          } else {
+            // Fallback for old API format
+            setStudentId(data.id);
+          }
         } else {
           setError("Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.");
         }
@@ -306,11 +322,22 @@ function ProgramSuggestionTest() {
     };
 
     if (roomId && !isNavigatingRef.current) {
-      const existingStudentId = localStorage.getItem(storageKey);
-      if (existingStudentId) {
-        fetchExistingStudent(parseInt(existingStudentId));
+      // Check for existing session token
+      const existingSession = getParticipantSession(sessionType);
+      if (existingSession && existingSession.participantId) {
+        fetchExistingStudent(existingSession.participantId, true);
       } else {
-        createNewStudent();
+        // Fallback: check old localStorage format for backward compatibility
+        const storageKey = `program_suggestion_student_${roomId}`;
+        const oldStudentId = localStorage.getItem(storageKey);
+        if (oldStudentId) {
+          // Migrate: try to fetch without token (will fail if routes require auth)
+          fetchExistingStudent(parseInt(oldStudentId), false);
+          // Clean up old storage
+          localStorage.removeItem(storageKey);
+        } else {
+          createNewStudent();
+        }
       }
     }
   }, [roomId, navigate, riasecQuestionsList.length]);
@@ -360,46 +387,47 @@ function ProgramSuggestionTest() {
   const handleNext = async () => {
     setLoading(true);
     setError(null);
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
     try {
       if (activeStep === 0) {
         // Save Step 1
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step1`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               name: formData.name,
               birth_year: parseInt(formData.birthYear),
               gender: formData.gender,
-            }),
+            },
           }
         );
       } else if (activeStep === 1) {
         // Save Step 2
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step2`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               class_year: formData.classYear,
               will_take_exam: formData.willTakeExam,
               average_grade: formData.averageGrade ? parseFloat(formData.averageGrade) : null,
               area: formData.area,
               wants_foreign_language: formData.wantsForeignLanguage,
-            }),
+            },
           }
         );
       } else if (activeStep === 2) {
         // Save Step 3
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step3`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               expected_score_min: formData.expectedScoreRange[0],
               expected_score_max: formData.expectedScoreRange[1],
               expected_score_distribution: formData.expectedDistribution,
@@ -413,7 +441,7 @@ function ProgramSuggestionTest() {
               alternative_score_distribution: formData.alternativeArea
                 ? formData.alternativeDistribution
                 : null,
-            }),
+            },
           }
         );
       } else if (activeStep === 3) {
@@ -426,16 +454,16 @@ function ProgramSuggestionTest() {
         // Remove duplicates
         const uniqueUniversities = [...new Set(universitiesWithDefault)];
 
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step4`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               preferred_language: formData.preferredLanguage,
               desired_universities: uniqueUniversities,
               desired_cities: formData.desiredCities,
-            }),
+            },
           }
         );
       }
@@ -456,6 +484,7 @@ function ProgramSuggestionTest() {
   const handleRiasecAnswer = async (questionId, answer) => {
     const newAnswers = { ...riasecAnswers, [questionId]: SCORE_MAP[answer] };
     setRiasecAnswers(newAnswers);
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
     // Move to next question or finish
     if (currentQuestionIndex < riasecQuestionsList.length - 1) {
@@ -464,21 +493,20 @@ function ProgramSuggestionTest() {
       // All questions answered - submit and get results
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/riasec`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ riasec_answers: newAnswers }),
+            body: { riasec_answers: newAnswers },
           }
         );
 
         if (response.ok) {
           // Set flag to prevent creating new student during navigation
           isNavigatingRef.current = true;
-          // Clear localStorage so next student can start fresh
-          const storageKey = `program_suggestion_student_${roomId}`;
-          localStorage.removeItem(storageKey);
+          // Clear session so next student can start fresh
+          clearParticipantSession(sessionType);
           // Navigate to results
           navigate(`/program-test-result/${studentId}`);
         } else {

@@ -3,7 +3,8 @@ import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useUniversity, UNIVERSITY_CONFIG } from "../contexts/UniversityContext";
-import { login } from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
+import { storeUsername } from "../services/authService";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
@@ -71,12 +72,16 @@ function Login() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
   const { setUniversityFromUsername } = useUniversity();
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
       await login(username, password);
+
+      // Store username for UI convenience (non-sensitive)
+      storeUsername(username);
 
       // Set university based on username suffix
       setUniversityFromUsername(username);

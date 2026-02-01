@@ -1,84 +1,109 @@
+/**
+ * Auth Service - Legacy Compatibility Layer
+ *
+ * This service provides backward compatibility for code that hasn't migrated
+ * to the new AuthContext-based authentication.
+ *
+ * MIGRATION NOTE: New code should use the useAuth() hook from AuthContext.
+ * This service will be deprecated once all components have migrated.
+ *
+ * Security Model:
+ * - Access tokens: Stored in memory (AuthContext state)
+ * - Refresh tokens: HttpOnly cookie (managed by backend)
+ * - Only username persists in localStorage (for UI convenience)
+ */
+
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
-const TOKEN_KEYS = {
-  ACCESS_TOKEN: "access_token",
-  REFRESH_TOKEN: "refresh_token",
-  USER_ID: "current_user_id",
+// Only store non-sensitive data in localStorage
+const STORAGE_KEYS = {
   USERNAME: "username",
-  TOKEN_EXPIRY: "token_expiry",
+  UNIVERSITY_KEY: "universityKey",
 };
 
-const REFRESH_THRESHOLD_MS = 5 * 60 * 1000;
+// In-memory token storage for legacy compatibility
+// This is a singleton - shared across all imports
+let inMemoryAccessToken = null;
+let inMemoryUserId = null;
 
-export const storeAuthData = (data) => {
-  localStorage.setItem(TOKEN_KEYS.ACCESS_TOKEN, data.access_token);
-  localStorage.setItem(TOKEN_KEYS.USER_ID, data.current_user_id);
-
-  if (data.refresh_token) {
-    localStorage.setItem(TOKEN_KEYS.REFRESH_TOKEN, data.refresh_token);
-  }
-
-  if (data.expires_in) {
-    const expiryTime = Date.now() + data.expires_in * 1000;
-    localStorage.setItem(TOKEN_KEYS.TOKEN_EXPIRY, expiryTime.toString());
-  }
-};
-
+/**
+ * Store username in localStorage (non-sensitive, for UI convenience)
+ */
 export const storeUsername = (username) => {
-  localStorage.setItem(TOKEN_KEYS.USERNAME, username);
+  localStorage.setItem(STORAGE_KEYS.USERNAME, username);
 };
 
-export const getAccessToken = () => {
-  return localStorage.getItem(TOKEN_KEYS.ACCESS_TOKEN);
-};
-
-export const getRefreshToken = () => {
-  return localStorage.getItem(TOKEN_KEYS.REFRESH_TOKEN);
-};
-
-export const getUserId = () => {
-  return localStorage.getItem(TOKEN_KEYS.USER_ID);
-};
-
+/**
+ * Get stored username
+ */
 export const getUsername = () => {
-  return localStorage.getItem(TOKEN_KEYS.USERNAME);
+  return localStorage.getItem(STORAGE_KEYS.USERNAME);
 };
 
+/**
+ * Get access token from memory.
+ *
+ * For React components, prefer using useAuth().accessToken.
+ * For utility functions (like fetchWithAuth), this is the correct approach.
+ */
+export const getAccessToken = () => {
+  return inMemoryAccessToken;
+};
+
+/**
+ * Get user ID from memory.
+ *
+ * For React components, prefer using useAuth().userId.
+ * For utility functions, this is the correct approach.
+ */
+export const getUserId = () => {
+  return inMemoryUserId;
+};
+
+/**
+ * Check if user is authenticated (has access token in memory).
+ *
+ * For React components, prefer using useAuth().isAuthenticated.
+ * For utility functions, this is the correct approach.
+ */
 export const isAuthenticated = () => {
-  return !!getAccessToken();
+  return !!inMemoryAccessToken;
 };
 
-export const isTokenExpiringSoon = () => {
-  const expiryTime = localStorage.getItem(TOKEN_KEYS.TOKEN_EXPIRY);
-  if (!expiryTime) return false;
-
-  const timeUntilExpiry = parseInt(expiryTime, 10) - Date.now();
-  return timeUntilExpiry < REFRESH_THRESHOLD_MS;
-};
-
-export const isTokenExpired = () => {
-  const expiryTime = localStorage.getItem(TOKEN_KEYS.TOKEN_EXPIRY);
-  if (!expiryTime) return false;
-
-  return Date.now() > parseInt(expiryTime, 10);
-};
-
+/**
+ * Clear all auth data
+ */
 export const clearAuthData = () => {
-  localStorage.removeItem(TOKEN_KEYS.ACCESS_TOKEN);
-  localStorage.removeItem(TOKEN_KEYS.REFRESH_TOKEN);
-  localStorage.removeItem(TOKEN_KEYS.USER_ID);
-  localStorage.removeItem(TOKEN_KEYS.USERNAME);
-  localStorage.removeItem(TOKEN_KEYS.TOKEN_EXPIRY);
-  localStorage.removeItem("universityKey");
+  inMemoryAccessToken = null;
+  inMemoryUserId = null;
+  localStorage.removeItem(STORAGE_KEYS.USERNAME);
+  localStorage.removeItem(STORAGE_KEYS.UNIVERSITY_KEY);
 };
 
+/**
+ * Store auth data in memory (called by AuthContext or login)
+ * @internal Used by AuthContext, not for direct use
+ */
+export const setAuthData = (accessToken, userId) => {
+  inMemoryAccessToken = accessToken;
+  inMemoryUserId = userId;
+};
+
+/**
+ * Login with username and password
+ * Sets HttpOnly refresh cookie automatically via backend
+ */
 export const login = async (username, password) => {
-  const formData = new FormData();
+  const formData = new URLSearchParams();
   formData.append("username", username);
   formData.append("password", password);
 
   const response = await fetch(`${BASE_URL}/authenticate`, {
     method: "POST",
+    credentials: "include", // Receive HttpOnly cookie
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
     body: formData,
   });
 
@@ -89,25 +114,26 @@ export const login = async (username, password) => {
 
   const data = await response.json();
 
-  storeAuthData(data);
+  // Store access token in memory only
+  inMemoryAccessToken = data.access_token;
+  inMemoryUserId = data.current_user_id;
+  // Refresh token is automatically stored in HttpOnly cookie by backend
+
   storeUsername(username);
 
   return data;
 };
 
+/**
+ * Refresh access token using HttpOnly cookie
+ */
 export const refreshAccessToken = async () => {
-  const refreshToken = getRefreshToken();
-
-  if (!refreshToken) {
-    throw new Error("No refresh token available");
-  }
-
   const response = await fetch(`${BASE_URL}/refresh`, {
     method: "POST",
+    credentials: "include", // Send HttpOnly cookie
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ refresh_token: refreshToken }),
   });
 
   if (!response.ok) {
@@ -118,30 +144,27 @@ export const refreshAccessToken = async () => {
 
   const data = await response.json();
 
-  storeAuthData({
-    access_token: data.access_token,
-    refresh_token: data.refresh_token,
-    current_user_id: getUserId(),
-    expires_in: data.expires_in,
-  });
+  // Update in-memory token
+  inMemoryAccessToken = data.access_token;
+  inMemoryUserId = data.current_user_id;
 
   return data;
 };
 
+/**
+ * Logout - clear tokens and revoke on server
+ */
 export const logout = async (callApi = true) => {
   if (callApi) {
     try {
-      const accessToken = getAccessToken();
-      const refreshToken = getRefreshToken();
-
-      if (accessToken) {
+      if (inMemoryAccessToken) {
         await fetch(`${BASE_URL}/logout`, {
           method: "POST",
+          credentials: "include", // Send refresh cookie to be cleared
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${inMemoryAccessToken}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ refresh_token: refreshToken }),
         });
       }
     } catch {
@@ -152,43 +175,54 @@ export const logout = async (callApi = true) => {
   clearAuthData();
 };
 
+/**
+ * Get a valid access token, refreshing if needed
+ * @deprecated Use useAuth().getValidAccessToken() instead
+ */
 export const getValidAccessToken = async () => {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    throw new Error("No access token available");
-  }
-
-  if (isTokenExpiringSoon() || isTokenExpired()) {
+  if (!inMemoryAccessToken) {
+    // Try to restore session via refresh token cookie
     try {
       await refreshAccessToken();
-      return getAccessToken();
+      return inMemoryAccessToken;
     } catch {
-      return accessToken;
+      throw new Error("No access token available");
     }
   }
 
-  return accessToken;
+  return inMemoryAccessToken;
 };
 
-export { TOKEN_KEYS };
+/**
+ * Try to restore session on app load
+ * Called once on app initialization to restore session from refresh cookie
+ */
+export const tryRestoreSession = async () => {
+  try {
+    await refreshAccessToken();
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+// Legacy exports for backward compatibility
+export { STORAGE_KEYS as TOKEN_KEYS };
 
 const authService = {
   login,
   logout,
   refreshAccessToken,
   getAccessToken,
-  getRefreshToken,
   getUserId,
   getUsername,
   isAuthenticated,
-  isTokenExpiringSoon,
-  isTokenExpired,
   clearAuthData,
-  storeAuthData,
   storeUsername,
   getValidAccessToken,
-  TOKEN_KEYS,
+  setAuthData,
+  tryRestoreSession,
+  TOKEN_KEYS: STORAGE_KEYS,
 };
 
 export default authService;
