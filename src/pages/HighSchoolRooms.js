@@ -16,24 +16,18 @@ import fetchWithAuth from "../utils/fetchWithAuth";
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "../styles/CommonStyles";
 import Header from "../components/Header";
 import { useNavigate } from "react-router-dom";
+import { fetchLiseMapping } from "../services/liseService";
 
-// Import high school list from CSV
-// CSV format: lise_adi,sehir,lise_id
+// Load high school list from API
 const loadHighSchools = async () => {
   try {
-    const response = await fetch("/assets/data_2025/lise_mapping_canonical.csv");
-    const text = await response.text();
-    const lines = text.split("\n").slice(1); // Skip header
-    const highSchools = lines
-      .filter((line) => line.trim())
-      .map((line) => {
-        const parts = line.split(",");
-        return {
-          name: parts[0]?.trim().replace(/"/g, "") || "",
-          city: parts[1]?.trim().replace(/"/g, "") || "",
-          code: parts[2]?.trim() || "",
-        };
-      })
+    const mapping = await fetchLiseMapping("2025");
+    const highSchools = Object.entries(mapping)
+      .map(([liseId, info]) => ({
+        name: info.lise_adi || "",
+        city: info.sehir || "",
+        code: liseId,
+      }))
       .filter((hs) => hs.name);
     return highSchools;
   } catch (error) {

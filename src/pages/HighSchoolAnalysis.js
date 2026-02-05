@@ -18,7 +18,7 @@ import {
 import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import { fetchPlacementsByPrograms } from "../services/liseService";
 
 // School type decoder
 const decodeSchoolType = (schoolType) => {
@@ -48,105 +48,9 @@ const HighSchoolAnalysis = () => {
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [liseMapping, setLiseMapping] = useState({});
-  const [universityMapping, setUniversityMapping] = useState({});
   const [highSchoolData, setHighSchoolData] = useState([]);
 
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      } catch (error) {}
-    };
-
-    fetchRooms();
-  }, []);
-
-  // Load lise mapping
-  useEffect(() => {
-    const loadLiseMapping = async () => {
-      try {
-        // Load from both folders
-        const [response1, response2] = await Promise.all([
-          fetch("/assets/data/lise_mapping.csv"),
-          fetch("/assets/data_2025/lise_mapping.csv"),
-        ]);
-
-        if (!response1.ok && !response2.ok) throw new Error("Failed to load lise mapping");
-
-        const mapping = {};
-
-        // Process first file if available
-        if (response1.ok) {
-          const text1 = await response1.text();
-          const lines1 = text1.trim().split("\n");
-          for (let i = 1; i < lines1.length; i++) {
-            const parts = lines1[i].split(",");
-            if (parts.length >= 3) {
-              const lise_id = parts[2];
-              const lise_adi = parts[0];
-              const sehir = parts[1];
-              mapping[lise_id] = { lise_adi, sehir };
-            }
-          }
-        }
-
-        // Process second file if available (2025 data may have additional schools)
-        if (response2.ok) {
-          const text2 = await response2.text();
-          const lines2 = text2.trim().split("\n");
-          for (let i = 1; i < lines2.length; i++) {
-            const parts = lines2[i].split(",");
-            if (parts.length >= 3) {
-              const lise_id = parts[2];
-              const lise_adi = parts[0];
-              const sehir = parts[1];
-              // Don't overwrite if already exists from first file
-              if (!mapping[lise_id]) {
-                mapping[lise_id] = { lise_adi, sehir };
-              }
-            }
-          }
-        }
-
-        setLiseMapping(mapping);
-      } catch (err) {
-        console.error("Error loading lise mapping:", err);
-        setError("Lise haritası yüklenemedi");
-      }
-    };
-
-    loadLiseMapping();
-  }, []);
-
-  // Load university mapping
-  useEffect(() => {
-    const loadUniversityMapping = async () => {
-      try {
-        const dataFolder = selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
-        const response = await fetch(`${dataFolder}/lise_by_university/_university_mapping.json`);
-
-        if (response.ok) {
-          const mapping = await response.json();
-          setUniversityMapping(mapping);
-        }
-      } catch (err) {
-        console.error("Error loading university mapping:", err);
-      }
-    };
-
-    if (selectedYear) {
-      loadUniversityMapping();
-    }
-  }, [selectedYear]);
-
-  // Load high school data for selected programs
+  // Load high school data for selected programs from API
   useEffect(() => {
     const loadHighSchoolData = async () => {
       if (selectedPrograms.length === 0) {
@@ -154,114 +58,43 @@ const HighSchoolAnalysis = () => {
         return;
       }
 
-      if (Object.keys(liseMapping).length === 0 || Object.keys(universityMapping).length === 0) {
-        return; // Wait for mappings to load
-      }
-
       try {
         setLoading(true);
         setError(null);
 
-        const dataFolder = selectedYear === "2025" ? "/assets/data_2025" : "/assets/data";
-
         console.log("[HighSchoolAnalysis] Selected year:", selectedYear);
         console.log("[HighSchoolAnalysis] Selected programs:", selectedPrograms.length);
 
-        // Get unique universities from selected programs
-        const universities = [...new Set(selectedPrograms.map((p) => p.university))];
-        console.log("[HighSchoolAnalysis] Unique universities:", universities.length, universities);
+        // Get YOP codes from selected programs
+        const yopKodlari = selectedPrograms.map((p) => p.yop_kodu);
 
-        // Create program map
+        // Create program map for enriching data
         const programMap = new Map();
         selectedPrograms.forEach((p) => {
           programMap.set(p.yop_kodu, p);
         });
 
-        // Create Set for fast yop_kodu lookup
-        const programSet = new Set(selectedPrograms.map((p) => p.yop_kodu));
-        const selectedYearStr = String(selectedYear);
+        // Fetch placements from API
+        const year = selectedYear ? parseInt(selectedYear) : null;
+        const response = await fetchPlacementsByPrograms(yopKodlari, year, { limit: 100000 });
 
-        const allData = [];
-        let totalMatched = 0;
+        console.log("[HighSchoolAnalysis] API response:", response.total, "total records");
 
-        // Load CSV file for each university
-        for (const university of universities) {
-          const sanitizedName = universityMapping[university];
-          if (!sanitizedName) {
-            console.warn(`No mapping found for university: ${university}`);
-            continue;
-          }
+        // Enrich with program info and add school type labels
+        const enrichedData = response.items.map((item) => {
+          const program = programMap.get(item.yop_kodu);
+          return {
+            ...item,
+            university: program?.university || "",
+            program: program?.program || program?.department || "",
+            city: program?.city || "",
+            school_type_label: getSchoolTypeLabel(item.school_type),
+          };
+        });
 
-          const csvPath = `${dataFolder}/lise_by_university/${sanitizedName}.csv`;
-          console.log(`Loading ${csvPath}...`);
+        console.log("[HighSchoolAnalysis] Enriched data rows:", enrichedData.length);
 
-          try {
-            const response = await fetch(csvPath);
-            if (!response.ok) {
-              console.warn(`File not found: ${csvPath}`);
-              continue;
-            }
-
-            const text = await response.text();
-            const lines = text.trim().split("\n");
-
-            console.log(`  ${sanitizedName}: ${lines.length} lines`);
-
-            // Skip header
-            for (let i = 1; i < lines.length; i++) {
-              const line = lines[i];
-              if (!line) continue;
-
-              const firstComma = line.indexOf(",");
-              if (firstComma === -1) continue;
-
-              const yop_kodu = line.substring(0, firstComma);
-
-              // Fast rejection
-              if (!programSet.has(yop_kodu)) continue;
-
-              const parts = line.split(",");
-              if (parts.length >= 5) {
-                const year = parts[1];
-
-                if (year === selectedYearStr) {
-                  totalMatched++;
-                  const lise_id = parts[2];
-                  const yerlesen_sayisi = parseInt(parts[3]);
-                  const school_type = parts[4];
-
-                  const liseInfo = liseMapping[lise_id] || {
-                    lise_adi: `Lise ID: ${lise_id}`,
-                    sehir: "Bilinmiyor",
-                  };
-
-                  const program = programMap.get(yop_kodu);
-
-                  allData.push({
-                    yop_kodu,
-                    university: program?.university || "",
-                    program: program?.program || program?.department || "",
-                    city: program?.city || "",
-                    year,
-                    lise_id,
-                    lise_adi: liseInfo.lise_adi,
-                    lise_sehir: liseInfo.sehir,
-                    yerlesen_sayisi,
-                    school_type,
-                    school_type_label: getSchoolTypeLabel(school_type),
-                  });
-                }
-              }
-            }
-          } catch (fileErr) {
-            console.error(`Error loading ${csvPath}:`, fileErr);
-          }
-        }
-
-        console.log("[HighSchoolAnalysis] Total matched records:", totalMatched);
-        console.log("[HighSchoolAnalysis] Data rows:", allData.length);
-
-        setHighSchoolData(allData);
+        setHighSchoolData(enrichedData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading high school data:", err);
@@ -271,8 +104,7 @@ const HighSchoolAnalysis = () => {
     };
 
     loadHighSchoolData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedPrograms, selectedYear, liseMapping, universityMapping]);
+  }, [selectedPrograms, selectedYear]);
 
   // Download as CSV
   const handleDownload = () => {

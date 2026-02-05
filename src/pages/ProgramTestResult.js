@@ -18,6 +18,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import jobTranslations from "./RiasecTest/job_translations.json";
+import { fetchScoreRankingDistribution } from "../services/liseService";
 
 // Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)
 const normalizeForComparison = (str) => {
@@ -80,12 +81,11 @@ function ProgramTestResult() {
   const [error, setError] = useState(null);
   const [scoreDistribution, setScoreDistribution] = useState(null);
 
-  // Load score distribution data
+  // Load score distribution data from API
   useEffect(() => {
     const loadScoreDistribution = async () => {
       try {
-        const response = await fetch("/assets/data_2025/score_ranking_distribution.json");
-        const data = await response.json();
+        const data = await fetchScoreRankingDistribution();
         setScoreDistribution(data);
       } catch (error) {
         console.error("Error loading score distribution:", error);

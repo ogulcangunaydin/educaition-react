@@ -32,6 +32,7 @@ import {
   clearParticipantSession,
   SESSION_TYPES,
 } from "../services/participantSessionService";
+import { fetchUniversityMapping, fetchScoreRankingDistribution } from "../services/liseService";
 
 const SCORE_MAP = {
   strongly_like: 2,
@@ -145,14 +146,11 @@ function ProgramSuggestionTest() {
   const [riasecQuestionsList] = useState(() => getAllQuestions());
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
 
-  // Load university list
+  // Load university list from API
   useEffect(() => {
     const loadUniversities = async () => {
       try {
-        const response = await fetch(
-          "/assets/data_2025/lise_by_university/_university_mapping.json"
-        );
-        const data = await response.json();
+        const data = await fetchUniversityMapping();
         const uniList = Object.keys(data).map((name) => ({
           name,
           code: data[name],
@@ -165,12 +163,11 @@ function ProgramSuggestionTest() {
     loadUniversities();
   }, []);
 
-  // Load score-ranking distribution data
+  // Load score-ranking distribution data from API
   useEffect(() => {
     const loadScoreDistribution = async () => {
       try {
-        const response = await fetch("/assets/data_2025/score_ranking_distribution.json");
-        const data = await response.json();
+        const data = await fetchScoreRankingDistribution();
         setScoreDistribution(data);
       } catch (error) {
         console.error("Error loading score distribution:", error);
