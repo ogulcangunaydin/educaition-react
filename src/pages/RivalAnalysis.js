@@ -20,6 +20,7 @@ import { Download } from "@mui/icons-material";
 import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
 import fetchWithAuth from "../utils/fetchWithAuth";
+import { fetchAllTercihStatsCached } from "../services/programService";
 
 const RivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
@@ -58,52 +59,24 @@ const RivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load from both folders
-        const [response1, response2] = await Promise.all([
-          fetch("/assets/data/all_universities_combined_tercih_stats.csv"),
-          fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
-        ]);
+        // Load tercih stats from API
+        const tercihStats = await fetchAllTercihStatsCached();
 
-        if (!response1.ok && !response2.ok) throw new Error("Failed to load rival data");
-
-        const allLines = [];
-
-        // Combine lines from both files
-        if (response1.ok) {
-          const text1 = await response1.text();
-          const lines1 = text1.trim().split("\n");
-          allLines.push(...lines1.slice(1)); // Skip header
-        }
-
-        if (response2.ok) {
-          const text2 = await response2.text();
-          const lines2 = text2.trim().split("\n");
-          allLines.push(...lines2.slice(1)); // Skip header
-        }
-
-        const lines = allLines;
-
-        console.log("[RivalAnalysis] Total CSV lines:", lines.length);
+        console.log("[RivalAnalysis] Tercih stats count:", tercihStats.length);
         console.log("[RivalAnalysis] Selected year:", selectedYear);
         console.log("[RivalAnalysis] Selected programs:", selectedPrograms.length);
         console.log("[RivalAnalysis] First selected program:", selectedPrograms[0]);
 
-        // Parse CSV data into a map for quick lookup by yop_kodu
+        // Parse data into a map for quick lookup by yop_kodu
         const csvDataMap = new Map();
-        for (let i = 0; i < lines.length; i++) {
-          const parts = lines[i].split(",");
-          if (parts.length >= 5) {
-            const yop_kodu = parts[0];
-            const year = parts[1];
-
-            // Only include data for the selected year
-            if (year === String(selectedYear)) {
-              csvDataMap.set(yop_kodu, {
-                ortalama_tercih_edilme: parseFloat(parts[2]),
-                ortalama_yerlesen_tercih: parseFloat(parts[3]),
-                marka_etkinlik: parseFloat(parts[4]),
-              });
-            }
+        for (const stat of tercihStats) {
+          // Only include data for the selected year
+          if (stat.year === Number(selectedYear)) {
+            csvDataMap.set(stat.yop_kodu, {
+              ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
+              ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
+              marka_etkinlik: stat.marka_etkinlik_degeri,
+            });
           }
         }
 

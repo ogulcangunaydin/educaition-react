@@ -18,7 +18,11 @@ import FilterSlider from "../components/UniversityComparison/FilterSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import InstructionsPanel from "../components/UniversityComparison/InstructionsPanel";
-import { fetchAllProgramsCached } from "../services/programService";
+import {
+  fetchAllProgramsCached,
+  fetchAllPricesCached,
+  fetchPreferencesBySource,
+} from "../services/programService";
 import { useBasket } from "../contexts/BasketContext";
 import { useUniversity } from "../contexts/UniversityContext";
 import {
@@ -233,192 +237,56 @@ const UniversityComparison = () => {
 
         const dataPrefix = university.dataPrefix;
 
-        // Load program data from API (cached)
-        const programDataPromise = fetchAllProgramsCached();
+        // Load all data from API in parallel
+        const [allProgramsData, pricesData, cityPrefsData, uniPrefsData, progPrefsData] =
+          await Promise.all([
+            fetchAllProgramsCached(),
+            fetchAllPricesCached(),
+            fetchPreferencesBySource(dataPrefix, { preferenceType: "city" }),
+            fetchPreferencesBySource(dataPrefix, { preferenceType: "university" }),
+            fetchPreferencesBySource(dataPrefix, { preferenceType: "program" }),
+          ]);
 
-        // Load preference and price CSV files (these will be migrated to API in Phase 8.5)
-        const [
-          cityPrefsResponse,
-          uniPrefsResponse,
-          progPrefsResponse,
-          priceResponse,
-          cityPrefs2025Response,
-          uniPrefs2025Response,
-          progPrefs2025Response,
-        ] = await Promise.all([
-          fetch(`/assets/data/${dataPrefix}_tercih_edilen_iller.csv`),
-          fetch(`/assets/data/${dataPrefix}_tercih_edilen_universiteler.csv`),
-          fetch(`/assets/data/${dataPrefix}_tercih_edilen_programlar.csv`),
-          fetch("/assets/data/all_programs_prices_processed.csv"),
-          fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_iller.csv`),
-          fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_universiteler.csv`),
-          fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_programlar.csv`),
-        ]);
+        // Transform price data to match expected format
+        const transformedPriceData = pricesData.map((p) => ({
+          yop_kodu: p.yop_kodu,
+          is_english: p.is_english,
+          scholarship_pct: p.scholarship_pct,
+          full_price_2024: p.full_price_2024,
+          full_price_2025: p.full_price_2025,
+          discounted_price_2024: p.discounted_price_2024,
+          discounted_price_2025: p.discounted_price_2025,
+        }));
 
-        if (
-          !cityPrefsResponse.ok ||
-          !uniPrefsResponse.ok ||
-          !progPrefsResponse.ok ||
-          !priceResponse.ok ||
-          !cityPrefs2025Response.ok ||
-          !uniPrefs2025Response.ok ||
-          !progPrefs2025Response.ok
-        ) {
-          throw new Error("Failed to load preference CSV files");
-        }
+        // Transform preference data to match expected format
+        const transformedCityPrefs = cityPrefsData.map((p) => ({
+          yop_kodu: p.yop_kodu,
+          year: String(p.year),
+          il: p.preferred_item,
+          tercih_sayisi: p.tercih_sayisi,
+        }));
 
-        // Get program data from API
-        const allProgramsData = await programDataPromise;
+        const transformedUniPrefs = uniPrefsData.map((p) => ({
+          yop_kodu: p.yop_kodu,
+          year: String(p.year),
+          universite: p.preferred_item,
+          tercih_sayisi: p.tercih_sayisi,
+          university_type: p.university_type,
+        }));
 
-        const [
-          cityPrefsText,
-          uniPrefsText,
-          progPrefsText,
-          priceText,
-          cityPrefs2025Text,
-          uniPrefs2025Text,
-          progPrefs2025Text,
-        ] = await Promise.all([
-          cityPrefsResponse.text(),
-          uniPrefsResponse.text(),
-          progPrefsResponse.text(),
-          priceResponse.text(),
-          cityPrefs2025Response.text(),
-          uniPrefs2025Response.text(),
-          progPrefs2025Response.text(),
-        ]);
+        const transformedProgPrefs = progPrefsData.map((p) => ({
+          yop_kodu: p.yop_kodu,
+          year: String(p.year),
+          program: p.preferred_item,
+          tercih_sayisi: p.tercih_sayisi,
+        }));
 
-        // Parse city preferences CSV (simple format, not using parseCSV)
-        const cityPrefsLines = cityPrefsText.trim().split("\n");
-        const cityPrefs2025Lines = cityPrefs2025Text.trim().split("\n");
-        const cityPrefsData = [];
-        for (let i = 1; i < cityPrefsLines.length; i++) {
-          const [yop_kodu, year, il, tercih_sayisi] = cityPrefsLines[i].split(",");
-          cityPrefsData.push({
-            yop_kodu,
-            year,
-            il,
-            tercih_sayisi: parseInt(tercih_sayisi),
-          });
-        }
-        // Add 2025 city preferences
-        for (let i = 1; i < cityPrefs2025Lines.length; i++) {
-          const [yop_kodu, year, il, tercih_sayisi] = cityPrefs2025Lines[i].split(",");
-          cityPrefsData.push({
-            yop_kodu,
-            year,
-            il,
-            tercih_sayisi: parseInt(tercih_sayisi),
-          });
-        }
-
-        // Parse university preferences CSV
-        const uniPrefsLines = uniPrefsText.trim().split("\n");
-        const uniPrefs2025Lines = uniPrefs2025Text.trim().split("\n");
-        const uniPrefsData = [];
-        for (let i = 1; i < uniPrefsLines.length; i++) {
-          const [yop_kodu, year, universite, tercih_sayisi, university_type] =
-            uniPrefsLines[i].split(",");
-          uniPrefsData.push({
-            yop_kodu,
-            year,
-            universite,
-            tercih_sayisi: parseInt(tercih_sayisi),
-            university_type,
-          });
-        }
-        // Add 2025 university preferences
-        for (let i = 1; i < uniPrefs2025Lines.length; i++) {
-          const [yop_kodu, year, universite, tercih_sayisi, university_type] =
-            uniPrefs2025Lines[i].split(",");
-          uniPrefsData.push({
-            yop_kodu,
-            year,
-            universite,
-            tercih_sayisi: parseInt(tercih_sayisi),
-            university_type,
-          });
-        }
-
-        // Parse program preferences CSV
-        const progPrefsLines = progPrefsText.trim().split("\n");
-        const progPrefs2025Lines = progPrefs2025Text.trim().split("\n");
-        const progPrefsData = [];
-        for (let i = 1; i < progPrefsLines.length; i++) {
-          const [yop_kodu, year, program, tercih_sayisi] = progPrefsLines[i].split(",");
-          progPrefsData.push({
-            yop_kodu,
-            year,
-            program,
-            tercih_sayisi: parseInt(tercih_sayisi),
-          });
-        }
-        // Add 2025 program preferences
-        for (let i = 1; i < progPrefs2025Lines.length; i++) {
-          const [yop_kodu, year, program, tercih_sayisi] = progPrefs2025Lines[i].split(",");
-          progPrefsData.push({
-            yop_kodu,
-            year,
-            program,
-            tercih_sayisi: parseInt(tercih_sayisi),
-          });
-        }
-
-        // Parse price data CSV (new format with 2024 and 2025 prices)
-        // Helper to parse CSV line with quoted fields containing commas
-        const parseCSVLine = (line) => {
-          const result = [];
-          let current = "";
-          let inQuotes = false;
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === "," && !inQuotes) {
-              result.push(current.trim());
-              current = "";
-            } else {
-              current += char;
-            }
-          }
-          result.push(current.trim());
-          return result;
-        };
-
-        const priceLines = priceText.trim().split("\n");
-        const parsedPriceData = [];
-        for (let i = 1; i < priceLines.length; i++) {
-          const parts = parseCSVLine(priceLines[i]);
-          const [
-            yop_kodu,
-            university,
-            program,
-            is_english,
-            scholarship_pct,
-            full_price_2024,
-            full_price_2025,
-            discounted_price_2024,
-            discounted_price_2025,
-          ] = parts;
-          parsedPriceData.push({
-            yop_kodu: yop_kodu?.trim(),
-            university: university?.trim(),
-            program: program?.trim(),
-            is_english: is_english === "True",
-            scholarship_pct: parseFloat(scholarship_pct),
-            full_price_2024: parseFloat(full_price_2024) || null,
-            full_price_2025: parseFloat(full_price_2025) || null,
-            discounted_price_2024: parseFloat(discounted_price_2024) || null,
-            discounted_price_2025: parseFloat(discounted_price_2025) || null,
-          });
-        }
-
-        // Use program data from API (already includes all years)
+        // Use data from API (already includes all years)
         setAllUniversitiesData(allProgramsData);
-        setCityPreferencesData(cityPrefsData);
-        setUniversityPreferencesData(uniPrefsData);
-        setProgramPreferencesData(progPrefsData);
-        setPriceData(parsedPriceData);
+        setCityPreferencesData(transformedCityPrefs);
+        setUniversityPreferencesData(transformedUniPrefs);
+        setProgramPreferencesData(transformedProgPrefs);
+        setPriceData(transformedPriceData);
         setLoading(false);
       } catch (err) {
         console.error("Error loading data:", err);

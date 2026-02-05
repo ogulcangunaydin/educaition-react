@@ -174,3 +174,277 @@ export const clearProgramCache = () => {
   programCache = null;
   programCacheTimestamp = null;
 };
+
+// ===================== TERCIH STATS API =====================
+
+/**
+ * Fetch program prices by YOP code
+ * @param {string} yopKodu - The program's YOP code
+ * @returns {Promise<Array>} Array of price objects
+ */
+export const fetchProgramPrices = async (yopKodu) => {
+  const url = `${API_BASE_URL}/tercih-stats/prices/${encodeURIComponent(yopKodu)}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch program prices: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch all program prices with pagination
+ * @param {number} skip - Offset for pagination
+ * @param {number} limit - Maximum results (default 1000)
+ * @returns {Promise<{items: Array, total: number}>}
+ */
+export const fetchAllPrices = async (skip = 0, limit = 10000) => {
+  const url = `${API_BASE_URL}/tercih-stats/prices?skip=${skip}&limit=${limit}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch prices: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch tercih stats by YOP code
+ * @param {string} yopKodu - The program's YOP code
+ * @param {number} year - Optional year filter
+ * @returns {Promise<Array>} Array of stats objects
+ */
+export const fetchTercihStats = async (yopKodu, year = null) => {
+  let url = `${API_BASE_URL}/tercih-stats/stats/${encodeURIComponent(yopKodu)}`;
+  if (year) url += `?year=${year}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tercih stats: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch all tercih stats
+ * @param {number} skip - Offset for pagination
+ * @param {number} limit - Maximum results (default 1000)
+ * @returns {Promise<{items: Array, total: number}>}
+ */
+export const fetchAllTercihStats = async (skip = 0, limit = 50000) => {
+  const url = `${API_BASE_URL}/tercih-stats/stats?skip=${skip}&limit=${limit}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch all tercih stats: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch detailed tercih istatistikleri by YOP code
+ * @param {string} yopKodu - The program's YOP code
+ * @returns {Promise<Object>} Istatistikleri object
+ */
+export const fetchTercihIstatistikleri = async (yopKodu) => {
+  const url = `${API_BASE_URL}/tercih-stats/istatistikleri/${encodeURIComponent(yopKodu)}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    if (response.status === 404) return null;
+    throw new Error(`Failed to fetch tercih istatistikleri: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch all tercih istatistikleri
+ * @param {number} skip - Offset for pagination
+ * @param {number} limit - Maximum results (default 1000)
+ * @returns {Promise<Array>}
+ */
+export const fetchAllTercihIstatistikleri = async (skip = 0, limit = 15000) => {
+  const url = `${API_BASE_URL}/tercih-stats/istatistikleri?skip=${skip}&limit=${limit}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch all tercih istatistikleri: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch tercih preferences by YOP code
+ * @param {string} yopKodu - The program's YOP code
+ * @param {Object} options - Optional filters
+ * @param {string} options.sourceUniversity - Filter by source university
+ * @param {string} options.preferenceType - Filter by type: city, university, program
+ * @param {number} options.year - Filter by year
+ * @returns {Promise<Array>} Array of preference objects
+ */
+export const fetchTercihPreferences = async (yopKodu, options = {}) => {
+  const params = new URLSearchParams();
+  if (options.sourceUniversity) params.append("source_university", options.sourceUniversity);
+  if (options.preferenceType) params.append("preference_type", options.preferenceType);
+  if (options.year) params.append("year", options.year);
+
+  const url = `${API_BASE_URL}/tercih-stats/preferences/${encodeURIComponent(yopKodu)}${params.toString() ? `?${params}` : ""}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tercih preferences: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch tercih preferences by source university
+ * @param {string} sourceUniversity - Source university (e.g., "halic", "fsm")
+ * @param {Object} options - Optional filters
+ * @param {string} options.preferenceType - Filter by type: city, university, program
+ * @param {number} options.year - Filter by year
+ * @returns {Promise<Array>} Array of preference objects
+ */
+export const fetchPreferencesBySource = async (sourceUniversity, options = {}) => {
+  const params = new URLSearchParams();
+  if (options.preferenceType) params.append("preference_type", options.preferenceType);
+  if (options.year) params.append("year", options.year);
+
+  const url = `${API_BASE_URL}/tercih-stats/preferences/source/${encodeURIComponent(sourceUniversity)}${params.toString() ? `?${params}` : ""}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch preferences by source: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch available source universities
+ * @returns {Promise<Array<string>>}
+ */
+export const fetchSourceUniversities = async () => {
+  const url = `${API_BASE_URL}/tercih-stats/source-universities`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch source universities: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Fetch available years for tercih stats
+ * @returns {Promise<Array<number>>}
+ */
+export const fetchTercihYears = async () => {
+  const url = `${API_BASE_URL}/tercih-stats/years`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch tercih years: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Caches for tercih data
+let tercihStatsCache = null;
+let tercihStatsCacheTimestamp = null;
+let tercihIstatistikleriCache = null;
+let tercihIstatistikleriCacheTimestamp = null;
+let pricesCache = null;
+let pricesCacheTimestamp = null;
+
+/**
+ * Fetch all tercih stats with caching (for components that need full dataset)
+ * @param {boolean} forceRefresh - Force a fresh fetch
+ * @returns {Promise<Array>}
+ */
+export const fetchAllTercihStatsCached = async (forceRefresh = false) => {
+  const now = Date.now();
+
+  if (
+    !forceRefresh &&
+    tercihStatsCache &&
+    tercihStatsCacheTimestamp &&
+    now - tercihStatsCacheTimestamp < CACHE_TTL
+  ) {
+    return tercihStatsCache;
+  }
+
+  const data = await fetchAllTercihStats();
+  tercihStatsCache = data.items;
+  tercihStatsCacheTimestamp = now;
+
+  return tercihStatsCache;
+};
+
+/**
+ * Fetch all tercih istatistikleri with caching
+ * @param {boolean} forceRefresh - Force a fresh fetch
+ * @returns {Promise<Array>}
+ */
+export const fetchAllTercihIstatistikleriCached = async (forceRefresh = false) => {
+  const now = Date.now();
+
+  if (
+    !forceRefresh &&
+    tercihIstatistikleriCache &&
+    tercihIstatistikleriCacheTimestamp &&
+    now - tercihIstatistikleriCacheTimestamp < CACHE_TTL
+  ) {
+    return tercihIstatistikleriCache;
+  }
+
+  const data = await fetchAllTercihIstatistikleri();
+  tercihIstatistikleriCache = data;
+  tercihIstatistikleriCacheTimestamp = now;
+
+  return tercihIstatistikleriCache;
+};
+
+/**
+ * Fetch all program prices with caching
+ * @param {boolean} forceRefresh - Force a fresh fetch
+ * @returns {Promise<Array>}
+ */
+export const fetchAllPricesCached = async (forceRefresh = false) => {
+  const now = Date.now();
+
+  if (
+    !forceRefresh &&
+    pricesCache &&
+    pricesCacheTimestamp &&
+    now - pricesCacheTimestamp < CACHE_TTL
+  ) {
+    return pricesCache;
+  }
+
+  const data = await fetchAllPrices();
+  pricesCache = data.items;
+  pricesCacheTimestamp = now;
+
+  return pricesCache;
+};
+
+/**
+ * Clear all tercih caches
+ */
+export const clearTercihCaches = () => {
+  tercihStatsCache = null;
+  tercihStatsCacheTimestamp = null;
+  tercihIstatistikleriCache = null;
+  tercihIstatistikleriCacheTimestamp = null;
+  pricesCache = null;
+  pricesCacheTimestamp = null;
+};

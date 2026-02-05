@@ -22,6 +22,11 @@ import Header from "../components/Header";
 import { useBasket } from "../contexts/BasketContext";
 import { useUniversity } from "../contexts/UniversityContext";
 import fetchWithAuth from "../utils/fetchWithAuth";
+import {
+  fetchAllTercihStatsCached,
+  fetchAllPricesCached,
+  fetchAllTercihIstatistikleriCached,
+} from "../services/programService";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
@@ -61,227 +66,70 @@ const ProgramRivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load from both folders and also load price data and tercih statistics
-        const [
-          response1,
-          response2,
-          priceResponse,
-          tercihIstatResponse1,
-          tercihIstatResponse2,
-          tercihKullanmaResponse1,
-          tercihKullanmaResponse2,
-        ] = await Promise.all([
-          fetch("/assets/data/all_universities_combined_tercih_stats.csv"),
-          fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
-          fetch("/assets/data/all_programs_prices_processed.csv"),
-          fetch("/assets/data/all_universities_tercih_istatistikleri.csv"),
-          fetch("/assets/data_2025/all_universities_tercih_istatistikleri.csv"),
-          fetch("/assets/data/all_universities_tercih_kullanma_oranlari.csv"),
-          fetch("/assets/data_2025/all_universities_tercih_kullanma_oranlari.csv"),
+        // Load all data from API in parallel
+        const [tercihStats, pricesData, tercihIstatistikleri] = await Promise.all([
+          fetchAllTercihStatsCached(),
+          fetchAllPricesCached(),
+          fetchAllTercihIstatistikleriCached(),
         ]);
 
-        if (!response1.ok && !response2.ok) throw new Error("Failed to load rival data");
-
-        const allLines = [];
-
-        // Combine lines from both files
-        if (response1.ok) {
-          const text1 = await response1.text();
-          const lines1 = text1.trim().split("\n");
-          allLines.push(...lines1.slice(1)); // Skip header
-        }
-
-        if (response2.ok) {
-          const text2 = await response2.text();
-          const lines2 = text2.trim().split("\n");
-          allLines.push(...lines2.slice(1)); // Skip header
-        }
-
-        // Helper to parse Turkish decimal format
-        const parseTurkishDecimal = (value) => {
-          if (!value || value === "") return null;
-          // Remove quotes if present
-          const cleaned = value.toString().replace(/"/g, "").replace(",", ".");
-          const parsed = parseFloat(cleaned);
-          return isNaN(parsed) ? null : parsed;
-        };
-
-        // Helper to parse CSV line with quoted fields containing commas
-        const parseCSVLine = (line) => {
-          const result = [];
-          let current = "";
-          let inQuotes = false;
-          for (let i = 0; i < line.length; i++) {
-            const char = line[i];
-            if (char === '"') {
-              inQuotes = !inQuotes;
-            } else if (char === "," && !inQuotes) {
-              result.push(current.trim());
-              current = "";
-            } else {
-              current += char;
-            }
-          }
-          result.push(current.trim());
-          return result;
-        };
-
-        // Parse price data
+        // Build price map from API data
         const priceMap = new Map();
-        if (priceResponse.ok) {
-          const priceText = await priceResponse.text();
-          const priceLines = priceText.trim().split("\n");
-          for (let i = 1; i < priceLines.length; i++) {
-            const parts = parseCSVLine(priceLines[i]);
-            if (parts.length >= 9) {
-              const yop_kodu = parts[0]?.trim();
-              const scholarship_pct = parseFloat(parts[4]);
-              // Use year-specific prices
-              const price_2024 = parseFloat(parts[7]) || null; // discounted_price_2024
-              const price_2025 = parseFloat(parts[8]) || null; // discounted_price_2025
-
-              // Normalize yop_kodu
-              let normalizedYopKodu = yop_kodu;
-              if (normalizedYopKodu && normalizedYopKodu.includes(".")) {
-                const numValue = parseFloat(normalizedYopKodu);
-                if (!isNaN(numValue)) {
-                  normalizedYopKodu = Math.round(numValue).toString();
-                }
-              }
-
-              const key = `${normalizedYopKodu}_${scholarship_pct}`;
-              const price =
-                selectedYear === "2024" ? price_2024 : selectedYear === "2025" ? price_2025 : null;
-              if (price !== null && !isNaN(price)) {
-                priceMap.set(key, price);
-              }
+        for (const p of pricesData) {
+          let normalizedYopKodu = p.yop_kodu;
+          if (normalizedYopKodu && normalizedYopKodu.includes(".")) {
+            const numValue = parseFloat(normalizedYopKodu);
+            if (!isNaN(numValue)) {
+              normalizedYopKodu = Math.round(numValue).toString();
             }
+          }
+
+          const key = `${normalizedYopKodu}_${p.scholarship_pct}`;
+          const price =
+            selectedYear === "2024"
+              ? p.discounted_price_2024
+              : selectedYear === "2025"
+                ? p.discounted_price_2025
+                : null;
+          if (price !== null && !isNaN(price)) {
+            priceMap.set(key, price);
           }
         }
 
-        // Parse tercih istatistikleri data (bir_kontenjana_talip, ilk_uc_sirada_tercih_eden, ilk_uc_tercih_olarak_yerlesen)
+        // Build tercih istatistikleri map from API data
         const tercihIstatMap = new Map();
-
-        // Parse 2022-2024 data from data folder
-        if (tercihIstatResponse1.ok) {
-          const text = await tercihIstatResponse1.text();
-          const lines = text.trim().split("\n");
-          for (let i = 1; i < lines.length; i++) {
-            const parts = parseCSVLine(lines[i]);
-            if (parts.length >= 16) {
-              const yop_kodu = parts[0]?.trim();
-              // Year columns: 2022=index 1,4,7,10,13 | 2023=index 2,5,8,11,14 | 2024=index 3,6,9,12,15
-              const yearIndex =
-                selectedYear === "2022"
-                  ? 0
-                  : selectedYear === "2023"
-                    ? 1
-                    : selectedYear === "2024"
-                      ? 2
-                      : -1;
-              if (yearIndex >= 0) {
-                tercihIstatMap.set(yop_kodu, {
-                  birKontenjanaTalip: parseTurkishDecimal(parts[1 + yearIndex]),
-                  ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(parts[4 + yearIndex]),
-                  ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(parts[7 + yearIndex]),
-                  ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(parts[10 + yearIndex]),
-                  ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(parts[13 + yearIndex]),
-                });
-              }
-            }
-          }
+        for (const istat of tercihIstatistikleri) {
+          const yearSuffix = `_${selectedYear}`;
+          tercihIstatMap.set(istat.yop_kodu, {
+            birKontenjanaTalip: istat[`bir_kontenjana_talip_olan_aday_sayisi${yearSuffix}`],
+            ilkUcSiradaTercihEdenSayisi: istat[`ilk_uc_sirada_tercih_eden_sayisi${yearSuffix}`],
+            ilkUcSiradaTercihEdenOrani: istat[`ilk_uc_sirada_tercih_eden_orani${yearSuffix}`],
+            ilkUcTercihOlarakYerlesenSayisi:
+              istat[`ilk_uc_tercih_olarak_yerlesen_sayisi${yearSuffix}`],
+            ilkUcTercihOlarakYerlesenOrani:
+              istat[`ilk_uc_tercih_olarak_yerlesen_orani${yearSuffix}`],
+          });
         }
 
-        // Parse 2025 data from data_2025 folder (overwrites if year is 2025)
-        if (selectedYear === "2025" && tercihIstatResponse2.ok) {
-          const text = await tercihIstatResponse2.text();
-          const lines = text.trim().split("\n");
-          for (let i = 1; i < lines.length; i++) {
-            const parts = parseCSVLine(lines[i]);
-            if (parts.length >= 6) {
-              const yop_kodu = parts[0]?.trim();
-              tercihIstatMap.set(yop_kodu, {
-                birKontenjanaTalip: parseTurkishDecimal(parts[1]),
-                ilkUcSiradaTercihEdenSayisi: parseTurkishDecimal(parts[2]),
-                ilkUcSiradaTercihEdenOrani: parseTurkishDecimal(parts[3]),
-                ilkUcTercihOlarakYerlesenSayisi: parseTurkishDecimal(parts[4]),
-                ilkUcTercihOlarakYerlesenOrani: parseTurkishDecimal(parts[5]),
-              });
-            }
-          }
-        }
-
-        // Parse tercih kullanma oranlari data
+        // Note: tercih_kullanma_oranlari is not in the current API - leaving as empty for now
+        // This can be added in a future phase if needed
         const tercihKullanmaMap = new Map();
 
-        // Parse 2022-2024 data from data folder
-        if (tercihKullanmaResponse1.ok) {
-          const text = await tercihKullanmaResponse1.text();
-          const lines = text.trim().split("\n");
-          for (let i = 1; i < lines.length; i++) {
-            const parts = lines[i].split(",");
-            if (parts.length >= 10) {
-              const yop_kodu = parts[0]?.trim();
-              // Year columns: 2022=index 0 | 2023=index 1 | 2024=index 2
-              const yearIndex =
-                selectedYear === "2022"
-                  ? 0
-                  : selectedYear === "2023"
-                    ? 1
-                    : selectedYear === "2024"
-                      ? 2
-                      : -1;
-              if (yearIndex >= 0) {
-                tercihKullanmaMap.set(yop_kodu, {
-                  kullanilanTercih: parseTurkishDecimal(parts[1 + yearIndex]),
-                  bosBirakilanTercih: parseTurkishDecimal(parts[4 + yearIndex]),
-                  ortalamaKullanilanTercih: parseTurkishDecimal(parts[7 + yearIndex]),
-                });
-              }
-            }
-          }
-        }
-
-        // Parse 2025 data from data_2025 folder
-        if (selectedYear === "2025" && tercihKullanmaResponse2.ok) {
-          const text = await tercihKullanmaResponse2.text();
-          const lines = text.trim().split("\n");
-          for (let i = 1; i < lines.length; i++) {
-            const parts = lines[i].split(",");
-            if (parts.length >= 4) {
-              const yop_kodu = parts[0]?.trim();
-              tercihKullanmaMap.set(yop_kodu, {
-                kullanilanTercih: parseTurkishDecimal(parts[1]),
-                bosBirakilanTercih: parseTurkishDecimal(parts[2]),
-                ortalamaKullanilanTercih: parseTurkishDecimal(parts[3]),
-              });
-            }
-          }
-        }
-
-        const lines = allLines;
-
-        console.log("[ProgramRivalAnalysis] Total CSV lines:", lines.length);
+        console.log("[ProgramRivalAnalysis] Tercih stats count:", tercihStats.length);
         console.log("[ProgramRivalAnalysis] Selected year:", selectedYear);
         console.log("[ProgramRivalAnalysis] Selected programs:", selectedPrograms.length);
         console.log("[ProgramRivalAnalysis] First selected program:", selectedPrograms[0]);
 
-        // Parse CSV data into a map for quick lookup by yop_kodu
+        // Parse tercih stats into a map for quick lookup by yop_kodu
         const csvDataMap = new Map();
-        for (let i = 0; i < lines.length; i++) {
-          const parts = lines[i].split(",");
-          if (parts.length >= 5) {
-            const yop_kodu = parts[0];
-            const year = parts[1];
-
-            // Only include data for the selected year
-            if (year === String(selectedYear)) {
-              csvDataMap.set(yop_kodu, {
-                ortalama_tercih_edilme: parseFloat(parts[2]),
-                ortalama_yerlesen_tercih: parseFloat(parts[3]),
-                marka_etkinlik: parseFloat(parts[4]),
-              });
-            }
+        for (const stat of tercihStats) {
+          // Only include data for the selected year
+          if (stat.year === Number(selectedYear)) {
+            csvDataMap.set(stat.yop_kodu, {
+              ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
+              ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
+              marka_etkinlik: stat.marka_etkinlik_degeri,
+            });
           }
         }
 
