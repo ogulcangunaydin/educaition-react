@@ -13,7 +13,7 @@ export const UNIVERSITY_CONFIG = {
     primaryColor: "#001bc3",
     gradientStart: "#001bc3",
     gradientEnd: "#0029e8",
-    dataPrefix: "halic", // Used for loading data files like halic_programs.csv
+    dataPrefix: "halic", // Used for filtering tercih preferences from API
   },
   ibnhaldun: {
     id: "ibnhaldun",
@@ -23,7 +23,7 @@ export const UNIVERSITY_CONFIG = {
     primaryColor: "#001bc3",
     gradientStart: "#001bc3",
     gradientEnd: "#0029e8",
-    dataPrefix: "ibnhaldun", // Used for loading data files like ibnhaldun_programs.csv
+    dataPrefix: "ibnhaldun", // Used for filtering tercih preferences from API
   },
   fsm: {
     id: "fsm",
@@ -33,7 +33,7 @@ export const UNIVERSITY_CONFIG = {
     primaryColor: "#001bc3",
     gradientStart: "#001bc3",
     gradientEnd: "#0029e8",
-    dataPrefix: "fsm", // Used for loading data files like fsm_programs.csv
+    dataPrefix: "fsm", // Used for filtering tercih preferences from API
   },
   izu: {
     id: "izu",
@@ -43,7 +43,7 @@ export const UNIVERSITY_CONFIG = {
     primaryColor: "#001bc3",
     gradientStart: "#001bc3",
     gradientEnd: "#0029e8",
-    dataPrefix: "izu", // Used for loading data files like izu_programs.csv
+    dataPrefix: "izu", // Used for filtering tercih preferences from API
   },
   mayis: {
     id: "mayis",
@@ -53,7 +53,7 @@ export const UNIVERSITY_CONFIG = {
     primaryColor: "#001bc3",
     gradientStart: "#001bc3",
     gradientEnd: "#0029e8",
-    dataPrefix: "mayis", // Used for loading data files like mayis_programs.csv
+    dataPrefix: "mayis", // Used for filtering tercih preferences from API
   },
 };
 
