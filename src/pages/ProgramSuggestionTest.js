@@ -25,6 +25,13 @@ import {
   Alert,
 } from "@mui/material";
 import riasecQuestions from "./RiasecTest/riasecQuestions.json";
+import {
+  saveParticipantSession,
+  getParticipantSession,
+  fetchWithParticipantAuth,
+  clearParticipantSession,
+  SESSION_TYPES,
+} from "../services/participantSessionService";
 
 const SCORE_MAP = {
   strongly_like: 2,
@@ -143,7 +150,7 @@ function ProgramSuggestionTest() {
     const loadUniversities = async () => {
       try {
         const response = await fetch(
-          "/assets/data_2025/lise_by_university/_university_mapping.json",
+          "/assets/data_2025/lise_by_university/_university_mapping.json"
         );
         const data = await response.json();
         const uniList = Object.keys(data).map((name) => ({
@@ -162,9 +169,7 @@ function ProgramSuggestionTest() {
   useEffect(() => {
     const loadScoreDistribution = async () => {
       try {
-        const response = await fetch(
-          "/assets/data_2025/score_ranking_distribution.json",
-        );
+        const response = await fetch("/assets/data_2025/score_ranking_distribution.json");
         const data = await response.json();
         setScoreDistribution(data);
       } catch (error) {
@@ -190,12 +195,15 @@ function ProgramSuggestionTest() {
 
   // Create student when component mounts OR restore existing student
   useEffect(() => {
-    const storageKey = `program_suggestion_student_${roomId}`;
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
-    const fetchExistingStudent = async (existingStudentId) => {
+    const fetchExistingStudent = async (existingStudentId, hasValidToken) => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`,
+        // Use authenticated fetch if we have a token
+        const fetchFn = hasValidToken ? (url) => fetchWithParticipantAuth(sessionType, url) : fetch;
+
+        const response = await fetchFn(
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`
         );
 
         if (response.ok) {
@@ -205,8 +213,8 @@ function ProgramSuggestionTest() {
           if (data.status === "completed") {
             // Set flag to prevent creating new student
             isNavigatingRef.current = true;
-            // Clear localStorage so next student can start fresh
-            localStorage.removeItem(storageKey);
+            // Clear session so next student can start fresh
+            clearParticipantSession(sessionType);
             // Navigate to results
             navigate(`/program-test-result/${existingStudentId}`);
             return;
@@ -225,27 +233,20 @@ function ProgramSuggestionTest() {
             averageGrade: data.average_grade || "",
             area: data.area || "",
             wantsForeignLanguage: data.wants_foreign_language || false,
-            expectedScoreRange: [
-              data.expected_score_min || 200,
-              data.expected_score_max || 400,
-            ],
+            expectedScoreRange: [data.expected_score_min || 200, data.expected_score_max || 400],
             expectedDistribution: data.expected_score_distribution || "medium",
             alternativeArea: data.alternative_area || "",
             alternativeScoreRange: [
               data.alternative_score_min || 200,
               data.alternative_score_max || 400,
             ],
-            alternativeDistribution:
-              data.alternative_score_distribution || "medium",
+            alternativeDistribution: data.alternative_score_distribution || "medium",
             preferredLanguage: data.preferred_language || "",
             desiredCities: data.desired_cities || [],
           }));
 
           // Store university names to be resolved once universities are loaded
-          if (
-            data.desired_universities &&
-            data.desired_universities.length > 0
-          ) {
+          if (data.desired_universities && data.desired_universities.length > 0) {
             setPendingUniversityNames(data.desired_universities);
           }
 
@@ -254,10 +255,7 @@ function ProgramSuggestionTest() {
             setRiasecAnswers(data.riasec_answers);
             // Find where they left off
             const answeredCount = Object.keys(data.riasec_answers).length;
-            if (
-              answeredCount > 0 &&
-              answeredCount < riasecQuestionsList.length
-            ) {
+            if (answeredCount > 0 && answeredCount < riasecQuestionsList.length) {
               setCurrentQuestionIndex(answeredCount);
             }
           }
@@ -274,9 +272,9 @@ function ProgramSuggestionTest() {
 
           const resumeStep = statusToStep[data.status] ?? 0;
           setActiveStep(resumeStep);
-        } else if (response.status === 404) {
-          // Student not found, remove from storage and create new
-          localStorage.removeItem(storageKey);
+        } else if (response.status === 404 || response.status === 401) {
+          // Student not found or session invalid, clear and create new
+          clearParticipantSession(sessionType);
           createNewStudent();
         } else {
           setError("Test bilgileri yüklenemedi. Lütfen sayfayı yenileyin.");
@@ -300,18 +298,22 @@ function ProgramSuggestionTest() {
               "Content-Type": "application/json",
             },
             body: JSON.stringify({ high_school_room_id: parseInt(roomId) }),
-          },
+          }
         );
 
         if (response.ok) {
           const data = await response.json();
-          setStudentId(data.id);
-          // Save to localStorage for future visits
-          localStorage.setItem(storageKey, data.id.toString());
+          // New API returns session_token and student object
+          if (data.session_token && data.student) {
+            setStudentId(data.student.id);
+            // Save session with token for future requests
+            saveParticipantSession(sessionType, data);
+          } else {
+            // Fallback for old API format
+            setStudentId(data.id);
+          }
         } else {
-          setError(
-            "Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.",
-          );
+          setError("Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.");
         }
       } catch (error) {
         console.error("Error creating student:", error);
@@ -320,11 +322,22 @@ function ProgramSuggestionTest() {
     };
 
     if (roomId && !isNavigatingRef.current) {
-      const existingStudentId = localStorage.getItem(storageKey);
-      if (existingStudentId) {
-        fetchExistingStudent(parseInt(existingStudentId));
+      // Check for existing session token
+      const existingSession = getParticipantSession(sessionType);
+      if (existingSession && existingSession.participantId) {
+        fetchExistingStudent(existingSession.participantId, true);
       } else {
-        createNewStudent();
+        // Fallback: check old localStorage format for backward compatibility
+        const storageKey = `program_suggestion_student_${roomId}`;
+        const oldStudentId = localStorage.getItem(storageKey);
+        if (oldStudentId) {
+          // Migrate: try to fetch without token (will fail if routes require auth)
+          fetchExistingStudent(parseInt(oldStudentId), false);
+          // Clean up old storage
+          localStorage.removeItem(storageKey);
+        } else {
+          createNewStudent();
+        }
       }
     }
   }, [roomId, navigate, riasecQuestionsList.length]);
@@ -374,48 +387,47 @@ function ProgramSuggestionTest() {
   const handleNext = async () => {
     setLoading(true);
     setError(null);
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
     try {
       if (activeStep === 0) {
         // Save Step 1
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step1`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               name: formData.name,
               birth_year: parseInt(formData.birthYear),
               gender: formData.gender,
-            }),
-          },
+            },
+          }
         );
       } else if (activeStep === 1) {
         // Save Step 2
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step2`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               class_year: formData.classYear,
               will_take_exam: formData.willTakeExam,
-              average_grade: formData.averageGrade
-                ? parseFloat(formData.averageGrade)
-                : null,
+              average_grade: formData.averageGrade ? parseFloat(formData.averageGrade) : null,
               area: formData.area,
               wants_foreign_language: formData.wantsForeignLanguage,
-            }),
-          },
+            },
+          }
         );
       } else if (activeStep === 2) {
         // Save Step 3
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step3`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               expected_score_min: formData.expectedScoreRange[0],
               expected_score_max: formData.expectedScoreRange[1],
               expected_score_distribution: formData.expectedDistribution,
@@ -429,8 +441,8 @@ function ProgramSuggestionTest() {
               alternative_score_distribution: formData.alternativeArea
                 ? formData.alternativeDistribution
                 : null,
-            }),
-          },
+            },
+          }
         );
       } else if (activeStep === 3) {
         // Save Step 4
@@ -442,17 +454,17 @@ function ProgramSuggestionTest() {
         // Remove duplicates
         const uniqueUniversities = [...new Set(universitiesWithDefault)];
 
-        await fetch(
+        await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step4`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
+            body: {
               preferred_language: formData.preferredLanguage,
               desired_universities: uniqueUniversities,
               desired_cities: formData.desiredCities,
-            }),
-          },
+            },
+          }
         );
       }
 
@@ -472,6 +484,7 @@ function ProgramSuggestionTest() {
   const handleRiasecAnswer = async (questionId, answer) => {
     const newAnswers = { ...riasecAnswers, [questionId]: SCORE_MAP[answer] };
     setRiasecAnswers(newAnswers);
+    const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
     // Move to next question or finish
     if (currentQuestionIndex < riasecQuestionsList.length - 1) {
@@ -480,21 +493,20 @@ function ProgramSuggestionTest() {
       // All questions answered - submit and get results
       setLoading(true);
       try {
-        const response = await fetch(
+        const response = await fetchWithParticipantAuth(
+          sessionType,
           `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/riasec`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ riasec_answers: newAnswers }),
-          },
+            body: { riasec_answers: newAnswers },
+          }
         );
 
         if (response.ok) {
           // Set flag to prevent creating new student during navigation
           isNavigatingRef.current = true;
-          // Clear localStorage so next student can start fresh
-          const storageKey = `program_suggestion_student_${roomId}`;
-          localStorage.removeItem(storageKey);
+          // Clear session so next student can start fresh
+          clearParticipantSession(sessionType);
           // Navigate to results
           navigate(`/program-test-result/${studentId}`);
         } else {
@@ -535,9 +547,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Ad Soyad</FormLabel>
               <TextField
                 value={formData.name}
-                onChange={(e) =>
-                  setFormData({ ...formData, name: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 placeholder="Adınızı ve soyadınızı girin"
                 fullWidth
               />
@@ -548,9 +558,7 @@ function ProgramSuggestionTest() {
               <Autocomplete
                 options={BIRTH_YEARS}
                 value={formData.birthYear || null}
-                onChange={(e, value) =>
-                  setFormData({ ...formData, birthYear: value })
-                }
+                onChange={(e, value) => setFormData({ ...formData, birthYear: value })}
                 renderInput={(params) => (
                   <TextField {...params} placeholder="Doğum yılınızı seçin" />
                 )}
@@ -562,20 +570,10 @@ function ProgramSuggestionTest() {
               <FormLabel>Cinsiyet</FormLabel>
               <RadioGroup
                 value={formData.gender}
-                onChange={(e) =>
-                  setFormData({ ...formData, gender: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
               >
-                <FormControlLabel
-                  value="erkek"
-                  control={<Radio />}
-                  label="Erkek"
-                />
-                <FormControlLabel
-                  value="kadın"
-                  control={<Radio />}
-                  label="Kadın"
-                />
+                <FormControlLabel value="erkek" control={<Radio />} label="Erkek" />
+                <FormControlLabel value="kadın" control={<Radio />} label="Kadın" />
                 <FormControlLabel
                   value="belirtilmedi"
                   control={<Radio />}
@@ -595,9 +593,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Sınıf</FormLabel>
               <RadioGroup
                 value={formData.classYear}
-                onChange={(e) =>
-                  setFormData({ ...formData, classYear: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
               >
                 {CLASS_YEARS.map((cy) => (
                   <FormControlLabel
@@ -621,16 +617,8 @@ function ProgramSuggestionTest() {
                   })
                 }
               >
-                <FormControlLabel
-                  value="yes"
-                  control={<Radio />}
-                  label="Evet"
-                />
-                <FormControlLabel
-                  value="no"
-                  control={<Radio />}
-                  label="Hayır"
-                />
+                <FormControlLabel value="yes" control={<Radio />} label="Evet" />
+                <FormControlLabel value="no" control={<Radio />} label="Hayır" />
               </RadioGroup>
             </FormControl>
 
@@ -640,10 +628,7 @@ function ProgramSuggestionTest() {
               value={formData.averageGrade}
               onChange={(e) => {
                 const value = e.target.value;
-                if (
-                  value === "" ||
-                  (Number(value) >= 0 && Number(value) <= 100)
-                ) {
+                if (value === "" || (Number(value) >= 0 && Number(value) <= 100)) {
                   setFormData({ ...formData, averageGrade: value });
                 }
               }}
@@ -655,9 +640,7 @@ function ProgramSuggestionTest() {
               <FormLabel>Alan Seçimi</FormLabel>
               <RadioGroup
                 value={formData.area}
-                onChange={(e) =>
-                  setFormData({ ...formData, area: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, area: e.target.value })}
               >
                 {AREAS.map((area) => (
                   <FormControlLabel
@@ -675,16 +658,14 @@ function ProgramSuggestionTest() {
       case 2:
         const scoreBounds = getScoreBounds(formData.area);
         const midScore = Math.round(
-          (formData.expectedScoreRange[0] + formData.expectedScoreRange[1]) / 2,
+          (formData.expectedScoreRange[0] + formData.expectedScoreRange[1]) / 2
         );
         const estimatedRanking = estimateRanking(midScore, formData.area);
         const altScoreBounds = formData.alternativeArea
           ? getScoreBounds(formData.alternativeArea)
           : { min: 100, max: 560 };
         const altMidScore = Math.round(
-          (formData.alternativeScoreRange[0] +
-            formData.alternativeScoreRange[1]) /
-            2,
+          (formData.alternativeScoreRange[0] + formData.alternativeScoreRange[1]) / 2
         );
         const altEstimatedRanking = formData.alternativeArea
           ? estimateRanking(altMidScore, formData.alternativeArea)
@@ -695,14 +676,10 @@ function ProgramSuggestionTest() {
             <Typography variant="h6">1.3 Puan Beklentisi</Typography>
 
             <Box>
-              <FormLabel>
-                Beklediğiniz Puan Aralığı ({formData.area.toUpperCase()})
-              </FormLabel>
+              <FormLabel>Beklediğiniz Puan Aralığı ({formData.area.toUpperCase()})</FormLabel>
               <Slider
                 value={formData.expectedScoreRange}
-                onChange={(e, value) =>
-                  setFormData({ ...formData, expectedScoreRange: value })
-                }
+                onChange={(e, value) => setFormData({ ...formData, expectedScoreRange: value })}
                 min={scoreBounds.min}
                 max={scoreBounds.max}
                 step={5}
@@ -711,9 +688,7 @@ function ProgramSuggestionTest() {
                   { value: scoreBounds.min, label: String(scoreBounds.min) },
                   {
                     value: Math.round((scoreBounds.min + scoreBounds.max) / 2),
-                    label: String(
-                      Math.round((scoreBounds.min + scoreBounds.max) / 2),
-                    ),
+                    label: String(Math.round((scoreBounds.min + scoreBounds.max) / 2)),
                   },
                   { value: scoreBounds.max, label: String(scoreBounds.max) },
                 ]}
@@ -739,21 +714,17 @@ function ProgramSuggestionTest() {
                   {formatRanking(estimatedRanking)}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan
-                  aralığının ortasına denk gelen tahmini sıralamadır.
+                  Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan aralığının ortasına denk
+                  gelen tahmini sıralamadır.
                 </Typography>
               </Paper>
             </Box>
 
             <FormControl component="fieldset">
-              <FormLabel>
-                Alternatif bir alanda tercih yapmak ister misiniz?
-              </FormLabel>
+              <FormLabel>Alternatif bir alanda tercih yapmak ister misiniz?</FormLabel>
               <RadioGroup
                 value={formData.alternativeArea}
-                onChange={(e) =>
-                  setFormData({ ...formData, alternativeArea: e.target.value })
-                }
+                onChange={(e) => setFormData({ ...formData, alternativeArea: e.target.value })}
               >
                 <FormControlLabel value="" control={<Radio />} label="Hayır" />
                 {AREAS.filter((a) => a.value !== formData.area).map((area) => (
@@ -770,8 +741,7 @@ function ProgramSuggestionTest() {
             {formData.alternativeArea && (
               <Box>
                 <FormLabel>
-                  Alternatif Alan Puan Aralığı (
-                  {formData.alternativeArea.toUpperCase()})
+                  Alternatif Alan Puan Aralığı ({formData.alternativeArea.toUpperCase()})
                 </FormLabel>
                 <Slider
                   value={formData.alternativeScoreRange}
@@ -788,14 +758,8 @@ function ProgramSuggestionTest() {
                       label: String(altScoreBounds.min),
                     },
                     {
-                      value: Math.round(
-                        (altScoreBounds.min + altScoreBounds.max) / 2,
-                      ),
-                      label: String(
-                        Math.round(
-                          (altScoreBounds.min + altScoreBounds.max) / 2,
-                        ),
-                      ),
+                      value: Math.round((altScoreBounds.min + altScoreBounds.max) / 2),
+                      label: String(Math.round((altScoreBounds.min + altScoreBounds.max) / 2)),
                     },
                     {
                       value: altScoreBounds.max,
@@ -817,23 +781,15 @@ function ProgramSuggestionTest() {
                     borderRadius: 2,
                   }}
                 >
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
+                  <Typography variant="body2" color="text.secondary" gutterBottom>
                     Tahmini Sıralama (Orta puan: {altMidScore})
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color="secondary.main"
-                    fontWeight="bold"
-                  >
+                  <Typography variant="h5" color="secondary.main" fontWeight="bold">
                     {formatRanking(altEstimatedRanking)}
                   </Typography>
                   <Typography variant="caption" color="text.secondary">
-                    Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan
-                    aralığının ortasına denk gelen tahmini sıralamadır.
+                    Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan aralığının ortasına
+                    denk gelen tahmini sıralamadır.
                   </Typography>
                 </Paper>
               </Box>
@@ -873,9 +829,7 @@ function ProgramSuggestionTest() {
               options={universities}
               getOptionLabel={(option) => option.name}
               value={formData.desiredUniversities}
-              onChange={(e, value) =>
-                setFormData({ ...formData, desiredUniversities: value })
-              }
+              onChange={(e, value) => setFormData({ ...formData, desiredUniversities: value })}
               renderInput={(params) => (
                 <TextField
                   {...params}
@@ -886,9 +840,7 @@ function ProgramSuggestionTest() {
               filterOptions={(options, { inputValue }) => {
                 const searchTerm = inputValue.toLocaleLowerCase("tr-TR");
                 return options
-                  .filter((option) =>
-                    option.name.toLocaleLowerCase("tr-TR").includes(searchTerm),
-                  )
+                  .filter((option) => option.name.toLocaleLowerCase("tr-TR").includes(searchTerm))
                   .slice(0, 30);
               }}
             />
@@ -906,17 +858,12 @@ function ProgramSuggestionTest() {
                           if (e.target.checked) {
                             setFormData({
                               ...formData,
-                              desiredCities: [
-                                ...formData.desiredCities,
-                                city.value,
-                              ],
+                              desiredCities: [...formData.desiredCities, city.value],
                             });
                           } else {
                             setFormData({
                               ...formData,
-                              desiredCities: formData.desiredCities.filter(
-                                (c) => c !== city.value,
-                              ),
+                              desiredCities: formData.desiredCities.filter((c) => c !== city.value),
                             });
                           }
                         }}
@@ -932,8 +879,7 @@ function ProgramSuggestionTest() {
 
       case 4:
         const currentQuestion = riasecQuestionsList[currentQuestionIndex];
-        const progress =
-          ((currentQuestionIndex + 1) / riasecQuestionsList.length) * 100;
+        const progress = ((currentQuestionIndex + 1) / riasecQuestionsList.length) * 100;
 
         return (
           <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
@@ -952,11 +898,7 @@ function ProgramSuggestionTest() {
 
             <Card sx={{ p: 3 }}>
               <CardContent>
-                <Typography
-                  variant="h5"
-                  gutterBottom
-                  sx={{ textAlign: "center" }}
-                >
+                <Typography variant="h5" gutterBottom sx={{ textAlign: "center" }}>
                   {currentQuestion.text}
                 </Typography>
 
@@ -986,9 +928,7 @@ function ProgramSuggestionTest() {
                     <Button
                       key={option.value}
                       variant="outlined"
-                      onClick={() =>
-                        handleRiasecAnswer(currentQuestion.id, option.value)
-                      }
+                      onClick={() => handleRiasecAnswer(currentQuestion.id, option.value)}
                       sx={{
                         py: 1.5,
                         borderColor: option.color,
@@ -1040,11 +980,7 @@ function ProgramSuggestionTest() {
       }}
     >
       <Paper sx={{ maxWidth: 700, margin: "0 auto", p: 4 }}>
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ textAlign: "center", mb: 4 }}
-        >
+        <Typography variant="h4" gutterBottom sx={{ textAlign: "center", mb: 4 }}>
           Program Öneri Testi
         </Typography>
 
@@ -1071,17 +1007,11 @@ function ProgramSuggestionTest() {
             {renderStep()}
 
             {activeStep < 4 && (
-              <Box
-                sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}
-              >
+              <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
                 <Button disabled={activeStep === 0} onClick={handleBack}>
                   Geri
                 </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleNext}
-                  disabled={!isStepValid()}
-                >
+                <Button variant="contained" onClick={handleNext} disabled={!isStepValid()}>
                   {activeStep === 3 ? "RIASEC Testine Başla" : "Devam Et"}
                 </Button>
               </Box>

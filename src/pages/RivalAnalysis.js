@@ -33,12 +33,9 @@ const RivalAnalysis = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`,
-          {
-            method: "GET",
-          }
-        );
+        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
+          method: "GET",
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -67,8 +64,7 @@ const RivalAnalysis = () => {
           fetch("/assets/data_2025/all_universities_combined_tercih_stats.csv"),
         ]);
 
-        if (!response1.ok && !response2.ok)
-          throw new Error("Failed to load rival data");
+        if (!response1.ok && !response2.ok) throw new Error("Failed to load rival data");
 
         const allLines = [];
 
@@ -89,14 +85,8 @@ const RivalAnalysis = () => {
 
         console.log("[RivalAnalysis] Total CSV lines:", lines.length);
         console.log("[RivalAnalysis] Selected year:", selectedYear);
-        console.log(
-          "[RivalAnalysis] Selected programs:",
-          selectedPrograms.length
-        );
-        console.log(
-          "[RivalAnalysis] First selected program:",
-          selectedPrograms[0]
-        );
+        console.log("[RivalAnalysis] Selected programs:", selectedPrograms.length);
+        console.log("[RivalAnalysis] First selected program:", selectedPrograms[0]);
 
         // Parse CSV data into a map for quick lookup by yop_kodu
         const csvDataMap = new Map();
@@ -118,10 +108,7 @@ const RivalAnalysis = () => {
         }
 
         console.log("[RivalAnalysis] CSV data map size:", csvDataMap.size);
-        console.log(
-          "[RivalAnalysis] First program yop_kodu:",
-          selectedPrograms[0]?.yop_kodu
-        );
+        console.log("[RivalAnalysis] First program yop_kodu:", selectedPrograms[0]?.yop_kodu);
         console.log(
           "[RivalAnalysis] CSV has this yop_kodu?",
           csvDataMap.has(selectedPrograms[0]?.yop_kodu)
@@ -151,12 +138,9 @@ const RivalAnalysis = () => {
             }
 
             universityData[university].programCount += 1;
-            universityData[university].totalTercihEdilme +=
-              csvData.ortalama_tercih_edilme;
-            universityData[university].totalYerlesenTercih +=
-              csvData.ortalama_yerlesen_tercih;
-            universityData[university].totalMarkaEtkinlik +=
-              csvData.marka_etkinlik;
+            universityData[university].totalTercihEdilme += csvData.ortalama_tercih_edilme;
+            universityData[university].totalYerlesenTercih += csvData.ortalama_yerlesen_tercih;
+            universityData[university].totalMarkaEtkinlik += csvData.marka_etkinlik;
             universityData[university].programs.push({
               program: program.program || program.department,
               yop_kodu: program.yop_kodu,
@@ -172,10 +156,7 @@ const RivalAnalysis = () => {
           "out of",
           selectedPrograms.length
         );
-        console.log(
-          "[RivalAnalysis] Universities found:",
-          Object.keys(universityData)
-        );
+        console.log("[RivalAnalysis] Universities found:", Object.keys(universityData));
 
         // Calculate averages
         const data = Object.values(universityData).map((uni) => ({
@@ -282,9 +263,7 @@ const RivalAnalysis = () => {
     });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = `rakip_analizi_${
-      new Date().toISOString().split("T")[0]
-    }.csv`;
+    link.download = `rakip_analizi_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
   };
 
@@ -294,9 +273,7 @@ const RivalAnalysis = () => {
         <Header title="Rakip Analizi" />
         <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Alert severity="info">
-            <Typography>
-              Rakip analizi için önce program seçmeniz gerekiyor.
-            </Typography>
+            <Typography>Rakip analizi için önce program seçmeniz gerekiyor.</Typography>
           </Alert>
         </Container>
       </>
@@ -316,11 +293,7 @@ const RivalAnalysis = () => {
           }}
         >
           <Box>
-            <Chip
-              label={`${selectedPrograms.length} program`}
-              color="primary"
-              sx={{ mr: 2 }}
-            />
+            <Chip label={`${selectedPrograms.length} program`} color="primary" sx={{ mr: 2 }} />
             <Button
               variant="contained"
               startIcon={<Download />}
@@ -340,9 +313,7 @@ const RivalAnalysis = () => {
             {selectedPrograms.map((program) => (
               <Chip
                 key={program.yop_kodu}
-                label={`${program.university} - ${
-                  program.program || program.department
-                }${
+                label={`${program.university} - ${program.program || program.department}${
                   program.scholarship ? ` (Burs: ${program.scholarship})` : ""
                 }`}
                 size="small"
@@ -354,24 +325,20 @@ const RivalAnalysis = () => {
         {loading ? (
           <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
             <CircularProgress />
-            <Typography sx={{ ml: 2 }}>
-              Rakip analizi verileri yükleniyor...
-            </Typography>
+            <Typography sx={{ ml: 2 }}>Rakip analizi verileri yükleniyor...</Typography>
           </Box>
         ) : error ? (
           <Alert severity="error">{error}</Alert>
         ) : (
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Üniversite Bazında Rakip Analizi - {selectedYear} (
-              {rivalData.length} üniversite)
+              Üniversite Bazında Rakip Analizi - {selectedYear} ({rivalData.length} üniversite)
             </Typography>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              <strong>Açıklama:</strong> Ortalama Tercih Edilme Sırası (A):
-              Öğrencilerin programı kaçıncı sırada tercih ettiği. Ortalama
-              Yerleşen Tercih Sırası (B): Yerleşen öğrencilerin kaçıncı tercihte
-              yerleştiği. Marka Etkinlik Değeri (A/B): Yüksek değer, programın
-              daha erken sıralarda tercih edildiğini gösterir.
+              <strong>Açıklama:</strong> Ortalama Tercih Edilme Sırası (A): Öğrencilerin programı
+              kaçıncı sırada tercih ettiği. Ortalama Yerleşen Tercih Sırası (B): Yerleşen
+              öğrencilerin kaçıncı tercihte yerleştiği. Marka Etkinlik Değeri (A/B): Yüksek değer,
+              programın daha erken sıralarda tercih edildiğini gösterir.
             </Typography>
 
             <TableContainer sx={{ maxHeight: 600, mt: 2 }}>
@@ -417,9 +384,7 @@ const RivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "yerlesen_tercih"}
-                        direction={
-                          orderBy === "yerlesen_tercih" ? order : "asc"
-                        }
+                        direction={orderBy === "yerlesen_tercih" ? order : "asc"}
                         onClick={() => handleSort("yerlesen_tercih")}
                       >
                         Ort. Yerleşen Tercih (B)
@@ -428,9 +393,7 @@ const RivalAnalysis = () => {
                     <TableCell align="right">
                       <TableSortLabel
                         active={orderBy === "marka_etkinlik_degeri"}
-                        direction={
-                          orderBy === "marka_etkinlik_degeri" ? order : "asc"
-                        }
+                        direction={orderBy === "marka_etkinlik_degeri" ? order : "asc"}
                         onClick={() => handleSort("marka_etkinlik_degeri")}
                       >
                         Marka Etkinlik (A/B)
@@ -444,12 +407,8 @@ const RivalAnalysis = () => {
                       <TableCell>{row.university}</TableCell>
                       <TableCell>{row.city}</TableCell>
                       <TableCell align="right">{row.programCount}</TableCell>
-                      <TableCell align="right">
-                        {row.avgTercihEdilme.toFixed(2)}
-                      </TableCell>
-                      <TableCell align="right">
-                        {row.avgYerlesenTercih.toFixed(2)}
-                      </TableCell>
+                      <TableCell align="right">{row.avgTercihEdilme.toFixed(2)}</TableCell>
+                      <TableCell align="right">{row.avgYerlesenTercih.toFixed(2)}</TableCell>
                       <TableCell align="right">
                         <Chip
                           label={row.avgMarkaEtkinlik.toFixed(2)}
@@ -458,8 +417,8 @@ const RivalAnalysis = () => {
                             row.avgMarkaEtkinlik > 1.5
                               ? "success"
                               : row.avgMarkaEtkinlik > 1
-                              ? "primary"
-                              : "default"
+                                ? "primary"
+                                : "default"
                           }
                         />
                       </TableCell>

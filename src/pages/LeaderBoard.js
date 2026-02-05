@@ -62,13 +62,13 @@ const Leaderboard = () => {
               ? JSON.parse(data.results)
               : data.results;
 
-          const leaderboardArray = Object.entries(
-            parsedResults.leaderboard
-          ).map(([player, { score, short_tactic }]) => ({
-            player,
-            score,
-            short_tactic,
-          }));
+          const leaderboardArray = Object.entries(parsedResults.leaderboard).map(
+            ([player, { score, short_tactic }]) => ({
+              player,
+              score,
+              short_tactic,
+            })
+          );
 
           setScores(leaderboardArray);
           setMatrix(parsedResults.matrix);
@@ -102,11 +102,7 @@ const Leaderboard = () => {
     return (
       <>
         <Header title={`${sessionName} Session Results`}>
-          <Button
-            onClick={handleBackToPlayground}
-            variant="contained"
-            color="primary"
-          >
+          <Button onClick={handleBackToPlayground} variant="contained" color="primary">
             Back to Playground
           </Button>
         </Header>
@@ -127,11 +123,7 @@ const Leaderboard = () => {
   return (
     <>
       <Header title={`${sessionName} Session Results`}>
-        <Button
-          onClick={handleBackToPlayground}
-          variant="contained"
-          color="primary"
-        >
+        <Button onClick={handleBackToPlayground} variant="contained" color="primary">
           Back to Playground
         </Button>
       </Header>

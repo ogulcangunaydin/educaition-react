@@ -5,7 +5,7 @@
   display: grid;
   grid-template-columns: repeat(3, minmax(500px, 1fr));
   gap: 20px;
-  justify-content: center; 
+  justify-content: center;
   margin-top: 10px;
 }
 
@@ -40,7 +40,7 @@
 
 .character-traits {
   text-align: center;
-  background-color: #98FF98; /* Mint Green */
+  background-color: #98ff98; /* Mint Green */
   margin-bottom: 10px;
 }
 

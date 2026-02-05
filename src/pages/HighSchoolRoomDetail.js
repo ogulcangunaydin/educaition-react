@@ -42,7 +42,7 @@ const normalizeForComparison = (str) => {
 const translateJob = (englishName) => {
   const normalizedInput = normalizeForComparison(englishName);
   const translation = jobTranslations.find(
-    (job) => normalizeForComparison(job.en) === normalizedInput,
+    (job) => normalizeForComparison(job.en) === normalizedInput
   );
   return translation ? translation.tr : englishName;
 };
@@ -79,7 +79,7 @@ function HighSchoolRoomDetail() {
         // Fetch room details
         const roomResponse = await fetchWithAuth(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/${roomId}`,
-          { method: "GET" },
+          { method: "GET" }
         );
 
         if (roomResponse.ok) {
@@ -90,7 +90,7 @@ function HighSchoolRoomDetail() {
         // Fetch students
         const studentsResponse = await fetchWithAuth(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/${roomId}/students`,
-          { method: "GET" },
+          { method: "GET" }
         );
 
         if (studentsResponse.ok) {
@@ -137,7 +137,7 @@ function HighSchoolRoomDetail() {
     try {
       const response = await fetchWithAuth(
         `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/debug`,
-        { method: "GET" },
+        { method: "GET" }
       );
       if (response.ok) {
         const data = await response.json();
@@ -185,11 +185,7 @@ function HighSchoolRoomDetail() {
   return (
     <>
       <Header title={room?.high_school_name || highSchoolName}>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={() => navigate("/high-school-rooms")}
-        >
+        <Button variant="contained" color="primary" onClick={() => navigate("/high-school-rooms")}>
           Odalara Dön
         </Button>
       </Header>
@@ -224,18 +220,12 @@ function HighSchoolRoomDetail() {
               color="text.secondary"
               sx={{ textAlign: "center", maxWidth: 500 }}
             >
-              Öğrenciler bu QR kodu telefonlarıyla tarayarak program öneri
-              testine başlayabilirler. Test anonim olarak yapılacak ve sonuçlar
-              bu sayfada görüntülenecektir.
+              Öğrenciler bu QR kodu telefonlarıyla tarayarak program öneri testine başlayabilirler.
+              Test anonim olarak yapılacak ve sonuçlar bu sayfada görüntülenecektir.
             </Typography>
 
             <Paper elevation={3} sx={{ padding: 4, backgroundColor: "white" }}>
-              <QRCode
-                value={testUrl}
-                size={256}
-                level="H"
-                includeMargin={true}
-              />
+              <QRCode value={testUrl} size={256} level="H" includeMargin={true} />
             </Paper>
 
             <Box
@@ -257,10 +247,7 @@ function HighSchoolRoomDetail() {
               </Typography>
             </Box>
 
-            <Button
-              variant="outlined"
-              onClick={() => navigator.clipboard.writeText(testUrl)}
-            >
+            <Button variant="outlined" onClick={() => navigator.clipboard.writeText(testUrl)}>
               Linki Kopyala
             </Button>
           </Box>
@@ -268,10 +255,7 @@ function HighSchoolRoomDetail() {
 
         <TabPanel value={tabValue} index={1}>
           {students.length === 0 ? (
-            <Typography
-              variant="body1"
-              sx={{ textAlign: "center", color: "text.secondary" }}
-            >
+            <Typography variant="body1" sx={{ textAlign: "center", color: "text.secondary" }}>
               Henüz test tamamlayan öğrenci yok.
             </Typography>
           ) : (
@@ -301,24 +285,15 @@ function HighSchoolRoomDetail() {
                           if (!dateStr) return new Date(0);
                           // Parse format: DD/MM/YYYY HH:mm:ss
                           const match = dateStr.match(
-                            /(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/,
+                            /(\d{2})\/(\d{2})\/(\d{4})\s+(\d{2}):(\d{2}):(\d{2})/
                           );
                           if (match) {
                             const [, day, month, year, hour, min, sec] = match;
-                            return new Date(
-                              year,
-                              month - 1,
-                              day,
-                              hour,
-                              min,
-                              sec,
-                            );
+                            return new Date(year, month - 1, day, hour, min, sec);
                           }
                           return new Date(dateStr);
                         };
-                        return (
-                          parseDate(b.created_at) - parseDate(a.created_at)
-                        );
+                        return parseDate(b.created_at) - parseDate(a.created_at);
                       })
                       .map((student) => (
                         <TableRow key={student.id}>
@@ -397,15 +372,9 @@ function HighSchoolRoomDetail() {
       </Box>
 
       {/* Debug Dialog */}
-      <Dialog
-        open={debugDialogOpen}
-        onClose={handleCloseDebug}
-        maxWidth="lg"
-        fullWidth
-      >
+      <Dialog open={debugDialogOpen} onClose={handleCloseDebug} maxWidth="lg" fullWidth>
         <DialogTitle>
-          🔍 Debug Info - Öğrenci #{debugData?.id}{" "}
-          {debugData?.name && `(${debugData.name})`}
+          🔍 Debug Info - Öğrenci #{debugData?.id} {debugData?.name && `(${debugData.name})`}
         </DialogTitle>
         <DialogContent dividers>
           {debugLoading ? (
@@ -433,9 +402,7 @@ function HighSchoolRoomDetail() {
                           <Typography variant="body2">
                             <strong>{letter}</strong> - {RIASEC_NAMES[letter]}
                           </Typography>
-                          <Typography variant="body2">
-                            {score.toFixed(2)} / 7
-                          </Typography>
+                          <Typography variant="body2">{score.toFixed(2)} / 7</Typography>
                         </Box>
                         <LinearProgress
                           variant="determinate"

@@ -1,10 +1,6 @@
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
 
-const UniversityTypeSelector = ({
-  universityType,
-  onChange,
-  disabled = false,
-}) => {
+const UniversityTypeSelector = ({ universityType, onChange, disabled = false }) => {
   return (
     <FormControl fullWidth sx={{ mb: 3 }}>
       <InputLabel>Tür Seçin</InputLabel>

@@ -2,34 +2,15 @@ import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, TextField, Box, Paper } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import {
-  useUniversity,
-  UNIVERSITY_CONFIG,
-} from "../contexts/UniversityContext";
+import { useUniversity } from "../contexts/UniversityContext";
+import { useAuth } from "../contexts/AuthContext";
+import { storeUsername, getUserRole, getUserUniversity } from "../services/authService";
 
 // Always use Haliç branding
 const HALIC_LOGO = "/halic_universitesi_logo.svg";
 const HALIC_PRIMARY_COLOR = "#001bc3";
 const HALIC_GRADIENT_START = "#001bc3";
 const HALIC_GRADIENT_END = "#0029e8";
-
-// List of valid university extensions
-const VALID_UNIVERSITY_EXTENSIONS = Object.keys(UNIVERSITY_CONFIG).filter(
-  (key) => key !== "halic",
-);
-
-/**
- * Check if username has a valid university extension
- * @param {string} username
- * @returns {boolean}
- */
-const hasUniversityExtension = (username) => {
-  if (!username) return false;
-  const parts = username.toLowerCase().split(".");
-  if (parts.length < 2) return false;
-  const lastPart = parts[parts.length - 1];
-  return VALID_UNIVERSITY_EXTENSIONS.includes(lastPart) || lastPart === "halic";
-};
 
 // Styled components
 const LoginContainer = styled(Box)({
@@ -74,42 +55,47 @@ function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
-  const { setUniversityFromUsername } = useUniversity();
+  const { setUniversityKey } = useUniversity();
+  const { login } = useAuth();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("username", username);
-    formData.append("password", password);
-
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/authenticate`,
-        {
-          method: "POST",
-          body: formData,
-        },
-      );
+      await login(username, password);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      // Store username for UI convenience (non-sensitive)
+      storeUsername(username);
+
+      // Get role and university from backend response (stored by authService)
+      const role = getUserRole();
+      const university = getUserUniversity();
+
+      // Set university from backend response
+      if (university) {
+        setUniversityKey(university);
       }
 
-      const data = await response.json();
-      localStorage.setItem("access_token", data.access_token);
-      localStorage.setItem("current_user_id", data.current_user_id);
-      localStorage.setItem("username", username);
-
-      // Set university based on username suffix
-      setUniversityFromUsername(username);
-
-      // Check if user has a university extension
-      if (hasUniversityExtension(username)) {
-        navigate("/university-comparison");
-      } else {
-        // Users without extension go to dashboard
-        navigate("/dashboard");
+      // Role-based navigation
+      // - Viewers: Read-only access to university comparison
+      // - Students: Should not login here (they participate anonymously in tests)
+      // - Admin/Teacher: Full dashboard access
+      switch (role?.toLowerCase()) {
+        case "viewer":
+          navigate("/university-comparison");
+          break;
+        case "student":
+          // Students shouldn't login here - redirect to a test page or show message
+          alert(
+            "Students should access tests directly through the test links provided by their teachers."
+          );
+          navigate("/login");
+          break;
+        case "admin":
+        case "teacher":
+        default:
+          navigate("/dashboard");
+          break;
       }
     } catch (error) {
       alert("Login failed: " + error.message);
@@ -137,9 +123,7 @@ function Login() {
       <BackgroundLogo />
       <LoginForm elevation={8}>
         <Logo src={HALIC_LOGO} alt="Haliç Üniversitesi" />
-        <h2 style={{ margin: "0 0 30px 0", color: HALIC_PRIMARY_COLOR }}>
-          Welcome to Educaition
-        </h2>
+        <h2 style={{ margin: "0 0 30px 0", color: HALIC_PRIMARY_COLOR }}>Welcome to Educaition</h2>
         <form onSubmit={handleSubmit} style={{ width: "100%" }}>
           <StyledTextField
             fullWidth
@@ -166,12 +150,7 @@ function Login() {
               shrink: true,
             }}
           />
-          <StyledButton
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-          >
+          <StyledButton type="submit" variant="contained" color="primary" fullWidth>
             Login
           </StyledButton>
         </form>

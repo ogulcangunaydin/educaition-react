@@ -32,7 +32,7 @@ const normalizeForComparison = (str) => {
 const translateJob = (englishName) => {
   const normalizedInput = normalizeForComparison(englishName);
   const translation = jobTranslations.find(
-    (job) => normalizeForComparison(job.en) === normalizedInput,
+    (job) => normalizeForComparison(job.en) === normalizedInput
   );
   return translation ? translation.tr : englishName;
 };
@@ -84,9 +84,7 @@ function ProgramTestResult() {
   useEffect(() => {
     const loadScoreDistribution = async () => {
       try {
-        const response = await fetch(
-          "/assets/data_2025/score_ranking_distribution.json",
-        );
+        const response = await fetch("/assets/data_2025/score_ranking_distribution.json");
         const data = await response.json();
         setScoreDistribution(data);
       } catch (error) {
@@ -100,7 +98,7 @@ function ProgramTestResult() {
     const fetchResult = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/result`,
+          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/result`
         );
 
         if (response.ok) {
@@ -154,24 +152,15 @@ function ProgramTestResult() {
     console.log("Result in renderScoreAndRanking:", result);
     if (!result?.area || !result?.expected_score_min) return null;
 
-    const midScore = Math.round(
-      (result.expected_score_min + result.expected_score_max) / 2,
-    );
+    const midScore = Math.round((result.expected_score_min + result.expected_score_max) / 2);
     const estimatedRanking = estimateRanking(midScore, result.area);
 
     const hasAlternative =
-      result.alternative_area &&
-      result.alternative_score_min &&
-      result.alternative_score_max;
+      result.alternative_area && result.alternative_score_min && result.alternative_score_max;
     let altMidScore, altEstimatedRanking;
     if (hasAlternative) {
-      altMidScore = Math.round(
-        (result.alternative_score_min + result.alternative_score_max) / 2,
-      );
-      altEstimatedRanking = estimateRanking(
-        altMidScore,
-        result.alternative_area,
-      );
+      altMidScore = Math.round((result.alternative_score_min + result.alternative_score_max) / 2);
+      altEstimatedRanking = estimateRanking(altMidScore, result.alternative_area);
     }
 
     return (
@@ -196,11 +185,7 @@ function ProgramTestResult() {
                   height: "100%",
                 }}
               >
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                   Ana Alan
                 </Typography>
                 <Chip
@@ -210,8 +195,7 @@ function ProgramTestResult() {
                   sx={{ mb: 1 }}
                 />
                 <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
-                  📊 Puan Aralığı: {result.expected_score_min} -{" "}
-                  {result.expected_score_max}
+                  📊 Puan Aralığı: {result.expected_score_min} - {result.expected_score_max}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   Orta Puan: {midScore}
@@ -220,11 +204,7 @@ function ProgramTestResult() {
                 <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                   🎯 Tahmini Sıralama
                 </Typography>
-                <Typography
-                  variant="h5"
-                  color="success.main"
-                  sx={{ fontWeight: "bold" }}
-                >
+                <Typography variant="h5" color="success.main" sx={{ fontWeight: "bold" }}>
                   {formatRanking(estimatedRanking)}
                 </Typography>
               </Paper>
@@ -241,28 +221,19 @@ function ProgramTestResult() {
                     height: "100%",
                   }}
                 >
-                  <Typography
-                    variant="subtitle2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
+                  <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                     Alternatif Alan
                   </Typography>
                   <Chip
                     label={
-                      AREA_LABELS[result.alternative_area] ||
-                      result.alternative_area.toUpperCase()
+                      AREA_LABELS[result.alternative_area] || result.alternative_area.toUpperCase()
                     }
                     color="secondary"
                     size="small"
                     sx={{ mb: 1 }}
                   />
-                  <Typography
-                    variant="body1"
-                    sx={{ fontWeight: "bold", mt: 1 }}
-                  >
-                    📊 Puan Aralığı: {result.alternative_score_min} -{" "}
-                    {result.alternative_score_max}
+                  <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+                    📊 Puan Aralığı: {result.alternative_score_min} - {result.alternative_score_max}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Orta Puan: {altMidScore}
@@ -271,11 +242,7 @@ function ProgramTestResult() {
                   <Typography variant="body1" sx={{ fontWeight: "bold" }}>
                     🎯 Tahmini Sıralama
                   </Typography>
-                  <Typography
-                    variant="h5"
-                    color="warning.main"
-                    sx={{ fontWeight: "bold" }}
-                  >
+                  <Typography variant="h5" color="warning.main" sx={{ fontWeight: "bold" }}>
                     {formatRanking(altEstimatedRanking)}
                   </Typography>
                 </Paper>
@@ -283,11 +250,7 @@ function ProgramTestResult() {
             )}
           </Grid>
 
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            sx={{ display: "block", mt: 2 }}
-          >
+          <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
             * Tahmini sıralama, geçen yılın verilerine göre hesaplanmıştır.
           </Typography>
         </CardContent>
@@ -299,9 +262,7 @@ function ProgramTestResult() {
     if (!result?.riasec_scores) return null;
 
     const maxScore = 7;
-    const sortedScores = Object.entries(result.riasec_scores).sort(
-      (a, b) => b[1] - a[1],
-    );
+    const sortedScores = Object.entries(result.riasec_scores).sort((a, b) => b[1] - a[1]);
 
     return (
       <Card sx={{ mb: 3 }}>
@@ -323,8 +284,7 @@ function ProgramTestResult() {
                 }}
               >
                 <Typography variant="body2">
-                  <strong>{letter}</strong> -{" "}
-                  {RIASEC_DESCRIPTIONS[letter]?.name}
+                  <strong>{letter}</strong> - {RIASEC_DESCRIPTIONS[letter]?.name}
                 </Typography>
                 <Typography variant="body2" color="text.secondary">
                   {score.toFixed(2)} / {maxScore}
@@ -338,12 +298,7 @@ function ProgramTestResult() {
                   borderRadius: 5,
                   backgroundColor: "#e0e0e0",
                   "& .MuiLinearProgress-bar": {
-                    backgroundColor:
-                      score >= 4
-                        ? "#4caf50"
-                        : score >= 2.5
-                          ? "#ff9800"
-                          : "#f44336",
+                    backgroundColor: score >= 4 ? "#4caf50" : score >= 2.5 ? "#ff9800" : "#f44336",
                   },
                 }}
               />
@@ -358,8 +313,7 @@ function ProgramTestResult() {
   };
 
   const renderSuggestedJobs = () => {
-    if (!result?.suggested_jobs || result.suggested_jobs.length === 0)
-      return null;
+    if (!result?.suggested_jobs || result.suggested_jobs.length === 0) return null;
 
     return (
       <Card sx={{ mb: 3 }}>
@@ -386,9 +340,7 @@ function ProgramTestResult() {
                   <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
                     #{index + 1} {translateJob(job.job)}
                   </Typography>
-                  <Box
-                    sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}
-                  >
+                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
                     <Chip
                       label={`Uyumluluk: ${job.match_score ? (job.match_score * 100).toFixed(0) : ((1 - job.distance / 7) * 100).toFixed(0)}%`}
                       color={index === 0 ? "success" : "default"}
@@ -425,11 +377,7 @@ function ProgramTestResult() {
                                 fontSize: "0.7rem",
                                 height: "20px",
                                 backgroundColor:
-                                  score >= 4
-                                    ? "#e8f5e9"
-                                    : score >= 2.5
-                                      ? "#fff3e0"
-                                      : "#ffebee",
+                                  score >= 4 ? "#e8f5e9" : score >= 2.5 ? "#fff3e0" : "#ffebee",
                               }}
                             />
                           ))}
@@ -449,8 +397,7 @@ function ProgramTestResult() {
     if (!result?.suggested_programs || result.suggested_programs.length === 0) {
       return (
         <Alert severity="info" sx={{ mb: 3 }}>
-          Program önerileri hesaplanıyor veya kriterlere uygun program
-          bulunamadı.
+          Program önerileri hesaplanıyor veya kriterlere uygun program bulunamadı.
         </Alert>
       );
     }
@@ -491,11 +438,7 @@ function ProgramTestResult() {
                     {program.university}
                   </Typography>
                   {program.faculty && (
-                    <Typography
-                      variant="caption"
-                      color="text.secondary"
-                      display="block"
-                    >
+                    <Typography variant="caption" color="text.secondary" display="block">
                       {program.faculty}
                     </Typography>
                   )}
@@ -535,9 +478,7 @@ function ProgramTestResult() {
                   <Chip
                     label={program.scholarship}
                     size="small"
-                    color={
-                      program.scholarship === "Burslu" ? "success" : "default"
-                    }
+                    color={program.scholarship === "Burslu" ? "success" : "default"}
                   />
                 )}
                 {program.job && (
@@ -609,21 +550,13 @@ function ProgramTestResult() {
           🎓 Test Sonuçlarınız
         </Typography>
 
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{ textAlign: "center", mb: 4 }}
-        >
+        <Typography variant="body1" color="text.secondary" sx={{ textAlign: "center", mb: 4 }}>
           RIASEC kariyer testi ve tercihlerinize göre size özel öneriler
         </Typography>
 
         {result?.area && (
           <Box sx={{ mb: 3, textAlign: "center" }}>
-            <Chip
-              label={`Ana Alan: ${result.area.toUpperCase()}`}
-              color="primary"
-              sx={{ mr: 1 }}
-            />
+            <Chip label={`Ana Alan: ${result.area.toUpperCase()}`} color="primary" sx={{ mr: 1 }} />
             {result.alternative_area && (
               <Chip
                 label={`Alternatif: ${result.alternative_area.toUpperCase()}`}
@@ -642,9 +575,8 @@ function ProgramTestResult() {
 
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography variant="body2" color="text.secondary">
-            Bu öneriler RIASEC kariyer testi ve tercihlerinize göre
-            oluşturulmuştur. Son kararı verirken aileniz ve danışmanlarınızla
-            görüşmenizi öneririz.
+            Bu öneriler RIASEC kariyer testi ve tercihlerinize göre oluşturulmuştur. Son kararı
+            verirken aileniz ve danışmanlarınızla görüşmenizi öneririz.
           </Typography>
         </Box>
       </Paper>

@@ -35,10 +35,7 @@ export const BasketProvider = ({ children }) => {
   // Save to localStorage whenever selectedPrograms changes
   useEffect(() => {
     try {
-      localStorage.setItem(
-        "selectedPrograms",
-        JSON.stringify(selectedPrograms)
-      );
+      localStorage.setItem("selectedPrograms", JSON.stringify(selectedPrograms));
     } catch (error) {
       console.error("Error saving selectedPrograms to localStorage:", error);
     }

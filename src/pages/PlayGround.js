@@ -74,9 +74,7 @@ const Playground = () => {
       }
 
       // Update the rooms state by filtering out the deleted room
-      setParticipants(
-        participants.filter((participant) => participant.id !== participantId)
-      );
+      setParticipants(participants.filter((participant) => participant.id !== participantId));
     } catch (error) {
       console.error("Failed to delete room:", error);
     }
@@ -97,14 +95,11 @@ const Playground = () => {
         const data = await response.json();
         setParticipants(data);
 
-        const authResponse = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/auth`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-          }
-        );
+        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+          },
+        });
 
         if (authResponse.ok) {
           setIsUserAuthenticated(true);
@@ -173,9 +168,7 @@ const Playground = () => {
 
   const handleDeleteNotReadyPlayers = async () => {
     try {
-      const notReadyPlayers = participants.filter(
-        (player) => !player.player_tactic
-      );
+      const notReadyPlayers = participants.filter((player) => !player.player_tactic);
       for (const player of notReadyPlayers) {
         await fetchWithAuth(
           `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${player.id}`,
@@ -223,10 +216,7 @@ const Playground = () => {
   return (
     <>
       <Header title={`Playground for Room ${roomName || roomId}`}>
-        <Typography
-          variant="h6"
-          style={{ marginRight: "20px", marginLeft: "auto" }}
-        >
+        <Typography variant="h6" style={{ marginRight: "20px", marginLeft: "auto" }}>
           Participants: {participants.length}
         </Typography>
         <Button // Step 3: Add the new Button for toggling blur
@@ -286,10 +276,7 @@ const Playground = () => {
               style={{ marginLeft: "20px", marginTop: "10px" }}
             >
               {sessions.map((session) => (
-                <MenuItem
-                  key={session.id}
-                  onClick={() => handleSessionChange(session.id)}
-                >
+                <MenuItem key={session.id} onClick={() => handleSessionChange(session.id)}>
                   {session.name}
                 </MenuItem>
               ))}
@@ -317,9 +304,7 @@ const Playground = () => {
         <div style={{ marginTop: "64px" }}>
           {participants.length === 0 ? (
             <CenteredContainer>
-              <Typography variant="h6">
-                No participants have joined yet
-              </Typography>
+              <Typography variant="h6">No participants have joined yet</Typography>
             </CenteredContainer>
           ) : (
             <>
@@ -337,21 +322,15 @@ const Playground = () => {
                       {
                         label: "Personality Traits",
                         data: [
-                          participant.extroversion !== null
-                            ? participant.extroversion
-                            : 0,
-                          participant.agreeableness !== null
-                            ? participant.agreeableness
-                            : 0,
+                          participant.extroversion !== null ? participant.extroversion : 0,
+                          participant.agreeableness !== null ? participant.agreeableness : 0,
                           participant.conscientiousness !== null
                             ? participant.conscientiousness
                             : 0,
                           participant.negative_emotionality !== null
                             ? participant.negative_emotionality
                             : 0,
-                          participant.open_mindedness !== null
-                            ? participant.open_mindedness
-                            : 0,
+                          participant.open_mindedness !== null ? participant.open_mindedness : 0,
                         ],
                         backgroundColor: "rgba(75,192,192,0.2)",
                         borderColor: "rgba(75,192,192,1)",
@@ -412,9 +391,7 @@ const Playground = () => {
                       <Card className="participant-card">
                         <CardContent>
                           <div className="name-section">
-                            <div
-                              style={{ flex: isUserAuthenticated ? 5 : 3 }}
-                            ></div>
+                            <div style={{ flex: isUserAuthenticated ? 5 : 3 }}></div>
                             <Typography variant="h6" style={{ flex: 1 }}>
                               {participant.player_name.charAt(0).toUpperCase() +
                                 participant.player_name.slice(1)}
@@ -425,17 +402,13 @@ const Playground = () => {
                                 <Button
                                   variant="contained"
                                   color="secondary"
-                                  onClick={() =>
-                                    handleClickOpen(participant.id)
-                                  }
+                                  onClick={() => handleClickOpen(participant.id)}
                                   style={{ flex: 2 }}
                                 >
                                   Delete Player
                                 </Button>
                                 <Dialog
-                                  open={
-                                    openDialogParticipantId === participant.id
-                                  } // Dialog is open only for the selected participant
+                                  open={openDialogParticipantId === participant.id} // Dialog is open only for the selected participant
                                   onClose={handleClose}
                                   aria-labelledby="alert-dialog-title"
                                   aria-describedby="alert-dialog-description"
@@ -445,22 +418,15 @@ const Playground = () => {
                                   </DialogTitle>
                                   <DialogContent>
                                     <DialogContentText id="alert-dialog-description">
-                                      Are you sure you want to delete{" "}
-                                      {participant.player_name} player?
+                                      Are you sure you want to delete {participant.player_name}{" "}
+                                      player?
                                     </DialogContentText>
                                   </DialogContent>
                                   <DialogActions>
-                                    <Button
-                                      onClick={handleClose}
-                                      color="primary"
-                                    >
+                                    <Button onClick={handleClose} color="primary">
                                       Cancel
                                     </Button>
-                                    <Button
-                                      onClick={handleDelete}
-                                      color="primary"
-                                      autoFocus
-                                    >
+                                    <Button onClick={handleDelete} color="primary" autoFocus>
                                       Confirm
                                     </Button>
                                   </DialogActions>
@@ -529,19 +495,13 @@ const Playground = () => {
       >
         <DialogTitle id="alert-dialog-title">{"Error"}</DialogTitle>
         <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            {errorMessage}
-          </DialogContentText>
+          <DialogContentText id="alert-dialog-description">{errorMessage}</DialogContentText>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setShowErrorModal(false)} color="primary">
             Cancel
           </Button>
-          <Button
-            onClick={handleDeleteNotReadyPlayers}
-            color="primary"
-            autoFocus
-          >
+          <Button onClick={handleDeleteNotReadyPlayers} color="primary" autoFocus>
             Delete Not Ready Players and Start Game
           </Button>
         </DialogActions>

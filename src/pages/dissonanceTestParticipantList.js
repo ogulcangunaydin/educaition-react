@@ -123,21 +123,13 @@ const DissonanceTestParticipantList = () => {
         ? participant.fare_question_displayed_average.toFixed(2)
         : "N/A",
       participant.fare_question_second_answer,
-      participant.extroversion !== null
-        ? participant.extroversion.toFixed(2)
-        : "N/A",
-      participant.agreeableness !== null
-        ? participant.agreeableness.toFixed(2)
-        : "N/A",
-      participant.conscientiousness !== null
-        ? participant.conscientiousness.toFixed(2)
-        : "N/A",
+      participant.extroversion !== null ? participant.extroversion.toFixed(2) : "N/A",
+      participant.agreeableness !== null ? participant.agreeableness.toFixed(2) : "N/A",
+      participant.conscientiousness !== null ? participant.conscientiousness.toFixed(2) : "N/A",
       participant.negative_emotionality !== null
         ? participant.negative_emotionality.toFixed(2)
         : "N/A",
-      participant.open_mindedness !== null
-        ? participant.open_mindedness.toFixed(2)
-        : "N/A",
+      participant.open_mindedness !== null ? participant.open_mindedness.toFixed(2) : "N/A",
       participant.created_at,
       participant.workload,
       participant.career_start,
@@ -147,8 +139,7 @@ const DissonanceTestParticipantList = () => {
       formatPersonalityTestAnswers(participant.personality_test_answers),
     ]);
 
-    let csvContent =
-      headers.join(",") + "\n" + rows.map((e) => e.join(",")).join("\n");
+    const csvContent = headers.join(",") + "\n" + rows.map((e) => e.join(",")).join("\n");
 
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
@@ -226,10 +217,7 @@ const DissonanceTestParticipantList = () => {
               zIndex: 1000,
             }}
           >
-            <div
-              onClick={(e) => e.stopPropagation()}
-              style={{ textAlign: "center" }}
-            >
+            <div onClick={(e) => e.stopPropagation()} style={{ textAlign: "center" }}>
               <QRCodeCanvas
                 value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}
                 size={isSmallScreen ? 200 : 256}
@@ -247,10 +235,7 @@ const DissonanceTestParticipantList = () => {
           {loading ? (
             <CircularProgress /> // Display a loading indicator while loading
           ) : (
-            <TableContainer
-              component={Paper}
-              style={{ overflowX: "auto", marginTop: "50px" }}
-            >
+            <TableContainer component={Paper} style={{ overflowX: "auto", marginTop: "50px" }}>
               <Table>
                 <TableHead>
                   <TableRow>
@@ -288,24 +273,12 @@ const DissonanceTestParticipantList = () => {
                       <TableCell>{participant.gender}</TableCell>
                       <TableCell>{participant.education}</TableCell>
                       <TableCell>{participant.sentiment}</TableCell>
-                      <TableCell>
-                        {participant.comfort_question_first_answer}
-                      </TableCell>
-                      <TableCell>
-                        {participant.comfort_question_displayed_average}
-                      </TableCell>
-                      <TableCell>
-                        {participant.comfort_question_second_answer}
-                      </TableCell>
-                      <TableCell>
-                        {participant.fare_question_first_answer}
-                      </TableCell>
-                      <TableCell>
-                        {participant.fare_question_displayed_average}
-                      </TableCell>
-                      <TableCell>
-                        {participant.fare_question_second_answer}
-                      </TableCell>
+                      <TableCell>{participant.comfort_question_first_answer}</TableCell>
+                      <TableCell>{participant.comfort_question_displayed_average}</TableCell>
+                      <TableCell>{participant.comfort_question_second_answer}</TableCell>
+                      <TableCell>{participant.fare_question_first_answer}</TableCell>
+                      <TableCell>{participant.fare_question_displayed_average}</TableCell>
+                      <TableCell>{participant.fare_question_second_answer}</TableCell>
                       <TableCell>
                         {participant.extroversion !== null
                           ? participant.extroversion.toFixed(2)
@@ -339,11 +312,10 @@ const DissonanceTestParticipantList = () => {
                       <TableCell>{participant.rising_sign}</TableCell>
                       <TableCell>
                         {participant.personality_test_answers !== null
-                          ? JSON.stringify(
-                              participant.personality_test_answers,
-                              null,
-                              2
-                            ).slice(0, 20) + "..."
+                          ? JSON.stringify(participant.personality_test_answers, null, 2).slice(
+                              0,
+                              20
+                            ) + "..."
                           : "N/A"}
                       </TableCell>
                       <TableCell>
