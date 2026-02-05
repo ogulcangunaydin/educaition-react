@@ -33,14 +33,7 @@ import {
   SESSION_TYPES,
 } from "../services/participantSessionService";
 import { fetchUniversityMapping, fetchScoreRankingDistribution } from "../services/liseService";
-
-const SCORE_MAP = {
-  strongly_like: 2,
-  like: 1,
-  unsure: 0,
-  dislike: -1,
-  strongly_dislike: -2,
-};
+import { fetchEnums } from "../services/enumService";
 
 const steps = [
   "Kişisel Bilgiler",
@@ -48,34 +41,6 @@ const steps = [
   "Puan Beklentisi",
   "Tercihler",
   "RIASEC Testi",
-];
-
-const AREAS = [
-  { value: "say", label: "Sayısal (SAY)" },
-  { value: "ea", label: "Eşit Ağırlık (EA)" },
-  { value: "söz", label: "Sözel (SÖZ)" },
-  { value: "dil", label: "Dil" },
-];
-
-const CLASS_YEARS = [
-  { value: "9", label: "9. Sınıf" },
-  { value: "10", label: "10. Sınıf" },
-  { value: "11", label: "11. Sınıf" },
-  { value: "12", label: "12. Sınıf" },
-  { value: "mezun", label: "Mezun" },
-];
-
-const LANGUAGES = [
-  { value: "türkçe", label: "Türkçe" },
-  { value: "ingilizce", label: "İngilizce" },
-  { value: "farketmez", label: "Farketmez" },
-];
-
-const CITIES = [
-  { value: "istanbul", label: "İstanbul" },
-  { value: "ankara", label: "Ankara" },
-  { value: "izmir", label: "İzmir" },
-  { value: "other", label: "Diğer Şehirler" },
 ];
 
 const BIRTH_YEARS = Array.from({ length: 20 }, (_, i) => 2010 - i);
@@ -114,6 +79,16 @@ function ProgramSuggestionTest() {
   const [pendingUniversityNames, setPendingUniversityNames] = useState(null);
   const [scoreDistribution, setScoreDistribution] = useState(null);
 
+  // Enum values from API
+  const [enums, setEnums] = useState({
+    scoreAreas: [],
+    classYears: [],
+    preferredLanguages: [],
+    cities: [],
+    genders: [],
+    riasecScoreMap: {},
+  });
+
   // Form data
   const [formData, setFormData] = useState({
     // Step 1 - Personal Info
@@ -145,6 +120,26 @@ function ProgramSuggestionTest() {
   const [riasecAnswers, setRiasecAnswers] = useState({});
   const [riasecQuestionsList] = useState(() => getAllQuestions());
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
+  // Load enums from API
+  useEffect(() => {
+    const loadEnums = async () => {
+      try {
+        const data = await fetchEnums();
+        setEnums({
+          scoreAreas: data.scoreAreas || [],
+          classYears: data.classYears || [],
+          preferredLanguages: data.preferredLanguages || [],
+          cities: data.cities || [],
+          genders: data.genders || [],
+          riasecScoreMap: data.riasecScoreMap || {},
+        });
+      } catch (error) {
+        console.error("Error loading enums:", error);
+      }
+    };
+    loadEnums();
+  }, []);
 
   // Load university list from API
   useEffect(() => {
@@ -479,7 +474,7 @@ function ProgramSuggestionTest() {
   };
 
   const handleRiasecAnswer = async (questionId, answer) => {
-    const newAnswers = { ...riasecAnswers, [questionId]: SCORE_MAP[answer] };
+    const newAnswers = { ...riasecAnswers, [questionId]: enums.riasecScoreMap[answer] };
     setRiasecAnswers(newAnswers);
     const sessionType = SESSION_TYPES.PROGRAM_SUGGESTION;
 
@@ -592,7 +587,7 @@ function ProgramSuggestionTest() {
                 value={formData.classYear}
                 onChange={(e) => setFormData({ ...formData, classYear: e.target.value })}
               >
-                {CLASS_YEARS.map((cy) => (
+                {enums.classYears.map((cy) => (
                   <FormControlLabel
                     key={cy.value}
                     value={cy.value}
@@ -639,7 +634,7 @@ function ProgramSuggestionTest() {
                 value={formData.area}
                 onChange={(e) => setFormData({ ...formData, area: e.target.value })}
               >
-                {AREAS.map((area) => (
+                {enums.scoreAreas.map((area) => (
                   <FormControlLabel
                     key={area.value}
                     value={area.value}
@@ -724,14 +719,16 @@ function ProgramSuggestionTest() {
                 onChange={(e) => setFormData({ ...formData, alternativeArea: e.target.value })}
               >
                 <FormControlLabel value="" control={<Radio />} label="Hayır" />
-                {AREAS.filter((a) => a.value !== formData.area).map((area) => (
-                  <FormControlLabel
-                    key={area.value}
-                    value={area.value}
-                    control={<Radio />}
-                    label={area.label}
-                  />
-                ))}
+                {enums.scoreAreas
+                  .filter((a) => a.value !== formData.area)
+                  .map((area) => (
+                    <FormControlLabel
+                      key={area.value}
+                      value={area.value}
+                      control={<Radio />}
+                      label={area.label}
+                    />
+                  ))}
               </RadioGroup>
             </FormControl>
 
@@ -810,7 +807,7 @@ function ProgramSuggestionTest() {
                   })
                 }
               >
-                {LANGUAGES.map((lang) => (
+                {enums.preferredLanguages.map((lang) => (
                   <FormControlLabel
                     key={lang.value}
                     value={lang.value}
@@ -845,7 +842,7 @@ function ProgramSuggestionTest() {
             <FormControl component="fieldset" required>
               <FormLabel>Tercih ettiğiniz şehirler</FormLabel>
               <FormGroup>
-                {CITIES.map((city) => (
+                {enums.cities.map((city) => (
                   <FormControlLabel
                     key={city.value}
                     control={

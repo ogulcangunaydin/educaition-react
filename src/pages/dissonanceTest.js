@@ -33,6 +33,7 @@ import {
   fetchWithParticipantAuth,
   SESSION_TYPES,
 } from "../services/participantSessionService";
+import { fetchEnums } from "../services/enumService";
 
 const DissonanceTest = () => {
   const TAXI_COMFORT_QUESTION =
@@ -40,28 +41,11 @@ const DissonanceTest = () => {
   const TAXI_FARES_QUESTION =
     "Sizce İstanbul’da aldığınız taksi hizmetinin kalitesi ile ücret dengesi ne ölçüde uyumlu?";
 
-  const educationOptions = [
-    "lise mezunu",
-    "lise öğrencisi",
-    "üniversite öğrencisi",
-    "üniversite mezunu",
-    "y.lisans öğrencisi ve üzeri",
-  ];
-
-  const starSignOptions = [
-    "Koç",
-    "Boğa",
-    "İkizler",
-    "Yengeç",
-    "Aslan",
-    "Başak",
-    "Terazi",
-    "Akrep",
-    "Yay",
-    "Oğlak",
-    "Kova",
-    "Balık",
-  ];
+  // Enums loaded from API
+  const [enums, setEnums] = useState({
+    educations: [],
+    starSigns: [],
+  });
 
   const { currentUserId } = useParams();
 
@@ -92,6 +76,22 @@ const DissonanceTest = () => {
   const navigate = useNavigate();
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  // Load enums from API
+  useEffect(() => {
+    const loadEnums = async () => {
+      try {
+        const enumData = await fetchEnums();
+        setEnums({
+          educations: enumData.educations || [],
+          starSigns: enumData.starSigns || [],
+        });
+      } catch (error) {
+        console.error("Failed to load enums:", error);
+      }
+    };
+    loadEnums();
+  }, []);
 
   const handleNext = useCallback(() => {
     setStep(step + 1);
@@ -341,9 +341,9 @@ const DissonanceTest = () => {
                     onChange={(e) => setEducation(e.target.value)}
                     label="Eğitim Durumu"
                   >
-                    {educationOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
+                    {enums.educations.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
                       </MenuItem>
                     ))}
                   </Select>
@@ -358,9 +358,9 @@ const DissonanceTest = () => {
                     onChange={(e) => setStarSign(e.target.value)}
                     label="Burç"
                   >
-                    {starSignOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
+                    {enums.starSigns.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
                       </MenuItem>
                     ))}
                   </Select>
@@ -375,9 +375,9 @@ const DissonanceTest = () => {
                     onChange={(e) => setRisingSign(e.target.value)}
                     label="Yükselen Burç"
                   >
-                    {starSignOptions.map((option) => (
-                      <MenuItem key={option} value={option}>
-                        {option}
+                    {enums.starSigns.map((option) => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
                       </MenuItem>
                     ))}
                   </Select>
