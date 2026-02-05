@@ -18,7 +18,7 @@ import FilterSlider from "../components/UniversityComparison/FilterSlider";
 import ComparisonChart from "../components/UniversityComparison/ComparisonChart";
 import DepartmentList from "../components/UniversityComparison/DepartmentList";
 import InstructionsPanel from "../components/UniversityComparison/InstructionsPanel";
-import { parseCSV } from "../utils/csvParser";
+import { fetchAllProgramsCached } from "../services/programService";
 import { useBasket } from "../contexts/BasketContext";
 import { useUniversity } from "../contexts/UniversityContext";
 import {
@@ -224,7 +224,7 @@ const UniversityComparison = () => {
     customRangeMax,
   ]);
 
-  // Load CSV data on mount or when university changes
+  // Load data on mount or when university changes
   useEffect(() => {
     const loadData = async () => {
       try {
@@ -233,81 +233,60 @@ const UniversityComparison = () => {
 
         const dataPrefix = university.dataPrefix;
 
-        // Load CSV files (existing data + 2025 data)
+        // Load program data from API (cached)
+        const programDataPromise = fetchAllProgramsCached();
+
+        // Load preference and price CSV files (these will be migrated to API in Phase 8.5)
         const [
-          uniProgramsResponse,
-          allUniversitiesResponse,
           cityPrefsResponse,
           uniPrefsResponse,
           progPrefsResponse,
           priceResponse,
-          uniPrograms2025Response,
-          allUniversities2025Response,
           cityPrefs2025Response,
           uniPrefs2025Response,
           progPrefs2025Response,
         ] = await Promise.all([
-          fetch(`/assets/data/${dataPrefix}_programs.csv`),
-          fetch("/assets/data/all_universities_programs_master.csv"),
           fetch(`/assets/data/${dataPrefix}_tercih_edilen_iller.csv`),
           fetch(`/assets/data/${dataPrefix}_tercih_edilen_universiteler.csv`),
           fetch(`/assets/data/${dataPrefix}_tercih_edilen_programlar.csv`),
           fetch("/assets/data/all_programs_prices_processed.csv"),
-          fetch(`/assets/data_2025/${dataPrefix}_programs.csv`),
-          fetch("/assets/data_2025/all_universities_programs_master.csv"),
           fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_iller.csv`),
           fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_universiteler.csv`),
           fetch(`/assets/data_2025/${dataPrefix}_tercih_edilen_programlar.csv`),
         ]);
 
         if (
-          !uniProgramsResponse.ok ||
-          !allUniversitiesResponse.ok ||
           !cityPrefsResponse.ok ||
           !uniPrefsResponse.ok ||
           !progPrefsResponse.ok ||
           !priceResponse.ok ||
-          !uniPrograms2025Response.ok ||
-          !allUniversities2025Response.ok ||
           !cityPrefs2025Response.ok ||
           !uniPrefs2025Response.ok ||
           !progPrefs2025Response.ok
         ) {
-          throw new Error("Failed to load CSV files");
+          throw new Error("Failed to load preference CSV files");
         }
 
+        // Get program data from API
+        const allProgramsData = await programDataPromise;
+
         const [
-          ,
-          // uniProgramsText - not needed, using allUniversitiesData instead
-          allUniversitiesText,
           cityPrefsText,
           uniPrefsText,
           progPrefsText,
-          priceText, // uniPrograms2025Text - not needed, using allUniversitiesData instead
-          ,
-          allUniversities2025Text,
+          priceText,
           cityPrefs2025Text,
           uniPrefs2025Text,
           progPrefs2025Text,
         ] = await Promise.all([
-          uniProgramsResponse.text(),
-          allUniversitiesResponse.text(),
           cityPrefsResponse.text(),
           uniPrefsResponse.text(),
           progPrefsResponse.text(),
           priceResponse.text(),
-          uniPrograms2025Response.text(),
-          allUniversities2025Response.text(),
           cityPrefs2025Response.text(),
           uniPrefs2025Response.text(),
           progPrefs2025Response.text(),
         ]);
-
-        const allUniversitiesParsed = parseCSV(allUniversitiesText);
-        const allUniversities2025Parsed = parseCSV(allUniversities2025Text);
-
-        // Merge all universities data from both sources
-        const mergedAllUniversitiesData = [...allUniversitiesParsed, ...allUniversities2025Parsed];
 
         // Parse city preferences CSV (simple format, not using parseCSV)
         const cityPrefsLines = cityPrefsText.trim().split("\n");
@@ -434,15 +413,16 @@ const UniversityComparison = () => {
           });
         }
 
-        setAllUniversitiesData(mergedAllUniversitiesData);
+        // Use program data from API (already includes all years)
+        setAllUniversitiesData(allProgramsData);
         setCityPreferencesData(cityPrefsData);
         setUniversityPreferencesData(uniPrefsData);
         setProgramPreferencesData(progPrefsData);
         setPriceData(parsedPriceData);
         setLoading(false);
       } catch (err) {
-        console.error("Error loading CSV files:", err);
-        setError("CSV dosyaları yüklenirken hata oluştu. Lütfen sayfayı yenileyin.");
+        console.error("Error loading data:", err);
+        setError("Veri yüklenirken hata oluştu. Lütfen sayfayı yenileyin.");
         setLoading(false);
       }
     };
