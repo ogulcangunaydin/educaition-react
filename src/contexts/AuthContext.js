@@ -165,6 +165,31 @@ export const AuthProvider = ({ children }) => {
     }
   }, [updateAuthState]);
 
+  /**
+   * Authenticate an anonymous user by device fingerprint.
+   * Finds or creates a student-role user on the backend, then stores
+   * the returned JWT pair just like a regular login.
+   */
+  const deviceLogin = useCallback(
+    async (deviceId) => {
+      const response = await fetch(`${API_BASE_URL}/auth/device-login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ device_id: deviceId }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Device login failed");
+      }
+
+      const data = await response.json();
+      updateAuthState(data);
+      return data;
+    },
+    [updateAuthState]
+  );
+
   // Register auth callbacks with the API client once on mount
   useEffect(() => {
     configureAuth({
@@ -251,6 +276,7 @@ export const AuthProvider = ({ children }) => {
       isLoading,
       login,
       logout,
+      deviceLogin,
       getValidAccessToken,
       silentRefresh,
       hasRole,
@@ -267,6 +293,7 @@ export const AuthProvider = ({ children }) => {
       isLoading,
       login,
       logout,
+      deviceLogin,
       getValidAccessToken,
       silentRefresh,
       hasRole,

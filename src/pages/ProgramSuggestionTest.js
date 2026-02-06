@@ -33,7 +33,7 @@ import {
 } from "../services/participantSessionService";
 import { fetchUniversityMapping, fetchScoreRankingDistribution } from "../services/liseService";
 import { fetchEnums } from "../services/enumService";
-import { markTestCompleted } from "@components/atoms/TestPageGuard";
+
 import { TEST_TYPES } from "@config/permissions";
 import programSuggestionService from "@services/programSuggestionService";
 
@@ -435,7 +435,7 @@ function ProgramSuggestionTest() {
         await programSuggestionService.submitRiasec(studentId, { riasec_answers: newAnswers });
 
         // Mark test as completed (prevents retaking on same device)
-        await markTestCompleted(TEST_TYPES.PROGRAM_SUGGESTION, roomId);
+
         // Set flag to prevent creating new student during navigation
         isNavigatingRef.current = true;
         // Clear session so next student can start fresh

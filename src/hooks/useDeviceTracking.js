@@ -7,25 +7,31 @@
 
 import { useState, useCallback, useEffect } from "react";
 import api from "@services/api";
+import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 
-const DEVICE_ID_KEY = "educaition_device_id";
 const COMPLETED_TESTS_KEY = "educaition_completed_tests";
 
 /**
- * Generate or retrieve a device ID
+ * Check if the current user is an admin or teacher by reading the JWT from localStorage.
  */
-export const getOrCreateDeviceId = () => {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
-  if (!deviceId) {
-    // Generate a proper UUID v4 format
-    deviceId = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
-      const r = (Math.random() * 16) | 0;
-      const v = c === "x" ? r : (r & 0x3) | 0x8;
-      return v.toString(16);
-    });
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
+const isPrivilegedUser = () => {
+  try {
+    const token = localStorage.getItem("access_token");
+    if (!token) return false;
+    const base64Url = token.split(".")[1];
+    const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    const payload = JSON.parse(
+      decodeURIComponent(
+        atob(base64)
+          .split("")
+          .map((c) => "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2))
+          .join("")
+      )
+    );
+    return ["admin", "teacher"].includes(payload?.role);
+  } catch {
+    return false;
   }
-  return deviceId;
 };
 
 /**
@@ -104,10 +110,15 @@ const markCompletionInBackend = async (deviceId, testType, roomId) => {
 export function useDeviceTracking(testType, roomId = null, options = {}) {
   const { autoCheck = true, skipForAuth = false } = options;
 
-  const [deviceId] = useState(() => getOrCreateDeviceId());
+  const [deviceId, setDeviceId] = useState(null);
   const [hasCompleted, setHasCompleted] = useState(null);
   const [isChecking, setIsChecking] = useState(autoCheck);
   const [error, setError] = useState(null);
+
+  // Resolve fingerprint on mount
+  useEffect(() => {
+    getDeviceFingerprint().then(setDeviceId);
+  }, []);
 
   /**
    * Check if the device has completed this test
@@ -117,6 +128,13 @@ export function useDeviceTracking(testType, roomId = null, options = {}) {
     setError(null);
 
     try {
+      // Admins and teachers can always retake tests
+      if (isPrivilegedUser()) {
+        setHasCompleted(false);
+        setIsChecking(false);
+        return false;
+      }
+
       // Quick local check first
       if (hasCompletedTestLocally(testType, roomId)) {
         setHasCompleted(true);
@@ -150,6 +168,9 @@ export function useDeviceTracking(testType, roomId = null, options = {}) {
   const markCompleted = useCallback(async () => {
     setError(null);
 
+    // Admins and teachers can retake tests — don't mark their device
+    if (isPrivilegedUser()) return true;
+
     // Save locally first (fast)
     saveCompletedTestLocally(testType, roomId);
     setHasCompleted(true);
@@ -179,11 +200,12 @@ export function useDeviceTracking(testType, roomId = null, options = {}) {
   }, [testType, roomId]);
 
   // Auto-check on mount if enabled
+  // Auto-check on mount if enabled (wait for deviceId)
   useEffect(() => {
-    if (autoCheck && !skipForAuth) {
+    if (autoCheck && !skipForAuth && deviceId) {
       checkCompletion();
     }
-  }, [autoCheck, skipForAuth, checkCompletion]);
+  }, [autoCheck, skipForAuth, deviceId, checkCompletion]);
 
   return {
     deviceId,

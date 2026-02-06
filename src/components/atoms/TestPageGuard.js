@@ -1,140 +1,102 @@
-import { useEffect, useState, useCallback } from "react";
+/**
+ * TestPageGuard
+ *
+ * Controls access to public test pages based on user role and test completion.
+ *
+ * Flow:
+ * 1. If the user is an authenticated admin or teacher → always allow (unlimited retakes)
+ * 2. If the user is an authenticated viewer → block (viewers cannot take tests)
+ * 3. If the user is an authenticated student → check if they completed this test type;
+ *    if completed → block, otherwise → allow
+ * 4. If the user is not authenticated → auto-create a student account via device
+ *    fingerprint (device-login), then follow the student flow above
+ *
+ * This means every anonymous test-taker gets a real user row in the `users` table
+ * (role=student, username=device_{fingerprint}), so all participant records are
+ * linked via foreign keys and we can track a student across different tests.
+ */
+
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { Box, CircularProgress, Typography } from "@mui/material";
 import { useAuth } from "@contexts/AuthContext";
 import { Button } from "@components/atoms";
 import api from "@services/api";
-
-const DEVICE_ID_KEY = "educaition_device_id";
-const COMPLETED_TESTS_KEY = "educaition_completed_tests";
-
-const getOrCreateDeviceId = () => {
-  let deviceId = localStorage.getItem(DEVICE_ID_KEY);
-  if (!deviceId) {
-    if (typeof crypto !== "undefined" && crypto.randomUUID) {
-      deviceId = crypto.randomUUID();
-    } else {
-      deviceId = ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-        (c ^ (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))).toString(16)
-      );
-    }
-    localStorage.setItem(DEVICE_ID_KEY, deviceId);
-  }
-  return deviceId;
-};
-
-const getCompletedTests = () => {
-  try {
-    return JSON.parse(localStorage.getItem(COMPLETED_TESTS_KEY) || "{}");
-  } catch {
-    return {};
-  }
-};
-
-const saveCompletedTestLocally = (testType, roomId) => {
-  const completed = getCompletedTests();
-  if (!completed[testType]) completed[testType] = [];
-  const roomKey = roomId || "global";
-  if (!completed[testType].includes(roomKey)) {
-    completed[testType].push(roomKey);
-    localStorage.setItem(COMPLETED_TESTS_KEY, JSON.stringify(completed));
-  }
-};
-
-const hasCompletedTestLocally = (testType, roomId) => {
-  const completed = getCompletedTests();
-  const roomKey = roomId || "global";
-  return completed[testType]?.includes(roomKey) || false;
-};
-
-/**
- * Check completion status from backend
- */
-const checkCompletionFromBackend = async (deviceId, testType, roomId) => {
-  try {
-    const response = await api.deviceTracking.checkCompletion(deviceId, testType, roomId);
-    if (response.ok) {
-      return response.data.has_completed;
-    }
-    return false;
-  } catch (error) {
-    console.error("Failed to check completion from backend:", error);
-    return false;
-  }
-};
-
-/**
- * Mark test as completed in both localStorage and backend
- */
-const markTestCompleted = async (testType, roomId) => {
-  const deviceId = getOrCreateDeviceId();
-
-  // Save locally first (fast)
-  saveCompletedTestLocally(testType, roomId);
-
-  // Then persist to backend (secure)
-  try {
-    await api.deviceTracking.markCompletion(deviceId, testType, roomId);
-  } catch (error) {
-    console.error("Failed to mark completion in backend:", error);
-    // Local storage is already updated, so the user is still blocked locally
-  }
-};
-
-/**
- * Check if test has been completed (both local and backend)
- */
-const hasCompletedTest = async (testType, roomId) => {
-  const deviceId = getOrCreateDeviceId();
-
-  // Quick local check first
-  if (hasCompletedTestLocally(testType, roomId)) {
-    return true;
-  }
-
-  // If not found locally, check backend (user might have cleared localStorage)
-  const backendCompleted = await checkCompletionFromBackend(deviceId, testType, roomId);
-
-  // If backend says completed, sync to localStorage
-  if (backendCompleted) {
-    saveCompletedTestLocally(testType, roomId);
-  }
-
-  return backendCompleted;
-};
+import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 
 export default function TestPageGuard({ children, testType = "generic" }) {
   const { roomId } = useParams();
-  const { isAuthenticated, isTeacherOrAdmin, isLoading } = useAuth();
-  const [canAccess, setCanAccess] = useState(null);
-  const [alreadyCompleted, setAlreadyCompleted] = useState(false);
+  const { isAuthenticated, isLoading: authLoading, user, deviceLogin } = useAuth();
 
-  const checkAccess = useCallback(async () => {
-    // Teachers and admins can always access (for testing purposes)
-    if (isAuthenticated && isTeacherOrAdmin) {
-      setCanAccess(true);
-      setAlreadyCompleted(false);
-      return;
-    }
-
-    // For anonymous users, check if they've already completed the test
-    const completed = await hasCompletedTest(testType, roomId);
-
-    if (completed) {
-      setCanAccess(false);
-      setAlreadyCompleted(true);
-    } else {
-      setCanAccess(true);
-      setAlreadyCompleted(false);
-    }
-  }, [isAuthenticated, isTeacherOrAdmin, testType, roomId]);
+  const [canAccess, setCanAccess] = useState(null); // null = still checking
+  const [message, setMessage] = useState("");
+  const hasCheckedRef = useRef(false);
 
   useEffect(() => {
-    if (isLoading) return;
-    checkAccess();
-  }, [isLoading, checkAccess]);
+    if (authLoading || hasCheckedRef.current) return;
+    hasCheckedRef.current = true;
 
-  if (isLoading || canAccess === null) {
+    const checkAccess = async () => {
+      // --- Step 1: Ensure we have an authenticated user ---
+      let currentUser = user;
+      let authenticated = isAuthenticated;
+
+      if (!authenticated) {
+        // Anonymous visitor — auto-register via device fingerprint
+        try {
+          const deviceId = await getDeviceFingerprint();
+          const data = await deviceLogin(deviceId);
+          currentUser = { id: data.current_user_id, role: data.role };
+          authenticated = true;
+        } catch (err) {
+          console.error("Device login failed:", err);
+          // If device login fails, let them through anyway — the test page
+          // itself will handle participant creation
+          setCanAccess(true);
+          return;
+        }
+      }
+
+      // --- Step 2: Role-based checks ---
+      const role = currentUser?.role;
+
+      // Admin & Teacher → always allowed (unlimited retakes)
+      if (role === "admin" || role === "teacher") {
+        setCanAccess(true);
+        return;
+      }
+
+      // Viewer → never allowed to take tests
+      if (role === "viewer") {
+        setCanAccess(false);
+        setMessage("Viewers are not allowed to take tests.");
+        return;
+      }
+
+      // --- Step 3: Student — check test completion via backend ---
+      try {
+        const response = await api.checkTestCompletion(testType, roomId);
+        if (response.ok && response.data.has_completed) {
+          setCanAccess(false);
+          setMessage(
+            "You have already completed this test. Each participant can only complete the test once."
+          );
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to check test completion:", err);
+        // On error, allow through — better to let them try than to block
+      }
+
+      setCanAccess(true);
+    };
+
+    checkAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [authLoading]);
+
+  // Still loading
+  if (authLoading || canAccess === null) {
     return (
       <Box
         sx={{
@@ -149,7 +111,8 @@ export default function TestPageGuard({ children, testType = "generic" }) {
     );
   }
 
-  if (!canAccess && alreadyCompleted) {
+  // Blocked
+  if (!canAccess) {
     return (
       <Box
         sx={{
@@ -164,11 +127,10 @@ export default function TestPageGuard({ children, testType = "generic" }) {
         }}
       >
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
-          Test Already Completed
+          Access Denied
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 400 }}>
-          You have already completed this test on this device. Each participant can only complete
-          the test once.
+          {message}
         </Typography>
         <Button variant="outlined" onClick={() => window.history.back()}>
           Go Back
@@ -180,4 +142,4 @@ export default function TestPageGuard({ children, testType = "generic" }) {
   return children;
 }
 
-export { markTestCompleted, hasCompletedTest, getOrCreateDeviceId };
+export { getDeviceFingerprint };

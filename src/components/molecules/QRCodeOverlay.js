@@ -49,9 +49,27 @@ function QRCodeOverlay({ url, onClose, size = 256 }) {
       <QRContainer onClick={(e) => e.stopPropagation()}>
         <QRCodeCanvas value={url} size={size} level="H" includeMargin />
         <Typography
+          variant="caption"
+          color={COLORS.primary.contrastText}
+          sx={{ textAlign: "center" }}
+        >
+          QR kod okunamıyorsa aşağıdaki linki tarayıcınıza yazabilirsiniz
+        </Typography>
+        <Typography
+          component="a"
+          href={url}
+          target="_blank"
+          rel="noopener noreferrer"
           variant="body2"
-          color="textSecondary"
-          sx={{ maxWidth: 300, textAlign: "center" }}
+          sx={{
+            maxWidth: 350,
+            textAlign: "center",
+            wordBreak: "break-all",
+            userSelect: "all",
+            color: COLORS.primary.contrastText,
+            textDecoration: "underline",
+            cursor: "pointer",
+          }}
         >
           {url}
         </Typography>

@@ -12,7 +12,7 @@ export { default as Card } from "./Card";
 export { default as Logo } from "./Logo";
 export { default as Modal } from "./Modal";
 export { default as ProtectedRoute } from "./ProtectedRoute";
-export { default as TestPageGuard, markTestCompleted, hasCompletedTest } from "./TestPageGuard";
+export { default as TestPageGuard } from "./TestPageGuard";
 export { List, ListItem } from "./List";
 export { Container, Flex, Center } from "./Container";
 export { Grid, GridContainer, GridItem } from "./Grid";

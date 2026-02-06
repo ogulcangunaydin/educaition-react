@@ -25,7 +25,8 @@ import {
 } from "@mui/material";
 import { Button } from "@components/atoms";
 import { PageLayout } from "@components/templates";
-import { markTestCompleted, getOrCreateDeviceId } from "@components/atoms/TestPageGuard";
+import { useAuth } from "@contexts/AuthContext";
+import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 import { getTestRoomPublic, TEST_TYPE_CONFIG, TestType } from "../services/testRoomService";
 import bigFiveTestENQuestions from "./PersonalityTest/BigFiveTestEN.txt";
 
@@ -44,6 +45,7 @@ const BASE_URL = API_BASE_URL;
 function PersonalityTestPublic() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const { userId } = useAuth();
 
   // Room and test state
   const [room, setRoom] = useState(null);
@@ -60,11 +62,52 @@ function PersonalityTestPublic() {
   const [result, setResult] = useState(null);
   const [participantId, setParticipantId] = useState(null);
 
-  // Device ID for fingerprinting
-  const deviceId = getOrCreateDeviceId();
+  // Device fingerprint (async — resolved on mount)
+  const [deviceId, setDeviceId] = useState(null);
 
-  // Load room and questions
   useEffect(() => {
+    getDeviceFingerprint().then(setDeviceId);
+  }, []);
+
+  // --- Progress persistence helpers ---
+  const storageKey = `personality_test_progress_${roomId}`;
+
+  const saveProgress = useCallback(
+    (data) => {
+      try {
+        localStorage.setItem(
+          storageKey,
+          JSON.stringify({
+            participantId: data.participantId ?? participantId,
+            answers: data.answers ?? answers,
+            currentQuestionIndex: data.currentQuestionIndex ?? currentQuestionIndex,
+            email: data.email ?? email,
+          })
+        );
+      } catch {
+        // localStorage full or unavailable — non-critical
+      }
+    },
+    [storageKey, participantId, answers, currentQuestionIndex, email]
+  );
+
+  const clearProgress = useCallback(() => {
+    localStorage.removeItem(storageKey);
+  }, [storageKey]);
+
+  const loadProgress = useCallback(() => {
+    try {
+      const raw = localStorage.getItem(storageKey);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }, [storageKey]);
+
+  // Load room and questions (wait for deviceId to be ready)
+  useEffect(() => {
+    if (!deviceId) return;
+
     const loadRoomAndQuestions = async () => {
       try {
         // Fetch room info
@@ -76,9 +119,45 @@ function PersonalityTestPublic() {
         const text = await response.text();
         const questionsArray = text.split("\n").filter(Boolean);
         setQuestions(questionsArray);
-        setAnswers(new Array(questionsArray.length).fill(null));
 
-        setStage("registration");
+        // Try to restore saved progress
+        const saved = loadProgress();
+        if (saved?.participantId) {
+          // Re-register with the backend to get a fresh session token cookie.
+          // The backend will recognise the device_fingerprint + room and
+          // return the existing in-progress participant (no duplicate).
+          try {
+            const regResponse = await fetch(`${BASE_URL}/personality-test/participants`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                test_room_id: parseInt(roomId, 10),
+                email: saved.email || "",
+                device_fingerprint: deviceId,
+                student_user_id: userId || null,
+              }),
+            });
+
+            if (regResponse.ok) {
+              const regData = await regResponse.json();
+              setParticipantId(regData.participant.id);
+            } else {
+              // Token refresh failed — use saved ID and hope the cookie is still valid
+              setParticipantId(saved.participantId);
+            }
+          } catch {
+            setParticipantId(saved.participantId);
+          }
+
+          setAnswers(saved.answers || new Array(questionsArray.length).fill(null));
+          setCurrentQuestionIndex(saved.currentQuestionIndex || 0);
+          if (saved.email) setEmail(saved.email);
+          setStage("test");
+        } else {
+          setAnswers(new Array(questionsArray.length).fill(null));
+          setStage("registration");
+        }
       } catch (err) {
         setError(err.message || "Failed to load test");
         setStage("error");
@@ -86,7 +165,7 @@ function PersonalityTestPublic() {
     };
 
     loadRoomAndQuestions();
-  }, [roomId]);
+  }, [roomId, deviceId]);
 
   // Handle participant registration
   const handleRegister = useCallback(async () => {
@@ -112,6 +191,7 @@ function PersonalityTestPublic() {
           test_room_id: parseInt(roomId, 10),
           email: email.trim(),
           device_fingerprint: deviceId,
+          student_user_id: userId || null,
         }),
       });
 
@@ -126,6 +206,12 @@ function PersonalityTestPublic() {
 
       const data = await response.json();
       setParticipantId(data.participant.id);
+      saveProgress({
+        participantId: data.participant.id,
+        answers: answers,
+        currentQuestionIndex: 0,
+        email: email.trim(),
+      });
       setStage("test");
     } catch (err) {
       setEmailError(err.message);
@@ -140,9 +226,14 @@ function PersonalityTestPublic() {
     newAnswers[questionIndex] = parseInt(value, 10);
     setAnswers(newAnswers);
 
+    const nextIndex = questionIndex < questions.length - 1 ? questionIndex + 1 : questionIndex;
+
+    // Persist progress
+    saveProgress({ answers: newAnswers, currentQuestionIndex: nextIndex });
+
     // Auto-advance to next question
     if (questionIndex < questions.length - 1) {
-      setTimeout(() => setCurrentQuestionIndex(questionIndex + 1), 200);
+      setTimeout(() => setCurrentQuestionIndex(nextIndex), 200);
     }
   };
 
@@ -175,8 +266,8 @@ function PersonalityTestPublic() {
       const resultData = await response.json();
       setResult(resultData);
 
-      // Mark as completed (both localStorage and backend)
-      await markTestCompleted(TestType.PERSONALITY_TEST, roomId);
+      // Clear saved progress
+      clearProgress();
 
       setStage("result");
     } catch (err) {

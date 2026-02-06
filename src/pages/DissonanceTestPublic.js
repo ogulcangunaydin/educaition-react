@@ -29,8 +29,9 @@ import {
 } from "@mui/icons-material";
 import { Button } from "@components/atoms";
 import { PageLayout } from "@components/templates";
+import { useAuth } from "@contexts/AuthContext";
 import { FormField, SelectField, SliderField, StepIndicator } from "@components/molecules";
-import { markTestCompleted, getOrCreateDeviceId } from "@components/atoms/TestPageGuard";
+import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { fetchEnums } from "@services/enumService";
 import { DISSONANCE_TEST } from "@data/testQuestions";
@@ -56,6 +57,7 @@ const SENTIMENT_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
 function DissonanceTestPublic() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const { userId } = useAuth();
 
   // Room state
   const [room, setRoom] = useState(null);
@@ -96,8 +98,12 @@ function DissonanceTestPublic() {
   // Step 4 auto-advance and step 5 fake error
   const [showFakeError, setShowFakeError] = useState(false);
 
-  // Device ID
-  const deviceId = getOrCreateDeviceId();
+  // Device fingerprint
+  const [deviceId, setDeviceId] = useState(null);
+
+  useEffect(() => {
+    getDeviceFingerprint().then(setDeviceId);
+  }, []);
 
   // Load room and enums
   useEffect(() => {
@@ -172,6 +178,7 @@ function DissonanceTestPublic() {
           star_sign: formData.starSign,
           rising_sign: formData.risingSign,
           device_fingerprint: deviceId,
+          student_user_id: userId || null,
         }),
       });
 

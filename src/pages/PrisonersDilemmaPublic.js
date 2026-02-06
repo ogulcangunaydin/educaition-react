@@ -28,7 +28,6 @@ import {
 import { Button } from "@components/atoms";
 import { PageLayout } from "@components/templates";
 import { FormField, StepIndicator } from "@components/molecules";
-import { markTestCompleted } from "@components/atoms/TestPageGuard";
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { PRISONERS_DILEMMA, ANSWER_SCALES } from "@data/testQuestions";
 import bigFiveTestENQuestions from "./PersonalityTest/BigFiveTestEN.txt";
@@ -198,8 +197,6 @@ function PrisonersDilemmaPublic() {
         throw new Error("Failed to save tactic");
       }
 
-      // Mark as completed
-      await markTestCompleted(TestType.PRISONERS_DILEMMA, roomId);
       nextStep();
     } catch (err) {
       setError(err.message);

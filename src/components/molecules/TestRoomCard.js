@@ -17,7 +17,7 @@ import {
 } from "@mui/icons-material";
 import Typography from "../atoms/Typography";
 import Button from "../atoms/Button";
-import { TEST_TYPE_CONFIG } from "../../services/testRoomService";
+import { TEST_TYPE_CONFIG, generateRoomUrl } from "../../services/testRoomService";
 
 function TestRoomCard({
   room,
@@ -34,7 +34,7 @@ function TestRoomCard({
 
   const handleCopyUrl = async () => {
     try {
-      const url = `${window.location.origin}/test-room/${room.id}`;
+      const url = generateRoomUrl(room.id, room.test_type);
       await navigator.clipboard.writeText(url);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);

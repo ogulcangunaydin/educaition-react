@@ -179,7 +179,7 @@ const api = {
 
   deviceTracking: {
     checkCompletion: async (deviceId, testType, roomId = null) => {
-      return apiFetch("/api/device-tracking/check", {
+      return apiFetch("/device-tracking/check", {
         method: "POST",
         body: {
           device_id: deviceId,
@@ -189,7 +189,7 @@ const api = {
       });
     },
     markCompletion: async (deviceId, testType, roomId = null) => {
-      return apiFetch("/api/device-tracking/mark", {
+      return apiFetch("/device-tracking/mark", {
         method: "POST",
         body: {
           device_id: deviceId,
@@ -199,10 +199,33 @@ const api = {
       });
     },
     getDeviceCompletions: async (deviceId) => {
-      return apiFetch(`/api/device-tracking/device/${deviceId}`, {
+      return apiFetch(`/device-tracking/device/${deviceId}`, {
         method: "GET",
       });
     },
+  },
+
+  /**
+   * Device-based anonymous login — finds or creates a student user
+   * tied to the device fingerprint.
+   */
+  deviceLogin: async (deviceId) => {
+    return apiFetch("/auth/device-login", {
+      method: "POST",
+      body: { device_id: deviceId },
+    });
+  },
+
+  /**
+   * Check if the authenticated user has completed a specific test type.
+   */
+  checkTestCompletion: async (testType, roomId = null) => {
+    const params = new URLSearchParams({ test_type: testType });
+    if (roomId) params.append("room_id", roomId);
+    return apiFetch(`/test-completions/check?${params}`, {
+      method: "GET",
+      authType: AUTH_TYPES.USER,
+    });
   },
 };
 

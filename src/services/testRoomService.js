@@ -181,7 +181,7 @@ export function generateRoomUrl(roomId, testType) {
     case TestType.PERSONALITY_TEST:
       return `${baseUrl}/personality-test/${roomId}`;
     default:
-      return `${baseUrl}/test-room/${roomId}`;
+      return `${baseUrl}/personality-test/${roomId}`;
   }
 }
 
