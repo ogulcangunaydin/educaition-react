@@ -2,6 +2,17 @@
  * DataTable Organism
  *
  * A data table with sorting, pagination, and row actions.
+ * Supports built-in cell type renderers for common data patterns.
+ *
+ * Column types:
+ *   - "string"     : renders value as-is, fallback to "-"
+ *   - "number"     : renders number, fallback to "-"
+ *   - "percentage" : renders Math.round(value) + "%", fallback to "-"
+ *   - "date"       : formats with toLocaleDateString("tr-TR"), fallback to "-"
+ *   - "chip"       : renders a MUI Chip using chipConfig(value, row) → { label, color }
+ *   - "custom"     : uses the column's render(value, row) function
+ *
+ * If a column has a `render` function it always takes priority over `type`.
  */
 
 import React, { useState, useMemo } from "react";
@@ -17,12 +28,50 @@ import {
   Paper,
   Box,
   Checkbox,
+  Chip,
   IconButton,
   Tooltip,
 } from "@mui/material";
 import PropTypes from "prop-types";
 import EmptyState from "../molecules/EmptyState";
 import Spinner from "../atoms/Spinner";
+
+/**
+ * Built-in cell renderer based on column type
+ */
+function renderCellByType(value, row, column) {
+  // Custom render always wins
+  if (column.render) {
+    return column.render(value, row);
+  }
+
+  switch (column.type) {
+    case "percentage":
+      return value != null ? Math.round(value) + "%" : "-";
+
+    case "number":
+      return value != null ? value : "-";
+
+    case "date":
+      if (!value) return "-";
+      try {
+        return new Date(value).toLocaleDateString("tr-TR");
+      } catch {
+        return value;
+      }
+
+    case "chip": {
+      if (!column.chipConfig) return value ?? "-";
+      const config = column.chipConfig(value, row);
+      if (!config) return "-";
+      return <Chip label={config.label} color={config.color || "default"} size="small" />;
+    }
+
+    case "string":
+    default:
+      return value ?? "-";
+  }
+}
 
 function DataTable({
   columns = [],
@@ -187,7 +236,7 @@ function DataTable({
                   )}
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align || "left"}>
-                      {column.render ? column.render(row[column.id], row) : row[column.id]}
+                      {renderCellByType(row[column.id], row, column)}
                     </TableCell>
                   ))}
                   {actions.length > 0 && (
@@ -242,6 +291,8 @@ DataTable.propTypes = {
       align: PropTypes.oneOf(["left", "center", "right"]),
       minWidth: PropTypes.number,
       sortable: PropTypes.bool,
+      type: PropTypes.oneOf(["string", "number", "percentage", "date", "chip", "custom"]),
+      chipConfig: PropTypes.func,
       render: PropTypes.func,
     })
   ).isRequired,

@@ -12,5 +12,6 @@ export { default as MultiStepForm } from "./MultiStepForm";
 export { default as FilterPanel, FilterItem } from "./FilterPanel";
 export { default as ChartContainer } from "./ChartContainer";
 export { default as TestRoomList } from "./TestRoomList";
+export { default as RoomInfoHeader } from "./RoomInfoHeader";
 export { default as ParticipantDetailCard } from "./ParticipantDetailCard";
 export { default as PrisonersDilemmaInstructions } from "./PrisonersDilemmaInstructions";

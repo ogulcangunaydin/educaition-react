@@ -11,21 +11,10 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
-  Grid,
-  Card,
-  CardContent,
   CircularProgress,
   Alert,
-  Chip,
   IconButton,
   Tooltip,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -33,14 +22,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import {
-  QrCode2 as QRIcon,
-  ContentCopy as CopyIcon,
-  Refresh as RefreshIcon,
-  Download as DownloadIcon,
-  Visibility as ViewIcon,
-  Close as CloseIcon,
-} from "@mui/icons-material";
+import { Visibility as ViewIcon, Close as CloseIcon } from "@mui/icons-material";
 import { Radar } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -54,14 +36,10 @@ import {
 import ReactMarkdown from "react-markdown";
 import { PageLayout } from "@components/templates";
 import { Typography, Button } from "@components/atoms";
-import { QRCodeOverlay, EmptyState } from "@components/molecules";
+import { QRCodeOverlay, RoomParticipantEmptyState } from "@components/molecules";
+import { RoomInfoHeader, DataTable } from "@components/organisms";
 import personalityTestService from "@services/personalityTestService";
-import {
-  getTestRoom,
-  generateRoomUrl,
-  TEST_TYPE_CONFIG,
-  TestType,
-} from "../../services/testRoomService";
+import { getTestRoom, generateRoomUrl, TestType } from "../../services/testRoomService";
 
 // Register Chart.js components for Radar chart
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, ChartTooltip, Legend);
@@ -81,8 +59,6 @@ function PersonalityTestRoomDetail() {
 
   // Result detail dialog
   const [selectedParticipant, setSelectedParticipant] = useState(null);
-
-  const config = TEST_TYPE_CONFIG[TestType.PERSONALITY_TEST];
 
   const fetchRoomData = useCallback(async () => {
     setLoading(true);
@@ -234,196 +210,74 @@ function PersonalityTestRoomDetail() {
       onBack={() => navigate("/personality-test-rooms")}
     >
       {/* Room Info Header */}
-      <Card sx={{ mb: 3, borderLeft: 4, borderColor: config.color }}>
-        <CardContent>
-          <Grid container spacing={3} alignItems="center">
-            <Grid item xs={12} md={6}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-                <Typography variant="h5">{room?.name}</Typography>
-                <Chip
-                  label={room?.is_active ? "Aktif" : "Pasif"}
-                  color={room?.is_active ? "success" : "default"}
-                  size="small"
-                />
-              </Box>
-              <Typography variant="body2" color="text.secondary">
-                Oluşturulma: {new Date(room?.created_at).toLocaleDateString("tr-TR")}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: 1,
-                  justifyContent: { xs: "flex-start", md: "flex-end" },
-                }}
-              >
-                <Tooltip title="QR Kod Göster">
-                  <IconButton color="primary" onClick={() => setShowQR(true)}>
-                    <QRIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title={copySuccess ? "Kopyalandı!" : "URL Kopyala"}>
-                  <IconButton color={copySuccess ? "success" : "primary"} onClick={handleCopyUrl}>
-                    <CopyIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Yenile">
-                  <IconButton color="primary" onClick={fetchRoomData}>
-                    <RefreshIcon />
-                  </IconButton>
-                </Tooltip>
-                <Button
-                  variant="outlined"
-                  startIcon={<DownloadIcon />}
-                  onClick={handleExportCSV}
-                  disabled={participants.length === 0}
-                >
-                  CSV İndir
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-
-          {/* Quick Stats */}
-          <Grid container spacing={2} sx={{ mt: 2 }}>
-            <Grid item xs={6} sm={3}>
-              <Box sx={{ textAlign: "center", p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="h4" color="primary.main">
-                  {participants.length}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Toplam Katılımcı
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Box sx={{ textAlign: "center", p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="h4" color="success.main">
-                  {completedCount}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Tamamlayan
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Box sx={{ textAlign: "center", p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="h4" color="warning.main">
-                  {participants.length - completedCount}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Devam Eden
-                </Typography>
-              </Box>
-            </Grid>
-            <Grid item xs={6} sm={3}>
-              <Box sx={{ textAlign: "center", p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
-                <Typography variant="h4" color="info.main">
-                  {participants.length > 0
-                    ? Math.round((completedCount / participants.length) * 100)
-                    : 0}
-                  %
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Tamamlama Oranı
-                </Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </CardContent>
-      </Card>
+      <RoomInfoHeader
+        room={room}
+        testType={TestType.PERSONALITY_TEST}
+        participantCount={participants.length}
+        completedCount={completedCount}
+        onShowQR={() => setShowQR(true)}
+        onCopyUrl={handleCopyUrl}
+        copySuccess={copySuccess}
+        onRefresh={fetchRoomData}
+        onExportCSV={handleExportCSV}
+      />
 
       {/* Participants Table */}
       {participants.length === 0 ? (
-        <EmptyState
-          title="Henüz katılımcı yok"
-          description="QR kodu paylaşarak öğrencilerinizin teste katılmasını sağlayın."
-          action={
-            <Button variant="contained" startIcon={<QRIcon />} onClick={() => setShowQR(true)}>
-              QR Kodu Göster
-            </Button>
-          }
-        />
+        <RoomParticipantEmptyState onShowQR={() => setShowQR(true)} />
       ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Ad Soyad</TableCell>
-                <TableCell>Öğrenci No</TableCell>
-                <TableCell align="center">Durum</TableCell>
-                <TableCell align="center">Dışa Dönüklük</TableCell>
-                <TableCell align="center">Uyumluluk</TableCell>
-                <TableCell align="center">Sorumluluk</TableCell>
-                <TableCell align="center">Duygusal Denge</TableCell>
-                <TableCell align="center">Açıklık</TableCell>
-                <TableCell>Tarih</TableCell>
-                <TableCell align="center">Sonuç</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {participants.map((participant) => (
-                <TableRow key={participant.id}>
-                  <TableCell>{participant.full_name || "-"}</TableCell>
-                  <TableCell>{participant.student_number || "-"}</TableCell>
-                  <TableCell align="center">
-                    <Chip
-                      label={participant.has_completed ? "Tamamlandı" : "Devam Ediyor"}
-                      color={participant.has_completed ? "success" : "warning"}
+        <DataTable
+          columns={[
+            { id: "full_name", label: "Ad Soyad", type: "string" },
+            { id: "student_number", label: "Öğrenci No", type: "string" },
+            {
+              id: "has_completed",
+              label: "Durum",
+              align: "center",
+              type: "chip",
+              chipConfig: (value) => ({
+                label: value ? "Tamamlandı" : "Devam Ediyor",
+                color: value ? "success" : "warning",
+              }),
+            },
+            { id: "extroversion", label: "Dışa Dönüklük", align: "center", type: "percentage" },
+            { id: "agreeableness", label: "Uyumluluk", align: "center", type: "percentage" },
+            { id: "conscientiousness", label: "Sorumluluk", align: "center", type: "percentage" },
+            {
+              id: "negative_emotionality",
+              label: "Duygusal Denge",
+              align: "center",
+              type: "percentage",
+            },
+            { id: "open_mindedness", label: "Açıklık", align: "center", type: "percentage" },
+            { id: "created_at", label: "Tarih", type: "date" },
+            {
+              id: "actions",
+              label: "Sonuç",
+              align: "center",
+              sortable: false,
+              render: (_value, row) =>
+                row.has_completed ? (
+                  <Tooltip title="Sonuçları Görüntüle">
+                    <IconButton
+                      color="primary"
                       size="small"
-                    />
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.extroversion != null
-                      ? Math.round(participant.extroversion) + "%"
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.agreeableness != null
-                      ? Math.round(participant.agreeableness) + "%"
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.conscientiousness != null
-                      ? Math.round(participant.conscientiousness) + "%"
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.negative_emotionality != null
-                      ? Math.round(participant.negative_emotionality) + "%"
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.open_mindedness != null
-                      ? Math.round(participant.open_mindedness) + "%"
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    {participant.created_at
-                      ? new Date(participant.created_at).toLocaleDateString("tr-TR")
-                      : "-"}
-                  </TableCell>
-                  <TableCell align="center">
-                    {participant.has_completed ? (
-                      <Tooltip title="Sonuçları Görüntüle">
-                        <IconButton
-                          color="primary"
-                          size="small"
-                          onClick={() => setSelectedParticipant(participant)}
-                        >
-                          <ViewIcon />
-                        </IconButton>
-                      </Tooltip>
-                    ) : (
-                      "-"
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                      onClick={() => setSelectedParticipant(row)}
+                    >
+                      <ViewIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  "-"
+                ),
+            },
+          ]}
+          data={participants}
+          pagination={participants.length > 10}
+          defaultSortBy="created_at"
+          defaultSortOrder="desc"
+          emptyMessage="Henüz katılımcı yok"
+        />
       )}
 
       {/* Result Detail Dialog */}
