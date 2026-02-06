@@ -3,6 +3,9 @@
  */
 
 const navigation = {
+  navigation: {
+    modules: "Modüller",
+  },
   nav: {
     home: "Ana Sayfa",
     dashboard: "Kontrol Paneli",

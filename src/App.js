@@ -4,7 +4,7 @@ import { ProtectedRoute, TestPageGuard } from "@components/atoms";
 import { ROLES, TEST_TYPES } from "@config/permissions";
 
 import { Login } from "@pages/auth";
-import Dashboard from "@pages/dashboard";
+import Dashboard from "@pages/Dashboard";
 import Unauthorized from "@pages/Unauthorized";
 
 import { GameRoom, PlayGround, LeaderBoard, TacticPreparation } from "@pages/prisoners-dilemma";

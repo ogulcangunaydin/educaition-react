@@ -9,6 +9,7 @@ import auth from "./auth";
 import navigation from "./navigation";
 import validation from "./validation";
 import tests from "./tests";
+import dashboard from "./dashboard";
 
 const en = {
   ...common,
@@ -16,6 +17,7 @@ const en = {
   ...navigation,
   ...validation,
   ...tests,
+  ...dashboard,
 };
 
 export default en;

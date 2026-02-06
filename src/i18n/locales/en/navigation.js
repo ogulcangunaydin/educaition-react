@@ -3,6 +3,9 @@
  */
 
 const navigation = {
+  navigation: {
+    modules: "Modules",
+  },
   nav: {
     home: "Home",
     dashboard: "Dashboard",

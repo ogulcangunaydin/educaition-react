@@ -9,6 +9,7 @@ import auth from "./auth";
 import navigation from "./navigation";
 import validation from "./validation";
 import tests from "./tests";
+import dashboard from "./dashboard";
 
 const tr = {
   ...common,
@@ -16,6 +17,7 @@ const tr = {
   ...navigation,
   ...validation,
   ...tests,
+  ...dashboard,
 };
 
 export default tr;
