@@ -29,7 +29,7 @@ import {
   Download as DownloadIcon,
 } from "@mui/icons-material";
 import { Typography, Button } from "@components/atoms";
-import { TEST_TYPE_CONFIG } from "../../services/testRoomService";
+import { TEST_TYPE_CONFIG } from "@services/testRoomService";
 
 function RoomInfoHeader({
   room,

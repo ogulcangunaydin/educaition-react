@@ -32,6 +32,7 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
+import { Download as DownloadIcon } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import EmptyState from "../molecules/EmptyState";
 import Spinner from "../atoms/Spinner";
@@ -73,6 +74,66 @@ function renderCellByType(value, row, column) {
   }
 }
 
+/**
+ * Converts a cell value to a plain-text string suitable for CSV export.
+ * Uses the column's `exportValue(value, row)` if provided, then falls back to type-based formatting.
+ */
+function getCSVCellText(value, row, column) {
+  if (column.exportValue) return column.exportValue(value, row);
+  if (column.sortable === false && !column.exportValue) return undefined; // skip action columns
+
+  switch (column.type) {
+    case "percentage":
+      return value != null ? `${value.toFixed(1)}%` : "";
+    case "number":
+      return value != null ? String(value) : "";
+    case "date":
+      if (!value) return "";
+      try {
+        return new Date(value).toLocaleDateString("tr-TR");
+      } catch {
+        return String(value);
+      }
+    case "chip": {
+      if (!column.chipConfig) return value != null ? String(value) : "";
+      const config = column.chipConfig(value, row);
+      return config?.label || "";
+    }
+    case "string":
+    default:
+      return value != null ? String(value) : "";
+  }
+}
+
+/**
+ * Exports table data as a CSV file download.
+ * Can be called externally or used internally via the `exportable` prop.
+ *
+ * @param {Array} columns - DataTable column definitions
+ * @param {Array} data - Row data array
+ * @param {string} [fileName="export"] - File name without extension
+ */
+export function exportTableToCSV(columns, data, fileName = "export") {
+  // Filter out non-exportable columns (e.g. action columns with sortable=false and no exportValue)
+  const exportColumns = columns.filter((col) => col.sortable !== false || col.exportValue);
+
+  const headers = exportColumns.map((col) => col.label);
+  const rows = data.map((row) =>
+    exportColumns.map((col) => {
+      const text = getCSVCellText(row[col.id], row, col);
+      // Escape double quotes and wrap in quotes
+      return `"${String(text ?? "").replace(/"/g, '""')}"`;
+    })
+  );
+
+  const csvContent = [headers.join(","), ...rows.map((r) => r.join(","))].join("\n");
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = `${fileName}.csv`;
+  link.click();
+}
+
 function DataTable({
   columns = [],
   data = [],
@@ -91,6 +152,8 @@ function DataTable({
   emptyMessage = "Veri bulunamadı",
   stickyHeader = false,
   maxHeight,
+  exportable = false,
+  exportFileName = "export",
   getRowId = (row) => row.id,
   ...props
 }) {
@@ -174,8 +237,21 @@ function DataTable({
   const isAllSelected = selectedIds.length === data.length;
   const isIndeterminate = selectedIds.length > 0 && selectedIds.length < data.length;
 
+  const handleExportCSV = () => {
+    exportTableToCSV(columns, data, exportFileName);
+  };
+
   return (
     <Box {...props}>
+      {exportable && (
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
+          <Tooltip title="CSV İndir">
+            <IconButton size="small" onClick={handleExportCSV} color="primary">
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
+        </Box>
+      )}
       <TableContainer component={Paper} sx={{ maxHeight: maxHeight }}>
         <Table stickyHeader={stickyHeader} size="medium">
           <TableHead>
@@ -320,6 +396,8 @@ DataTable.propTypes = {
   emptyMessage: PropTypes.string,
   stickyHeader: PropTypes.bool,
   maxHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+  exportable: PropTypes.bool,
+  exportFileName: PropTypes.string,
   getRowId: PropTypes.func,
 };
 

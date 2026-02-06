@@ -14,7 +14,7 @@ import { EmptyState, ConfirmDialog, QRCodeOverlay } from "../molecules";
 import TestRoomCard from "../molecules/TestRoomCard";
 import CreateTestRoomModal from "../molecules/CreateTestRoomModal";
 import { useTestRooms } from "../../hooks/useTestRooms";
-import { generateRoomUrl, TEST_TYPE_CONFIG } from "../../services/testRoomService";
+import { generateRoomUrl, TEST_TYPE_CONFIG } from "@services/testRoomService";
 
 function TestRoomList({
   testType,

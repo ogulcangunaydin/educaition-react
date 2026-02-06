@@ -12,7 +12,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@components/templates";
 import { TestRoomList } from "@components/organisms";
-import { TEST_TYPE_CONFIG } from "../../services/testRoomService";
+import { TEST_TYPE_CONFIG } from "@services/testRoomService";
 
 function TestRoomsPage({ testType }) {
   const navigate = useNavigate();

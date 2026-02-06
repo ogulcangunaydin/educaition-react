@@ -15,7 +15,7 @@ import {
   Person as PersonIcon,
 } from "@mui/icons-material";
 import Typography from "../atoms/Typography";
-import { TestType, TEST_TYPE_CONFIG } from "../../services/testRoomService";
+import { TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 
 // Icon mapping
 const ICONS = {

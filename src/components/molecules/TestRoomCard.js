@@ -17,7 +17,7 @@ import {
 } from "@mui/icons-material";
 import Typography from "../atoms/Typography";
 import Button from "../atoms/Button";
-import { TEST_TYPE_CONFIG, generateRoomUrl } from "../../services/testRoomService";
+import { TEST_TYPE_CONFIG, generateRoomUrl } from "@services/testRoomService";
 
 function TestRoomCard({
   room,

@@ -27,7 +27,7 @@ import {
 } from "@mui/icons-material";
 import { PageLayout } from "@components/templates";
 import { Typography, Button } from "@components/atoms";
-import { TestType, TEST_TYPE_CONFIG, getTestRooms } from "../services/testRoomService";
+import { TestType, TEST_TYPE_CONFIG, getTestRooms } from "@services/testRoomService";
 import { canAccessModule } from "@config/permissions";
 import { useAuth } from "@contexts/AuthContext";
 

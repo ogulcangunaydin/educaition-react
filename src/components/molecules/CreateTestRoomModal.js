@@ -19,8 +19,8 @@ import {
 } from "@mui/material";
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
-import { TestType, TEST_TYPE_CONFIG } from "../../services/testRoomService";
-import { fetchLiseMapping } from "../../services/liseService";
+import { TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
+import { fetchLiseMapping } from "@services/liseService";
 
 function CreateTestRoomModal({
   open,

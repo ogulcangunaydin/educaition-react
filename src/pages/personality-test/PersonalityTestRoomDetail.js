@@ -15,7 +15,7 @@ import { PageLayout } from "@components/templates";
 import { QRCodeOverlay, RoomParticipantEmptyState, MarkdownSection } from "@components/molecules";
 import { RoomInfoHeader, DataTable, RadarChart, ResultDetailDialog } from "@components/organisms";
 import personalityTestService from "@services/personalityTestService";
-import { getTestRoom, generateRoomUrl, TestType } from "../../services/testRoomService";
+import { getTestRoom, generateRoomUrl, TestType } from "@services/testRoomService";
 
 function PersonalityTestRoomDetail() {
   const { roomId } = useParams();
@@ -66,47 +66,6 @@ function PersonalityTestRoomDetail() {
     } catch (err) {
       console.error("Failed to copy URL:", err);
     }
-  };
-
-  const handleExportCSV = () => {
-    if (participants.length === 0) return;
-
-    const headers = [
-      "Ad Soyad",
-      "Öğrenci No",
-      "Tamamlandı",
-      "Dışa Dönüklük",
-      "Uyumluluk",
-      "Sorumluluk",
-      "Duygusal Denge",
-      "Açıklık",
-      "İş Önerisi",
-      "Tarih",
-    ];
-
-    const rows = participants.map((p) => [
-      p.full_name || "",
-      p.student_number || "",
-      p.has_completed ? "Evet" : "Hayır",
-      p.extroversion != null ? p.extroversion.toFixed(1) + "%" : "",
-      p.agreeableness != null ? p.agreeableness.toFixed(1) + "%" : "",
-      p.conscientiousness != null ? p.conscientiousness.toFixed(1) + "%" : "",
-      p.negative_emotionality != null ? p.negative_emotionality.toFixed(1) + "%" : "",
-      p.open_mindedness != null ? p.open_mindedness.toFixed(1) + "%" : "",
-      p.job_recommendation || "",
-      p.created_at ? new Date(p.created_at).toLocaleDateString("tr-TR") : "",
-    ]);
-
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
-
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `personality_test_${room?.name || roomId}_${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
   };
 
   if (loading) {
@@ -175,7 +134,6 @@ function PersonalityTestRoomDetail() {
         onCopyUrl={handleCopyUrl}
         copySuccess={copySuccess}
         onRefresh={fetchRoomData}
-        onExportCSV={handleExportCSV}
       />
 
       {/* Participants Table */}
@@ -232,6 +190,8 @@ function PersonalityTestRoomDetail() {
           pagination={participants.length > 10}
           defaultSortBy="created_at"
           defaultSortOrder="desc"
+          exportable
+          exportFileName={`personality_test_${room?.name || roomId}_${new Date().toISOString().split("T")[0]}`}
           emptyMessage="Henüz katılımcı yok"
         />
       )}

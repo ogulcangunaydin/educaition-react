@@ -11,7 +11,7 @@ import {
   deleteTestRoom,
   toggleTestRoomActive,
   generateRoomUrl,
-} from "../services/testRoomService";
+} from "@services/testRoomService";
 
 /**
  * Hook for managing test rooms
