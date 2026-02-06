@@ -9,9 +9,9 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Box, CircularProgress, Alert, IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip } from "@mui/material";
 import { Visibility as ViewIcon } from "@mui/icons-material";
-import { PageLayout } from "@components/templates";
+import { PageLayout, PageLoading, PageError } from "@components/templates";
 import { QRCodeOverlay, RoomParticipantEmptyState, MarkdownSection } from "@components/molecules";
 import { RoomInfoHeader, DataTable, RadarChart, ResultDetailDialog } from "@components/organisms";
 import personalityTestService from "@services/personalityTestService";
@@ -26,7 +26,6 @@ function PersonalityTestRoomDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showQR, setShowQR] = useState(false);
-  const [copySuccess, setCopySuccess] = useState(false);
 
   // Result detail dialog
   const [selectedParticipant, setSelectedParticipant] = useState(null);
@@ -57,34 +56,8 @@ function PersonalityTestRoomDetail() {
     fetchRoomData();
   }, [fetchRoomData]);
 
-  const handleCopyUrl = async () => {
-    const url = generateRoomUrl(roomId, TestType.PERSONALITY_TEST);
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopySuccess(true);
-      setTimeout(() => setCopySuccess(false), 2000);
-    } catch (err) {
-      console.error("Failed to copy URL:", err);
-    }
-  };
-
-  if (loading) {
-    return (
-      <PageLayout title="Yükleniyor..." showBackButton onBack={() => navigate(-1)}>
-        <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
-          <CircularProgress />
-        </Box>
-      </PageLayout>
-    );
-  }
-
-  if (error) {
-    return (
-      <PageLayout title="Hata" showBackButton onBack={() => navigate(-1)}>
-        <Alert severity="error">{error}</Alert>
-      </PageLayout>
-    );
-  }
+  if (loading) return <PageLoading onBack={() => navigate(-1)} />;
+  if (error) return <PageError message={error} onBack={() => navigate(-1)} />;
 
   const roomUrl = generateRoomUrl(roomId, TestType.PERSONALITY_TEST);
   const completedCount = participants.filter((p) => p.has_completed).length;
@@ -111,12 +84,6 @@ function PersonalityTestRoomDetail() {
     },
   ];
 
-  const getParticipantSubtitle = (p) => {
-    if (!p) return undefined;
-    const parts = [p.full_name, p.student_number && `(${p.student_number})`];
-    return parts.filter(Boolean).join(" ") || undefined;
-  };
-
   return (
     <PageLayout
       title={room?.name || "Kişilik Testi Odası"}
@@ -127,12 +94,11 @@ function PersonalityTestRoomDetail() {
       {/* Room Info Header */}
       <RoomInfoHeader
         room={room}
+        roomId={roomId}
         testType={TestType.PERSONALITY_TEST}
         participantCount={participants.length}
         completedCount={completedCount}
         onShowQR={() => setShowQR(true)}
-        onCopyUrl={handleCopyUrl}
-        copySuccess={copySuccess}
         onRefresh={fetchRoomData}
       />
 
@@ -201,7 +167,7 @@ function PersonalityTestRoomDetail() {
         open={!!selectedParticipant}
         onClose={() => setSelectedParticipant(null)}
         title="Kişilik Testi Sonuçları"
-        subtitle={getParticipantSubtitle(selectedParticipant)}
+        participant={selectedParticipant}
       >
         {selectedParticipant && (
           <>

@@ -5,6 +5,9 @@
  * Provides a consistent shell with participant info in the title,
  * a close button, and responsive fullScreen on small devices.
  *
+ * Accepts a `participant` object (with full_name / student_number) and
+ * auto-generates the subtitle. You can also override with a custom `subtitle`.
+ *
  * Content is passed as children so each test type can render
  * its own result layout (RadarChart, MarkdownSection, etc.).
  *
@@ -13,7 +16,7 @@
  *   open={!!selectedParticipant}
  *   onClose={() => setSelectedParticipant(null)}
  *   title="Kişilik Testi Sonuçları"
- *   subtitle="Ahmet Yılmaz (2024001)"
+ *   participant={selectedParticipant}
  * >
  *   <RadarChart labels={...} datasets={...} />
  *   <MarkdownSection title="Meslek Tavsiyeleri" content={...} />
@@ -35,11 +38,26 @@ import { Close as CloseIcon } from "@mui/icons-material";
 import Typography from "../atoms/Typography";
 import Button from "../atoms/Button";
 
+/**
+ * Builds a display subtitle from participant fields.
+ * @param {object} participant - expects { full_name?, student_number? }
+ * @returns {string|undefined}
+ */
+function getParticipantSubtitle(participant) {
+  if (!participant) return undefined;
+  const parts = [
+    participant.full_name,
+    participant.student_number && `(${participant.student_number})`,
+  ];
+  return parts.filter(Boolean).join(" ") || undefined;
+}
+
 function ResultDetailDialog({
   open,
   onClose,
   title,
-  subtitle,
+  participant,
+  subtitle: subtitleOverride,
   children,
   maxWidth = "md",
   closeLabel = "Kapat",
@@ -47,6 +65,8 @@ function ResultDetailDialog({
 }) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const subtitle = subtitleOverride ?? getParticipantSubtitle(participant);
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth={maxWidth} fullWidth fullScreen={isSmallScreen}>
@@ -88,7 +108,12 @@ ResultDetailDialog.propTypes = {
   onClose: PropTypes.func.isRequired,
   /** Main dialog title */
   title: PropTypes.string.isRequired,
-  /** Secondary text shown after title (e.g. participant name + id) */
+  /** Participant object — auto-generates subtitle from full_name & student_number */
+  participant: PropTypes.shape({
+    full_name: PropTypes.string,
+    student_number: PropTypes.string,
+  }),
+  /** Manual subtitle override (takes priority over participant-based subtitle) */
   subtitle: PropTypes.string,
   /** Dialog content — RadarChart, MarkdownSection, etc. */
   children: PropTypes.node,

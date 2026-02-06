@@ -2,51 +2,61 @@
  * RoomInfoHeader Organism
  *
  * Reusable room information header card for all test room detail pages.
- * Displays room name, status, action buttons (QR, copy URL, refresh, export CSV),
+ * Displays room name, status, action buttons (QR, copy URL, refresh),
  * and quick participant stats.
+ *
+ * Handles URL copy internally — just pass `roomId` and `testType`.
  *
  * Usage:
  *   <RoomInfoHeader
  *     room={room}
+ *     roomId={roomId}
  *     testType={TestType.PERSONALITY_TEST}
  *     participantCount={participants.length}
  *     completedCount={completedCount}
  *     onShowQR={() => setShowQR(true)}
- *     onCopyUrl={handleCopyUrl}
- *     copySuccess={copySuccess}
  *     onRefresh={fetchRoomData}
- *     onExportCSV={handleExportCSV}
  *   />
  */
 
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Box, Grid, Card, CardContent, Chip, IconButton, Tooltip } from "@mui/material";
 import {
   QrCode2 as QRIcon,
   ContentCopy as CopyIcon,
   Refresh as RefreshIcon,
-  Download as DownloadIcon,
 } from "@mui/icons-material";
-import { Typography, Button } from "@components/atoms";
-import { TEST_TYPE_CONFIG } from "@services/testRoomService";
+import { Typography } from "@components/atoms";
+import { TEST_TYPE_CONFIG, generateRoomUrl } from "@services/testRoomService";
 
 function RoomInfoHeader({
   room,
+  roomId,
   testType,
   participantCount = 0,
   completedCount = 0,
   onShowQR,
-  onCopyUrl,
-  copySuccess = false,
   onRefresh,
-  onExportCSV,
   extraActions,
 }) {
+  const [copySuccess, setCopySuccess] = useState(false);
+
   const config = testType ? TEST_TYPE_CONFIG[testType] : null;
   const inProgressCount = participantCount - completedCount;
   const completionRate =
     participantCount > 0 ? Math.round((completedCount / participantCount) * 100) : 0;
+
+  const handleCopyUrl = async () => {
+    const url = generateRoomUrl(roomId, testType);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+    }
+  };
 
   return (
     <Card sx={{ mb: 3, borderLeft: 4, borderColor: config?.color || "primary.main" }}>
@@ -85,9 +95,9 @@ function RoomInfoHeader({
                   </IconButton>
                 </Tooltip>
               )}
-              {onCopyUrl && (
+              {roomId && testType && (
                 <Tooltip title={copySuccess ? "Kopyalandı!" : "URL Kopyala"}>
-                  <IconButton color={copySuccess ? "success" : "primary"} onClick={onCopyUrl}>
+                  <IconButton color={copySuccess ? "success" : "primary"} onClick={handleCopyUrl}>
                     <CopyIcon />
                   </IconButton>
                 </Tooltip>
@@ -98,16 +108,6 @@ function RoomInfoHeader({
                     <RefreshIcon />
                   </IconButton>
                 </Tooltip>
-              )}
-              {onExportCSV && (
-                <Button
-                  variant="outlined"
-                  startIcon={<DownloadIcon />}
-                  onClick={onExportCSV}
-                  disabled={participantCount === 0}
-                >
-                  CSV İndir
-                </Button>
               )}
               {extraActions}
             </Box>
@@ -165,7 +165,9 @@ function RoomInfoHeader({
 RoomInfoHeader.propTypes = {
   /** Room data object (expects name, is_active, created_at) */
   room: PropTypes.object,
-  /** Test type key from TestType enum, used for accent color */
+  /** Room ID used for generating the share URL */
+  roomId: PropTypes.string,
+  /** Test type key from TestType enum, used for accent color and URL generation */
   testType: PropTypes.string,
   /** Total number of participants */
   participantCount: PropTypes.number,
@@ -173,14 +175,8 @@ RoomInfoHeader.propTypes = {
   completedCount: PropTypes.number,
   /** Callback to show QR code overlay */
   onShowQR: PropTypes.func,
-  /** Callback to copy the room URL */
-  onCopyUrl: PropTypes.func,
-  /** Whether the URL was just copied (shows success state) */
-  copySuccess: PropTypes.bool,
   /** Callback to refresh room data */
   onRefresh: PropTypes.func,
-  /** Callback to export CSV */
-  onExportCSV: PropTypes.func,
   /** Additional action buttons rendered after the default ones */
   extraActions: PropTypes.node,
 };
