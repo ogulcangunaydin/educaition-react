@@ -67,7 +67,7 @@ const IconWrapper = styled(Box)(({ theme, bgcolor }) => ({
   },
 }));
 
-function ModuleCard({ title, description, icon: Icon, color, onClick, disabled }) {
+function ModuleCard({ title, description, icon: Icon, color, onClick, disabled = false }) {
   return (
     <StyledCard
       elevation={0}
@@ -98,10 +98,6 @@ ModuleCard.propTypes = {
   color: PropTypes.string,
   onClick: PropTypes.func,
   disabled: PropTypes.bool,
-};
-
-ModuleCard.defaultProps = {
-  disabled: false,
 };
 
 export default ModuleCard;

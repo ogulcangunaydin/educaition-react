@@ -136,7 +136,7 @@ function TestManagement() {
       // Fetch stats for each test type
       for (const type of Object.values(TestType)) {
         try {
-          const response = await getTestRooms({ testType: type, limit: 100 });
+          const response = await getTestRooms({ testType: type });
           const rooms = response.items || response || [];
           newStats[type] = {
             rooms: rooms.length,

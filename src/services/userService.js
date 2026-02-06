@@ -8,13 +8,10 @@ import api from "./api";
 
 /**
  * Get all users
- * @param {Object} options - Query options
- * @param {number} options.skip - Pagination offset
- * @param {number} options.limit - Pagination limit
  * @returns {Promise<Array>} List of users
  */
-export async function getUsers({ skip = 0, limit = 100 } = {}) {
-  const { ok, data, status } = await api.auth.get(`/users/?skip=${skip}&limit=${limit}`);
+export async function getUsers() {
+  const { ok, data, status } = await api.auth.get("/users/");
 
   if (!ok) {
     throw new Error(data?.detail || `HTTP error! status: ${status}`);

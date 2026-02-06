@@ -44,7 +44,7 @@ function Header({
   };
 
   return (
-    <AppBar position="fixed" sx={{ bgcolor: "primary.light" }} {...props}>
+    <AppBar position="static" sx={{ bgcolor: "primary.light" }} {...props}>
       <Toolbar>
         {/* Menu button for mobile */}
         {onMenuClick && isMobile && (

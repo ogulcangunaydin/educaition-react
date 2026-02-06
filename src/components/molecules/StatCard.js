@@ -29,7 +29,7 @@ const IconWrapper = styled(Box)(({ theme, bgcolor }) => ({
   color: bgcolor || theme.palette.primary.main,
 }));
 
-function StatCard({ title, value, icon: Icon, color, trend, trendValue, loading }) {
+function StatCard({ title, value, icon: Icon, color, trend, trendValue, loading = false }) {
   const isPositiveTrend = trend === "up";
 
   return (
@@ -78,10 +78,6 @@ StatCard.propTypes = {
   trend: PropTypes.oneOf(["up", "down"]),
   trendValue: PropTypes.string,
   loading: PropTypes.bool,
-};
-
-StatCard.defaultProps = {
-  loading: false,
 };
 
 export default StatCard;

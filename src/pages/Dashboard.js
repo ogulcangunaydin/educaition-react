@@ -86,7 +86,7 @@ const MODULE_CONFIG = [
 export default function Dashboard() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [stats, setStats] = useState({
     totalRooms: 0,
     activeRooms: 0,
@@ -95,8 +95,13 @@ export default function Dashboard() {
   });
   const [statsLoading, setStatsLoading] = useState(true);
 
-  // Fetch dashboard stats
+  // Fetch dashboard stats (admin only)
   useEffect(() => {
+    if (!isAdmin) {
+      setStatsLoading(false);
+      return;
+    }
+
     const fetchStats = async () => {
       try {
         const rooms = await testRoomService.getTestRooms();
@@ -116,7 +121,7 @@ export default function Dashboard() {
     };
 
     fetchStats();
-  }, []);
+  }, [isAdmin]);
 
   // Filter modules based on user permissions
   const accessibleModules = useMemo(() => {
@@ -158,47 +163,51 @@ export default function Dashboard() {
           </Typography>
         </Box>
 
-        {/* Stats Section */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title={t("dashboard.stats.totalRooms")}
-              value={stats.totalRooms}
-              icon={MeetingRoom}
-              color="#5c6bc0"
-              loading={statsLoading}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title={t("dashboard.stats.activeRooms")}
-              value={stats.activeRooms}
-              icon={PlayCircle}
-              color="#2e7d32"
-              loading={statsLoading}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title={t("dashboard.stats.totalParticipants")}
-              value={stats.totalParticipants}
-              icon={People}
-              color="#1976d2"
-              loading={statsLoading}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6} md={3}>
-            <StatCard
-              title={t("dashboard.stats.todayParticipants")}
-              value={stats.todayParticipants}
-              icon={Today}
-              color="#ed6c02"
-              loading={statsLoading}
-            />
-          </Grid>
-        </Grid>
+        {/* Stats Section (admin only) */}
+        {isAdmin && (
+          <>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title={t("dashboard.stats.totalRooms")}
+                  value={stats.totalRooms}
+                  icon={MeetingRoom}
+                  color="#5c6bc0"
+                  loading={statsLoading}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title={t("dashboard.stats.activeRooms")}
+                  value={stats.activeRooms}
+                  icon={PlayCircle}
+                  color="#2e7d32"
+                  loading={statsLoading}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title={t("dashboard.stats.totalParticipants")}
+                  value={stats.totalParticipants}
+                  icon={People}
+                  color="#1976d2"
+                  loading={statsLoading}
+                />
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <StatCard
+                  title={t("dashboard.stats.todayParticipants")}
+                  value={stats.todayParticipants}
+                  icon={Today}
+                  color="#ed6c02"
+                  loading={statsLoading}
+                />
+              </Grid>
+            </Grid>
 
-        <Divider sx={{ my: 4 }} />
+            <Divider sx={{ my: 4 }} />
+          </>
+        )}
 
         {/* Modules Section */}
         <Box sx={{ mb: 3 }}>
@@ -207,7 +216,7 @@ export default function Dashboard() {
           </Typography>
         </Box>
 
-        <Grid container spacing={3}>
+        <Grid container columnSpacing={3} rowSpacing={10}>
           {accessibleModules.map((module) => (
             <Grid item xs={12} sm={6} md={4} lg={3} key={module.id}>
               <ModuleCard

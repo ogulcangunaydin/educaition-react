@@ -69,14 +69,10 @@ export async function createTestRoom(roomData) {
  * Get all test rooms for the current user
  * @param {Object} [options] - Query options
  * @param {string} [options.testType] - Filter by test type
- * @param {number} [options.skip=0] - Pagination offset
- * @param {number} [options.limit=100] - Pagination limit
- * @returns {Promise<Object>} Paginated list of rooms
+ * @returns {Promise<Object>} List of rooms
  */
-export async function getTestRooms({ testType, skip = 0, limit = 100 } = {}) {
-  const endpoint = testType
-    ? `/test-rooms/by-type/${testType}?skip=${skip}&limit=${limit}`
-    : `/test-rooms/?skip=${skip}&limit=${limit}`;
+export async function getTestRooms({ testType } = {}) {
+  const endpoint = testType ? `/test-rooms/by-type/${testType}` : `/test-rooms/`;
 
   const { ok, data, status } = await api.auth.get(endpoint);
 
