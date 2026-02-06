@@ -1,0 +1,27 @@
+/**
+ * Prisoners Dilemma Module - Shared Styles
+ */
+
+.room-list {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.participant-grid {
+  padding: 16px 0;
+}
+
+/* Radar Chart Container */
+.radar-container {
+  max-width: 500px;
+  margin: 0 auto 16px;
+}
+
+/* Trait Display */
+.trait-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+  font-size: 0.875rem;
+  color: #666;
+}

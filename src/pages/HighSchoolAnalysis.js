@@ -16,7 +16,7 @@ import {
   Chip,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { useBasket } from "../contexts/BasketContext";
 import { fetchPlacementsByPrograms } from "../services/liseService";
 

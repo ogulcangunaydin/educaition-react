@@ -9,7 +9,7 @@ import {
   Alert,
   styled,
 } from "@mui/material";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import YearSelector from "../components/UniversityComparison/YearSelector";
 import ProgramSelector from "../components/UniversityComparison/ProgramSelector";
 import MetricSelector from "../components/UniversityComparison/MetricSelector";

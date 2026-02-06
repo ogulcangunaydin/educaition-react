@@ -61,7 +61,7 @@ const PersonalityTest = () => {
     };
 
     fetchQuestions();
-  }, []);
+  }, [type]);
 
   const handleOptionChange = (index, value) => {
     const newAnswers = [...answers];

@@ -17,7 +17,7 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { useBasket } from "../contexts/BasketContext";
 import fetchWithAuth from "../utils/fetchWithAuth";
 import { fetchAllTercihStatsCached } from "../services/programService";

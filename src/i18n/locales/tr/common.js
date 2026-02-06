@@ -1,0 +1,48 @@
+/**
+ * Turkish - Common Translations
+ */
+
+const common = {
+  common: {
+    loading: "Yükleniyor...",
+    error: "Bir hata oluştu",
+    success: "Başarılı",
+    save: "Kaydet",
+    cancel: "İptal",
+    delete: "Sil",
+    edit: "Düzenle",
+    create: "Oluştur",
+    update: "Güncelle",
+    confirm: "Onayla",
+    back: "Geri",
+    next: "İleri",
+    previous: "Önceki",
+    submit: "Gönder",
+    close: "Kapat",
+    yes: "Evet",
+    no: "Hayır",
+    search: "Ara",
+    filter: "Filtrele",
+    reset: "Sıfırla",
+    refresh: "Yenile",
+    download: "İndir",
+    upload: "Yükle",
+    view: "Görüntüle",
+    details: "Detaylar",
+    actions: "İşlemler",
+    status: "Durum",
+    date: "Tarih",
+    name: "Ad",
+    description: "Açıklama",
+    total: "Toplam",
+    all: "Tümü",
+    none: "Hiçbiri",
+    select: "Seç",
+    noData: "Veri bulunamadı",
+    noResults: "Sonuç bulunamadı",
+    tryAgain: "Tekrar deneyin",
+    somethingWentWrong: "Bir şeyler yanlış gitti",
+  },
+};
+
+export default common;

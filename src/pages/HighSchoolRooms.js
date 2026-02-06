@@ -14,7 +14,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import fetchWithAuth from "../utils/fetchWithAuth";
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "../styles/CommonStyles";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { useNavigate } from "react-router-dom";
 import { fetchLiseMapping } from "../services/liseService";
 

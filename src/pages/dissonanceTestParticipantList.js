@@ -15,7 +15,7 @@ import {
   Box,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { StyledTableContainer } from "../styles/CommonStyles";
 import fetchWithAuth from "../utils/fetchWithAuth";
 import { QRCodeCanvas } from "qrcode.react";

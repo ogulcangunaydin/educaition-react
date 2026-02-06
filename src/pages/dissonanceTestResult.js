@@ -12,7 +12,7 @@ import {
   Legend,
 } from "chart.js";
 import ReactMarkdown from "react-markdown";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
 import { fetchWithParticipantAuth, SESSION_TYPES } from "../services/participantSessionService";
 

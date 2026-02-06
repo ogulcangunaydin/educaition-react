@@ -23,11 +23,9 @@ import {
   SentimentSatisfied,
   SentimentVerySatisfied,
 } from "@mui/icons-material";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
-import taxiImage from "../assets/taxi.png";
 import { useNavigate, useParams } from "react-router-dom";
-import careerImage from "../assets/career.jpeg";
 import {
   saveParticipantSession,
   fetchWithParticipantAuth,
@@ -266,7 +264,7 @@ const DissonanceTest = () => {
               <>
                 <Box textAlign="center" mb={4}>
                   <img
-                    src={careerImage}
+                    src="/assets/career.jpeg"
                     alt="Career"
                     style={{
                       width: "100%",
@@ -450,7 +448,7 @@ const DissonanceTest = () => {
             {step === 3 && (
               <>
                 <img
-                  src={taxiImage}
+                  src="/assets/taxi.png"
                   alt="Taxi"
                   style={{
                     width: isSmallScreen ? "100%" : "500px",
@@ -520,7 +518,7 @@ const DissonanceTest = () => {
                 {showFakeError ? (
                   <>
                     <img
-                      src={taxiImage}
+                      src="/assets/taxi.png"
                       alt="Taxi"
                       style={{
                         width: isSmallScreen ? "100%" : "500px",

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
+import { ROLES } from "@config/permissions";
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
@@ -32,10 +33,28 @@ const isTokenExpiringSoon = (token) => {
 
 export const AuthProvider = ({ children }) => {
   const [accessToken, setAccessToken] = useState(null);
-  const [userId, setUserId] = useState(null);
+  const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [refreshPromise, setRefreshPromise] = useState(null);
+
+  const updateAuthState = useCallback((data) => {
+    if (data) {
+      setAccessToken(data.access_token);
+      setUser({
+        id: data.current_user_id,
+        role: data.role,
+        university: data.university,
+      });
+      setIsAuthenticated(true);
+      localStorage.setItem("access_token", data.access_token);
+    } else {
+      setAccessToken(null);
+      setUser(null);
+      setIsAuthenticated(false);
+      localStorage.removeItem("access_token");
+    }
+  }, []);
 
   const silentRefresh = useCallback(async () => {
     if (refreshPromise) {
@@ -54,21 +73,15 @@ export const AuthProvider = ({ children }) => {
 
         if (response.ok) {
           const data = await response.json();
-          setAccessToken(data.access_token);
-          setUserId(data.current_user_id);
-          setIsAuthenticated(true);
+          updateAuthState(data);
           return data.access_token;
         } else {
-          setAccessToken(null);
-          setUserId(null);
-          setIsAuthenticated(false);
+          updateAuthState(null);
           return null;
         }
       } catch (error) {
         console.error("Silent refresh failed:", error);
-        setAccessToken(null);
-        setUserId(null);
-        setIsAuthenticated(false);
+        updateAuthState(null);
         return null;
       } finally {
         setRefreshPromise(null);
@@ -77,7 +90,7 @@ export const AuthProvider = ({ children }) => {
 
     setRefreshPromise(promise);
     return promise;
-  }, [refreshPromise]);
+  }, [refreshPromise, updateAuthState]);
 
   const getValidAccessToken = useCallback(async () => {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
@@ -86,32 +99,32 @@ export const AuthProvider = ({ children }) => {
     return silentRefresh();
   }, [accessToken, silentRefresh]);
 
-  const login = useCallback(async (username, password) => {
-    const formData = new URLSearchParams();
-    formData.append("username", username);
-    formData.append("password", password);
+  const login = useCallback(
+    async (username, password) => {
+      const formData = new URLSearchParams();
+      formData.append("username", username);
+      formData.append("password", password);
 
-    const response = await fetch(`${API_BASE_URL}/authenticate`, {
-      method: "POST",
-      credentials: "include", // Receive HttpOnly cookie
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      body: formData,
-    });
+      const response = await fetch(`${API_BASE_URL}/authenticate`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+      });
 
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ detail: "Login failed" }));
-      throw new Error(error.detail || "Login failed");
-    }
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ detail: "Login failed" }));
+        throw new Error(error.detail || "Login failed");
+      }
 
-    const data = await response.json();
-    setAccessToken(data.access_token);
-    setUserId(data.current_user_id);
-    setIsAuthenticated(true);
-
-    return data;
-  }, []);
+      const data = await response.json();
+      updateAuthState(data);
+      return data;
+    },
+    [updateAuthState]
+  );
 
   const logout = useCallback(async () => {
     try {
@@ -128,11 +141,9 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       console.error("Logout request failed:", error);
     } finally {
-      setAccessToken(null);
-      setUserId(null);
-      setIsAuthenticated(false);
+      updateAuthState(null);
     }
-  }, [accessToken]);
+  }, [accessToken, updateAuthState]);
 
   useEffect(() => {
     const initAuth = async () => {
@@ -170,26 +181,63 @@ export const AuthProvider = ({ children }) => {
     return () => clearTimeout(timeoutId);
   }, [accessToken, isAuthenticated, silentRefresh]);
 
+  const hasRole = useCallback(
+    (...roles) => {
+      if (!user) return false;
+      return roles.includes(user.role);
+    },
+    [user]
+  );
+
+  const isAdmin = useMemo(() => hasRole(ROLES.ADMIN), [hasRole]);
+  const isTeacher = useMemo(() => hasRole(ROLES.TEACHER), [hasRole]);
+  const isTeacherOrAdmin = useMemo(() => hasRole(ROLES.ADMIN, ROLES.TEACHER), [hasRole]);
+  const isViewer = useMemo(() => hasRole(ROLES.VIEWER), [hasRole]);
+
+  const canAccessUniversity = useCallback(
+    (universityKey) => {
+      if (!user) return false;
+      if (user.role === ROLES.ADMIN) return true;
+      return user.university === universityKey;
+    },
+    [user]
+  );
+
   const value = useMemo(
     () => ({
       accessToken,
-      userId,
+      user,
+      userId: user?.id,
+      role: user?.role,
+      university: user?.university,
       isAuthenticated,
       isLoading,
       login,
       logout,
       getValidAccessToken,
       silentRefresh,
+      hasRole,
+      isAdmin,
+      isTeacher,
+      isTeacherOrAdmin,
+      isViewer,
+      canAccessUniversity,
     }),
     [
       accessToken,
-      userId,
+      user,
       isAuthenticated,
       isLoading,
       login,
       logout,
       getValidAccessToken,
       silentRefresh,
+      hasRole,
+      isAdmin,
+      isTeacher,
+      isTeacherOrAdmin,
+      isViewer,
+      canAccessUniversity,
     ]
   );
 

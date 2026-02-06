@@ -18,7 +18,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import Header from "../components/Header";
+import Header from "../components/organisms/Header";
 import { useBasket } from "../contexts/BasketContext";
 import { useUniversity } from "../contexts/UniversityContext";
 import fetchWithAuth from "../utils/fetchWithAuth";

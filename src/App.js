@@ -1,174 +1,118 @@
-import React from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import Playground from "./pages/PlayGround";
-import Login from "./pages/Login";
-import GameRoom from "./pages/GameRoom";
-import TacticPreparation from "./pages/TacticPreparation";
-import Leaderboard from "./pages/LeaderBoard";
-import PersonalityTest from "./pages/PersonalityTest/PersonalityTest";
-import Dashboard from "./pages/dashboard";
-import DissonanceTestParticipantList from "./pages/dissonanceTestParticipantList";
-import DissonanceTest from "./pages/dissonanceTest";
-import DissonanceTestResult from "./pages/dissonanceTestResult";
-import UniversityComparison from "./pages/UniversityComparison";
-import HighSchoolAnalysis from "./pages/HighSchoolAnalysis";
-import RivalAnalysis from "./pages/RivalAnalysis";
-import ProgramRivalAnalysis from "./pages/ProgramRivalAnalysis";
-import HighSchoolRooms from "./pages/HighSchoolRooms";
-import HighSchoolRoomDetail from "./pages/HighSchoolRoomDetail";
-import ProgramSuggestionTest from "./pages/ProgramSuggestionTest";
-import ProgramTestResult from "./pages/ProgramTestResult";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import { getUserRole } from "./services/authService";
+import { AuthProvider, useAuth } from "@contexts/AuthContext";
+import { ProtectedRoute, TestPageGuard } from "@components/atoms";
+import { ROLES, TEST_TYPES } from "@config/permissions";
 
-// Role-based access configuration
-const ROLE_ACCESS = {
-  admin: ["dashboard", "rooms", "all"], // Full access
-  teacher: ["dashboard", "rooms", "all"], // Full access
-  viewer: ["university-comparison"], // Read-only university comparison
-  student: ["tests"], // Only test participation
-};
+import { Login } from "@pages/auth";
+import Dashboard from "@pages/dashboard";
+import Unauthorized from "@pages/Unauthorized";
 
-/**
- * Get the default redirect path for a role
- */
-function getDefaultPathForRole(role) {
-  switch (role?.toLowerCase()) {
-    case "viewer":
-      return "/university-comparison";
-    case "student":
-      return "/program-test"; // Students go to test area
-    case "admin":
-    case "teacher":
-    default:
-      return "/dashboard";
-  }
+import { GameRoom, PlayGround, LeaderBoard, TacticPreparation } from "@pages/prisoners-dilemma";
+import PersonalityTest from "@pages/PersonalityTest/PersonalityTest";
+
+import DissonanceTestParticipantList from "@pages/dissonanceTestParticipantList";
+import DissonanceTest from "@pages/dissonanceTest";
+import DissonanceTestResult from "@pages/dissonanceTestResult";
+
+import UniversityComparison from "@pages/UniversityComparison";
+import HighSchoolAnalysis from "@pages/HighSchoolAnalysis";
+import RivalAnalysis from "@pages/RivalAnalysis";
+import ProgramRivalAnalysis from "@pages/ProgramRivalAnalysis";
+
+import HighSchoolRooms from "@pages/HighSchoolRooms";
+import HighSchoolRoomDetail from "@pages/HighSchoolRoomDetail";
+import PersonalityTestRooms from "@pages/PersonalityTestRooms";
+import PersonalityTestRoomDetail from "@pages/PersonalityTestRoomDetail";
+import TestManagement from "@pages/TestManagement";
+import ProgramSuggestionRooms from "@pages/ProgramSuggestionRooms";
+import PrisonersDilemmaRooms from "@pages/PrisonersDilemmaRooms";
+
+import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
+import ProgramTestResult from "@pages/ProgramTestResult";
+import PersonalityTestPublic from "@pages/PersonalityTestPublic";
+import DissonanceTestPublic from "@pages/DissonanceTestPublic";
+import PrisonersDilemmaPublic from "@pages/PrisonersDilemmaPublic";
+
+const ADMIN_TEACHER = [ROLES.ADMIN, ROLES.TEACHER];
+const VIEWER_PLUS = [ROLES.ADMIN, ROLES.TEACHER, ROLES.VIEWER];
+const ALL_AUTHENTICATED = [ROLES.ADMIN, ROLES.TEACHER, ROLES.VIEWER];
+
+function getDefaultPath() {
+  return "/dashboard";
 }
 
-/**
- * Check if a role has access to a specific route type
- */
-function hasAccess(role, routeType) {
-  const roleKey = role?.toLowerCase() || "student";
-  const allowedRoutes = ROLE_ACCESS[roleKey] || ROLE_ACCESS.student;
-  return allowedRoutes.includes("all") || allowedRoutes.includes(routeType);
-}
-
-/**
- * Protected Route wrapper
- * Redirects to login if not authenticated
- * Optionally checks for required role access
- */
-function ProtectedRoute({ children, requiredAccess = null }) {
-  const { isAuthenticated, isLoading } = useAuth();
-  const role = getUserRole();
-
-  if (isLoading) {
-    // Show nothing while checking auth state (or could show a spinner)
-    return null;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Check role-based access if specified
-  if (requiredAccess && !hasAccess(role, requiredAccess)) {
-    // Redirect to appropriate page for their role
-    return <Navigate to={getDefaultPathForRole(role)} replace />;
-  }
-
-  return children;
-}
-
-/**
- * Viewer-only route - only accessible by viewers
- */
-function ViewerRoute({ children }) {
-  const { isAuthenticated, isLoading } = useAuth();
-  const role = getUserRole();
-
-  if (isLoading) {
-    return null;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  // Viewers can access, admins and teachers can also access
-  const allowedRoles = ["viewer", "admin", "teacher"];
-  if (!allowedRoles.includes(role?.toLowerCase())) {
-    return <Navigate to={getDefaultPathForRole(role)} replace />;
-  }
-
-  return children;
-}
-
-/**
- * Public Route wrapper
- * Redirects authenticated users to their appropriate page based on role
- */
 function PublicRoute({ children }) {
   const { isAuthenticated, isLoading } = useAuth();
-  const role = getUserRole();
 
-  if (isLoading) {
-    return null;
-  }
+  if (isLoading) return null;
 
   if (isAuthenticated) {
-    return <Navigate to={getDefaultPathForRole(role)} replace />;
+    return <Navigate to={getDefaultPath()} replace />;
   }
 
   return children;
 }
 
-/**
- * Main App Routes
- */
 function AppRoutes() {
   return (
     <Routes>
-      {/* Public routes */}
+      {/* Auth Routes */}
       <Route
         path="/login"
         element={
           <PublicRoute>
-            <Login />
+            <Login variant="educaition" />
           </PublicRoute>
         }
       />
+      <Route
+        path="/login-halic"
+        element={
+          <PublicRoute>
+            <Login variant="halic" />
+          </PublicRoute>
+        }
+      />
+      <Route path="/unauthorized" element={<Unauthorized />} />
 
-      {/* Admin/Teacher only routes - Dashboard and management */}
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ALL_AUTHENTICATED}>
             <Dashboard />
           </ProtectedRoute>
         }
       />
+
+      {/* Prisoners' Dilemma Routes */}
       <Route
         path="/rooms"
         element={
-          <ProtectedRoute requiredAccess="rooms">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <GameRoom />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/prisoners-dilemma-rooms"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <PrisonersDilemmaRooms />
           </ProtectedRoute>
         }
       />
       <Route
         path="/playground/:roomId"
         element={
-          <ProtectedRoute requiredAccess="rooms">
-            <Playground />
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <PlayGround />
           </ProtectedRoute>
         }
       />
       <Route
         path="/tacticpreparation/:roomId"
         element={
-          <ProtectedRoute requiredAccess="rooms">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <TacticPreparation />
           </ProtectedRoute>
         }
@@ -176,23 +120,24 @@ function AppRoutes() {
       <Route
         path="/leaderboard/:sessionId"
         element={
-          <ProtectedRoute requiredAccess="rooms">
-            <Leaderboard />
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <LeaderBoard />
           </ProtectedRoute>
         }
       />
       <Route
         path="/personalitytest/:type/:id"
         element={
-          <ProtectedRoute requiredAccess="rooms">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <PersonalityTest />
           </ProtectedRoute>
         }
       />
+
       <Route
         path="/dissonanceTestParticipantList"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <DissonanceTestParticipantList />
           </ProtectedRoute>
         }
@@ -200,7 +145,7 @@ function AppRoutes() {
       <Route
         path="/dissonanceTest/:currentUserId"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <DissonanceTest />
           </ProtectedRoute>
         }
@@ -208,76 +153,140 @@ function AppRoutes() {
       <Route
         path="/dissonanceTestResult/:participantId"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <DissonanceTestResult />
           </ProtectedRoute>
         }
       />
 
-      {/* University comparison - Viewers, Admins, and Teachers */}
       <Route
         path="/university-comparison"
         element={
-          <ViewerRoute>
+          <ProtectedRoute allowedRoles={VIEWER_PLUS}>
             <UniversityComparison />
-          </ViewerRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/highschool-analysis"
         element={
-          <ViewerRoute>
+          <ProtectedRoute allowedRoles={VIEWER_PLUS}>
             <HighSchoolAnalysis />
-          </ViewerRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/rival-analysis"
         element={
-          <ViewerRoute>
+          <ProtectedRoute allowedRoles={VIEWER_PLUS}>
             <RivalAnalysis />
-          </ViewerRoute>
+          </ProtectedRoute>
         }
       />
       <Route
         path="/program-rival-analysis"
         element={
-          <ViewerRoute>
+          <ProtectedRoute allowedRoles={VIEWER_PLUS}>
             <ProgramRivalAnalysis />
-          </ViewerRoute>
+          </ProtectedRoute>
         }
       />
 
-      {/* High School Rooms - Admin/Teacher only */}
+      {/* Program Suggestion Routes */}
       <Route
         path="/high-school-rooms"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <HighSchoolRooms />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/program-suggestion-rooms"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <ProgramSuggestionRooms />
           </ProtectedRoute>
         }
       />
       <Route
         path="/high-school-room/:roomId"
         element={
-          <ProtectedRoute requiredAccess="dashboard">
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <HighSchoolRoomDetail />
           </ProtectedRoute>
         }
       />
 
-      {/* Public test routes - accessed by anonymous participants (students) */}
-      {/* These don't require login - participants enter their name when starting */}
-      <Route path="/program-test/:roomId" element={<ProgramSuggestionTest />} />
+      {/* Personality Test Routes */}
+      <Route
+        path="/personality-test-rooms"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <PersonalityTestRooms />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/personality-test-room/:roomId"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <PersonalityTestRoomDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/test-management"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <TestManagement />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/program-test/:roomId"
+        element={
+          <TestPageGuard testType={TEST_TYPES.PROGRAM_SUGGESTION}>
+            <ProgramSuggestionTest />
+          </TestPageGuard>
+        }
+      />
       <Route path="/program-test-result/:studentId" element={<ProgramTestResult />} />
 
-      {/* Default route */}
+      {/* Public Test Routes (accessible via QR code) */}
+      <Route
+        path="/personality-test/:roomId"
+        element={
+          <TestPageGuard testType={TEST_TYPES.PERSONALITY_TEST}>
+            <PersonalityTestPublic />
+          </TestPageGuard>
+        }
+      />
+      <Route
+        path="/dissonance-test/:roomId"
+        element={
+          <TestPageGuard testType={TEST_TYPES.DISSONANCE_TEST}>
+            <DissonanceTestPublic />
+          </TestPageGuard>
+        }
+      />
+      <Route
+        path="/game-room/:roomId"
+        element={
+          <TestPageGuard testType={TEST_TYPES.PRISONERS_DILEMMA}>
+            <PrisonersDilemmaPublic />
+          </TestPageGuard>
+        }
+      />
+
       <Route path="/" element={<Navigate to="/login" replace />} />
     </Routes>
   );
 }
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
       <Router>
@@ -286,5 +295,3 @@ function App() {
     </AuthProvider>
   );
 }
-
-export default App;

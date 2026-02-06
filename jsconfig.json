@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["./*"],
+      "@components/*": ["./components/*"],
+      "@atoms/*": ["./components/atoms/*"],
+      "@molecules/*": ["./components/molecules/*"],
+      "@organisms/*": ["./components/organisms/*"],
+      "@templates/*": ["./components/templates/*"],
+      "@hooks/*": ["./hooks/*"],
+      "@hooks": ["./hooks/index.js"],
+      "@services/*": ["./services/*"],
+      "@utils/*": ["./utils/*"],
+      "@theme/*": ["./theme/*"],
+      "@pages/*": ["./pages/*"],
+      "@contexts/*": ["./contexts/*"],
+      "@config/*": ["./config/*"],
+      "@config": ["./config/index.js"],
+      "@data/*": ["./data/*"],
+      "@i18n": ["./i18n/index.js"],
+      "@i18n/*": ["./i18n/*"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "build"]
+}
