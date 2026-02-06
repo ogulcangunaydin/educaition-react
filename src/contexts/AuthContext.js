@@ -89,7 +89,6 @@ export const AuthProvider = ({ children }) => {
         const response = await fetch(`${API_BASE_URL}/refresh`, {
           method: "POST",
           credentials: "include",
-          headers: { "Content-Type": "application/json" },
         });
 
         if (!response.ok) {
@@ -180,7 +179,13 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       setIsLoading(true);
       try {
-        await silentRefresh();
+        // Only attempt refresh if a previous session existed.
+        // The refresh token is an HttpOnly cookie (not readable from JS),
+        // so we use the stored access_token as a proxy indicator.
+        const hadSession = localStorage.getItem("access_token");
+        if (hadSession) {
+          await silentRefresh();
+        }
       } finally {
         setIsLoading(false);
       }
