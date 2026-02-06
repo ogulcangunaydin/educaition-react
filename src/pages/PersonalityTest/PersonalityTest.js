@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import bigFiveTestTRQuestions from "./BigFiveTestTR.txt";
 import bigFiveTestENQuestions from "./BigFiveTestEN.txt";
-import Header from "../../components/Header";
+import Header from "@organisms/Header";
 import { CenteredContainer } from "../../styles/CommonStyles";
 import {
   useTheme,
@@ -20,11 +20,9 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  saveParticipantSession,
-  fetchWithParticipantAuth,
-  SESSION_TYPES,
-} from "../../services/participantSessionService";
+import { saveParticipantSession, SESSION_TYPES } from "../../services/participantSessionService";
+import { createPlayer, savePlayerPersonality } from "@services/playerService";
+import { saveParticipantPersonality } from "@services/dissonanceTestService";
 
 const PersonalityTest = () => {
   const [name, setName] = useState("");
@@ -86,24 +84,7 @@ const PersonalityTest = () => {
     setNameError("");
 
     try {
-      const createPlayerForm = new FormData();
-
-      createPlayerForm.append("player_name", name);
-      createPlayerForm.append("room_id", id);
-
-      const createPlayerResponse = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/players`,
-        {
-          method: "POST",
-          body: createPlayerForm,
-          credentials: "include", // Important for receiving HttpOnly cookie
-        }
-      );
-      if (!createPlayerResponse.ok) {
-        throw new Error("Player Name is already taken. Please choose a different name.");
-      }
-
-      const data = await createPlayerResponse.json();
+      const data = await createPlayer(name, id);
 
       // Save participant session metadata
       saveParticipantSession(SESSION_TYPES.PLAYER, {
@@ -124,31 +105,11 @@ const PersonalityTest = () => {
   const handleSubmit = async () => {
     setLoading(true); // Set loading to true when submission starts
     try {
-      const formBody = new FormData();
-      formBody.append("answers", JSON.stringify(answers));
-
-      let endpoint;
-      let sessionType;
       if (type === "room") {
-        endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/personality`;
-        sessionType = SESSION_TYPES.PLAYER;
-      } else if (type === "participant") {
-        endpoint = `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${id}/personality`;
-        sessionType = SESSION_TYPES.DISSONANCE_TEST;
-      }
-
-      // Use fetchWithParticipantAuth for authenticated requests
-      const response = await fetchWithParticipantAuth(sessionType, endpoint, {
-        method: "POST",
-        body: formBody,
-      });
-      if (!response.ok) {
-        throw new Error("Failed to save survey.");
-      }
-
-      if (type === "room") {
+        await savePlayerPersonality(playerId, answers);
         navigate(`/tacticpreparation/${id}`, { state: { playerId: playerId } });
       } else if (type === "participant") {
+        await saveParticipantPersonality(id, answers);
         navigate(`/dissonanceTestResult/${id}`);
       }
     } catch (error) {

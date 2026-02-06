@@ -23,8 +23,158 @@ export async function getStudentDebug(studentId) {
   return data;
 }
 
+/**
+ * Get student by ID
+ * @param {number} studentId - Student ID
+ * @returns {Promise<Object>} Student data
+ */
+export async function getStudent(studentId) {
+  const { ok, data, status } = await api.get(`/program-suggestion/students/${studentId}`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get student result
+ * @param {number} studentId - Student ID
+ * @returns {Promise<Object>} Student result
+ */
+export async function getStudentResult(studentId) {
+  const { ok, data, status } = await api.get(`/program-suggestion/students/${studentId}/result`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Create a new student
+ * @param {number} roomId - High school room ID
+ * @returns {Promise<Object>} Created student with session token
+ */
+export async function createStudent(roomId) {
+  const { ok, data, status } = await api.post("/program-suggestion/students/", {
+    high_school_room_id: parseInt(roomId),
+  });
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update student step 1 (personal info)
+ * @param {number} studentId - Student ID
+ * @param {Object} stepData - Step 1 data
+ * @returns {Promise<Object>} Updated student
+ */
+export async function updateStep1(studentId, stepData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/step1`,
+    stepData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update student step 2 (education info)
+ * @param {number} studentId - Student ID
+ * @param {Object} stepData - Step 2 data
+ * @returns {Promise<Object>} Updated student
+ */
+export async function updateStep2(studentId, stepData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/step2`,
+    stepData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update student step 3 (score expectations)
+ * @param {number} studentId - Student ID
+ * @param {Object} stepData - Step 3 data
+ * @returns {Promise<Object>} Updated student
+ */
+export async function updateStep3(studentId, stepData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/step3`,
+    stepData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Update student step 4 (preferences)
+ * @param {number} studentId - Student ID
+ * @param {Object} stepData - Step 4 data
+ * @returns {Promise<Object>} Updated student
+ */
+export async function updateStep4(studentId, stepData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/step4`,
+    stepData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Submit RIASEC answers
+ * @param {number} studentId - Student ID
+ * @param {Object} riasecData - RIASEC answers
+ * @returns {Promise<Object>} Result
+ */
+export async function submitRiasec(studentId, riasecData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/riasec`,
+    riasecData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
 const programSuggestionService = {
   getStudentDebug,
+  getStudent,
+  getStudentResult,
+  createStudent,
+  updateStep1,
+  updateStep2,
+  updateStep3,
+  updateStep4,
+  submitRiasec,
 };
 
 export default programSuggestionService;

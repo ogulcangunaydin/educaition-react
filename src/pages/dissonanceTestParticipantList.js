@@ -19,6 +19,7 @@ import Header from "../components/organisms/Header";
 import { StyledTableContainer } from "../styles/CommonStyles";
 import dissonanceTestService from "@services/dissonanceTestService";
 import { QRCodeCanvas } from "qrcode.react";
+import { FRONTEND_BASE_URL } from "@config/env";
 
 const DissonanceTestParticipantList = () => {
   const [participants, setParticipants] = useState([]);
@@ -208,7 +209,7 @@ const DissonanceTestParticipantList = () => {
           >
             <div onClick={(e) => e.stopPropagation()} style={{ textAlign: "center" }}>
               <QRCodeCanvas
-                value={`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}
+                value={`${FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}
                 size={isSmallScreen ? 200 : 256}
                 level={"H"}
                 includeMargin={true}
@@ -216,7 +217,7 @@ const DissonanceTestParticipantList = () => {
               <Typography
                 variant="h6"
                 style={{ color: "white", marginTop: "10px" }}
-              >{`${process.env.REACT_APP_FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}</Typography>
+              >{`${FRONTEND_BASE_URL}/dissonanceTest/${currentUserId}`}</Typography>
             </div>
           </div>
         )}

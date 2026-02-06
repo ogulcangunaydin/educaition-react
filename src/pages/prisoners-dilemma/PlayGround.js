@@ -10,8 +10,7 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import HistoryIcon from "@mui/icons-material/History";
 
 import { PageLayout } from "@components/templates";
-import { Button, TextField, Modal, Card } from "@components/atoms";
-import { GridContainer, GridItem, Flex } from "@components/atoms/Container";
+import { Button, TextField, Modal, Card, GridContainer, GridItem, Flex } from "@components/atoms";
 import { EmptyState, ConfirmDialog, QRCodeOverlay } from "@components/molecules";
 import ParticipantDetailCard from "@organisms/ParticipantDetailCard";
 import { usePlayground } from "@hooks/prisoners-dilemma";

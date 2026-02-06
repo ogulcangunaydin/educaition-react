@@ -32,8 +32,9 @@ import { markTestCompleted } from "@components/atoms/TestPageGuard";
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { PRISONERS_DILEMMA, ANSWER_SCALES } from "@data/testQuestions";
 import bigFiveTestENQuestions from "./PersonalityTest/BigFiveTestEN.txt";
+import { API_BASE_URL } from "@config/env";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+const BASE_URL = API_BASE_URL;
 
 const STEPS = ["Join", "Personality Test", "Prepare Tactic", "Waiting"];
 

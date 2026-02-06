@@ -19,16 +19,23 @@ const StyledImg = styled("img")({
   objectFit: "contain",
 });
 
-function Logo({ src = "/halic_universitesi_logo.svg", alt = "Logo", size = "medium", ...props }) {
+function Logo({
+  src = "/halic_universitesi_logo.svg",
+  alt = "Logo",
+  size = "medium",
+  sx,
+  ...props
+}) {
   const logoSize = typeof size === "number" ? size : SIZES[size];
 
   return (
     <StyledImg
       src={src}
       alt={alt}
-      style={{
+      sx={{
         width: logoSize,
-        height: "auto",
+        height: logoSize,
+        ...sx,
       }}
       {...props}
     />

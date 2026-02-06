@@ -34,7 +34,9 @@ import { EmptyState } from "../components/molecules";
 import ParticipantDetailCard from "../components/organisms/ParticipantDetailCard";
 import roomService from "@services/roomService";
 import playerService from "@services/playerService";
+import { checkAuth } from "@services/authService";
 import { COLORS, SPACING, SHADOWS } from "../theme";
+import { FRONTEND_BASE_URL } from "@config/env";
 
 /**
  * Styled Components
@@ -168,25 +170,13 @@ const Playground = () => {
       try {
         setLoading(true);
 
-        // Fetch participants
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/players/room/${roomId}`,
-          { method: "GET" }
-        );
-
-        if (!response.ok) throw new Error("Network response was not ok");
-
-        const data = await response.json();
+        // Fetch participants using playerService
+        const data = await playerService.getPlayersByRoom(roomId);
         setParticipants(data);
 
-        // Check authentication
-        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
-
-        if (authResponse.ok) {
+        // Check authentication using authService
+        const isAuth = await checkAuth();
+        if (isAuth) {
           setIsUserAuthenticated(true);
 
           // Fetch sessions
@@ -237,33 +227,19 @@ const Playground = () => {
       if (e) e.preventDefault();
 
       try {
-        const formBody = new FormData();
-        formBody.append("name", sessionName);
+        const result = await roomService.startSessionWithName(roomId, sessionName);
 
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/ready`,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-            },
-            method: "POST",
-            body: formBody,
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          if (errorData.detail === "All players are not ready") {
-            setErrorMessage(errorData.detail);
+        if (!result.ok) {
+          if (result.error === "All players are not ready") {
+            setErrorMessage(result.error);
             setShowErrorModal(true);
           } else {
-            throw new Error(errorData.detail || "Failed to create session");
+            throw new Error(result.error || "Failed to create session");
           }
         } else {
-          const data = await response.json();
-          setSessions((prev) => [...prev, data]);
+          setSessions((prev) => [...prev, result.data]);
           setShowModal(false);
-          navigate(`/leaderboard/${data.id}`, {
+          navigate(`/leaderboard/${result.data.id}`, {
             state: { roomId, roomName },
           });
         }
@@ -301,7 +277,7 @@ const Playground = () => {
   const redirectToGameRoom = useCallback(() => navigate("/rooms"), [navigate]);
 
   // QR Code URL
-  const qrUrl = `${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/room/${roomId}`;
+  const qrUrl = `${FRONTEND_BASE_URL}/personalitytest/room/${roomId}`;
 
   // Radar chart configuration generator
   const getRadarConfig = useCallback(

@@ -7,7 +7,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import { PageLayout } from "../components/templates";
 import { Button, TextField, Alert } from "../components/atoms";
 import PrisonersDilemmaInstructions from "../components/organisms/PrisonersDilemmaInstructions";
-import { fetchWithParticipantAuth, SESSION_TYPES } from "../services/participantSessionService";
+import { savePlayerTactic } from "@services/playerService";
 import { SPACING, SHADOWS, COLORS } from "../theme";
 
 /**
@@ -55,22 +55,7 @@ const TacticPreparation = () => {
       setLoading(true);
 
       try {
-        const updateTacticForm = new FormData();
-        updateTacticForm.append("player_tactic", tactic);
-
-        const saveTacticResponse = await fetchWithParticipantAuth(
-          SESSION_TYPES.PLAYER,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${playerId}/tactic`,
-          {
-            method: "POST",
-            body: updateTacticForm,
-          }
-        );
-
-        if (!saveTacticResponse.ok) {
-          throw new Error("Failed to save tactic");
-        }
-
+        await savePlayerTactic(playerId, tactic);
         navigate(`/playground/${roomId}`);
       } catch (error) {
         setTacticError("Error saving tactic: " + error.message);

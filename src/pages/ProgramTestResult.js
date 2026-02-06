@@ -19,6 +19,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import jobTranslations from "./RiasecTest/job_translations.json";
 import { fetchScoreRankingDistribution } from "../services/liseService";
+import { getStudentResult } from "@services/programSuggestionService";
 
 // Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)
 const normalizeForComparison = (str) => {
@@ -97,19 +98,11 @@ function ProgramTestResult() {
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/result`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-          setResult(data);
-        } else {
-          setError("Sonuçlar yüklenemedi. Lütfen daha sonra tekrar deneyin.");
-        }
+        const data = await getStudentResult(studentId);
+        setResult(data);
       } catch (error) {
         console.error("Error fetching result:", error);
-        setError("Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.");
+        setError("Sonuçlar yüklenemedi. Lütfen daha sonra tekrar deneyin.");
       } finally {
         setLoading(false);
       }

@@ -14,7 +14,8 @@ import {
 import ReactMarkdown from "react-markdown";
 import Header from "../components/organisms/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
-import { fetchWithParticipantAuth, SESSION_TYPES } from "../services/participantSessionService";
+import { getParticipant } from "@services/dissonanceTestService";
+import { checkAuth } from "@services/authService";
 
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
 
@@ -30,17 +31,7 @@ const DissonanceTestResult = () => {
   useEffect(() => {
     const fetchParticipant = async () => {
       try {
-        const response = await fetchWithParticipantAuth(
-          SESSION_TYPES.DISSONANCE_TEST,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participantId}`,
-          {
-            method: "GET",
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
+        const data = await getParticipant(participantId);
         setParticipant(data);
         setLoading(false);
       } catch (error) {
@@ -49,15 +40,10 @@ const DissonanceTestResult = () => {
       }
     };
 
-    const checkAuth = async () => {
+    const checkAuthentication = async () => {
       try {
-        const authResponse = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/auth`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        });
-
-        if (authResponse.ok) {
+        const isAuth = await checkAuth();
+        if (isAuth) {
           setIsUserAuthenticated(true);
         }
       } catch (error) {
@@ -66,7 +52,7 @@ const DissonanceTestResult = () => {
     };
 
     fetchParticipant();
-    checkAuth();
+    checkAuthentication();
   }, [participantId]);
 
   if (loading) {

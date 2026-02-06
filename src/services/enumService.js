@@ -5,7 +5,9 @@
  * and controlled values, eliminating hardcoded lists in the frontend.
  */
 
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { API_BASE_URL } from "@config/env";
+
+const BASE_URL = API_BASE_URL;
 
 // Cache for enum values to avoid repeated API calls
 let enumsCache = null;

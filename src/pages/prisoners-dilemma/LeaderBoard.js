@@ -11,8 +11,15 @@ import {
 } from "@mui/material";
 
 import { PageLayout } from "@components/templates";
-import { Button, Typography, Card } from "@components/atoms";
-import { Container, GridContainer, GridItem, Center } from "@components/atoms/Container";
+import {
+  Button,
+  Typography,
+  Card,
+  Container,
+  GridContainer,
+  GridItem,
+  Center,
+} from "@components/atoms";
 import ParticipantDetailCard from "@organisms/ParticipantDetailCard";
 import { useLeaderboard } from "@hooks/prisoners-dilemma";
 import { COLORS, SPACING } from "@theme";

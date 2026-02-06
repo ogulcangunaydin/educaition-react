@@ -85,7 +85,7 @@ function AuthLayout({
       {headerActions && <HeaderActions>{headerActions}</HeaderActions>}
 
       <AuthCard elevation={0}>
-        <Logo src={logoSrc} size="large" style={{ marginBottom: 24 }} />
+        <Logo src={logoSrc} size="xlarge"/>
 
         {title && (
           <Typography variant="h5" align="center" gutterBottom>

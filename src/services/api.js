@@ -8,11 +8,14 @@
  * - Automatic token refresh on 401
  * - Consistent error handling
  * - Support for different auth types (user, participant, etc.)
+ *
+ * Auth is provided by AuthContext via configureAuth() — this module
+ * has no knowledge of where tokens come from.
  */
 
-import { getAccessToken, refreshAccessToken, clearTokens } from "@utils/tokenStore";
+import { API_BASE_URL } from "@config/env";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+const BASE_URL = API_BASE_URL;
 
 export const AUTH_TYPES = {
   NONE: "none",
@@ -22,41 +25,36 @@ export const AUTH_TYPES = {
   PROGRAM_SUGGESTION: "program_suggestion",
 };
 
-// Token refresh state
-let isRefreshing = false;
-let refreshPromise = null;
-
-const performTokenRefresh = async () => {
-  if (isRefreshing) {
-    return refreshPromise;
-  }
-
-  isRefreshing = true;
-  refreshPromise = refreshAccessToken()
-    .then((result) => {
-      isRefreshing = false;
-      refreshPromise = null;
-      return result;
-    })
-    .catch((error) => {
-      isRefreshing = false;
-      refreshPromise = null;
-      throw error;
-    });
-
-  return refreshPromise;
+// Auth provider — registered by AuthContext on mount
+let authProvider = {
+  getToken: () => null,
+  refreshToken: async () => {
+    throw new Error("Auth not configured");
+  },
+  onAuthFailure: () => {
+    window.location.href = "/login";
+  },
 };
 
+/**
+ * Register auth callbacks. Called once by AuthContext on mount.
+ * This is the bridge between React auth state and the plain-JS API client.
+ */
+export const configureAuth = (provider) => {
+  authProvider = { ...authProvider, ...provider };
+};
+
+const performTokenRefresh = () => authProvider.refreshToken();
+
 const redirectToLogin = () => {
-  clearTokens();
-  window.location.href = "/login";
+  authProvider.onAuthFailure();
 };
 
 const buildHeaders = (authType, customHeaders = {}) => {
   const headers = { ...customHeaders };
 
   if (authType === AUTH_TYPES.USER) {
-    const token = getAccessToken();
+    const token = authProvider.getToken();
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
@@ -85,7 +83,7 @@ const apiFetch = async (endpoint, options = {}, _isRetry = false) => {
   const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
 
   // For authenticated requests without token, try refresh first
-  if (authType === AUTH_TYPES.USER && !getAccessToken() && !_isRetry) {
+  if (authType === AUTH_TYPES.USER && !authProvider.getToken() && !_isRetry) {
     try {
       await performTokenRefresh();
     } catch {

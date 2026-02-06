@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 import api from "@services/api";
+import { FRONTEND_BASE_URL } from "@config/env";
 
 export default function usePlayground(roomId) {
   const [participants, setParticipants] = useState([]);
@@ -86,7 +87,7 @@ export default function usePlayground(roomId) {
   const openQR = useCallback(() => setShowQR(true), []);
   const closeQR = useCallback(() => setShowQR(false), []);
 
-  const qrUrl = `${process.env.REACT_APP_FRONTEND_BASE_URL}/personalitytest/room/${roomId}`;
+  const qrUrl = `${FRONTEND_BASE_URL}/personalitytest/room/${roomId}`;
 
   return {
     participants,

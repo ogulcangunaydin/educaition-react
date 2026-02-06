@@ -3,7 +3,7 @@
  * Fetches lise placement data from the backend API
  */
 
-const API_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { API_BASE_URL } from "@config/env";
 
 /**
  * Fetch lise ID to info mapping

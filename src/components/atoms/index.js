@@ -6,6 +6,7 @@ export { default as Radio } from "./Radio";
 export { default as Slider } from "./Slider";
 export { default as Typography } from "./Typography";
 export { default as Spinner } from "./Spinner";
+export { default as Loading } from "./Spinner";
 export { default as Alert } from "./Alert";
 export { default as Card } from "./Card";
 export { default as Logo } from "./Logo";

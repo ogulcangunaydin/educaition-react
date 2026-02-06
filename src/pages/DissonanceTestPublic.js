@@ -34,8 +34,9 @@ import { markTestCompleted, getOrCreateDeviceId } from "@components/atoms/TestPa
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { fetchEnums } from "@services/enumService";
 import { DISSONANCE_TEST } from "@data/testQuestions";
+import { API_BASE_URL } from "@config/env";
 
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+const BASE_URL = API_BASE_URL;
 
 const STEPS = [
   "Welcome",

@@ -1,9 +1,16 @@
-import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 import { ROLES } from "@config/permissions";
-import { setTokens, clearTokens } from "@utils/tokenStore";
+import { configureAuth } from "@services/api";
 import { storeUniversityKey, clearLocalAuthData } from "@services/authService";
-
-const API_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { API_BASE_URL } from "@config/env";
 const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
 
 const AuthContext = createContext(null);
@@ -38,39 +45,43 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [refreshPromise, setRefreshPromise] = useState(null);
+
+  // Refs for synchronous access from api.js callbacks (no stale closures)
+  const tokenRef = useRef(null);
+  const refreshRef = useRef(null);
 
   const updateAuthState = useCallback((data) => {
     if (data) {
-      setAccessToken(data.access_token);
+      const token = data.access_token;
+      setAccessToken(token);
+      tokenRef.current = token;
       setUser({
         id: data.current_user_id,
         role: data.role,
         university: data.university,
       });
       setIsAuthenticated(true);
-      localStorage.setItem("access_token", data.access_token);
-
-      // Sync with tokenStore for API client (api.js)
-      setTokens(data.access_token, data.current_user_id);
-
-      // Store university in localStorage for persistence
+      localStorage.setItem("access_token", token);
       storeUniversityKey(data.university);
     } else {
       setAccessToken(null);
+      tokenRef.current = null;
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
-
-      // Clear tokenStore and localStorage
-      clearTokens();
       clearLocalAuthData();
     }
   }, []);
 
+  /**
+   * Single deduped refresh function.
+   * Uses a ref-based promise so concurrent callers (timer, 401 retry, init)
+   * all share one in-flight request. Critical because the backend rotates
+   * (blacklists) the refresh token on every use.
+   */
   const silentRefresh = useCallback(async () => {
-    if (refreshPromise) {
-      return refreshPromise;
+    if (refreshRef.current) {
+      return refreshRef.current;
     }
 
     const promise = (async () => {
@@ -78,31 +89,29 @@ export const AuthProvider = ({ children }) => {
         const response = await fetch(`${API_BASE_URL}/refresh`, {
           method: "POST",
           credentials: "include",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          updateAuthState(data);
-          return data.access_token;
-        } else {
+        if (!response.ok) {
           updateAuthState(null);
           return null;
         }
+
+        const data = await response.json();
+        updateAuthState(data);
+        return data.access_token;
       } catch (error) {
         console.error("Silent refresh failed:", error);
         updateAuthState(null);
         return null;
       } finally {
-        setRefreshPromise(null);
+        refreshRef.current = null;
       }
     })();
 
-    setRefreshPromise(promise);
+    refreshRef.current = promise;
     return promise;
-  }, [refreshPromise, updateAuthState]);
+  }, [updateAuthState]);
 
   const getValidAccessToken = useCallback(async () => {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
@@ -140,12 +149,12 @@ export const AuthProvider = ({ children }) => {
 
   const logout = useCallback(async () => {
     try {
-      if (accessToken) {
+      if (tokenRef.current) {
         await fetch(`${API_BASE_URL}/logout`, {
           method: "POST",
           credentials: "include",
           headers: {
-            Authorization: `Bearer ${accessToken}`,
+            Authorization: `Bearer ${tokenRef.current}`,
             "Content-Type": "application/json",
           },
         });
@@ -155,8 +164,18 @@ export const AuthProvider = ({ children }) => {
     } finally {
       updateAuthState(null);
     }
-  }, [accessToken, updateAuthState]);
+  }, [updateAuthState]);
 
+  // Register auth callbacks with the API client once on mount
+  useEffect(() => {
+    configureAuth({
+      getToken: () => tokenRef.current,
+      refreshToken: () => silentRefresh(),
+      onAuthFailure: () => updateAuthState(null),
+    });
+  }, [silentRefresh, updateAuthState]);
+
+  // Initial session restore from HttpOnly cookie
   useEffect(() => {
     const initAuth = async () => {
       setIsLoading(true);
@@ -171,6 +190,7 @@ export const AuthProvider = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Proactive token refresh before expiry
   useEffect(() => {
     if (!accessToken || !isAuthenticated) return;
 

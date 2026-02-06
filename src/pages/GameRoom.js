@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { List, ListItemButton, ListItemText, Modal, Box, styled } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
@@ -9,8 +9,8 @@ import { useNavigate } from "react-router-dom";
 import { PageLayout } from "../components/templates";
 import { Button, TextField } from "../components/atoms";
 import { EmptyState } from "../components/molecules";
-import { useApi } from "../hooks";
 import { COLORS, SPACING, SHADOWS } from "../theme";
+import roomService from "@services/roomService";
 
 /**
  * Styled Components
@@ -66,13 +66,25 @@ function GameRoom() {
   const [openModal, setOpenModal] = useState(false);
   const [roomName, setRoomName] = useState("");
   const [createLoading, setCreateLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   // Fetch rooms on mount
-  const { loading, error, refetch } = useApi(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
-    immediate: true,
-    onSuccess: (data) => setRooms(data || []),
-  });
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        setLoading(true);
+        const data = await roomService.getRooms();
+        setRooms(data || []);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchRooms();
+  }, []);
 
   // Modal handlers
   const handleOpenModal = useCallback(() => setOpenModal(true), []);
@@ -88,24 +100,10 @@ function GameRoom() {
       setCreateLoading(true);
 
       try {
-        const formBody = new FormData();
         const sanitizedName = validator.escape(roomName);
         const cleanedName = sanitizedName.replace(/\s+/g, "").replace(/[^a-zA-Z0-9]/g, "");
-        formBody.append("name", cleanedName);
 
-        const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-          method: "POST",
-          body: formBody,
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await roomService.createRoom(cleanedName);
         setRooms((prev) => [...prev, data]);
         handleCloseModal();
       } catch (err) {
@@ -120,21 +118,7 @@ function GameRoom() {
   // Delete room
   const handleDeleteRoom = useCallback(async (roomId) => {
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/delete/${roomId}`,
-        {
-          method: "POST",
-          body: JSON.stringify({ _method: "DELETE" }),
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      await roomService.deleteRoom(roomId);
       setRooms((prev) => prev.filter((room) => room.id !== roomId));
     } catch (err) {
       console.error("Failed to delete room:", err);

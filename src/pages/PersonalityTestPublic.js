@@ -37,7 +37,9 @@ const ANSWER_LABELS = [
   { value: 5, label: "Strongly Agree" },
 ];
 
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import { API_BASE_URL } from "@config/env";
+
+const BASE_URL = API_BASE_URL;
 
 function PersonalityTestPublic() {
   const { roomId } = useParams();

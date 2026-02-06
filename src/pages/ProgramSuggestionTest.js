@@ -28,7 +28,6 @@ import riasecQuestions from "./RiasecTest/riasecQuestions.json";
 import {
   saveParticipantSession,
   getParticipantSession,
-  fetchWithParticipantAuth,
   clearParticipantSession,
   SESSION_TYPES,
 } from "../services/participantSessionService";
@@ -36,6 +35,7 @@ import { fetchUniversityMapping, fetchScoreRankingDistribution } from "../servic
 import { fetchEnums } from "../services/enumService";
 import { markTestCompleted } from "@components/atoms/TestPageGuard";
 import { TEST_TYPES } from "@config/permissions";
+import programSuggestionService from "@services/programSuggestionService";
 
 const steps = [
   "Kişisel Bilgiler",
@@ -193,89 +193,76 @@ function ProgramSuggestionTest() {
 
     const fetchExistingStudent = async (existingStudentId, hasValidToken) => {
       try {
-        // Use authenticated fetch if we have a token
-        const fetchFn = hasValidToken ? (url) => fetchWithParticipantAuth(sessionType, url) : fetch;
+        const data = await programSuggestionService.getStudent(existingStudentId);
 
-        const response = await fetchFn(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${existingStudentId}`
-        );
-
-        if (response.ok) {
-          const data = await response.json();
-
-          // Check if test is already completed
-          if (data.status === "completed") {
-            // Set flag to prevent creating new student
-            isNavigatingRef.current = true;
-            // Clear session so next student can start fresh
-            clearParticipantSession(sessionType);
-            // Navigate to results
-            navigate(`/program-test-result/${existingStudentId}`);
-            return;
-          }
-
-          setStudentId(existingStudentId);
-
-          // Restore form data from existing student
-          setFormData((prev) => ({
-            ...prev,
-            name: data.name || "",
-            birthYear: data.birth_year || "",
-            gender: data.gender || "",
-            classYear: data.class_year || "",
-            willTakeExam: data.will_take_exam ?? true,
-            averageGrade: data.average_grade || "",
-            area: data.area || "",
-            wantsForeignLanguage: data.wants_foreign_language || false,
-            expectedScoreRange: [data.expected_score_min || 200, data.expected_score_max || 400],
-            expectedDistribution: data.expected_score_distribution || "medium",
-            alternativeArea: data.alternative_area || "",
-            alternativeScoreRange: [
-              data.alternative_score_min || 200,
-              data.alternative_score_max || 400,
-            ],
-            alternativeDistribution: data.alternative_score_distribution || "medium",
-            preferredLanguage: data.preferred_language || "",
-            desiredCities: data.desired_cities || [],
-          }));
-
-          // Store university names to be resolved once universities are loaded
-          if (data.desired_universities && data.desired_universities.length > 0) {
-            setPendingUniversityNames(data.desired_universities);
-          }
-
-          // Restore RIASEC answers if any
-          if (data.riasec_answers) {
-            setRiasecAnswers(data.riasec_answers);
-            // Find where they left off
-            const answeredCount = Object.keys(data.riasec_answers).length;
-            if (answeredCount > 0 && answeredCount < riasecQuestionsList.length) {
-              setCurrentQuestionIndex(answeredCount);
-            }
-          }
-
-          // Determine which step to resume from based on status
-          const statusToStep = {
-            started: 0,
-            step1_completed: 1,
-            step2_completed: 2,
-            step3_completed: 3,
-            step4_completed: 4,
-            riasec_started: 4,
-          };
-
-          const resumeStep = statusToStep[data.status] ?? 0;
-          setActiveStep(resumeStep);
-        } else if (response.status === 404 || response.status === 401) {
-          // Student not found or session invalid, clear and create new
+        // Check if test is already completed
+        if (data.status === "completed") {
+          // Set flag to prevent creating new student
+          isNavigatingRef.current = true;
+          // Clear session so next student can start fresh
           clearParticipantSession(sessionType);
-          createNewStudent();
-        } else {
-          setError("Test bilgileri yüklenemedi. Lütfen sayfayı yenileyin.");
+          // Navigate to results
+          navigate(`/program-test-result/${existingStudentId}`);
+          return;
         }
+
+        setStudentId(existingStudentId);
+
+        // Restore form data from existing student
+        setFormData((prev) => ({
+          ...prev,
+          name: data.name || "",
+          birthYear: data.birth_year || "",
+          gender: data.gender || "",
+          classYear: data.class_year || "",
+          willTakeExam: data.will_take_exam ?? true,
+          averageGrade: data.average_grade || "",
+          area: data.area || "",
+          wantsForeignLanguage: data.wants_foreign_language || false,
+          expectedScoreRange: [data.expected_score_min || 200, data.expected_score_max || 400],
+          expectedDistribution: data.expected_score_distribution || "medium",
+          alternativeArea: data.alternative_area || "",
+          alternativeScoreRange: [
+            data.alternative_score_min || 200,
+            data.alternative_score_max || 400,
+          ],
+          alternativeDistribution: data.alternative_score_distribution || "medium",
+          preferredLanguage: data.preferred_language || "",
+          desiredCities: data.desired_cities || [],
+        }));
+
+        // Store university names to be resolved once universities are loaded
+        if (data.desired_universities && data.desired_universities.length > 0) {
+          setPendingUniversityNames(data.desired_universities);
+        }
+
+        // Restore RIASEC answers if any
+        if (data.riasec_answers) {
+          setRiasecAnswers(data.riasec_answers);
+          // Find where they left off
+          const answeredCount = Object.keys(data.riasec_answers).length;
+          if (answeredCount > 0 && answeredCount < riasecQuestionsList.length) {
+            setCurrentQuestionIndex(answeredCount);
+          }
+        }
+
+        // Determine which step to resume from based on status
+        const statusToStep = {
+          started: 0,
+          step1_completed: 1,
+          step2_completed: 2,
+          step3_completed: 3,
+          step4_completed: 4,
+          riasec_started: 4,
+        };
+
+        const resumeStep = statusToStep[data.status] ?? 0;
+        setActiveStep(resumeStep);
       } catch (error) {
         console.error("Error fetching student:", error);
-        setError("Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.");
+        // Student not found or session invalid, clear and create new
+        clearParticipantSession(sessionType);
+        createNewStudent();
       }
     };
 
@@ -284,34 +271,20 @@ function ProgramSuggestionTest() {
       if (isNavigatingRef.current) return;
 
       try {
-        const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/`,
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ high_school_room_id: parseInt(roomId) }),
-          }
-        );
+        const data = await programSuggestionService.createStudent(roomId);
 
-        if (response.ok) {
-          const data = await response.json();
-          // New API returns session_token and student object
-          if (data.session_token && data.student) {
-            setStudentId(data.student.id);
-            // Save session with token for future requests
-            saveParticipantSession(sessionType, data);
-          } else {
-            // Fallback for old API format
-            setStudentId(data.id);
-          }
+        // New API returns session_token and student object
+        if (data.session_token && data.student) {
+          setStudentId(data.student.id);
+          // Save session with token for future requests
+          saveParticipantSession(sessionType, data);
         } else {
-          setError("Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.");
+          // Fallback for old API format
+          setStudentId(data.id);
         }
       } catch (error) {
         console.error("Error creating student:", error);
-        setError("Bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.");
+        setError("Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.");
       }
     };
 
@@ -386,58 +359,37 @@ function ProgramSuggestionTest() {
     try {
       if (activeStep === 0) {
         // Save Step 1
-        await fetchWithParticipantAuth(
-          sessionType,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step1`,
-          {
-            method: "POST",
-            body: {
-              name: formData.name,
-              birth_year: parseInt(formData.birthYear),
-              gender: formData.gender,
-            },
-          }
-        );
+        await programSuggestionService.updateStep1(studentId, {
+          name: formData.name,
+          birth_year: parseInt(formData.birthYear),
+          gender: formData.gender,
+        });
       } else if (activeStep === 1) {
         // Save Step 2
-        await fetchWithParticipantAuth(
-          sessionType,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step2`,
-          {
-            method: "POST",
-            body: {
-              class_year: formData.classYear,
-              will_take_exam: formData.willTakeExam,
-              average_grade: formData.averageGrade ? parseFloat(formData.averageGrade) : null,
-              area: formData.area,
-              wants_foreign_language: formData.wantsForeignLanguage,
-            },
-          }
-        );
+        await programSuggestionService.updateStep2(studentId, {
+          class_year: formData.classYear,
+          will_take_exam: formData.willTakeExam,
+          average_grade: formData.averageGrade ? parseFloat(formData.averageGrade) : null,
+          area: formData.area,
+          wants_foreign_language: formData.wantsForeignLanguage,
+        });
       } else if (activeStep === 2) {
         // Save Step 3
-        await fetchWithParticipantAuth(
-          sessionType,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step3`,
-          {
-            method: "POST",
-            body: {
-              expected_score_min: formData.expectedScoreRange[0],
-              expected_score_max: formData.expectedScoreRange[1],
-              expected_score_distribution: formData.expectedDistribution,
-              alternative_area: formData.alternativeArea || null,
-              alternative_score_min: formData.alternativeArea
-                ? formData.alternativeScoreRange[0]
-                : null,
-              alternative_score_max: formData.alternativeArea
-                ? formData.alternativeScoreRange[1]
-                : null,
-              alternative_score_distribution: formData.alternativeArea
-                ? formData.alternativeDistribution
-                : null,
-            },
-          }
-        );
+        await programSuggestionService.updateStep3(studentId, {
+          expected_score_min: formData.expectedScoreRange[0],
+          expected_score_max: formData.expectedScoreRange[1],
+          expected_score_distribution: formData.expectedDistribution,
+          alternative_area: formData.alternativeArea || null,
+          alternative_score_min: formData.alternativeArea
+            ? formData.alternativeScoreRange[0]
+            : null,
+          alternative_score_max: formData.alternativeArea
+            ? formData.alternativeScoreRange[1]
+            : null,
+          alternative_score_distribution: formData.alternativeArea
+            ? formData.alternativeDistribution
+            : null,
+        });
       } else if (activeStep === 3) {
         // Save Step 4
         // Add Haliç Üniversitesi as default (always included but not shown)
@@ -448,18 +400,11 @@ function ProgramSuggestionTest() {
         // Remove duplicates
         const uniqueUniversities = [...new Set(universitiesWithDefault)];
 
-        await fetchWithParticipantAuth(
-          sessionType,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/step4`,
-          {
-            method: "POST",
-            body: {
-              preferred_language: formData.preferredLanguage,
-              desired_universities: uniqueUniversities,
-              desired_cities: formData.desiredCities,
-            },
-          }
-        );
+        await programSuggestionService.updateStep4(studentId, {
+          preferred_language: formData.preferredLanguage,
+          desired_universities: uniqueUniversities,
+          desired_cities: formData.desiredCities,
+        });
       }
 
       setActiveStep((prevStep) => prevStep + 1);
@@ -487,27 +432,16 @@ function ProgramSuggestionTest() {
       // All questions answered - submit and get results
       setLoading(true);
       try {
-        const response = await fetchWithParticipantAuth(
-          sessionType,
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/riasec`,
-          {
-            method: "POST",
-            body: { riasec_answers: newAnswers },
-          }
-        );
+        await programSuggestionService.submitRiasec(studentId, { riasec_answers: newAnswers });
 
-        if (response.ok) {
-          // Mark test as completed (prevents retaking on same device)
-          await markTestCompleted(TEST_TYPES.PROGRAM_SUGGESTION, roomId);
-          // Set flag to prevent creating new student during navigation
-          isNavigatingRef.current = true;
-          // Clear session so next student can start fresh
-          clearParticipantSession(sessionType);
-          // Navigate to results
-          navigate(`/program-test-result/${studentId}`);
-        } else {
-          setError("Sonuçlar hesaplanırken bir hata oluştu.");
-        }
+        // Mark test as completed (prevents retaking on same device)
+        await markTestCompleted(TEST_TYPES.PROGRAM_SUGGESTION, roomId);
+        // Set flag to prevent creating new student during navigation
+        isNavigatingRef.current = true;
+        // Clear session so next student can start fresh
+        clearParticipantSession(sessionType);
+        // Navigate to results
+        navigate(`/program-test-result/${studentId}`);
       } catch (error) {
         console.error("Error submitting RIASEC:", error);
         setError("Sonuçlar gönderilirken bir hata oluştu.");

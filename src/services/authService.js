@@ -2,9 +2,7 @@
  * Auth Utilities
  *
  * Simple utility functions for authentication-related tasks.
- * For authentication state and token management, use:
- * - React components: useAuth() hook from AuthContext
- * - Non-React code: tokenStore from utils/tokenStore
+ * For authentication state and token management, use useAuth() from AuthContext.
  */
 
 const STORAGE_KEYS = {
@@ -62,6 +60,17 @@ export const clearUniversityKey = () => {
 export const clearLocalAuthData = () => {
   localStorage.removeItem(STORAGE_KEYS.USERNAME);
   localStorage.removeItem(STORAGE_KEYS.UNIVERSITY_KEY);
+};
+
+/**
+ * Check if user is authenticated (for non-React contexts)
+ * Uses the centralized API client
+ */
+export const checkAuth = async () => {
+  // Lazy import to avoid circular dependency
+  const api = (await import("./api")).default;
+  const { ok } = await api.auth.get("/auth");
+  return ok;
 };
 
 export { STORAGE_KEYS };

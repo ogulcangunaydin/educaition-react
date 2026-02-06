@@ -26,12 +26,9 @@ import {
 import Header from "../components/organisms/Header";
 import { CenteredContainer } from "../styles/CommonStyles";
 import { useNavigate, useParams } from "react-router-dom";
-import {
-  saveParticipantSession,
-  fetchWithParticipantAuth,
-  SESSION_TYPES,
-} from "../services/participantSessionService";
+import { saveParticipantSession, SESSION_TYPES } from "../services/participantSessionService";
 import { fetchEnums } from "../services/enumService";
+import { createParticipant, updateParticipantAnswers } from "@services/dissonanceTestService";
 
 const DissonanceTest = () => {
   const TAXI_COMFORT_QUESTION =
@@ -155,23 +152,7 @@ const DissonanceTest = () => {
         rising_sign: risingSign,
       };
 
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(participantData),
-          credentials: "include", // Important for receiving HttpOnly cookie
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
+      const data = await createParticipant(participantData);
 
       // Save participant session metadata
       saveParticipantSession(SESSION_TYPES.DISSONANCE_TEST, {
@@ -191,26 +172,12 @@ const DissonanceTest = () => {
 
   const handleSecondSubmit = async () => {
     try {
-      const response = await fetchWithParticipantAuth(
-        SESSION_TYPES.DISSONANCE_TEST,
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants/${participant.id}`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            comfort_question_second_answer: parseInt(comfortQuestionSecondAnswer, 10),
-            fare_question_second_answer: parseInt(fareQuestionSecondAnswer, 10),
-            comfort_question_displayed_average: parseFloat(comfortQuestionAverage, 10),
-            fare_question_displayed_average: parseFloat(fareQuestionAverage, 10),
-          }),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+      await updateParticipantAnswers(participant.id, {
+        comfort_question_second_answer: parseInt(comfortQuestionSecondAnswer, 10),
+        fare_question_second_answer: parseInt(fareQuestionSecondAnswer, 10),
+        comfort_question_displayed_average: parseFloat(comfortQuestionAverage, 10),
+        fare_question_displayed_average: parseFloat(fareQuestionAverage, 10),
+      });
 
       handleNext();
     } catch (error) {
