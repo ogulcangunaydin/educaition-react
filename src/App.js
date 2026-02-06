@@ -8,8 +8,13 @@ import Dashboard from "@pages/Dashboard";
 import UserManagement from "@pages/UserManagement";
 import Unauthorized from "@pages/Unauthorized";
 
-import { GameRoom, PlayGround, LeaderBoard, TacticPreparation } from "@pages/prisoners-dilemma";
-import PersonalityTest from "@pages/PersonalityTest/PersonalityTest";
+import {
+  GameRoom,
+  PlayGround,
+  LeaderBoard,
+  TacticPreparation,
+  PersonalityTest,
+} from "@pages/prisoners-dilemma";
 
 import DissonanceTestParticipantList from "@pages/dissonanceTestParticipantList";
 import DissonanceTest from "@pages/dissonanceTest";
@@ -22,15 +27,17 @@ import ProgramRivalAnalysis from "@pages/ProgramRivalAnalysis";
 
 import HighSchoolRooms from "@pages/HighSchoolRooms";
 import HighSchoolRoomDetail from "@pages/HighSchoolRoomDetail";
-import PersonalityTestRooms from "@pages/PersonalityTestRooms";
-import PersonalityTestRoomDetail from "@pages/PersonalityTestRoomDetail";
+import {
+  PersonalityTestRooms,
+  PersonalityTestRoomDetail,
+  PersonalityTestPublic,
+} from "@pages/personality-test";
 import TestManagement from "@pages/TestManagement";
 import ProgramSuggestionRooms from "@pages/ProgramSuggestionRooms";
 import PrisonersDilemmaRooms from "@pages/PrisonersDilemmaRooms";
 
 import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
 import ProgramTestResult from "@pages/ProgramTestResult";
-import PersonalityTestPublic from "@pages/PersonalityTestPublic";
 import DissonanceTestPublic from "@pages/DissonanceTestPublic";
 import PrisonersDilemmaPublic from "@pages/PrisonersDilemmaPublic";
 

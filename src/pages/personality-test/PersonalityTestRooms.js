@@ -8,7 +8,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { PageLayout } from "@components/templates";
 import { TestRoomList } from "@components/organisms";
-import { TestType } from "../services/testRoomService";
+import { TestType } from "../../services/testRoomService";
 
 function PersonalityTestRooms() {
   const navigate = useNavigate();

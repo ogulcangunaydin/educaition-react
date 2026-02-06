@@ -30,7 +30,7 @@ import { PageLayout } from "@components/templates";
 import { FormField, StepIndicator } from "@components/molecules";
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { PRISONERS_DILEMMA, ANSWER_SCALES } from "@data/testQuestions";
-import bigFiveTestENQuestions from "./PersonalityTest/BigFiveTestEN.txt";
+import bigFiveTestENQuestions from "./personality-test/BigFiveTestEN.txt";
 import { API_BASE_URL } from "@config/env";
 
 const BASE_URL = API_BASE_URL;

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import bigFiveTestTRQuestions from "./BigFiveTestTR.txt";
-import bigFiveTestENQuestions from "./BigFiveTestEN.txt";
+import bigFiveTestTRQuestions from "../personality-test/BigFiveTestTR.txt";
+import bigFiveTestENQuestions from "../personality-test/BigFiveTestEN.txt";
 import Header from "@organisms/Header";
 import { CenteredContainer } from "../../styles/CommonStyles";
 import {

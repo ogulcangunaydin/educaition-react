@@ -61,7 +61,7 @@ import {
   generateRoomUrl,
   TEST_TYPE_CONFIG,
   TestType,
-} from "../services/testRoomService";
+} from "../../services/testRoomService";
 
 // Register Chart.js components for Radar chart
 ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, ChartTooltip, Legend);

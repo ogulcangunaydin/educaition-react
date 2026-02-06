@@ -27,8 +27,8 @@ import { Button } from "@components/atoms";
 import { PageLayout } from "@components/templates";
 import { useAuth } from "@contexts/AuthContext";
 import { getDeviceFingerprint } from "@utils/deviceFingerprint";
-import { getTestRoomPublic, TEST_TYPE_CONFIG, TestType } from "../services/testRoomService";
-import bigFiveTestENQuestions from "./PersonalityTest/BigFiveTestEN.txt";
+import { getTestRoomPublic, TEST_TYPE_CONFIG, TestType } from "../../services/testRoomService";
+import bigFiveTestENQuestions from "./BigFiveTestEN.txt";
 
 const ANSWER_LABELS = [
   { value: 1, label: "Strongly Disagree" },
