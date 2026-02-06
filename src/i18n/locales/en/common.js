@@ -46,6 +46,8 @@ const common = {
     errorTitle: "Error",
     rowsPerPage: "Rows per page:",
     downloadCSV: "Download CSV",
+    downloadPDF: "Download PDF",
+    exportingPDF: "Exporting PDF...",
     copied: "Copied!",
     copyURL: "Copy URL",
     showQRCode: "Show QR Code",

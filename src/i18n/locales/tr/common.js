@@ -46,6 +46,8 @@ const common = {
     errorTitle: "Hata",
     rowsPerPage: "Sayfa başına:",
     downloadCSV: "CSV İndir",
+    downloadPDF: "PDF İndir",
+    exportingPDF: "PDF hazırlanıyor...",
     copied: "Kopyalandı!",
     copyURL: "URL Kopyala",
     showQRCode: "QR Kod Göster",

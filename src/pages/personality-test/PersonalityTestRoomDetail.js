@@ -194,6 +194,7 @@ function PersonalityTestRoomDetail() {
         onClose={() => setSelectedParticipant(null)}
         title={t("tests.personality.roomDetail.resultsTitle")}
         participant={selectedParticipant}
+        exportable
       >
         {selectedParticipant && (
           <>

@@ -4,6 +4,8 @@
  * Reusable radar/spider chart for displaying multi-dimensional data.
  * Built on Chart.js Radar chart with responsive defaults.
  *
+ * Shows percentage values next to each data point via chartjs-plugin-datalabels.
+ *
  * Works for personality tests (Big Five), RIASEC, or any multi-axis comparison.
  *
  * @example
@@ -27,9 +29,18 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import ChartDataLabels from "chartjs-plugin-datalabels";
 
 // Register Chart.js components (safe to call multiple times)
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, Tooltip, Legend);
+ChartJS.register(
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip,
+  Legend,
+  ChartDataLabels
+);
 
 /**
  * Converts a hex color to rgba
@@ -52,6 +63,7 @@ function RadarChart({
   stepSize = 20,
   maxWidth = 500,
   showLegend,
+  showValues = true,
   sx,
 }) {
   const theme = useTheme();
@@ -86,6 +98,20 @@ function RadarChart({
         position: "top",
       },
       tooltip: { enabled: true },
+      datalabels: showValues
+        ? {
+            display: true,
+            color: "#333",
+            font: {
+              size: isSmallScreen ? 10 : 12,
+              weight: "bold",
+            },
+            formatter: (value) => (value != null ? `%${Math.round(value)}` : ""),
+            anchor: "end",
+            align: "end",
+            offset: 4,
+          }
+        : { display: false },
     },
     maintainAspectRatio: true,
   };
@@ -127,6 +153,8 @@ RadarChart.propTypes = {
   maxWidth: PropTypes.number,
   /** Force legend visibility (auto-shows when >1 dataset) */
   showLegend: PropTypes.bool,
+  /** Show data values next to each point (default: true) */
+  showValues: PropTypes.bool,
   /** Additional sx styles for the wrapper Box */
   sx: PropTypes.object,
 };
