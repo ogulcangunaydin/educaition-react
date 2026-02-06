@@ -4,7 +4,7 @@
  * Shows detailed view of a personality test room including:
  * - Room information and QR code
  * - Participant list with completion status
- * - Statistics and trait summaries
+ * - Result detail dialog with radar chart and GPT recommendations
  */
 
 import React, { useState, useEffect, useCallback } from "react";
@@ -16,8 +16,6 @@ import {
   CardContent,
   CircularProgress,
   Alert,
-  Tabs,
-  Tab,
   Chip,
   IconButton,
   Tooltip,
@@ -28,16 +26,32 @@ import {
   TableHead,
   TableRow,
   Paper,
-  LinearProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import {
   QrCode2 as QRIcon,
   ContentCopy as CopyIcon,
   Refresh as RefreshIcon,
-  Person as PersonIcon,
-  Assessment as StatsIcon,
   Download as DownloadIcon,
+  Visibility as ViewIcon,
+  Close as CloseIcon,
 } from "@mui/icons-material";
+import { Radar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  RadialLinearScale,
+  PointElement,
+  LineElement,
+  Filler,
+  Tooltip as ChartTooltip,
+  Legend,
+} from "chart.js";
+import ReactMarkdown from "react-markdown";
 import { PageLayout } from "@components/templates";
 import { Typography, Button } from "@components/atoms";
 import { QRCodeOverlay, EmptyState } from "@components/molecules";
@@ -49,49 +63,24 @@ import {
   TestType,
 } from "../services/testRoomService";
 
-// Tab panels
-function TabPanel({ children, value, index, ...other }) {
-  return (
-    <div role="tabpanel" hidden={value !== index} {...other}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-// Personality trait bar component
-function TraitBar({ label, value, color = "primary" }) {
-  const percentage = value ? Math.round(value * 100) : 0;
-
-  return (
-    <Box sx={{ mb: 2 }}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-        <Typography variant="body2">{label}</Typography>
-        <Typography variant="body2" color="text.secondary">
-          {percentage}%
-        </Typography>
-      </Box>
-      <LinearProgress
-        variant="determinate"
-        value={percentage}
-        color={color}
-        sx={{ height: 8, borderRadius: 4 }}
-      />
-    </Box>
-  );
-}
+// Register Chart.js components for Radar chart
+ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, ChartTooltip, Legend);
 
 function PersonalityTestRoomDetail() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
-  const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [tabValue, setTabValue] = useState(0);
   const [showQR, setShowQR] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+
+  // Result detail dialog
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
 
   const config = TEST_TYPE_CONFIG[TestType.PERSONALITY_TEST];
 
@@ -100,24 +89,14 @@ function PersonalityTestRoomDetail() {
     setError(null);
 
     try {
-      // Fetch room info
       const roomData = await getTestRoom(roomId);
       setRoom(roomData);
 
-      // Fetch participants
       try {
         const participantsData = await personalityTestService.getParticipants(roomId);
         setParticipants(participantsData.items || []);
       } catch (err) {
         console.error("Error fetching participants:", err);
-      }
-
-      // Fetch statistics
-      try {
-        const statsData = await personalityTestService.getRoomStatistics(roomId);
-        setStatistics(statsData);
-      } catch (err) {
-        console.error("Error fetching statistics:", err);
       }
     } catch (err) {
       console.error("Error fetching room data:", err);
@@ -159,12 +138,12 @@ function PersonalityTestRoomDetail() {
 
     const rows = participants.map((p) => [
       p.email || "",
-      p.is_completed ? "Evet" : "Hayır",
-      p.extroversion ? (p.extroversion * 100).toFixed(1) + "%" : "",
-      p.agreeableness ? (p.agreeableness * 100).toFixed(1) + "%" : "",
-      p.conscientiousness ? (p.conscientiousness * 100).toFixed(1) + "%" : "",
-      p.negative_emotionality ? (p.negative_emotionality * 100).toFixed(1) + "%" : "",
-      p.open_mindedness ? (p.open_mindedness * 100).toFixed(1) + "%" : "",
+      p.has_completed ? "Evet" : "Hayır",
+      p.extroversion != null ? p.extroversion.toFixed(1) + "%" : "",
+      p.agreeableness != null ? p.agreeableness.toFixed(1) + "%" : "",
+      p.conscientiousness != null ? p.conscientiousness.toFixed(1) + "%" : "",
+      p.negative_emotionality != null ? p.negative_emotionality.toFixed(1) + "%" : "",
+      p.open_mindedness != null ? p.open_mindedness.toFixed(1) + "%" : "",
       p.job_recommendation || "",
       p.created_at ? new Date(p.created_at).toLocaleDateString("tr-TR") : "",
     ]);
@@ -200,7 +179,50 @@ function PersonalityTestRoomDetail() {
   }
 
   const roomUrl = generateRoomUrl(roomId, TestType.PERSONALITY_TEST);
-  const completedCount = participants.filter((p) => p.is_completed).length;
+  const completedCount = participants.filter((p) => p.has_completed).length;
+
+  // Radar chart config for the selected participant
+  const getRadarConfig = (participant) => {
+    const data = {
+      labels: ["Dışadönüklük", "Uyumluluk", "Sorumluluk", "Olumsuz Duygusallık", "Açık Fikirlilik"],
+      datasets: [
+        {
+          label: "Kişilik Özellikleri",
+          data: [
+            participant.extroversion ?? 0,
+            participant.agreeableness ?? 0,
+            participant.conscientiousness ?? 0,
+            participant.negative_emotionality ?? 0,
+            participant.open_mindedness ?? 0,
+          ],
+          backgroundColor: "rgba(34, 202, 236, 0.2)",
+          borderColor: "rgba(34, 202, 236, 1)",
+          borderWidth: 2,
+        },
+      ],
+    };
+
+    const options = {
+      scales: {
+        r: {
+          beginAtZero: true,
+          max: 100,
+          ticks: { stepSize: 20, backdropColor: "transparent" },
+          grid: { color: "rgba(0, 0, 0, 0.1)" },
+          angleLines: { color: "rgba(0, 0, 0, 0.1)" },
+          pointLabels: { font: { size: isSmallScreen ? 10 : 14 } },
+        },
+      },
+      layout: { padding: { top: 10, bottom: 10 } },
+      plugins: {
+        legend: { display: true, position: "top" },
+        tooltip: { enabled: true },
+      },
+      maintainAspectRatio: true,
+    };
+
+    return { data, options };
+  };
 
   return (
     <PageLayout
@@ -310,170 +332,175 @@ function PersonalityTestRoomDetail() {
         </CardContent>
       </Card>
 
-      {/* Tabs */}
-      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs value={tabValue} onChange={(_, v) => setTabValue(v)}>
-          <Tab icon={<PersonIcon />} iconPosition="start" label="Katılımcılar" />
-          <Tab icon={<StatsIcon />} iconPosition="start" label="İstatistikler" />
-        </Tabs>
-      </Box>
-
-      {/* Participants Tab */}
-      <TabPanel value={tabValue} index={0}>
-        {participants.length === 0 ? (
-          <EmptyState
-            title="Henüz katılımcı yok"
-            description="QR kodu paylaşarak öğrencilerinizin teste katılmasını sağlayın."
-            action={
-              <Button variant="contained" startIcon={<QRIcon />} onClick={() => setShowQR(true)}>
-                QR Kodu Göster
-              </Button>
-            }
-          />
-        ) : (
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>Email</TableCell>
-                  <TableCell align="center">Durum</TableCell>
-                  <TableCell align="center">Dışa Dönüklük</TableCell>
-                  <TableCell align="center">Uyumluluk</TableCell>
-                  <TableCell align="center">Sorumluluk</TableCell>
-                  <TableCell align="center">Duygusal Denge</TableCell>
-                  <TableCell align="center">Açıklık</TableCell>
-                  <TableCell>Tarih</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {participants.map((participant) => (
-                  <TableRow key={participant.id}>
-                    <TableCell>{participant.email || "-"}</TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={participant.is_completed ? "Tamamlandı" : "Devam Ediyor"}
-                        color={participant.is_completed ? "success" : "warning"}
-                        size="small"
-                      />
-                    </TableCell>
-                    <TableCell align="center">
-                      {participant.extroversion
-                        ? (participant.extroversion * 100).toFixed(0) + "%"
-                        : "-"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {participant.agreeableness
-                        ? (participant.agreeableness * 100).toFixed(0) + "%"
-                        : "-"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {participant.conscientiousness
-                        ? (participant.conscientiousness * 100).toFixed(0) + "%"
-                        : "-"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {participant.negative_emotionality
-                        ? (participant.negative_emotionality * 100).toFixed(0) + "%"
-                        : "-"}
-                    </TableCell>
-                    <TableCell align="center">
-                      {participant.open_mindedness
-                        ? (participant.open_mindedness * 100).toFixed(0) + "%"
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {participant.created_at
-                        ? new Date(participant.created_at).toLocaleDateString("tr-TR")
-                        : "-"}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </TabPanel>
-
-      {/* Statistics Tab */}
-      <TabPanel value={tabValue} index={1}>
-        {statistics ? (
-          <Grid container spacing={3}>
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    Ortalama Kişilik Özellikleri
-                  </Typography>
-                  <TraitBar
-                    label="Dışa Dönüklük (Extroversion)"
-                    value={statistics.averages?.extroversion}
-                    color="primary"
-                  />
-                  <TraitBar
-                    label="Uyumluluk (Agreeableness)"
-                    value={statistics.averages?.agreeableness}
-                    color="success"
-                  />
-                  <TraitBar
-                    label="Sorumluluk (Conscientiousness)"
-                    value={statistics.averages?.conscientiousness}
-                    color="warning"
-                  />
-                  <TraitBar
-                    label="Duygusal Denge (Negative Emotionality)"
-                    value={statistics.averages?.negative_emotionality}
-                    color="error"
-                  />
-                  <TraitBar
-                    label="Deneyime Açıklık (Open Mindedness)"
-                    value={statistics.averages?.open_mindedness}
-                    color="info"
-                  />
-                </CardContent>
-              </Card>
-            </Grid>
-            <Grid item xs={12} md={6}>
-              <Card>
-                <CardContent>
-                  <Typography variant="h6" gutterBottom>
-                    İş Önerileri Dağılımı
-                  </Typography>
-                  {statistics.job_recommendations &&
-                  Object.keys(statistics.job_recommendations).length > 0 ? (
-                    <Box>
-                      {Object.entries(statistics.job_recommendations).map(([job, count]) => (
-                        <Box
-                          key={job}
-                          sx={{
-                            display: "flex",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            py: 1,
-                            borderBottom: "1px solid",
-                            borderColor: "divider",
-                          }}
+      {/* Participants Table */}
+      {participants.length === 0 ? (
+        <EmptyState
+          title="Henüz katılımcı yok"
+          description="QR kodu paylaşarak öğrencilerinizin teste katılmasını sağlayın."
+          action={
+            <Button variant="contained" startIcon={<QRIcon />} onClick={() => setShowQR(true)}>
+              QR Kodu Göster
+            </Button>
+          }
+        />
+      ) : (
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Email</TableCell>
+                <TableCell align="center">Durum</TableCell>
+                <TableCell align="center">Dışa Dönüklük</TableCell>
+                <TableCell align="center">Uyumluluk</TableCell>
+                <TableCell align="center">Sorumluluk</TableCell>
+                <TableCell align="center">Duygusal Denge</TableCell>
+                <TableCell align="center">Açıklık</TableCell>
+                <TableCell>Tarih</TableCell>
+                <TableCell align="center">Sonuç</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {participants.map((participant) => (
+                <TableRow key={participant.id}>
+                  <TableCell>{participant.email || "-"}</TableCell>
+                  <TableCell align="center">
+                    <Chip
+                      label={participant.has_completed ? "Tamamlandı" : "Devam Ediyor"}
+                      color={participant.has_completed ? "success" : "warning"}
+                      size="small"
+                    />
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.extroversion != null
+                      ? Math.round(participant.extroversion) + "%"
+                      : "-"}
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.agreeableness != null
+                      ? Math.round(participant.agreeableness) + "%"
+                      : "-"}
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.conscientiousness != null
+                      ? Math.round(participant.conscientiousness) + "%"
+                      : "-"}
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.negative_emotionality != null
+                      ? Math.round(participant.negative_emotionality) + "%"
+                      : "-"}
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.open_mindedness != null
+                      ? Math.round(participant.open_mindedness) + "%"
+                      : "-"}
+                  </TableCell>
+                  <TableCell>
+                    {participant.created_at
+                      ? new Date(participant.created_at).toLocaleDateString("tr-TR")
+                      : "-"}
+                  </TableCell>
+                  <TableCell align="center">
+                    {participant.has_completed ? (
+                      <Tooltip title="Sonuçları Görüntüle">
+                        <IconButton
+                          color="primary"
+                          size="small"
+                          onClick={() => setSelectedParticipant(participant)}
                         >
-                          <Typography variant="body2">{job}</Typography>
-                          <Chip label={count} size="small" variant="outlined" />
-                        </Box>
-                      ))}
-                    </Box>
-                  ) : (
-                    <Typography variant="body2" color="text.secondary">
-                      Henüz iş önerisi verisi yok.
-                    </Typography>
-                  )}
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        ) : (
-          <EmptyState
-            title="İstatistik verisi yok"
-            description="Katılımcılar testi tamamladıkça istatistikler burada görünecek."
-          />
+                          <ViewIcon />
+                        </IconButton>
+                      </Tooltip>
+                    ) : (
+                      "-"
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      )}
+
+      {/* Result Detail Dialog */}
+      <Dialog
+        open={!!selectedParticipant}
+        onClose={() => setSelectedParticipant(null)}
+        maxWidth="md"
+        fullWidth
+        fullScreen={isSmallScreen}
+      >
+        {selectedParticipant && (
+          <>
+            <DialogTitle
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                pb: 1,
+              }}
+            >
+              <Typography variant="h6">
+                Kişilik Testi Sonuçları
+                {selectedParticipant.email && (
+                  <Typography
+                    component="span"
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ ml: 1 }}
+                  >
+                    — {selectedParticipant.email}
+                  </Typography>
+                )}
+              </Typography>
+              <IconButton onClick={() => setSelectedParticipant(null)} size="small">
+                <CloseIcon />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent dividers>
+              {/* Radar Chart */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "center",
+                  mb: 3,
+                  maxWidth: 500,
+                  mx: "auto",
+                }}
+              >
+                <Radar {...getRadarConfig(selectedParticipant)} />
+              </Box>
+
+              {/* Job Recommendation */}
+              {selectedParticipant.job_recommendation && (
+                <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Meslek Tavsiyeleri
+                  </Typography>
+                  <Box sx={{ "& p": { mt: 0, mb: 1 }, "& ul": { pl: 2 } }}>
+                    <ReactMarkdown>{selectedParticipant.job_recommendation}</ReactMarkdown>
+                  </Box>
+                </Box>
+              )}
+
+              {/* Compatibility Analysis */}
+              {selectedParticipant.compatibility_analysis && (
+                <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
+                  <Typography variant="h6" gutterBottom>
+                    Burç Uyumluluk Analizi
+                  </Typography>
+                  <Box sx={{ "& p": { mt: 0, mb: 1 }, "& ul": { pl: 2 } }}>
+                    <ReactMarkdown>{selectedParticipant.compatibility_analysis}</ReactMarkdown>
+                  </Box>
+                </Box>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setSelectedParticipant(null)}>Kapat</Button>
+            </DialogActions>
+          </>
         )}
-      </TabPanel>
+      </Dialog>
 
       {/* QR Code Overlay */}
       {showQR && (
