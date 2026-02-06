@@ -30,7 +30,7 @@ import {
   findSimilarPrograms,
   prepareChartData,
 } from "../utils/dataFilters";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import roomService from "@services/roomService";
 
 const PageContainer = styled(Box)(({ logourl }) => ({
   position: "relative",
@@ -75,14 +75,10 @@ const UniversityComparison = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetchWithAuth(`${process.env.REACT_APP_BACKEND_BASE_URL}/rooms`, {
-          method: "GET",
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-      } catch (error) {}
+        await roomService.getRooms();
+      } catch (error) {
+        // Silently handle error - this is just a check
+      }
     };
 
     fetchRooms();

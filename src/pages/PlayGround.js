@@ -32,7 +32,8 @@ import { PageLayout } from "../components/templates";
 import { Button, TextField, Typography } from "../components/atoms";
 import { EmptyState } from "../components/molecules";
 import ParticipantDetailCard from "../components/organisms/ParticipantDetailCard";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import roomService from "@services/roomService";
+import playerService from "@services/playerService";
 import { COLORS, SPACING, SHADOWS } from "../theme";
 
 /**
@@ -189,13 +190,11 @@ const Playground = () => {
           setIsUserAuthenticated(true);
 
           // Fetch sessions
-          const sessionsResponse = await fetchWithAuth(
-            `${process.env.REACT_APP_BACKEND_BASE_URL}/rooms/${roomId}/sessions`
-          );
-
-          if (sessionsResponse.ok) {
-            const sessionsData = await sessionsResponse.json();
+          try {
+            const sessionsData = await roomService.getRoomSessions(roomId);
             setSessions(sessionsData);
+          } catch (err) {
+            console.error("Failed to fetch sessions:", err);
           }
         }
       } catch (error) {
@@ -222,13 +221,7 @@ const Playground = () => {
     const participantId = openDialogParticipantId;
 
     try {
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${participantId}`,
-        { method: "POST" }
-      );
-
-      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
+      await playerService.deletePlayer(participantId);
       setParticipants((prev) => prev.filter((p) => p.id !== participantId));
     } catch (error) {
       console.error("Failed to delete player:", error);
@@ -286,10 +279,7 @@ const Playground = () => {
     try {
       const notReadyPlayers = participants.filter((player) => !player.player_tactic);
       for (const player of notReadyPlayers) {
-        await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/players/delete/${player.id}`,
-          { method: "POST" }
-        );
+        await playerService.deletePlayer(player.id);
       }
       setShowErrorModal(false);
       handleSubmit();

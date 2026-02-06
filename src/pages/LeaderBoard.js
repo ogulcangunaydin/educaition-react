@@ -16,7 +16,8 @@ import {
   styled,
   Box,
 } from "@mui/material";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import sessionService from "@services/sessionService";
+import playerService from "@services/playerService";
 import ParticipantDetailCard from "../components/organisms/ParticipantDetailCard";
 
 // Components
@@ -27,7 +28,7 @@ import { COLORS, SPACING, SHADOWS } from "../theme";
 /**
  * Styled Components
  */
-const ContentContainer = styled(Container)(({ theme }) => ({
+const ContentContainer = styled(Container)(({ _theme }) => ({
   paddingTop: SPACING.xl,
   paddingBottom: SPACING.xl,
 }));
@@ -130,15 +131,8 @@ const Leaderboard = () => {
   const fetchSessionData = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/sessions/${sessionId}`
-      );
+      const data = await sessionService.getSession(sessionId);
 
-      if (!response.ok) {
-        throw new Error("Session data could not be fetched");
-      }
-
-      const data = await response.json();
       setSessionName(data.name);
       setSessionStatus(data.status);
 
@@ -159,15 +153,7 @@ const Leaderboard = () => {
         setScores(leaderboardArray);
         setMatrix(parsedResults.matrix);
 
-        const participantsResponse = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/players/${data.player_ids}`
-        );
-
-        if (!participantsResponse.ok) {
-          throw new Error("Failed to fetch participants");
-        }
-
-        const participantsData = await participantsResponse.json();
+        const participantsData = await playerService.getPlayersByIds(data.player_ids);
         setParticipants(participantsData);
       }
     } catch (err) {

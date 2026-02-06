@@ -41,15 +41,13 @@ import {
 import { PageLayout } from "@components/templates";
 import { Typography, Button } from "@components/atoms";
 import { QRCodeOverlay, EmptyState } from "@components/molecules";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import personalityTestService from "@services/personalityTestService";
 import {
   getTestRoom,
   generateRoomUrl,
   TEST_TYPE_CONFIG,
   TestType,
 } from "../services/testRoomService";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
 // Tab panels
 function TabPanel({ children, value, index, ...other }) {
@@ -107,21 +105,19 @@ function PersonalityTestRoomDetail() {
       setRoom(roomData);
 
       // Fetch participants
-      const participantsResponse = await fetchWithAuth(
-        `${BASE_URL}/personality-test/rooms/${roomId}/participants`
-      );
-      if (participantsResponse.ok) {
-        const participantsData = await participantsResponse.json();
+      try {
+        const participantsData = await personalityTestService.getParticipants(roomId);
         setParticipants(participantsData.items || []);
+      } catch (err) {
+        console.error("Error fetching participants:", err);
       }
 
       // Fetch statistics
-      const statsResponse = await fetchWithAuth(
-        `${BASE_URL}/personality-test/rooms/${roomId}/statistics`
-      );
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
+      try {
+        const statsData = await personalityTestService.getRoomStatistics(roomId);
         setStatistics(statsData);
+      } catch (err) {
+        console.error("Error fetching statistics:", err);
       }
     } catch (err) {
       console.error("Error fetching room data:", err);

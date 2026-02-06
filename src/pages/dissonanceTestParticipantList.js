@@ -17,7 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Header from "../components/organisms/Header";
 import { StyledTableContainer } from "../styles/CommonStyles";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import dissonanceTestService from "@services/dissonanceTestService";
 import { QRCodeCanvas } from "qrcode.react";
 
 const DissonanceTestParticipantList = () => {
@@ -33,19 +33,8 @@ const DissonanceTestParticipantList = () => {
   useEffect(() => {
     const fetchParticipants = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/dissonance_test_participants`,
-          {
-            method: "GET",
-          }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        setParticipants(data); // Update the participants state with the fetched data
+        const data = await dissonanceTestService.getParticipants();
+        setParticipants(data);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching participants:", error);

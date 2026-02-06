@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import { getUserUniversity } from "../services/authService";
+import { getStoredUniversityKey } from "@services/authService";
 
 const UniversityContext = createContext();
 
@@ -68,11 +68,9 @@ export const useUniversity = () => {
 export const UniversityProvider = ({ children }) => {
   const [universityKey, setUniversityKey] = useState(() => {
     try {
-      // First try to get from localStorage (set by authService on login)
-      const saved = localStorage.getItem("universityKey");
-      // Also check the backend-provided university
-      const backendUniversity = getUserUniversity();
-      return backendUniversity || saved || "halic";
+      // Get from localStorage (set by AuthContext on login)
+      const saved = getStoredUniversityKey();
+      return saved || "halic";
     } catch (error) {
       console.error("Error loading universityKey from localStorage:", error);
       return "halic";

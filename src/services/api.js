@@ -1,3 +1,17 @@
+/**
+ * Centralized API Client
+ *
+ * This is the ONLY module that should make HTTP requests to the backend.
+ * All services should use this client instead of fetch or fetchWithAuth.
+ *
+ * Features:
+ * - Automatic token refresh on 401
+ * - Consistent error handling
+ * - Support for different auth types (user, participant, etc.)
+ */
+
+import { getAccessToken, refreshAccessToken, clearTokens } from "@utils/tokenStore";
+
 const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 
 export const AUTH_TYPES = {
@@ -8,19 +22,41 @@ export const AUTH_TYPES = {
   PROGRAM_SUGGESTION: "program_suggestion",
 };
 
-let tokenGetter = () => localStorage.getItem("access_token");
+// Token refresh state
+let isRefreshing = false;
+let refreshPromise = null;
 
-export const setTokenGetter = (getter) => {
-  tokenGetter = getter;
+const performTokenRefresh = async () => {
+  if (isRefreshing) {
+    return refreshPromise;
+  }
+
+  isRefreshing = true;
+  refreshPromise = refreshAccessToken()
+    .then((result) => {
+      isRefreshing = false;
+      refreshPromise = null;
+      return result;
+    })
+    .catch((error) => {
+      isRefreshing = false;
+      refreshPromise = null;
+      throw error;
+    });
+
+  return refreshPromise;
 };
 
-const getToken = () => tokenGetter();
+const redirectToLogin = () => {
+  clearTokens();
+  window.location.href = "/login";
+};
 
 const buildHeaders = (authType, customHeaders = {}) => {
   const headers = { ...customHeaders };
 
   if (authType === AUTH_TYPES.USER) {
-    const token = getToken();
+    const token = getAccessToken();
     if (token) {
       headers.Authorization = `Bearer ${token}`;
     }
@@ -37,7 +73,7 @@ const parseResponse = async (response) => {
   return response.text();
 };
 
-const apiFetch = async (endpoint, options = {}) => {
+const apiFetch = async (endpoint, options = {}, _isRetry = false) => {
   const {
     method = "GET",
     body,
@@ -47,6 +83,17 @@ const apiFetch = async (endpoint, options = {}) => {
   } = options;
 
   const url = endpoint.startsWith("http") ? endpoint : `${BASE_URL}${endpoint}`;
+
+  // For authenticated requests without token, try refresh first
+  if (authType === AUTH_TYPES.USER && !getAccessToken() && !_isRetry) {
+    try {
+      await performTokenRefresh();
+    } catch {
+      redirectToLogin();
+      throw new Error("Authentication required");
+    }
+  }
+
   const headers = buildHeaders(authType, customHeaders);
 
   let processedBody = body;
@@ -58,16 +105,9 @@ const apiFetch = async (endpoint, options = {}) => {
   const fetchOptions = {
     method,
     headers,
+    credentials: "include", // Always include credentials for cookie-based refresh
     ...rest,
   };
-
-  if (
-    [AUTH_TYPES.PLAYER, AUTH_TYPES.DISSONANCE_TEST, AUTH_TYPES.PROGRAM_SUGGESTION].includes(
-      authType
-    )
-  ) {
-    fetchOptions.credentials = "include";
-  }
 
   if (processedBody && method !== "GET") {
     fetchOptions.body = processedBody;
@@ -75,10 +115,38 @@ const apiFetch = async (endpoint, options = {}) => {
 
   const response = await fetch(url, fetchOptions);
 
+  // Handle 401 - try to refresh token and retry
+  if (response.status === 401 && authType === AUTH_TYPES.USER && !_isRetry) {
+    const errorData = await response.json().catch(() => ({}));
+
+    // If token is blacklisted, redirect to login
+    if (errorData.error_code === "token_blacklisted") {
+      redirectToLogin();
+      throw new Error("Session expired");
+    }
+
+    // Try to refresh and retry the request
+    try {
+      await performTokenRefresh();
+      return apiFetch(endpoint, options, true);
+    } catch {
+      redirectToLogin();
+      throw new Error("Session expired");
+    }
+  }
+
+  // Handle rate limiting
+  if (response.status === 429) {
+    const retryAfter = response.headers.get("Retry-After");
+    console.warn(`Rate limited. Retry after ${retryAfter || 60} seconds.`);
+  }
+
+  const data = await parseResponse(response.clone());
+
   return {
     ok: response.ok,
     status: response.status,
-    data: await parseResponse(response),
+    data,
     headers: response.headers,
   };
 };

@@ -25,7 +25,8 @@ import {
 } from "@mui/material";
 import BugReportIcon from "@mui/icons-material/BugReport";
 import QRCode from "qrcode.react";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import highSchoolService from "@services/highSchoolService";
+import programSuggestionService from "@services/programSuggestionService";
 import Header from "../components/organisms/Header";
 import jobTranslations from "./RiasecTest/job_translations.json";
 
@@ -77,25 +78,19 @@ function HighSchoolRoomDetail() {
     const fetchData = async () => {
       try {
         // Fetch room details
-        const roomResponse = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/${roomId}`,
-          { method: "GET" }
-        );
-
-        if (roomResponse.ok) {
-          const roomData = await roomResponse.json();
+        try {
+          const roomData = await highSchoolService.getRoom(roomId);
           setRoom(roomData);
+        } catch (err) {
+          console.error("Failed to fetch room:", err);
         }
 
         // Fetch students
-        const studentsResponse = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/${roomId}/students`,
-          { method: "GET" }
-        );
-
-        if (studentsResponse.ok) {
-          const studentsData = await studentsResponse.json();
+        try {
+          const studentsData = await highSchoolService.getStudents(roomId);
           setStudents(studentsData);
+        } catch (err) {
+          console.error("Failed to fetch students:", err);
         }
 
         setLoading(false);
@@ -135,14 +130,8 @@ function HighSchoolRoomDetail() {
     setDebugLoading(true);
     setDebugDialogOpen(true);
     try {
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/program-suggestion/students/${studentId}/debug`,
-        { method: "GET" }
-      );
-      if (response.ok) {
-        const data = await response.json();
-        setDebugData(data);
-      }
+      const data = await programSuggestionService.getStudentDebug(studentId);
+      setDebugData(data);
     } catch (error) {
       console.error("Failed to fetch debug data:", error);
     } finally {

@@ -1,5 +1,7 @@
 import { createContext, useContext, useState, useCallback, useEffect, useMemo } from "react";
 import { ROLES } from "@config/permissions";
+import { setTokens, clearTokens } from "@utils/tokenStore";
+import { storeUniversityKey, clearLocalAuthData } from "@services/authService";
 
 const API_BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
 const TOKEN_REFRESH_BUFFER_MS = 2 * 60 * 1000;
@@ -48,11 +50,21 @@ export const AuthProvider = ({ children }) => {
       });
       setIsAuthenticated(true);
       localStorage.setItem("access_token", data.access_token);
+
+      // Sync with tokenStore for API client (api.js)
+      setTokens(data.access_token, data.current_user_id);
+
+      // Store university in localStorage for persistence
+      storeUniversityKey(data.university);
     } else {
       setAccessToken(null);
       setUser(null);
       setIsAuthenticated(false);
       localStorage.removeItem("access_token");
+
+      // Clear tokenStore and localStorage
+      clearTokens();
+      clearLocalAuthData();
     }
   }, []);
 

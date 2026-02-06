@@ -5,9 +5,7 @@
  * Handles CRUD operations for all test types.
  */
 
-import fetchWithAuth from "../utils/fetchWithAuth";
-
-const BASE_URL = process.env.REACT_APP_BACKEND_BASE_URL;
+import api from "./api";
 
 /**
  * Test types available in the system
@@ -58,20 +56,13 @@ export const TEST_TYPE_CONFIG = {
  * @returns {Promise<Object>} Created room
  */
 export async function createTestRoom(roomData) {
-  const response = await fetchWithAuth(`${BASE_URL}/test-rooms/`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(roomData),
-  });
+  const { ok, data, status } = await api.auth.post("/test-rooms/", roomData);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+  if (!ok) {
+    throw new Error(data?.detail || `HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -83,21 +74,17 @@ export async function createTestRoom(roomData) {
  * @returns {Promise<Object>} Paginated list of rooms
  */
 export async function getTestRooms({ testType, skip = 0, limit = 100 } = {}) {
-  let url = `${BASE_URL}/test-rooms/?skip=${skip}&limit=${limit}`;
+  const endpoint = testType
+    ? `/test-rooms/by-type/${testType}?skip=${skip}&limit=${limit}`
+    : `/test-rooms/?skip=${skip}&limit=${limit}`;
 
-  if (testType) {
-    url = `${BASE_URL}/test-rooms/by-type/${testType}?skip=${skip}&limit=${limit}`;
+  const { ok, data, status } = await api.auth.get(endpoint);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
   }
 
-  const response = await fetchWithAuth(url, {
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
-  }
-
-  return response.json();
+  return data;
 }
 
 /**
@@ -106,15 +93,13 @@ export async function getTestRooms({ testType, skip = 0, limit = 100 } = {}) {
  * @returns {Promise<Object>} Room data
  */
 export async function getTestRoom(roomId) {
-  const response = await fetchWithAuth(`${BASE_URL}/test-rooms/${roomId}`, {
-    method: "GET",
-  });
+  const { ok, data, status } = await api.auth.get(`/test-rooms/${roomId}`);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -123,18 +108,16 @@ export async function getTestRoom(roomId) {
  * @returns {Promise<Object>} Public room info
  */
 export async function getTestRoomPublic(roomId) {
-  const response = await fetch(`${BASE_URL}/test-rooms/${roomId}/public`, {
-    method: "GET",
-  });
+  const { ok, data, status } = await api.get(`/test-rooms/${roomId}/public`);
 
-  if (!response.ok) {
-    if (response.status === 404) {
+  if (!ok) {
+    if (status === 404) {
       throw new Error("Room not found or inactive");
     }
-    throw new Error(`HTTP error! status: ${response.status}`);
+    throw new Error(`HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -144,20 +127,13 @@ export async function getTestRoomPublic(roomId) {
  * @returns {Promise<Object>} Updated room
  */
 export async function updateTestRoom(roomId, updateData) {
-  const response = await fetchWithAuth(`${BASE_URL}/test-rooms/${roomId}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(updateData),
-  });
+  const { ok, data, status } = await api.auth.put(`/test-rooms/${roomId}`, updateData);
 
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.detail || `HTTP error! status: ${response.status}`);
+  if (!ok) {
+    throw new Error(data?.detail || `HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -166,15 +142,13 @@ export async function updateTestRoom(roomId, updateData) {
  * @returns {Promise<Object>} Deleted room
  */
 export async function deleteTestRoom(roomId) {
-  const response = await fetchWithAuth(`${BASE_URL}/test-rooms/${roomId}`, {
-    method: "DELETE",
-  });
+  const { ok, data, status } = await api.auth.delete(`/test-rooms/${roomId}`);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**
@@ -183,15 +157,13 @@ export async function deleteTestRoom(roomId) {
  * @returns {Promise<Object>} Updated room
  */
 export async function toggleTestRoomActive(roomId) {
-  const response = await fetchWithAuth(`${BASE_URL}/test-rooms/${roomId}/toggle-active`, {
-    method: "POST",
-  });
+  const { ok, data, status } = await api.auth.post(`/test-rooms/${roomId}/toggle-active`);
 
-  if (!response.ok) {
-    throw new Error(`HTTP error! status: ${response.status}`);
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
   }
 
-  return response.json();
+  return data;
 }
 
 /**

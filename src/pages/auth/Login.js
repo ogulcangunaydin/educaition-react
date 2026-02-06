@@ -15,7 +15,7 @@ import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
 import { useUniversity } from "@contexts/UniversityContext";
 import { useAuth } from "@contexts/AuthContext";
-import { storeUsername, getUserRole, getUserUniversity } from "@services/authService";
+import { storeUsername } from "@services/authService";
 import AuthLayout from "@templates/AuthLayout";
 import Button from "@atoms/Button";
 import TextField from "@atoms/TextField";
@@ -59,14 +59,14 @@ function Login({ variant = "educaition" }) {
     setLoading(true);
 
     try {
-      await login(username, password);
+      // login() returns the auth data from backend
+      const authData = await login(username, password);
 
       // Store username for UI convenience (non-sensitive)
       storeUsername(username);
 
-      // Get role and university from backend response
-      const role = getUserRole();
-      const university = getUserUniversity();
+      // Get role and university directly from login response
+      const { role, university } = authData;
 
       // Set university from backend response
       if (university) {

@@ -12,7 +12,7 @@ import {
   Autocomplete,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import fetchWithAuth from "../utils/fetchWithAuth";
+import highSchoolService from "@services/highSchoolService";
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "../styles/CommonStyles";
 import Header from "../components/organisms/Header";
 import { useNavigate } from "react-router-dom";
@@ -48,16 +48,7 @@ function HighSchoolRooms() {
   useEffect(() => {
     const fetchRooms = async () => {
       try {
-        const response = await fetchWithAuth(
-          `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/`,
-          { method: "GET" }
-        );
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await highSchoolService.getRooms();
         setRooms(data);
         setLoading(false);
       } catch (error) {
@@ -91,23 +82,10 @@ function HighSchoolRooms() {
     }
 
     try {
-      const formBody = new FormData();
-      formBody.append("high_school_name", selectedHighSchool.name);
-      formBody.append("high_school_code", selectedHighSchool.code || "");
-
-      const response = await fetch(`${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-        },
-        method: "POST",
-        body: formBody,
+      const data = await highSchoolService.createRoom({
+        name: selectedHighSchool.name,
+        high_school_code: selectedHighSchool.code || "",
       });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
       setRooms([...rooms, data]);
       handleCloseModal();
     } catch (error) {
@@ -122,20 +100,7 @@ function HighSchoolRooms() {
     }
 
     try {
-      const response = await fetch(
-        `${process.env.REACT_APP_BACKEND_BASE_URL}/high-school-rooms/${roomId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access_token")}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
+      await highSchoolService.deleteRoom(roomId);
       setRooms(rooms.filter((room) => room.id !== roomId));
     } catch (error) {
       console.error("Failed to delete room:", error);
@@ -170,7 +135,7 @@ function HighSchoolRooms() {
             </Typography>
             <List sx={{ width: "100%", maxWidth: 600 }}>
               {rooms && rooms.length > 0 ? (
-                rooms.map((room, index) => (
+                rooms.map((room) => (
                   <Box key={room.id} sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <ListItemButton
                       component="a"
