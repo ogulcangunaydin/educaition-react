@@ -183,10 +183,10 @@ function TestRoomList({
         open={deleteDialogOpen}
         title="Odayı Sil"
         message={`"${roomToDelete?.name}" odasını silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`}
-        confirmText="Sil"
-        cancelText="İptal"
+        confirmLabel="Sil"
+        cancelLabel="İptal"
         onConfirm={handleDeleteConfirm}
-        onCancel={() => {
+        onClose={() => {
           setDeleteDialogOpen(false);
           setRoomToDelete(null);
         }}

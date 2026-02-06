@@ -54,11 +54,20 @@ function PageLayout({
   backgroundLogo,
   fullWidth = false,
   noPadding = false,
+  showBackButton,
+  onBack,
   ...props
 }) {
+  // Merge shorthand props into headerProps so they reach the Header component
+  const mergedHeaderProps = {
+    ...headerProps,
+    ...(showBackButton != null && { showBackButton }),
+    ...(onBack != null && { onBack }),
+  };
+
   return (
     <PageContainer backgroundlogo={backgroundLogo} {...props}>
-      {showHeader && <Header title={title} {...headerProps} />}
+      {showHeader && <Header title={title} {...mergedHeaderProps} />}
       
       <ContentWrapper>
         {fullWidth ? (
@@ -102,6 +111,8 @@ PageLayout.propTypes = {
   backgroundLogo: PropTypes.string,
   fullWidth: PropTypes.bool,
   noPadding: PropTypes.bool,
+  showBackButton: PropTypes.bool,
+  onBack: PropTypes.func,
 };
 
 export default PageLayout;

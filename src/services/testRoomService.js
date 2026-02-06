@@ -26,24 +26,61 @@ export const TEST_TYPE_CONFIG = {
     labelEn: "Prisoners Dilemma",
     color: "#1976d2",
     icon: "Groups",
+    rooms: {
+      pageTitle: "Mahkum İkilemi - Oyun Odaları",
+      listTitle: "Oyun Odaları",
+      description:
+        "Mahkum ikilemi oyunu için oda oluşturun. Öğrenciler QR kod ile oyuna katılabilir.",
+      emptyStateMessage:
+        "Henüz oyun odası oluşturmadınız. Yeni bir oda oluşturarak oyun teorisi simülasyonunu başlatın.",
+      getDetailPath: (room) => `/playground/${room.id}`,
+    },
   },
   [TestType.DISSONANCE_TEST]: {
     label: "Bilişsel Uyumsuzluk Testi",
     labelEn: "Dissonance Test",
     color: "#9c27b0",
     icon: "Psychology",
+    rooms: {
+      pageTitle: "Bilişsel Uyumsuzluk Testi - Odalar",
+      listTitle: "Test Odaları",
+      description:
+        "Bilişsel uyumsuzluk testi için oda oluşturun. Öğrenciler QR kod ile teste katılabilir.",
+      emptyStateMessage:
+        "Henüz test odası oluşturmadınız. Yeni bir oda oluşturarak öğrencilerinizin testi çözmesini sağlayın.",
+      getDetailPath: (room) => `/dissonance-test-room/${room.id}`,
+    },
   },
   [TestType.PROGRAM_SUGGESTION]: {
     label: "Program Öneri Testi",
     labelEn: "Program Suggestion",
     color: "#ed6c02",
     icon: "School",
+    rooms: {
+      pageTitle: "Program Öneri Sistemi - Lise Odaları",
+      listTitle: "Lise Odaları",
+      description:
+        "Öğrencilerin program öneri testini yapabilmesi için bir lise odası oluşturun. QR kod ile öğrenciler teste katılabilir.",
+      emptyStateMessage:
+        "Henüz lise odası oluşturmadınız. Yeni bir oda oluşturarak öğrencilerinizin program önerisi almasını sağlayın.",
+      getDetailPath: (room) => `/high-school-room/${room.id}`,
+      getNavigateState: (room) => ({ highSchoolName: room.name }),
+    },
   },
   [TestType.PERSONALITY_TEST]: {
     label: "Kişilik Testi",
     labelEn: "Personality Test",
     color: "#2e7d32",
     icon: "Person",
+    rooms: {
+      pageTitle: "Kişilik Testi Odaları",
+      listTitle: "Kişilik Testi Odaları",
+      description:
+        "Big Five kişilik testi odalarınızı yönetin. Öğrenciler QR kod ile teste katılabilir.",
+      emptyStateMessage:
+        "Henüz kişilik testi odası oluşturmadınız. Yeni bir oda oluşturarak öğrencilerinizin kişilik testini çözmesini sağlayın.",
+      getDetailPath: (room) => `/personality-test-room/${room.id}`,
+    },
   },
 };
 

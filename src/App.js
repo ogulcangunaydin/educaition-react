@@ -27,14 +27,10 @@ import ProgramRivalAnalysis from "@pages/ProgramRivalAnalysis";
 
 import HighSchoolRooms from "@pages/HighSchoolRooms";
 import HighSchoolRoomDetail from "@pages/HighSchoolRoomDetail";
-import {
-  PersonalityTestRooms,
-  PersonalityTestRoomDetail,
-  PersonalityTestPublic,
-} from "@pages/personality-test";
+import { PersonalityTestRoomDetail, PersonalityTestPublic } from "@pages/personality-test";
 import TestManagement from "@pages/TestManagement";
-import ProgramSuggestionRooms from "@pages/ProgramSuggestionRooms";
-import PrisonersDilemmaRooms from "@pages/PrisonersDilemmaRooms";
+import { TestRoomsPage } from "@components/templates";
+import { TestType } from "./services/testRoomService";
 
 import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
 import ProgramTestResult from "@pages/ProgramTestResult";
@@ -116,7 +112,7 @@ function AppRoutes() {
         path="/prisoners-dilemma-rooms"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <PrisonersDilemmaRooms />
+            <TestRoomsPage testType={TestType.PRISONERS_DILEMMA} />
           </ProtectedRoute>
         }
       />
@@ -224,7 +220,7 @@ function AppRoutes() {
         path="/program-suggestion-rooms"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <ProgramSuggestionRooms />
+            <TestRoomsPage testType={TestType.PROGRAM_SUGGESTION} />
           </ProtectedRoute>
         }
       />
@@ -242,7 +238,7 @@ function AppRoutes() {
         path="/personality-test-rooms"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <PersonalityTestRooms />
+            <TestRoomsPage testType={TestType.PERSONALITY_TEST} />
           </ProtectedRoute>
         }
       />

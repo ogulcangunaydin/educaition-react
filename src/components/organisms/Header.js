@@ -15,7 +15,7 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { Logout, Menu } from "@mui/icons-material";
+import { Logout, Menu, ArrowBack } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import PropTypes from "prop-types";
@@ -28,9 +28,10 @@ function Header({
   showLogout = true,
   showLogo = true,
   showLanguageSwitcher = true,
+  showBackButton = false,
+  onBack,
   logoSrc = "/halic_universitesi_logo.svg",
   onMenuClick,
-  ...props
 }) {
   const navigate = useNavigate();
   const { logout, isAuthenticated } = useAuth();
@@ -44,8 +45,15 @@ function Header({
   };
 
   return (
-    <AppBar position="static" sx={{ bgcolor: "primary.light" }} {...props}>
+    <AppBar position="static" sx={{ bgcolor: "primary.light" }}>
       <Toolbar>
+        {/* Back button */}
+        {showBackButton && (
+          <IconButton edge="start" color="inherit" onClick={onBack} sx={{ mr: 1 }}>
+            <ArrowBack />
+          </IconButton>
+        )}
+
         {/* Menu button for mobile */}
         {onMenuClick && isMobile && (
           <IconButton edge="start" color="inherit" onClick={onMenuClick} sx={{ mr: 1 }}>
@@ -116,6 +124,8 @@ Header.propTypes = {
   showLogout: PropTypes.bool,
   showLogo: PropTypes.bool,
   showLanguageSwitcher: PropTypes.bool,
+  showBackButton: PropTypes.bool,
+  onBack: PropTypes.func,
   logoSrc: PropTypes.string,
   onMenuClick: PropTypes.func,
 };
