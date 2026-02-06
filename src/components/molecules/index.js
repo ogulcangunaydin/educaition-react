@@ -22,6 +22,7 @@ export { default as TestRoomCard } from "./TestRoomCard";
 export { default as CreateTestRoomModal } from "./CreateTestRoomModal";
 export { default as TestTypeSelector } from "./TestTypeSelector";
 export { default as RoomParticipantEmptyState } from "./RoomParticipantEmptyState";
+export { default as MarkdownSection } from "./MarkdownSection";
 export { default as LanguageSwitcher } from "./LanguageSwitcher";
 export { default as ModuleCard } from "./ModuleCard";
 export { default as StatCard } from "./StatCard";

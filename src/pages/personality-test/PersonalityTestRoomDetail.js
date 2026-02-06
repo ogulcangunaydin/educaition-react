@@ -9,46 +9,17 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  Box,
-  CircularProgress,
-  Alert,
-  IconButton,
-  Tooltip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { Visibility as ViewIcon, Close as CloseIcon } from "@mui/icons-material";
-import { Radar } from "react-chartjs-2";
-import {
-  Chart as ChartJS,
-  RadialLinearScale,
-  PointElement,
-  LineElement,
-  Filler,
-  Tooltip as ChartTooltip,
-  Legend,
-} from "chart.js";
-import ReactMarkdown from "react-markdown";
+import { Box, CircularProgress, Alert, IconButton, Tooltip } from "@mui/material";
+import { Visibility as ViewIcon } from "@mui/icons-material";
 import { PageLayout } from "@components/templates";
-import { Typography, Button } from "@components/atoms";
-import { QRCodeOverlay, RoomParticipantEmptyState } from "@components/molecules";
-import { RoomInfoHeader, DataTable } from "@components/organisms";
+import { QRCodeOverlay, RoomParticipantEmptyState, MarkdownSection } from "@components/molecules";
+import { RoomInfoHeader, DataTable, RadarChart, ResultDetailDialog } from "@components/organisms";
 import personalityTestService from "@services/personalityTestService";
 import { getTestRoom, generateRoomUrl, TestType } from "../../services/testRoomService";
-
-// Register Chart.js components for Radar chart
-ChartJS.register(RadialLinearScale, PointElement, LineElement, Filler, ChartTooltip, Legend);
 
 function PersonalityTestRoomDetail() {
   const { roomId } = useParams();
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
@@ -159,47 +130,32 @@ function PersonalityTestRoomDetail() {
   const roomUrl = generateRoomUrl(roomId, TestType.PERSONALITY_TEST);
   const completedCount = participants.filter((p) => p.has_completed).length;
 
-  // Radar chart config for the selected participant
-  const getRadarConfig = (participant) => {
-    const data = {
-      labels: ["Dışadönüklük", "Uyumluluk", "Sorumluluk", "Olumsuz Duygusallık", "Açık Fikirlilik"],
-      datasets: [
-        {
-          label: "Kişilik Özellikleri",
-          data: [
-            participant.extroversion ?? 0,
-            participant.agreeableness ?? 0,
-            participant.conscientiousness ?? 0,
-            participant.negative_emotionality ?? 0,
-            participant.open_mindedness ?? 0,
-          ],
-          backgroundColor: "rgba(34, 202, 236, 0.2)",
-          borderColor: "rgba(34, 202, 236, 1)",
-          borderWidth: 2,
-        },
+  // Radar chart labels for Big Five personality traits
+  const personalityLabels = [
+    "Dışadönüklük",
+    "Uyumluluk",
+    "Sorumluluk",
+    "Olumsuz Duygusallık",
+    "Açık Fikirlilik",
+  ];
+
+  const getRadarDatasets = (participant) => [
+    {
+      label: "Kişilik Özellikleri",
+      data: [
+        participant.extroversion ?? 0,
+        participant.agreeableness ?? 0,
+        participant.conscientiousness ?? 0,
+        participant.negative_emotionality ?? 0,
+        participant.open_mindedness ?? 0,
       ],
-    };
+    },
+  ];
 
-    const options = {
-      scales: {
-        r: {
-          beginAtZero: true,
-          max: 100,
-          ticks: { stepSize: 20, backdropColor: "transparent" },
-          grid: { color: "rgba(0, 0, 0, 0.1)" },
-          angleLines: { color: "rgba(0, 0, 0, 0.1)" },
-          pointLabels: { font: { size: isSmallScreen ? 10 : 14 } },
-        },
-      },
-      layout: { padding: { top: 10, bottom: 10 } },
-      plugins: {
-        legend: { display: true, position: "top" },
-        tooltip: { enabled: true },
-      },
-      maintainAspectRatio: true,
-    };
-
-    return { data, options };
+  const getParticipantSubtitle = (p) => {
+    if (!p) return undefined;
+    const parts = [p.full_name, p.student_number && `(${p.student_number})`];
+    return parts.filter(Boolean).join(" ") || undefined;
   };
 
   return (
@@ -281,86 +237,26 @@ function PersonalityTestRoomDetail() {
       )}
 
       {/* Result Detail Dialog */}
-      <Dialog
+      <ResultDetailDialog
         open={!!selectedParticipant}
         onClose={() => setSelectedParticipant(null)}
-        maxWidth="md"
-        fullWidth
-        fullScreen={isSmallScreen}
+        title="Kişilik Testi Sonuçları"
+        subtitle={getParticipantSubtitle(selectedParticipant)}
       >
         {selectedParticipant && (
           <>
-            <DialogTitle
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                pb: 1,
-              }}
-            >
-              <Typography variant="h6">
-                Kişilik Testi Sonuçları
-                {selectedParticipant.full_name && (
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ ml: 1 }}
-                  >
-                    — {selectedParticipant.full_name}
-                    {selectedParticipant.student_number &&
-                      ` (${selectedParticipant.student_number})`}
-                  </Typography>
-                )}
-              </Typography>
-              <IconButton onClick={() => setSelectedParticipant(null)} size="small">
-                <CloseIcon />
-              </IconButton>
-            </DialogTitle>
-            <DialogContent dividers>
-              {/* Radar Chart */}
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "center",
-                  mb: 3,
-                  maxWidth: 500,
-                  mx: "auto",
-                }}
-              >
-                <Radar {...getRadarConfig(selectedParticipant)} />
-              </Box>
-
-              {/* Job Recommendation */}
-              {selectedParticipant.job_recommendation && (
-                <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Meslek Tavsiyeleri
-                  </Typography>
-                  <Box sx={{ "& p": { mt: 0, mb: 1 }, "& ul": { pl: 2 } }}>
-                    <ReactMarkdown>{selectedParticipant.job_recommendation}</ReactMarkdown>
-                  </Box>
-                </Box>
-              )}
-
-              {/* Compatibility Analysis */}
-              {selectedParticipant.compatibility_analysis && (
-                <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 2 }}>
-                  <Typography variant="h6" gutterBottom>
-                    Burç Uyumluluk Analizi
-                  </Typography>
-                  <Box sx={{ "& p": { mt: 0, mb: 1 }, "& ul": { pl: 2 } }}>
-                    <ReactMarkdown>{selectedParticipant.compatibility_analysis}</ReactMarkdown>
-                  </Box>
-                </Box>
-              )}
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={() => setSelectedParticipant(null)}>Kapat</Button>
-            </DialogActions>
+            <RadarChart
+              labels={personalityLabels}
+              datasets={getRadarDatasets(selectedParticipant)}
+              sx={{ mb: 3 }}
+            />
+            <MarkdownSection
+              title="Meslek Tavsiyeleri"
+              content={selectedParticipant.job_recommendation}
+            />
           </>
         )}
-      </Dialog>
+      </ResultDetailDialog>
 
       {/* QR Code Overlay */}
       {showQR && (
