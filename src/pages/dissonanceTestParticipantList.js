@@ -74,7 +74,8 @@ const DissonanceTestParticipantList = () => {
 
   const exportToCSV = () => {
     const headers = [
-      "Email",
+      "Ad Soyad",
+      "Öğrenci No",
       "Age",
       "Gender",
       "Education",
@@ -98,7 +99,8 @@ const DissonanceTestParticipantList = () => {
     ];
 
     const rows = participants.map((participant) => [
-      participant.email,
+      participant.full_name || "",
+      participant.student_number || "",
       participant.age,
       participant.gender,
       participant.education,
@@ -229,7 +231,8 @@ const DissonanceTestParticipantList = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Email</TableCell>
+                    <TableCell>Ad Soyad</TableCell>
+                    <TableCell>Öğrenci No</TableCell>
                     <TableCell>Age</TableCell>
                     <TableCell>Gender</TableCell>
                     <TableCell>Education</TableCell>
@@ -258,7 +261,8 @@ const DissonanceTestParticipantList = () => {
                 <TableBody>
                   {participants.map((participant) => (
                     <TableRow key={participant.id}>
-                      <TableCell>{participant.email}</TableCell>
+                      <TableCell>{participant.full_name || "-"}</TableCell>
+                      <TableCell>{participant.student_number || "-"}</TableCell>
                       <TableCell>{participant.age}</TableCell>
                       <TableCell>{participant.gender}</TableCell>
                       <TableCell>{participant.education}</TableCell>

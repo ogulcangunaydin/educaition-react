@@ -125,7 +125,8 @@ function PersonalityTestRoomDetail() {
     if (participants.length === 0) return;
 
     const headers = [
-      "Email",
+      "Ad Soyad",
+      "Öğrenci No",
       "Tamamlandı",
       "Dışa Dönüklük",
       "Uyumluluk",
@@ -137,7 +138,8 @@ function PersonalityTestRoomDetail() {
     ];
 
     const rows = participants.map((p) => [
-      p.email || "",
+      p.full_name || "",
+      p.student_number || "",
       p.has_completed ? "Evet" : "Hayır",
       p.extroversion != null ? p.extroversion.toFixed(1) + "%" : "",
       p.agreeableness != null ? p.agreeableness.toFixed(1) + "%" : "",
@@ -348,7 +350,8 @@ function PersonalityTestRoomDetail() {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Email</TableCell>
+                <TableCell>Ad Soyad</TableCell>
+                <TableCell>Öğrenci No</TableCell>
                 <TableCell align="center">Durum</TableCell>
                 <TableCell align="center">Dışa Dönüklük</TableCell>
                 <TableCell align="center">Uyumluluk</TableCell>
@@ -362,7 +365,8 @@ function PersonalityTestRoomDetail() {
             <TableBody>
               {participants.map((participant) => (
                 <TableRow key={participant.id}>
-                  <TableCell>{participant.email || "-"}</TableCell>
+                  <TableCell>{participant.full_name || "-"}</TableCell>
+                  <TableCell>{participant.student_number || "-"}</TableCell>
                   <TableCell align="center">
                     <Chip
                       label={participant.has_completed ? "Tamamlandı" : "Devam Ediyor"}
@@ -442,14 +446,16 @@ function PersonalityTestRoomDetail() {
             >
               <Typography variant="h6">
                 Kişilik Testi Sonuçları
-                {selectedParticipant.email && (
+                {selectedParticipant.full_name && (
                   <Typography
                     component="span"
                     variant="body2"
                     color="text.secondary"
                     sx={{ ml: 1 }}
                   >
-                    — {selectedParticipant.email}
+                    — {selectedParticipant.full_name}
+                    {selectedParticipant.student_number &&
+                      ` (${selectedParticipant.student_number})`}
                   </Typography>
                 )}
               </Typography>

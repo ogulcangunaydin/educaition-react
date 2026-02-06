@@ -72,7 +72,8 @@ function DissonanceTestPublic() {
 
   // Form data
   const [formData, setFormData] = useState({
-    email: "",
+    fullName: "",
+    studentNumber: "",
     age: "",
     gender: "",
     education: "",
@@ -163,7 +164,8 @@ function DissonanceTestPublic() {
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          email: formData.email,
+          full_name: formData.fullName,
+          student_number: formData.studentNumber,
           age: parseInt(formData.age, 10),
           gender: formData.gender,
           education: formData.education,
@@ -246,8 +248,6 @@ function DissonanceTestPublic() {
         throw new Error("Failed to save answers");
       }
 
-      // Mark test as completed
-      await markTestCompleted(TestType.DISSONANCE_TEST, roomId);
       nextStep();
     } catch (err) {
       setError(err.message);
@@ -259,7 +259,7 @@ function DissonanceTestPublic() {
   // Validation helpers
   const isStep0Valid = formData.sentiment !== null;
   const isStep1Valid =
-    formData.email && formData.age && formData.education && /\S+@\S+\.\S+/.test(formData.email);
+    formData.fullName && formData.studentNumber && formData.age && formData.education;
   const isStep2Valid = formData.comfortFirst > 0 && formData.fareFirst > 0;
   const isStep4Valid = formData.comfortSecond > 0 && formData.fareSecond > 0;
 
@@ -397,10 +397,16 @@ function DissonanceTestPublic() {
             </Typography>
 
             <FormField
-              label={DISSONANCE_TEST.step2.emailLabel}
-              type="email"
-              value={formData.email}
-              onChange={(v) => updateField("email", v)}
+              label="Ad Soyad"
+              value={formData.fullName}
+              onChange={(v) => updateField("fullName", v)}
+              required
+            />
+
+            <FormField
+              label="Öğrenci Numarası"
+              value={formData.studentNumber}
+              onChange={(v) => updateField("studentNumber", v)}
               required
             />
 

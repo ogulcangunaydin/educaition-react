@@ -53,8 +53,9 @@ function PersonalityTestPublic() {
 
   // Test flow state
   const [stage, setStage] = useState("loading"); // loading, registration, test, result
-  const [email, setEmail] = useState("");
-  const [emailError, setEmailError] = useState("");
+  const [fullName, setFullName] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
+  const [formError, setFormError] = useState("");
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -81,14 +82,15 @@ function PersonalityTestPublic() {
             participantId: data.participantId ?? participantId,
             answers: data.answers ?? answers,
             currentQuestionIndex: data.currentQuestionIndex ?? currentQuestionIndex,
-            email: data.email ?? email,
+            fullName: data.fullName ?? fullName,
+            studentNumber: data.studentNumber ?? studentNumber,
           })
         );
       } catch {
         // localStorage full or unavailable — non-critical
       }
     },
-    [storageKey, participantId, answers, currentQuestionIndex, email]
+    [storageKey, participantId, answers, currentQuestionIndex, fullName, studentNumber]
   );
 
   const clearProgress = useCallback(() => {
@@ -133,7 +135,8 @@ function PersonalityTestPublic() {
               credentials: "include",
               body: JSON.stringify({
                 test_room_id: parseInt(roomId, 10),
-                email: saved.email || "",
+                full_name: saved.fullName || "",
+                student_number: saved.studentNumber || "",
                 device_fingerprint: deviceId,
                 student_user_id: userId || null,
               }),
@@ -152,7 +155,8 @@ function PersonalityTestPublic() {
 
           setAnswers(saved.answers || new Array(questionsArray.length).fill(null));
           setCurrentQuestionIndex(saved.currentQuestionIndex || 0);
-          if (saved.email) setEmail(saved.email);
+          if (saved.fullName) setFullName(saved.fullName);
+          if (saved.studentNumber) setStudentNumber(saved.studentNumber);
           setStage("test");
         } else {
           setAnswers(new Array(questionsArray.length).fill(null));
@@ -169,18 +173,13 @@ function PersonalityTestPublic() {
 
   // Handle participant registration
   const handleRegister = useCallback(async () => {
-    if (!email.trim()) {
-      setEmailError("Email is required");
-      return;
-    }
-
-    if (!/\S+@\S+\.\S+/.test(email)) {
-      setEmailError("Please enter a valid email");
+    if (!fullName.trim() || !studentNumber.trim()) {
+      setFormError("Ad Soyad ve Öğrenci Numarası gerekli");
       return;
     }
 
     setSubmitting(true);
-    setEmailError("");
+    setFormError("");
 
     try {
       const response = await fetch(`${BASE_URL}/personality-test/participants`, {
@@ -189,7 +188,8 @@ function PersonalityTestPublic() {
         credentials: "include",
         body: JSON.stringify({
           test_room_id: parseInt(roomId, 10),
-          email: email.trim(),
+          full_name: fullName.trim(),
+          student_number: studentNumber.trim(),
           device_fingerprint: deviceId,
           student_user_id: userId || null,
         }),
@@ -210,15 +210,16 @@ function PersonalityTestPublic() {
         participantId: data.participant.id,
         answers: answers,
         currentQuestionIndex: 0,
-        email: email.trim(),
+        fullName: fullName.trim(),
+        studentNumber: studentNumber.trim(),
       });
       setStage("test");
     } catch (err) {
-      setEmailError(err.message);
+      setFormError(err.message);
     } finally {
       setSubmitting(false);
     }
-  }, [email, roomId, deviceId]);
+  }, [fullName, studentNumber, roomId, deviceId]);
 
   // Handle answer selection
   const handleAnswerChange = (questionIndex, value) => {
@@ -333,13 +334,24 @@ function PersonalityTestPublic() {
             )}
 
             <TextField
-              label="Email Address"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={!!emailError}
-              helperText={emailError}
+              label="Ad Soyad"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              error={!!formError && !fullName.trim()}
+              helperText={!fullName.trim() && formError ? formError : ""}
               fullWidth
+              required
+              sx={{ mb: 2 }}
+            />
+
+            <TextField
+              label="Öğrenci Numarası"
+              value={studentNumber}
+              onChange={(e) => setStudentNumber(e.target.value)}
+              error={!!formError && !studentNumber.trim()}
+              helperText={!studentNumber.trim() && formError ? formError : ""}
+              fullWidth
+              required
               sx={{ mb: 3 }}
             />
 
