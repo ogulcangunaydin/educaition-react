@@ -27,6 +27,7 @@ import {
   ContentCopy as CopyIcon,
   Refresh as RefreshIcon,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { Typography } from "@components/atoms";
 import { TEST_TYPE_CONFIG, generateRoomUrl } from "@services/testRoomService";
 
@@ -41,6 +42,7 @@ function RoomInfoHeader({
   extraActions,
 }) {
   const [copySuccess, setCopySuccess] = useState(false);
+  const { t, i18n } = useTranslation();
 
   const config = testType ? TEST_TYPE_CONFIG[testType] : null;
   const inProgressCount = participantCount - completedCount;
@@ -67,14 +69,18 @@ function RoomInfoHeader({
             <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
               <Typography variant="h5">{room?.name}</Typography>
               <Chip
-                label={room?.is_active ? "Aktif" : "Pasif"}
+                label={room?.is_active ? t("tests.status.active") : t("tests.status.inactive")}
                 color={room?.is_active ? "success" : "default"}
                 size="small"
               />
             </Box>
             <Typography variant="body2" color="text.secondary">
-              Oluşturulma:{" "}
-              {room?.created_at ? new Date(room.created_at).toLocaleDateString("tr-TR") : "-"}
+              {t("common.createdAt")}{" "}
+              {room?.created_at
+                ? new Date(room.created_at).toLocaleDateString(
+                    i18n.language === "tr" ? "tr-TR" : "en-US"
+                  )
+                : "-"}
             </Typography>
           </Grid>
 
@@ -89,21 +95,21 @@ function RoomInfoHeader({
               }}
             >
               {onShowQR && (
-                <Tooltip title="QR Kod Göster">
+                <Tooltip title={t("common.showQRCode")}>
                   <IconButton color="primary" onClick={onShowQR}>
                     <QRIcon />
                   </IconButton>
                 </Tooltip>
               )}
               {roomId && testType && (
-                <Tooltip title={copySuccess ? "Kopyalandı!" : "URL Kopyala"}>
+                <Tooltip title={copySuccess ? t("common.copied") : t("common.copyURL")}>
                   <IconButton color={copySuccess ? "success" : "primary"} onClick={handleCopyUrl}>
                     <CopyIcon />
                   </IconButton>
                 </Tooltip>
               )}
               {onRefresh && (
-                <Tooltip title="Yenile">
+                <Tooltip title={t("common.refresh")}>
                   <IconButton color="primary" onClick={onRefresh}>
                     <RefreshIcon />
                   </IconButton>
@@ -122,7 +128,7 @@ function RoomInfoHeader({
                 {participantCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Toplam Katılımcı
+                {t("tests.stats.totalParticipants")}
               </Typography>
             </Box>
           </Grid>
@@ -132,7 +138,7 @@ function RoomInfoHeader({
                 {completedCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Tamamlayan
+                {t("tests.stats.completedCount")}
               </Typography>
             </Box>
           </Grid>
@@ -142,7 +148,7 @@ function RoomInfoHeader({
                 {inProgressCount}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Devam Eden
+                {t("tests.stats.inProgressCount")}
               </Typography>
             </Box>
           </Grid>
@@ -152,7 +158,7 @@ function RoomInfoHeader({
                 {completionRate}%
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Tamamlama Oranı
+                {t("tests.stats.completionRate")}
               </Typography>
             </Box>
           </Grid>

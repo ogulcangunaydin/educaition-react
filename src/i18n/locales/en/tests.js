@@ -38,6 +38,7 @@ const tests = {
       name: "Full Name",
       email: "Email (optional)",
       studentId: "Student ID (optional)",
+      studentNumber: "Student No",
       department: "Department",
       continue: "Continue",
     },
@@ -64,6 +65,12 @@ const tests = {
         neuroticism: "Neuroticism",
       },
       resultsReady: "Your personality analysis is ready!",
+      roomDetail: {
+        pageTitle: "Personality Test Room",
+        traitsLabel: "Personality Traits",
+        resultsTitle: "Personality Test Results",
+        jobRecommendations: "Job Recommendations",
+      },
     },
 
     // Dissonance Test
@@ -108,10 +115,23 @@ const tests = {
       active: "Active",
       inactive: "Inactive",
       completed: "Completed",
+      inProgress: "In Progress",
       pending: "Pending",
       open: "Open",
       closed: "Closed",
     },
+
+    // Room statistics
+    stats: {
+      totalParticipants: "Total Participants",
+      completedCount: "Completed",
+      inProgressCount: "In Progress",
+      completionRate: "Completion Rate",
+    },
+
+    // Empty state
+    noParticipantsYet: "No participants yet",
+    shareQRDescription: "Share the QR code to let your students join the test.",
   },
 };
 

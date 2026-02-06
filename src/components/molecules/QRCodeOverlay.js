@@ -8,6 +8,7 @@ import React from "react";
 import { Box, styled } from "@mui/material";
 import { QRCodeCanvas } from "qrcode.react";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 import Button from "../atoms/Button";
 import Typography from "../atoms/Typography";
 import { COLORS, SPACING } from "../../theme";
@@ -38,6 +39,8 @@ const QRContainer = styled(Box)({
 });
 
 function QRCodeOverlay({ url, onClose, size = 256 }) {
+  const { t } = useTranslation();
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       onClose();
@@ -53,7 +56,7 @@ function QRCodeOverlay({ url, onClose, size = 256 }) {
           color={COLORS.primary.contrastText}
           sx={{ textAlign: "center" }}
         >
-          QR kod okunamıyorsa aşağıdaki linki tarayıcınıza yazabilirsiniz
+          {t("common.qrFallbackMessage")}
         </Typography>
         <Typography
           component="a"
@@ -74,7 +77,7 @@ function QRCodeOverlay({ url, onClose, size = 256 }) {
           {url}
         </Typography>
         <Button variant="outlined" onClick={onClose}>
-          Close
+          {t("common.close")}
         </Button>
       </QRContainer>
     </Backdrop>

@@ -34,13 +34,14 @@ import {
 } from "@mui/material";
 import { Download as DownloadIcon } from "@mui/icons-material";
 import PropTypes from "prop-types";
+import { useTranslation } from "react-i18next";
 import EmptyState from "../molecules/EmptyState";
 import Spinner from "../atoms/Spinner";
 
 /**
  * Built-in cell renderer based on column type
  */
-function renderCellByType(value, row, column) {
+function renderCellByType(value, row, column, locale = "tr-TR") {
   // Custom render always wins
   if (column.render) {
     return column.render(value, row);
@@ -56,7 +57,7 @@ function renderCellByType(value, row, column) {
     case "date":
       if (!value) return "-";
       try {
-        return new Date(value).toLocaleDateString("tr-TR");
+        return new Date(value).toLocaleDateString(locale);
       } catch {
         return value;
       }
@@ -78,7 +79,7 @@ function renderCellByType(value, row, column) {
  * Converts a cell value to a plain-text string suitable for CSV export.
  * Uses the column's `exportValue(value, row)` if provided, then falls back to type-based formatting.
  */
-function getCSVCellText(value, row, column) {
+function getCSVCellText(value, row, column, locale = "tr-TR") {
   if (column.exportValue) return column.exportValue(value, row);
   if (column.sortable === false && !column.exportValue) return undefined; // skip action columns
 
@@ -90,7 +91,7 @@ function getCSVCellText(value, row, column) {
     case "date":
       if (!value) return "";
       try {
-        return new Date(value).toLocaleDateString("tr-TR");
+        return new Date(value).toLocaleDateString(locale);
       } catch {
         return String(value);
       }
@@ -112,15 +113,16 @@ function getCSVCellText(value, row, column) {
  * @param {Array} columns - DataTable column definitions
  * @param {Array} data - Row data array
  * @param {string} [fileName="export"] - File name without extension
+ * @param {string} [locale="tr-TR"] - Locale for date formatting
  */
-export function exportTableToCSV(columns, data, fileName = "export") {
+export function exportTableToCSV(columns, data, fileName = "export", locale = "tr-TR") {
   // Filter out non-exportable columns (e.g. action columns with sortable=false and no exportValue)
   const exportColumns = columns.filter((col) => col.sortable !== false || col.exportValue);
 
   const headers = exportColumns.map((col) => col.label);
   const rows = data.map((row) =>
     exportColumns.map((col) => {
-      const text = getCSVCellText(row[col.id], row, col);
+      const text = getCSVCellText(row[col.id], row, col, locale);
       // Escape double quotes and wrap in quotes
       return `"${String(text ?? "").replace(/"/g, '""')}"`;
     })
@@ -161,6 +163,9 @@ function DataTable({
   const [order, setOrder] = useState(defaultSortOrder);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(pageSize);
+  const { t, i18n } = useTranslation();
+
+  const locale = i18n.language === "tr" ? "tr-TR" : "en-US";
 
   // Handle sorting
   const handleSort = (columnId) => {
@@ -238,14 +243,14 @@ function DataTable({
   const isIndeterminate = selectedIds.length > 0 && selectedIds.length < data.length;
 
   const handleExportCSV = () => {
-    exportTableToCSV(columns, data, exportFileName);
+    exportTableToCSV(columns, data, exportFileName, locale);
   };
 
   return (
     <Box {...props}>
       {exportable && (
         <Box sx={{ display: "flex", justifyContent: "flex-end", mb: 1 }}>
-          <Tooltip title="CSV İndir">
+          <Tooltip title={t("common.downloadCSV")}>
             <IconButton size="small" onClick={handleExportCSV} color="primary">
               <DownloadIcon />
             </IconButton>
@@ -285,7 +290,7 @@ function DataTable({
                   )}
                 </TableCell>
               ))}
-              {actions.length > 0 && <TableCell align="right">İşlemler</TableCell>}
+              {actions.length > 0 && <TableCell align="right">{t("common.actions")}</TableCell>}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -312,7 +317,7 @@ function DataTable({
                   )}
                   {columns.map((column) => (
                     <TableCell key={column.id} align={column.align || "left"}>
-                      {renderCellByType(row[column.id], row, column)}
+                      {renderCellByType(row[column.id], row, column, locale)}
                     </TableCell>
                   ))}
                   {actions.length > 0 && (
@@ -349,9 +354,11 @@ function DataTable({
           page={page}
           onPageChange={handleChangePage}
           onRowsPerPageChange={handleChangeRowsPerPage}
-          labelRowsPerPage="Sayfa başına:"
+          labelRowsPerPage={t("common.rowsPerPage")}
           labelDisplayedRows={({ from, to, count }) =>
-            `${from}-${to} / ${count !== -1 ? count : `${to}'den fazla`}`
+            count !== -1
+              ? t("common.displayedRows", { from, to, count })
+              : t("common.displayedRowsMore", { from, to })
           }
         />
       )}

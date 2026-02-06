@@ -41,7 +41,18 @@ const common = {
     noData: "Veri bulunamadı",
     noResults: "Sonuç bulunamadı",
     tryAgain: "Tekrar deneyin",
+    retry: "Tekrar Dene",
     somethingWentWrong: "Bir şeyler yanlış gitti",
+    errorTitle: "Hata",
+    rowsPerPage: "Sayfa başına:",
+    downloadCSV: "CSV İndir",
+    copied: "Kopyalandı!",
+    copyURL: "URL Kopyala",
+    showQRCode: "QR Kod Göster",
+    createdAt: "Oluşturulma:",
+    qrFallbackMessage: "QR kod okunamıyorsa aşağıdaki linki tarayıcınıza yazabilirsiniz",
+    displayedRows: "{{from}}-{{to}} / {{count}}",
+    displayedRowsMore: "{{from}}-{{to}} / {{to}}'den fazla",
   },
 };
 

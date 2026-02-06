@@ -11,11 +11,19 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Box, CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import PageLayout from "./PageLayout";
 
-function PageLoading({ title = "Yükleniyor...", onBack, maxWidth = "lg" }) {
+function PageLoading({ title, onBack, maxWidth = "lg" }) {
+  const { t } = useTranslation();
+
   return (
-    <PageLayout title={title} showBackButton={!!onBack} onBack={onBack} maxWidth={maxWidth}>
+    <PageLayout
+      title={title || t("common.loading")}
+      showBackButton={!!onBack}
+      onBack={onBack}
+      maxWidth={maxWidth}
+    >
       <Box sx={{ display: "flex", justifyContent: "center", py: 8 }}>
         <CircularProgress />
       </Box>

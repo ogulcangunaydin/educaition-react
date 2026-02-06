@@ -38,6 +38,7 @@ const tests = {
       name: "Ad Soyad",
       email: "E-posta (isteğe bağlı)",
       studentId: "Öğrenci Numarası (isteğe bağlı)",
+      studentNumber: "Öğrenci No",
       department: "Bölüm",
       continue: "Devam Et",
     },
@@ -64,6 +65,12 @@ const tests = {
         neuroticism: "Duygusal Dengesizlik",
       },
       resultsReady: "Kişilik analiziniz hazır!",
+      roomDetail: {
+        pageTitle: "Kişilik Testi Odası",
+        traitsLabel: "Kişilik Özellikleri",
+        resultsTitle: "Kişilik Testi Sonuçları",
+        jobRecommendations: "Meslek Tavsiyeleri",
+      },
     },
 
     // Dissonance Test
@@ -108,10 +115,23 @@ const tests = {
       active: "Aktif",
       inactive: "Pasif",
       completed: "Tamamlandı",
+      inProgress: "Devam Ediyor",
       pending: "Beklemede",
       open: "Açık",
       closed: "Kapalı",
     },
+
+    // Room statistics
+    stats: {
+      totalParticipants: "Toplam Katılımcı",
+      completedCount: "Tamamlayan",
+      inProgressCount: "Devam Eden",
+      completionRate: "Tamamlama Oranı",
+    },
+
+    // Empty state
+    noParticipantsYet: "Henüz katılımcı yok",
+    shareQRDescription: "QR kodu paylaşarak öğrencilerinizin teste katılmasını sağlayın.",
   },
 };
 

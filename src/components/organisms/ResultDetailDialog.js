@@ -35,6 +35,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { Close as CloseIcon } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import Typography from "../atoms/Typography";
 import Button from "../atoms/Button";
 
@@ -60,11 +61,12 @@ function ResultDetailDialog({
   subtitle: subtitleOverride,
   children,
   maxWidth = "md",
-  closeLabel = "Kapat",
+  closeLabel,
   actions,
 }) {
   const theme = useTheme();
   const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { t } = useTranslation();
 
   const subtitle = subtitleOverride ?? getParticipantSubtitle(participant);
 
@@ -95,7 +97,7 @@ function ResultDetailDialog({
 
       <DialogActions>
         {actions}
-        <Button onClick={onClose}>{closeLabel}</Button>
+        <Button onClick={onClose}>{closeLabel || t("common.close")}</Button>
       </DialogActions>
     </Dialog>
   );

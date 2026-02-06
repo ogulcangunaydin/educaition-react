@@ -11,22 +11,30 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Alert } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import PageLayout from "./PageLayout";
 
-function PageError({ title = "Hata", message, onBack, onRetry, maxWidth = "lg" }) {
+function PageError({ title, message, onBack, onRetry, maxWidth = "lg" }) {
+  const { t } = useTranslation();
+
   return (
-    <PageLayout title={title} showBackButton={!!onBack} onBack={onBack} maxWidth={maxWidth}>
+    <PageLayout
+      title={title || t("common.errorTitle")}
+      showBackButton={!!onBack}
+      onBack={onBack}
+      maxWidth={maxWidth}
+    >
       <Alert
         severity="error"
         action={
           onRetry ? (
             <span onClick={onRetry} style={{ cursor: "pointer", textDecoration: "underline" }}>
-              Tekrar Dene
+              {t("common.retry")}
             </span>
           ) : undefined
         }
       >
-        {message || "Bir hata oluştu"}
+        {message || t("common.error")}
       </Alert>
     </PageLayout>
   );

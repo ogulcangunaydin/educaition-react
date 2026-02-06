@@ -11,23 +11,21 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { QrCode2 as QRIcon } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import Button from "../atoms/Button";
 import EmptyState from "./EmptyState";
 
-function RoomParticipantEmptyState({
-  title = "Henüz katılımcı yok",
-  description = "QR kodu paylaşarak öğrencilerinizin teste katılmasını sağlayın.",
-  onShowQR,
-  buttonLabel = "QR Kodu Göster",
-}) {
+function RoomParticipantEmptyState({ title, description, onShowQR, buttonLabel }) {
+  const { t } = useTranslation();
+
   return (
     <EmptyState
-      title={title}
-      message={description}
+      title={title || t("tests.noParticipantsYet")}
+      message={description || t("tests.shareQRDescription")}
       action={
         onShowQR ? (
           <Button variant="contained" startIcon={<QRIcon />} onClick={onShowQR}>
-            {buttonLabel}
+            {buttonLabel || t("common.showQRCode")}
           </Button>
         ) : undefined
       }

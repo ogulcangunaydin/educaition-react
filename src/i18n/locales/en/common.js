@@ -41,7 +41,19 @@ const common = {
     noData: "No data available",
     noResults: "No results found",
     tryAgain: "Try again",
+    retry: "Retry",
     somethingWentWrong: "Something went wrong",
+    errorTitle: "Error",
+    rowsPerPage: "Rows per page:",
+    downloadCSV: "Download CSV",
+    copied: "Copied!",
+    copyURL: "Copy URL",
+    showQRCode: "Show QR Code",
+    createdAt: "Created:",
+    qrFallbackMessage:
+      "If the QR code cannot be scanned, you can type the link below in your browser",
+    displayedRows: "{{from}}-{{to}} of {{count}}",
+    displayedRowsMore: "{{from}}-{{to}} of more than {{to}}",
   },
 };
 

@@ -9,6 +9,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { IconButton, Tooltip } from "@mui/material";
 import { Visibility as ViewIcon } from "@mui/icons-material";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
@@ -20,6 +21,7 @@ import { getTestRoom, generateRoomUrl, TestType } from "@services/testRoomServic
 function PersonalityTestRoomDetail() {
   const { roomId } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [room, setRoom] = useState(null);
   const [participants, setParticipants] = useState([]);
@@ -64,16 +66,16 @@ function PersonalityTestRoomDetail() {
 
   // Radar chart labels for Big Five personality traits
   const personalityLabels = [
-    "Dışadönüklük",
-    "Uyumluluk",
-    "Sorumluluk",
-    "Olumsuz Duygusallık",
-    "Açık Fikirlilik",
+    t("tests.personality.traits.extraversion"),
+    t("tests.personality.traits.agreeableness"),
+    t("tests.personality.traits.conscientiousness"),
+    t("tests.personality.traits.neuroticism"),
+    t("tests.personality.traits.openness"),
   ];
 
   const getRadarDatasets = (participant) => [
     {
-      label: "Kişilik Özellikleri",
+      label: t("tests.personality.roomDetail.traitsLabel"),
       data: [
         participant.extroversion ?? 0,
         participant.agreeableness ?? 0,
@@ -86,7 +88,7 @@ function PersonalityTestRoomDetail() {
 
   return (
     <PageLayout
-      title={room?.name || "Kişilik Testi Odası"}
+      title={room?.name || t("tests.personality.roomDetail.pageTitle")}
       maxWidth="lg"
       showBackButton
       onBack={() => navigate("/personality-test-rooms")}
@@ -108,37 +110,61 @@ function PersonalityTestRoomDetail() {
       ) : (
         <DataTable
           columns={[
-            { id: "full_name", label: "Ad Soyad", type: "string" },
-            { id: "student_number", label: "Öğrenci No", type: "string" },
+            { id: "full_name", label: t("tests.participantInfo.name"), type: "string" },
+            {
+              id: "student_number",
+              label: t("tests.participantInfo.studentNumber"),
+              type: "string",
+            },
             {
               id: "has_completed",
-              label: "Durum",
+              label: t("common.status"),
               align: "center",
               type: "chip",
               chipConfig: (value) => ({
-                label: value ? "Tamamlandı" : "Devam Ediyor",
+                label: value ? t("tests.status.completed") : t("tests.status.inProgress"),
                 color: value ? "success" : "warning",
               }),
             },
-            { id: "extroversion", label: "Dışa Dönüklük", align: "center", type: "percentage" },
-            { id: "agreeableness", label: "Uyumluluk", align: "center", type: "percentage" },
-            { id: "conscientiousness", label: "Sorumluluk", align: "center", type: "percentage" },
             {
-              id: "negative_emotionality",
-              label: "Duygusal Denge",
+              id: "extroversion",
+              label: t("tests.personality.traits.extraversion"),
               align: "center",
               type: "percentage",
             },
-            { id: "open_mindedness", label: "Açıklık", align: "center", type: "percentage" },
-            { id: "created_at", label: "Tarih", type: "date" },
+            {
+              id: "agreeableness",
+              label: t("tests.personality.traits.agreeableness"),
+              align: "center",
+              type: "percentage",
+            },
+            {
+              id: "conscientiousness",
+              label: t("tests.personality.traits.conscientiousness"),
+              align: "center",
+              type: "percentage",
+            },
+            {
+              id: "negative_emotionality",
+              label: t("tests.personality.traits.neuroticism"),
+              align: "center",
+              type: "percentage",
+            },
+            {
+              id: "open_mindedness",
+              label: t("tests.personality.traits.openness"),
+              align: "center",
+              type: "percentage",
+            },
+            { id: "created_at", label: t("common.date"), type: "date" },
             {
               id: "actions",
-              label: "Sonuç",
+              label: t("tests.result"),
               align: "center",
               sortable: false,
               render: (_value, row) =>
                 row.has_completed ? (
-                  <Tooltip title="Sonuçları Görüntüle">
+                  <Tooltip title={t("tests.viewResults")}>
                     <IconButton
                       color="primary"
                       size="small"
@@ -158,7 +184,7 @@ function PersonalityTestRoomDetail() {
           defaultSortOrder="desc"
           exportable
           exportFileName={`personality_test_${room?.name || roomId}_${new Date().toISOString().split("T")[0]}`}
-          emptyMessage="Henüz katılımcı yok"
+          emptyMessage={t("tests.noParticipantsYet")}
         />
       )}
 
@@ -166,7 +192,7 @@ function PersonalityTestRoomDetail() {
       <ResultDetailDialog
         open={!!selectedParticipant}
         onClose={() => setSelectedParticipant(null)}
-        title="Kişilik Testi Sonuçları"
+        title={t("tests.personality.roomDetail.resultsTitle")}
         participant={selectedParticipant}
       >
         {selectedParticipant && (
@@ -177,7 +203,7 @@ function PersonalityTestRoomDetail() {
               sx={{ mb: 3 }}
             />
             <MarkdownSection
-              title="Meslek Tavsiyeleri"
+              title={t("tests.personality.roomDetail.jobRecommendations")}
               content={selectedParticipant.job_recommendation}
             />
           </>
@@ -189,7 +215,7 @@ function PersonalityTestRoomDetail() {
         <QRCodeOverlay
           url={roomUrl}
           onClose={() => setShowQR(false)}
-          title={`${room?.name} - Kişilik Testi`}
+          title={`${room?.name} - ${t("tests.personality.title")}`}
         />
       )}
     </PageLayout>
