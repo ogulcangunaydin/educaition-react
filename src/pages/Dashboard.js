@@ -19,6 +19,7 @@ import {
   PlayCircle,
   People,
   Today,
+  AdminPanelSettings,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { PageLayout } from "@components/templates";
@@ -71,6 +72,14 @@ const MODULE_CONFIG = [
     path: "/personality-test-rooms",
     icon: Person,
     color: "#00897b",
+  },
+  {
+    id: "user-management",
+    translationKey: "userManagement",
+    path: "/user-management",
+    icon: AdminPanelSettings,
+    color: "#d32f2f",
+    adminOnly: true,
   },
 ];
 

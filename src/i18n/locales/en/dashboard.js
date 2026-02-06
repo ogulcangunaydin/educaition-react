@@ -43,6 +43,10 @@ const dashboard = {
         title: "Personality Test",
         description: "Big Five personality test rooms",
       },
+      userManagement: {
+        title: "User Management",
+        description: "Manage users, roles and permissions",
+      },
     },
 
     // Quick actions

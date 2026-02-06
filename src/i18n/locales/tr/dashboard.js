@@ -43,6 +43,10 @@ const dashboard = {
         title: "Kişilik Testi",
         description: "Big Five kişilik testi odaları",
       },
+      userManagement: {
+        title: "Kullanıcı Yönetimi",
+        description: "Kullanıcıları, rolleri ve yetkileri yönetin",
+      },
     },
 
     // Quick actions

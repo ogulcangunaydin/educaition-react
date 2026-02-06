@@ -25,8 +25,7 @@ import { LanguageSwitcher } from "@molecules";
 // Login variants configuration
 const LOGIN_VARIANTS = {
   educaition: {
-    logo: "/educaition_logo.svg", // Placeholder - will use default if not exists
-    fallbackLogo: "/halic_universitesi_logo.svg",
+    logo: "/educaition_logo.png",
     allowedRoles: ["admin", "teacher"],
     redirectPath: "/dashboard",
     translationKey: "educaition",

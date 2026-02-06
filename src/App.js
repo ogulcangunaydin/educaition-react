@@ -5,6 +5,7 @@ import { ROLES, TEST_TYPES } from "@config/permissions";
 
 import { Login } from "@pages/auth";
 import Dashboard from "@pages/Dashboard";
+import UserManagement from "@pages/UserManagement";
 import Unauthorized from "@pages/Unauthorized";
 
 import { GameRoom, PlayGround, LeaderBoard, TacticPreparation } from "@pages/prisoners-dilemma";
@@ -33,6 +34,7 @@ import PersonalityTestPublic from "@pages/PersonalityTestPublic";
 import DissonanceTestPublic from "@pages/DissonanceTestPublic";
 import PrisonersDilemmaPublic from "@pages/PrisonersDilemmaPublic";
 
+const ADMIN_ONLY = [ROLES.ADMIN];
 const ADMIN_TEACHER = [ROLES.ADMIN, ROLES.TEACHER];
 const VIEWER_PLUS = [ROLES.ADMIN, ROLES.TEACHER, ROLES.VIEWER];
 const ALL_AUTHENTICATED = [ROLES.ADMIN, ROLES.TEACHER, ROLES.VIEWER];
@@ -80,6 +82,16 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={ALL_AUTHENTICATED}>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* User Management - Admin Only */}
+      <Route
+        path="/user-management"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_ONLY}>
+            <UserManagement />
           </ProtectedRoute>
         }
       />

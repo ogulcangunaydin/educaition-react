@@ -30,6 +30,7 @@ export const MODULE_ACCESS = {
   "university-comparison": [ROLES.ADMIN, ROLES.VIEWER],
   "program-suggestion": [ROLES.ADMIN, ROLES.TEACHER],
   "personality-test": [ROLES.ADMIN, ROLES.TEACHER],
+  "user-management": [ROLES.ADMIN],
 };
 
 export const canAccessModule = (user, moduleId) => {
@@ -57,6 +58,12 @@ export const ROUTE_PERMISSIONS = {
   "/leaderboard/:sessionId": {
     requireAuth: true,
     allowedRoles: [ROLES.ADMIN, ROLES.TEACHER],
+  },
+
+  // User Management - Admin only
+  "/user-management": {
+    requireAuth: true,
+    allowedRoles: [ROLES.ADMIN],
   },
 
   // Test Management - Unified test room management
