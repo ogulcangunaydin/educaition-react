@@ -87,7 +87,7 @@ export default function usePlayground(roomId) {
   const openQR = useCallback(() => setShowQR(true), []);
   const closeQR = useCallback(() => setShowQR(false), []);
 
-  const qrUrl = `${FRONTEND_BASE_URL}/personalitytest/room/${roomId}`;
+  const qrUrl = `${FRONTEND_BASE_URL}/prisoners-dilemma/${roomId}`;
 
   return {
     participants,

@@ -1,138 +1,124 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Typography, Container } from "@mui/material";
 
 const PrisonersDilemmaInstructions = () => {
+  const { t } = useTranslation();
+  const k = (key) => t(`tests.prisonersDilemma.instructions.${key}`);
+
   return (
     <Container style={{ marginTop: "100px" }}>
       <Typography variant="h4" gutterBottom>
-        Welcome to the Prisoner's Dilemma Game!
+        {k("welcomeTitle")}
       </Typography>
 
       <Typography variant="body1" paragraph>
-        In this game, you and another player will repeatedly choose to either cooperate or defect.
-        Your choices will affect both your outcomes and the other player's outcomes. Here's how you
-        can define your tactic:
+        {k("intro")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Understanding the Choices:
+        {k("choicesTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>1. Cooperate</strong>: If you choose to cooperate, you are trusting the other player
-        and working together for a potentially better mutual outcome.
+        <strong>1. {t("tests.prisonersDilemma.cooperate")}</strong>: {k("cooperateDesc")}
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>2. Defect</strong>: If you choose to defect, you are acting in your own
-        self-interest, which could lead to a better individual outcome but might hurt the other
-        player.
+        <strong>2. {t("tests.prisonersDilemma.defect")}</strong>: {k("defectDesc")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Scoring System:
+        {k("scoringTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        Each round, you and your opponent will receive points based on your choices. The payoffs for
-        each possible combination of choices are as follows:
+        {k("scoringIntro")}
       </Typography>
       <Typography variant="body1" paragraph>
         <ul>
           <li>
-            <strong>Both Cooperate</strong>: Both players receive 3 points.
+            <strong>{k("bothCooperate")}</strong>
           </li>
           <li>
-            <strong>You Cooperate, Opponent Defects</strong>: You receive 0 points (Sucker's
-            payoff), and your opponent receives 5 points (Temptation).
+            <strong>{k("youCooperateTheyDefect")}</strong>
           </li>
           <li>
-            <strong>You Defect, Opponent Cooperates</strong>: You receive 5 points (Temptation), and
-            your opponent receives 0 points (Sucker's payoff).
+            <strong>{k("youDefectTheyCooperate")}</strong>
           </li>
           <li>
-            <strong>Both Defect</strong>: Both players receive 1 point (Punishment).
+            <strong>{k("bothDefect")}</strong>
           </li>
         </ul>
       </Typography>
       <Typography variant="body1" paragraph>
-        The goal is to maximize your points over multiple rounds and finish at the top of the
-        leaderboard.
+        {k("scoringGoal")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Your Task:
+        {k("taskTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        We need you to describe the strategy or tactic you would like to use in the game. This
-        tactic will be used to determine your next move based on the previous rounds of the game.
+        {k("taskDesc")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        How to Describe Your Tactic:
+        {k("howToDescribeTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>1. Be Specific</strong>: Clearly state when you would choose to cooperate and when
-        you would choose to defect. For example, you might want to cooperate if both players
-        cooperated in the last round, or defect if the opponent defected last time.
+        <strong>1. </strong>
+        {k("beSpecific")}
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>2. Consider Different Scenarios:</strong>
+        <strong>2. {k("considerScenarios")}</strong>
       </Typography>
       <Typography variant="body1" paragraph>
-        - What will you do if both you and the opponent cooperated in the last round?
+        - {k("scenario1")}
       </Typography>
       <Typography variant="body1" paragraph>
-        - What will you do if you cooperated and the opponent defected?
+        - {k("scenario2")}
       </Typography>
       <Typography variant="body1" paragraph>
-        - What will you do if you defected and the opponent cooperated?
+        - {k("scenario3")}
       </Typography>
       <Typography variant="body1" paragraph>
-        - What will you do if both you and the opponent defected?
+        - {k("scenario4")}
       </Typography>
 
       <Typography variant="body1" paragraph>
-        <strong>3. Think About Patterns:</strong> You can also think about patterns over several
-        rounds. For example, you might cooperate if the opponent has cooperated for the last three
-        rounds, or defect if they have defected two times in a row.
+        <strong>3. </strong>
+        {k("thinkPatterns")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Example Tactics:
+        {k("examplesTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>Always Cooperate</strong>: Always choose to cooperate, regardless of the opponent's
-        previous moves.
+        <strong>{k("alwaysCooperate")}</strong>
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>Always Defect</strong>: Always choose to defect, regardless of the opponent's
-        previous moves.
+        <strong>{k("alwaysDefect")}</strong>
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>Tit for Tat</strong>: Start by cooperating, then in each subsequent round, do
-        whatever the opponent did in the previous round.
+        <strong>{k("titForTat")}</strong>
       </Typography>
       <Typography variant="body1" paragraph>
-        <strong>Grim Trigger</strong>: Start by cooperating, but if the opponent ever defects,
-        defect for the rest of the game.
+        <strong>{k("grimTrigger")}</strong>
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Your Tactic:
+        {k("yourTacticTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        Now it's your turn! Describe your tactic in detail. Remember, the more specific you are, the
-        better your strategy will be implemented in the game.
+        {k("yourTacticDesc")}
       </Typography>
 
       <Typography variant="h6" gutterBottom>
-        Leaderboard:
+        {k("leaderboardTitle")}
       </Typography>
       <Typography variant="body1" paragraph>
-        At the end of the game, your total points will determine your position on the leaderboard.
-        Aim to develop a strategy that maximizes your points and helps you climb to the top!
+        {k("leaderboardDesc")}
       </Typography>
 
       <Typography variant="body1" paragraph>
-        Feel free to ask if you need more information or have any questions!
+        {k("questions")}
       </Typography>
     </Container>
   );

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { useTheme, useMediaQuery, Menu, MenuItem, Chip } from "@mui/material";
-import { Radar } from "react-chartjs-2";
+import { useTranslation } from "react-i18next";
+import { Menu, MenuItem, Chip } from "@mui/material";
 import QrCodeIcon from "@mui/icons-material/QrCode";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import VisibilityIcon from "@mui/icons-material/Visibility";
@@ -12,17 +12,16 @@ import HistoryIcon from "@mui/icons-material/History";
 import { PageLayout } from "@components/templates";
 import { Button, TextField, Modal, Card, GridContainer, GridItem, Flex } from "@components/atoms";
 import { EmptyState, ConfirmDialog, QRCodeOverlay } from "@components/molecules";
+import { RadarChart } from "@components/organisms";
 import ParticipantDetailCard from "@organisms/ParticipantDetailCard";
 import { usePlayground } from "@hooks/prisoners-dilemma";
-import { COLORS, SPACING } from "@theme";
 import "./styles.css";
 
 export default function PlayGround() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
+  const { t } = useTranslation();
   const roomName = location.state?.roomName || "";
 
   const {
@@ -77,42 +76,27 @@ export default function PlayGround() {
 
   const getRadarConfig = useCallback(
     (p) => ({
-      data: {
-        labels: [
-          "Extroversion",
-          "Agreeableness",
-          "Conscientiousness",
-          "Negative Emotionality",
-          "Open-mindedness",
-        ],
-        datasets: [
-          {
-            label: "Personality Traits",
-            data: [
-              p.extroversion ?? 0,
-              p.agreeableness ?? 0,
-              p.conscientiousness ?? 0,
-              p.negative_emotionality ?? 0,
-              p.open_mindedness ?? 0,
-            ],
-            backgroundColor: "rgba(0, 27, 195, 0.2)",
-            borderColor: COLORS.primary,
-            borderWidth: 2,
-          },
-        ],
-      },
-      options: {
-        scales: {
-          r: {
-            beginAtZero: true,
-            max: 100,
-            pointLabels: { font: { size: isSmallScreen ? 12 : 16 } },
-          },
+      labels: [
+        t("tests.personality.traits.extraversion"),
+        t("tests.personality.traits.agreeableness"),
+        t("tests.personality.traits.conscientiousness"),
+        t("tests.personality.traits.neuroticism"),
+        t("tests.personality.traits.openness"),
+      ],
+      datasets: [
+        {
+          label: t("tests.prisonersDilemma.playgroundPage.personalityTraits"),
+          data: [
+            p.extroversion ?? 0,
+            p.agreeableness ?? 0,
+            p.conscientiousness ?? 0,
+            p.negative_emotionality ?? 0,
+            p.open_mindedness ?? 0,
+          ],
         },
-        plugins: { legend: { display: true, position: "top" } },
-      },
+      ],
     }),
-    [isSmallScreen]
+    [t]
   );
 
   const hasAllTraits = (p) =>
@@ -127,14 +111,20 @@ export default function PlayGround() {
   const headerActions = useMemo(
     () => (
       <Flex gap="sm" wrap>
-        <Chip label={`${participants.length} Participants`} color="primary" variant="outlined" />
+        <Chip
+          label={`${participants.length} ${t("tests.participants")}`}
+          color="primary"
+          variant="outlined"
+        />
         <Button
           variant="outlined"
           onClick={toggleBlur}
           disabled={!isAuthenticated}
           startIcon={blurText ? <VisibilityIcon /> : <VisibilityOffIcon />}
         >
-          {blurText ? "Show" : "Hide"}
+          {blurText
+            ? t("tests.prisonersDilemma.playgroundPage.show")
+            : t("tests.prisonersDilemma.playgroundPage.hide")}
         </Button>
         <Button
           variant="outlined"
@@ -142,7 +132,7 @@ export default function PlayGround() {
           disabled={!isAuthenticated}
           startIcon={<ArrowBackIcon />}
         >
-          Rooms
+          {t("tests.rooms")}
         </Button>
         <Button variant="outlined" onClick={openQR} startIcon={<QrCodeIcon />}>
           QR
@@ -153,7 +143,7 @@ export default function PlayGround() {
           disabled={!isAuthenticated}
           startIcon={<PlayArrowIcon />}
         >
-          Start
+          {t("tests.prisonersDilemma.playgroundPage.start")}
         </Button>
         {sessions.length > 0 && (
           <Button
@@ -161,12 +151,21 @@ export default function PlayGround() {
             onClick={(e) => setAnchorEl(e.currentTarget)}
             startIcon={<HistoryIcon />}
           >
-            Sessions
+            {t("tests.prisonersDilemma.playgroundPage.sessions")}
           </Button>
         )}
       </Flex>
     ),
-    [participants.length, blurText, isAuthenticated, sessions.length, navigate, toggleBlur, openQR]
+    [
+      participants.length,
+      blurText,
+      isAuthenticated,
+      sessions.length,
+      navigate,
+      toggleBlur,
+      openQR,
+      t,
+    ]
   );
 
   return (
@@ -193,15 +192,15 @@ export default function PlayGround() {
 
       {participants.length === 0 ? (
         <EmptyState
-          title="No Participants Yet"
-          message="Share the QR code to invite participants."
-          actionLabel="Show QR Code"
+          title={t("tests.noParticipantsYet")}
+          message={t("tests.shareQRDescription")}
+          actionLabel={t("tests.prisonersDilemma.playgroundPage.showQRCode")}
           onAction={openQR}
         />
       ) : (
         <GridContainer spacing="lg">
           {participants.map((p) => {
-            const { data, options } = getRadarConfig(p);
+            const { labels, datasets } = getRadarConfig(p);
             return (
               <GridItem key={p.id} xs={12} md={6}>
                 <Card
@@ -214,15 +213,13 @@ export default function PlayGround() {
                         size="small"
                         onClick={() => setDeleteId(p.id)}
                       >
-                        Delete
+                        {t("common.delete")}
                       </Button>
                     )
                   }
                 >
                   {hasAllTraits(p) && !blurText && (
-                    <div className="radar-container">
-                      <Radar data={data} options={options} />
-                    </div>
+                    <RadarChart labels={labels} datasets={datasets} showLegend sx={{ mb: 2 }} />
                   )}
                   <ParticipantDetailCard
                     participant={p}
@@ -239,29 +236,28 @@ export default function PlayGround() {
       <Modal
         open={showSessionModal}
         onClose={() => setShowSessionModal(false)}
-        title="Start New Session"
+        title={t("tests.prisonersDilemma.playgroundPage.startNewSession")}
         actions={
           <>
             <Button variant="outlined" onClick={() => setShowSessionModal(false)}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="contained"
               disabled={!sessionName.trim()}
               onClick={handleCreateSession}
             >
-              Create
+              {t("common.create")}
             </Button>
           </>
         }
       >
         <TextField
-          label="Session Name"
+          label={t("tests.prisonersDilemma.playgroundPage.sessionName")}
           value={sessionName}
           onChange={(e) => setSessionName(e.target.value)}
           fullWidth
           required
-          sx={{ mb: SPACING.md }}
         />
       </Modal>
 
@@ -269,9 +265,9 @@ export default function PlayGround() {
         open={Boolean(deleteId)}
         onClose={() => setDeleteId(null)}
         onConfirm={handleDeleteParticipant}
-        title="Delete Participant"
-        message="Are you sure you want to delete this participant?"
-        confirmLabel="Delete"
+        title={t("tests.prisonersDilemma.playgroundPage.deleteParticipant")}
+        message={t("tests.prisonersDilemma.playgroundPage.deleteConfirm")}
+        confirmLabel={t("common.delete")}
         confirmColor="error"
       />
 
@@ -279,9 +275,9 @@ export default function PlayGround() {
         open={showErrorDialog}
         onClose={() => setShowErrorDialog(false)}
         onConfirm={handleDeleteNotReady}
-        title="Error"
+        title={t("common.error")}
         message={errorMessage}
-        confirmLabel="Delete Not Ready & Start"
+        confirmLabel={t("tests.prisonersDilemma.playgroundPage.deleteNotReadyAndStart")}
         confirmColor="warning"
       />
     </PageLayout>

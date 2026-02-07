@@ -112,6 +112,46 @@ export async function savePlayerTactic(playerId, tactic) {
   return data;
 }
 
+/**
+ * Get GPT-generated probable reasons for a player's tactic
+ * @param {number} playerId - Player ID
+ * @param {string} language - Language code ("en" or "tr")
+ * @returns {Promise<string[]>} List of reason strings
+ */
+export async function getTacticReasons(playerId, language = "tr") {
+  const formData = new FormData();
+  formData.append("language", language);
+
+  const { ok, data, status } = await api.post(`/players/${playerId}/tactic-reasons`, formData);
+
+  if (!ok) {
+    throw new Error(`Failed to get tactic reasons: ${status}`);
+  }
+
+  return data.reasons;
+}
+
+/**
+ * Submit the selected tactic reason and get job recommendation
+ * @param {number} playerId - Player ID
+ * @param {string} reason - Selected reason text
+ * @param {string} language - Language code ("en" or "tr")
+ * @returns {Promise<Object>} Updated player with job_recommendation
+ */
+export async function submitTacticReason(playerId, reason, language = "tr") {
+  const formData = new FormData();
+  formData.append("reason", reason);
+  formData.append("language", language);
+
+  const { ok, data, status } = await api.post(`/players/${playerId}/tactic-reason`, formData);
+
+  if (!ok) {
+    throw new Error(`Failed to submit tactic reason: ${status}`);
+  }
+
+  return data;
+}
+
 const playerService = {
   getPlayersByRoom,
   getPlayersByIds,
@@ -119,6 +159,8 @@ const playerService = {
   createPlayer,
   savePlayerPersonality,
   savePlayerTactic,
+  getTacticReasons,
+  submitTacticReason,
 };
 
 export default playerService;

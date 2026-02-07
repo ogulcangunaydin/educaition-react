@@ -28,7 +28,7 @@ export const TEST_TYPE_CONFIG = {
     color: "#1976d2",
     icon: "Groups",
     endpoints: {
-      registration: "/players",
+      registration: "/players/register",
       submit: (participantId) => `/players/${participantId}/personality`,
     },
     rooms: {
@@ -38,7 +38,7 @@ export const TEST_TYPE_CONFIG = {
         "Mahkum ikilemi oyunu için oda oluşturun. Öğrenciler QR kod ile oyuna katılabilir.",
       emptyStateMessage:
         "Henüz oyun odası oluşturmadınız. Yeni bir oda oluşturarak oyun teorisi simülasyonunu başlatın.",
-      getDetailPath: (room) => `/playground/${room.id}`,
+      getDetailPath: (room) => `/prisoners-dilemma-room/${room.id}`,
     },
   },
   [TestType.DISSONANCE_TEST]: {
@@ -243,7 +243,7 @@ export function generateRoomUrl(roomId, testType) {
 
   switch (testType) {
     case TestType.PRISONERS_DILEMMA:
-      return `${baseUrl}/game-room/${roomId}`;
+      return `${baseUrl}/prisoners-dilemma/${roomId}`;
     case TestType.DISSONANCE_TEST:
       return `${baseUrl}/dissonance-test/${roomId}`;
     case TestType.PROGRAM_SUGGESTION:

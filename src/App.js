@@ -13,7 +13,8 @@ import {
   PlayGround,
   LeaderBoard,
   TacticPreparation,
-  PersonalityTest,
+  PrisonersDilemmaRoomDetail,
+  PrisonersDilemmaPublic,
 } from "@pages/prisoners-dilemma";
 
 import UniversityComparison from "@pages/UniversityComparison";
@@ -31,7 +32,6 @@ import { TestType } from "./services/testRoomService";
 import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
 import ProgramTestResult from "@pages/ProgramTestResult";
 import { DissonanceTestPublic, DissonanceTestRoomDetail } from "@pages/dissonance-test";
-import PrisonersDilemmaPublic from "@pages/PrisonersDilemmaPublic";
 
 const ADMIN_ONLY = [ROLES.ADMIN];
 const ADMIN_TEACHER = [ROLES.ADMIN, ROLES.TEACHER];
@@ -113,6 +113,14 @@ function AppRoutes() {
         }
       />
       <Route
+        path="/prisoners-dilemma-room/:roomId"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <PrisonersDilemmaRoomDetail />
+          </ProtectedRoute>
+        }
+      />
+      <Route
         path="/playground/:roomId"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
@@ -133,14 +141,6 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <LeaderBoard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/personalitytest/:type/:id"
-        element={
-          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <PersonalityTest />
           </ProtectedRoute>
         }
       />
@@ -277,7 +277,7 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/game-room/:roomId"
+        path="/prisoners-dilemma/:roomId"
         element={
           <TestPageGuard testType={TEST_TYPES.PRISONERS_DILEMMA}>
             <PrisonersDilemmaPublic />

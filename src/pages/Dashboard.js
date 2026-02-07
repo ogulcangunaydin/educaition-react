@@ -41,7 +41,7 @@ const MODULE_CONFIG = [
   {
     id: "prisoners-dilemma",
     translationKey: "prisonersDilemma",
-    path: "/rooms",
+    path: "/prisoners-dilemma-rooms",
     icon: Groups,
     color: "#1976d2",
   },

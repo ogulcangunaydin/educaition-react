@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 
@@ -12,6 +13,7 @@ import { SPACING } from "@theme";
 
 export default function GameRoom() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { rooms, loading, error, creating, createRoom, deleteRoom, refetch } = useRooms();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,18 +47,18 @@ export default function GameRoom() {
 
   return (
     <PageLayout
-      title="Game Rooms"
-      subtitle="Manage your Prisoners Dilemma game rooms"
+      title={t("tests.prisonersDilemma.gameRooms.title")}
+      subtitle={t("tests.prisonersDilemma.gameRooms.subtitle")}
       loading={loading}
       error={error}
       onRetry={refetch}
       headerActions={
         <>
           <Button variant="outlined" onClick={() => navigate("/dashboard")}>
-            Dashboard
+            {t("nav.dashboard")}
           </Button>
           <Button variant="contained" startIcon={<AddIcon />} onClick={openModal}>
-            Create Room
+            {t("tests.createRoom")}
           </Button>
         </>
       }
@@ -64,9 +66,9 @@ export default function GameRoom() {
       <div style={{ maxWidth: 600, margin: "0 auto" }}>
         {rooms.length === 0 ? (
           <EmptyState
-            title="No Rooms Yet"
-            message="Create your first game room to get started."
-            actionLabel="Create Room"
+            title={t("tests.prisonersDilemma.gameRooms.noRoomsTitle")}
+            message={t("tests.prisonersDilemma.gameRooms.noRoomsMessage")}
+            actionLabel={t("tests.createRoom")}
             onAction={openModal}
           />
         ) : (
@@ -97,11 +99,11 @@ export default function GameRoom() {
       <Modal
         open={modalOpen}
         onClose={closeModal}
-        title="Create New Room"
+        title={t("tests.prisonersDilemma.gameRooms.createTitle")}
         actions={
           <>
             <Button variant="outlined" onClick={closeModal}>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="contained"
@@ -109,7 +111,7 @@ export default function GameRoom() {
               disabled={!roomName.trim()}
               onClick={handleCreate}
             >
-              Create
+              {t("common.create")}
             </Button>
           </>
         }
@@ -117,10 +119,10 @@ export default function GameRoom() {
         <TextField
           autoFocus
           fullWidth
-          label="Room Name"
+          label={t("tests.prisonersDilemma.gameRooms.roomName")}
           value={roomName}
           onChange={(e) => setRoomName(e.target.value)}
-          placeholder="Enter room name"
+          placeholder={t("tests.prisonersDilemma.gameRooms.roomNamePlaceholder")}
           sx={{ mb: SPACING.md }}
         />
       </Modal>

@@ -1,4 +1,5 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Table,
   TableBody,
@@ -20,18 +21,19 @@ import {
   GridItem,
   Center,
 } from "@components/atoms";
+import { RadarChart } from "@components/organisms";
 import ParticipantDetailCard from "@organisms/ParticipantDetailCard";
 import { useLeaderboard } from "@hooks/prisoners-dilemma";
 import { COLORS, SPACING } from "@theme";
 import "./styles.css";
 
-const formatTrait = (v) => (v !== null ? v.toFixed(2) : "N/A");
-
 export default function LeaderBoard() {
   const { sessionId } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const roomId = location.state?.roomId;
+  const testRoomId = location.state?.testRoomId;
   const roomName = location.state?.roomName;
 
   const {
@@ -49,16 +51,50 @@ export default function LeaderBoard() {
 
   const headerActions = (
     <Button
-      onClick={() => navigate(`/playground/${roomId}`, { state: { roomName } })}
+      onClick={() =>
+        navigate(testRoomId ? `/prisoners-dilemma-room/${testRoomId}` : `/playground/${roomId}`, {
+          state: { roomName },
+        })
+      }
       variant="contained"
     >
-      Back to Playground
+      {t("tests.prisonersDilemma.leaderboardPage.backToPlayground")}
     </Button>
   );
 
+  const personalityLabels = [
+    t("tests.personality.traits.extraversion"),
+    t("tests.personality.traits.agreeableness"),
+    t("tests.personality.traits.conscientiousness"),
+    t("tests.personality.traits.neuroticism"),
+    t("tests.personality.traits.openness"),
+  ];
+
+  const getRadarDatasets = (p) => [
+    {
+      label: t("tests.prisonersDilemma.playgroundPage.personalityTraits"),
+      data: [
+        p.extroversion ?? 0,
+        p.agreeableness ?? 0,
+        p.conscientiousness ?? 0,
+        p.negative_emotionality ?? 0,
+        p.open_mindedness ?? 0,
+      ],
+    },
+  ];
+
+  const hasAllTraits = (p) =>
+    [
+      p.extroversion,
+      p.agreeableness,
+      p.conscientiousness,
+      p.negative_emotionality,
+      p.open_mindedness,
+    ].every((v) => v !== null);
+
   if (!loading && !isFinished) {
     return (
-      <PageLayout title={`${sessionName} Results`} headerActions={headerActions}>
+      <PageLayout title={`${sessionName} ${t("tests.results")}`} headerActions={headerActions}>
         <Center sx={{ minHeight: 300 }}>
           <LinearProgress
             variant="determinate"
@@ -66,7 +102,7 @@ export default function LeaderBoard() {
             sx={{ width: 400, height: 8, borderRadius: 4, mb: SPACING.lg }}
           />
           <Typography variant="h6" color="textSecondary">
-            Game in progress. Please wait...
+            {t("tests.prisonersDilemma.leaderboardPage.gameInProgress")}
           </Typography>
         </Center>
       </PageLayout>
@@ -75,7 +111,7 @@ export default function LeaderBoard() {
 
   return (
     <PageLayout
-      title={`${sessionName} Results`}
+      title={`${sessionName} ${t("tests.results")}`}
       loading={loading}
       error={error}
       onRetry={refetch}
@@ -91,9 +127,9 @@ export default function LeaderBoard() {
               }}
             >
               <TableRow>
-                <TableCell>Player</TableCell>
-                <TableCell>Tactic</TableCell>
-                <TableCell align="right">Score</TableCell>
+                <TableCell>{t("tests.prisonersDilemma.player")}</TableCell>
+                <TableCell>{t("tests.prisonersDilemma.tactic")}</TableCell>
+                <TableCell align="right">{t("tests.score")}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -111,7 +147,7 @@ export default function LeaderBoard() {
         </TableContainer>
 
         <Typography variant="h6" sx={{ mb: SPACING.md }}>
-          Results Matrix
+          {t("tests.prisonersDilemma.leaderboardPage.resultsMatrix")}
         </Typography>
         <TableContainer component={Paper} sx={{ mb: SPACING.xl, borderRadius: 2 }}>
           <Table>
@@ -122,7 +158,7 @@ export default function LeaderBoard() {
               }}
             >
               <TableRow>
-                <TableCell>Player</TableCell>
+                <TableCell>{t("tests.prisonersDilemma.player")}</TableCell>
                 {playerNames.map((p) => (
                   <TableCell key={p} align="right">
                     {p}
@@ -146,32 +182,20 @@ export default function LeaderBoard() {
         </TableContainer>
 
         <Typography variant="h6" sx={{ mb: SPACING.md }}>
-          Participants
+          {t("tests.participants")}
         </Typography>
         <GridContainer spacing="lg">
           {participants.map((p) => (
             <GridItem key={p.id} xs={12} md={6}>
               <Card title={p.player_name}>
-                <div className="trait-row">
-                  <span>Extroversion:</span>
-                  <span>{formatTrait(p.extroversion)}</span>
-                </div>
-                <div className="trait-row">
-                  <span>Agreeableness:</span>
-                  <span>{formatTrait(p.agreeableness)}</span>
-                </div>
-                <div className="trait-row">
-                  <span>Conscientiousness:</span>
-                  <span>{formatTrait(p.conscientiousness)}</span>
-                </div>
-                <div className="trait-row">
-                  <span>Negative Emotionality:</span>
-                  <span>{formatTrait(p.negative_emotionality)}</span>
-                </div>
-                <div className="trait-row">
-                  <span>Open-mindedness:</span>
-                  <span>{formatTrait(p.open_mindedness)}</span>
-                </div>
+                {hasAllTraits(p) && (
+                  <RadarChart
+                    labels={personalityLabels}
+                    datasets={getRadarDatasets(p)}
+                    showLegend
+                    sx={{ mb: 2 }}
+                  />
+                )}
                 <ParticipantDetailCard participant={p} isUserAuthenticated blurText={false} />
               </Card>
             </GridItem>

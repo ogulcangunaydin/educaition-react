@@ -51,6 +51,10 @@ export const ROUTE_PERMISSIONS = {
     requireAuth: true,
     allowedRoles: [ROLES.ADMIN, ROLES.TEACHER],
   },
+  "/prisoners-dilemma-room/:roomId": {
+    requireAuth: true,
+    allowedRoles: [ROLES.ADMIN, ROLES.TEACHER],
+  },
   "/playground/:roomId": {
     requireAuth: true,
     allowedRoles: [ROLES.ADMIN, ROLES.TEACHER],
@@ -95,12 +99,6 @@ export const ROUTE_PERMISSIONS = {
 
   // Program Suggestion - Public (anonymous students)
   "/program-suggestion": {
-    requireAuth: false,
-    allowedRoles: null,
-  },
-
-  // Personality Test - Public (anonymous participants)
-  "/personalitytest/:roomId": {
     requireAuth: false,
     allowedRoles: null,
   },
