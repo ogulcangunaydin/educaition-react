@@ -1,7 +1,7 @@
 import React from "react";
 import { FormControl, InputLabel, Select, MenuItem } from "@mui/material";
-import { formatProgramName } from "../../utils/dataFilters";
-import { useUniversity } from "../../contexts/UniversityContext";
+import { formatProgramName } from "@utils/dataFilters";
+import { useUniversity } from "@contexts/UniversityContext";
 
 const ProgramSelector = ({ programs, value, onChange, disabled = false }) => {
   const { university } = useUniversity();

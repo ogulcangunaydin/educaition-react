@@ -22,7 +22,7 @@ import {
   Legend,
 } from "chart.js";
 import { Bar } from "react-chartjs-2";
-import { useUniversity } from "../../contexts/UniversityContext";
+import { useUniversity } from "@contexts/UniversityContext";
 
 // Plugin to adjust bar width based on capacity using square root scaling
 // This prevents overflow while still showing relative capacity differences
@@ -235,6 +235,9 @@ const ComparisonChart = ({
     maintainAspectRatio: false,
     indexAxis: "x",
     plugins: {
+      datalabels: {
+        display: false,
+      },
       legend: {
         display: true,
         position: "top",

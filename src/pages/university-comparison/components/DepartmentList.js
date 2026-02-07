@@ -17,10 +17,10 @@ import {
   IconButton,
 } from "@mui/material";
 import { Clear as ClearIcon } from "@mui/icons-material";
-import { formatScore, formatRanking } from "../../utils/csvParser";
-import { formatProgramName } from "../../utils/dataFilters";
-import { useBasket } from "../../contexts/BasketContext";
-import { useUniversity } from "../../contexts/UniversityContext";
+import { formatScore, formatRanking } from "@utils/csvParser";
+import { formatProgramName } from "@utils/dataFilters";
+import { useBasket } from "@contexts/BasketContext";
+import { useUniversity } from "@contexts/UniversityContext";
 
 const DepartmentList = ({ programs, year, metric, priceData = [] }) => {
   const { isOwnUniversityName } = useUniversity();

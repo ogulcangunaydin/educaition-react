@@ -17,7 +17,7 @@ import {
   PrisonersDilemmaPublic,
 } from "@pages/prisoners-dilemma";
 
-import UniversityComparison from "@pages/UniversityComparison";
+import UniversityComparison from "@pages/university-comparison";
 import HighSchoolAnalysis from "@pages/HighSchoolAnalysis";
 import RivalAnalysis from "@pages/RivalAnalysis";
 import ProgramRivalAnalysis from "@pages/ProgramRivalAnalysis";

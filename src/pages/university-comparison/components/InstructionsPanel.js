@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import InfoIcon from "@mui/icons-material/Info";
-import { useUniversity } from "../../contexts/UniversityContext";
+import { useUniversity } from "@contexts/UniversityContext";
 
 const InstructionsPanel = () => {
   const { university } = useUniversity();
