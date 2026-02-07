@@ -100,10 +100,9 @@ function DissonanceTestRoomDetail() {
               type: "string",
             },
             {
-              id: "sentiment",
-              label: t("tests.dissonance.roomDetail.sentiment"),
-              align: "center",
-              type: "number",
+              id: "education",
+              label: t("tests.dissonance.roomDetail.classYear"),
+              type: "string",
             },
             {
               id: "comfort_question_first_answer",

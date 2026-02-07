@@ -2,22 +2,19 @@
  * DissonanceResultContent
  *
  * Shared result component for the dissonance test.
- * Used in both:
- *   - DissonanceTestPublic (inline result step after completion)
- *   - DissonanceTestRoomDetail (inside ResultDetailDialog)
+ * Used in DissonanceTestRoomDetail (inside ResultDetailDialog)
+ * to show teachers the full dissonance analysis.
  *
  * Shows:
  *   1. First / second round answer comparison
  *   2. Displayed averages (fake averages used in the experiment)
  *   3. Dissonance analysis (diff chips)
- *   4. Personality traits radar chart (if available)
- *   5. Job recommendation & compatibility analysis (if available)
+ *   4. Job recommendation / GPT analysis (if available)
  */
 
 import React from "react";
 import { Box, Typography, Chip, Divider } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { RadarChart } from "@components/organisms";
 import { MarkdownSection } from "@components/molecules";
 
 // ── Helpers ──────────────────────────────────────────────
@@ -82,35 +79,6 @@ function DissonanceResultContent({ participant }) {
     p.fare_question_second_answer !== null && p.fare_question_second_answer !== undefined
       ? p.fare_question_second_answer - p.fare_question_first_answer
       : null;
-
-  // Check if personality data is available
-  const hasPersonality =
-    p.extroversion != null ||
-    p.agreeableness != null ||
-    p.conscientiousness != null ||
-    p.negative_emotionality != null ||
-    p.open_mindedness != null;
-
-  const personalityLabels = [
-    t("tests.personality.traits.extraversion"),
-    t("tests.personality.traits.agreeableness"),
-    t("tests.personality.traits.conscientiousness"),
-    t("tests.personality.traits.neuroticism"),
-    t("tests.personality.traits.openness"),
-  ];
-
-  const radarDatasets = [
-    {
-      label: t("tests.personality.roomDetail.traitsLabel"),
-      data: [
-        p.extroversion ?? 0,
-        p.agreeableness ?? 0,
-        p.conscientiousness ?? 0,
-        p.negative_emotionality ?? 0,
-        p.open_mindedness ?? 0,
-      ],
-    },
-  ];
 
   return (
     <Box>
@@ -182,35 +150,13 @@ function DissonanceResultContent({ participant }) {
         <DiffChip label={t("tests.dissonance.roomDetail.fareFirst")} diff={fareDiff} />
       </Box>
 
-      {/* ── Personality Traits (if available) ────────── */}
-      {hasPersonality && (
-        <>
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="h6" gutterBottom>
-            {t("tests.personality.roomDetail.traitsLabel")}
-          </Typography>
-          <RadarChart labels={personalityLabels} datasets={radarDatasets} sx={{ mb: 3 }} />
-        </>
-      )}
-
-      {/* ── Job Recommendation (if available) ────────── */}
+      {/* ── GPT Job Recommendation / Analysis (if available) ── */}
       {p.job_recommendation && (
         <>
           <Divider sx={{ my: 2 }} />
           <MarkdownSection
-            title={t("tests.personality.roomDetail.jobRecommendations")}
+            title={t("tests.dissonance.jobRecommendation")}
             content={p.job_recommendation}
-          />
-        </>
-      )}
-
-      {/* ── Compatibility Analysis (if available) ────── */}
-      {p.compatibility_analysis && (
-        <>
-          <Divider sx={{ my: 2 }} />
-          <MarkdownSection
-            title={t("tests.dissonance.roomDetail.compatibilityAnalysis")}
-            content={p.compatibility_analysis}
           />
         </>
       )}

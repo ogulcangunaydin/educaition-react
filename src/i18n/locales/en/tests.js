@@ -93,7 +93,7 @@ const tests = {
       viewRecommendation: "View Your Career Recommendation",
       // Step labels
       steps: {
-        welcome: "Welcome",
+        registration: "Registration",
         personalInfo: "Personal Info",
         taxiQuestions: "Taxi Questions",
         processing: "Processing",
@@ -103,15 +103,16 @@ const tests = {
       // Step 0: Welcome
       welcome: {
         taxiProblemQuestion: "How important do you think the taxi problem in Istanbul is?",
+        veryImportant: "I find it very important",
+        notImportant: "I don't find it that important",
       },
       // Step 1: Personal Information
       personalInfo: {
         title: "Personal Information",
         fullName: "Full Name",
         studentNumber: "Student Number",
-        age: "Your age:",
+        classYear: "Your class year:",
         gender: "Your gender:",
-        education: "Your education level:",
         starSign: "Your zodiac sign:",
         risingSign: "Your rising sign:",
         workload: "Work tempo that motivates me:",
@@ -151,12 +152,11 @@ const tests = {
       // Step 5: Complete
       completeStep: {
         success: "Your answers have been saved correctly.",
-        thankYou: "Thank you for participating in this cognitive dissonance study.",
-        nextStep: "Click to take the personality test",
+        thankYou: "Thank you for participating in this study.",
       },
       roomDetail: {
         pageTitle: "Dissonance Test Room",
-        sentiment: "Sentiment",
+        classYear: "Class Year",
         comfortFirst: "Comfort (1st)",
         fareFirst: "Fare (1st)",
         comfortSecond: "Comfort (2nd)",

@@ -93,7 +93,7 @@ const tests = {
       viewRecommendation: "Kariyer Önerinizi Görüntüleyin",
       // Step labels
       steps: {
-        welcome: "Hoş Geldiniz",
+        registration: "Kayıt",
         personalInfo: "Kişisel Bilgiler",
         taxiQuestions: "Taksi Soruları",
         processing: "İşleniyor",
@@ -103,15 +103,16 @@ const tests = {
       // Step 0: Welcome
       welcome: {
         taxiProblemQuestion: "İstanbul'daki taksi sorununu ne kadar önemli buluyorsunuz?",
+        veryImportant: "Çok önemli buluyorum",
+        notImportant: "Çok önemli bulmuyorum",
       },
       // Step 1: Personal Information
       personalInfo: {
         title: "Kişisel Bilgiler",
         fullName: "Ad Soyad",
         studentNumber: "Öğrenci Numarası",
-        age: "Yaşınız:",
+        classYear: "Sınıfınız:",
         gender: "Cinsiyetiniz:",
-        education: "Eğitim durumunuz:",
         starSign: "Burcunuz:",
         risingSign: "Yükselen burcunuz:",
         workload: "Beni motive eden iş temposu:",
@@ -151,12 +152,11 @@ const tests = {
       // Step 5: Complete
       completeStep: {
         success: "Cevaplarınız doğru şekilde kaydedildi.",
-        thankYou: "Bu bilişsel uyumsuzluk çalışmasına katıldığınız için teşekkür ederiz.",
-        nextStep: "Kişilik testini çözmek için tıklayın",
+        thankYou: "Bu çalışmaya katıldığınız için teşekkür ederiz.",
       },
       roomDetail: {
         pageTitle: "Bilişsel Uyumsuzluk Test Odası",
-        sentiment: "Duygu",
+        classYear: "Sınıf",
         comfortFirst: "Konfor (1.)",
         fareFirst: "Ücret (1.)",
         comfortSecond: "Konfor (2.)",

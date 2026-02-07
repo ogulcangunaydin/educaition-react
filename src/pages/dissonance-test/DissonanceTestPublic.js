@@ -6,55 +6,43 @@
  * - Device tracking to prevent retaking
  * - Multi-step form with demographics and taxi service questions
  * - Cognitive dissonance experiment with fake averages display
+ * - GPT-powered dissonance analysis and job recommendation
  * - i18n translations for all UI text
  */
 
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { Box, Typography, Card, CardContent, Alert, LinearProgress } from "@mui/material";
-import {
-  SentimentVeryDissatisfied,
-  SentimentDissatisfied,
-  SentimentNeutral,
-  SentimentSatisfied,
-  SentimentVerySatisfied,
-} from "@mui/icons-material";
+
 import { useTranslation } from "react-i18next";
 import { Button, Spinner } from "@components/atoms";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
 import {
-  FormField,
   SelectField,
   SliderField,
   StepIndicator,
   TestCompletionMessage,
+  MarkdownSection,
 } from "@components/molecules";
+import { TestRegistrationCard } from "@components/organisms";
 import { useAuth } from "@contexts/AuthContext";
 import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 import { getTestRoomPublic, TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
 import { getParticipant } from "@services/dissonanceTestService";
 import { fetchEnums } from "@services/enumService";
 import { API_BASE_URL } from "@config/env";
-import DissonanceResultContent from "./DissonanceResultContent";
 
 const BASE_URL = API_BASE_URL;
 
-// Sentiment rating options (1-10)
-const SENTIMENT_OPTIONS = Array.from({ length: 10 }, (_, i) => ({
-  value: i + 1,
-  label: String(i + 1),
-}));
-
 function DissonanceTestPublic() {
   const { roomId } = useParams();
-  const navigate = useNavigate();
   const { userId } = useAuth();
   const { t } = useTranslation();
 
-  // Step labels from i18n
+  // Step labels from i18n (no welcome step)
   const STEPS = useMemo(
     () => [
-      t("tests.dissonance.steps.welcome"),
+      t("tests.dissonance.steps.registration"),
       t("tests.dissonance.steps.personalInfo"),
       t("tests.dissonance.steps.taxiQuestions"),
       t("tests.dissonance.steps.processing"),
@@ -73,26 +61,25 @@ function DissonanceTestPublic() {
   const [step, setStep] = useState(0);
 
   // Enum data from API
-  const [enums, setEnums] = useState({ educations: [], starSigns: [] });
+  const [enums, setEnums] = useState({ classYears: [], genders: [], starSigns: [] });
 
-  // Form data
+  // Form data (no age, no sentiment)
   const [formData, setFormData] = useState({
-    fullName: "",
-    studentNumber: "",
-    age: "",
+    classYear: "",
     gender: "",
-    education: "",
     starSign: "",
     risingSign: "",
-    workload: 5,
-    careerStart: 5,
-    flexibility: 5,
-    sentiment: null,
-    comfortFirst: 5,
-    fareFirst: 5,
-    comfortSecond: 5,
-    fareSecond: 5,
+    workload: 0,
+    careerStart: 0,
+    flexibility: 0,
+    comfortFirst: 0,
+    fareFirst: 0,
+    comfortSecond: 0,
+    fareSecond: 0,
   });
+
+  // Track which slider fields have been interacted with
+  const [touchedSliders, setTouchedSliders] = useState(new Set());
 
   // Averages (calculated/fake for experiment)
   const [averages, setAverages] = useState({ comfort: "", fare: "" });
@@ -101,7 +88,7 @@ function DissonanceTestPublic() {
   const [participant, setParticipant] = useState(null);
   const [submitting, setSubmitting] = useState(false);
 
-  // Step 4 auto-advance and step 5 fake error
+  // Step 3 auto-advance and step 4 fake error
   const [showFakeError, setShowFakeError] = useState(false);
 
   // Device fingerprint
@@ -117,9 +104,16 @@ function DissonanceTestPublic() {
       try {
         const [roomData, enumData] = await Promise.all([getTestRoomPublic(roomId), fetchEnums()]);
         setRoom(roomData);
+
+        // Sort star signs alphabetically by label
+        const sortedStarSigns = [...(enumData.starSigns || [])].sort((a, b) =>
+          (a.label || "").localeCompare(b.label || "", "tr")
+        );
+
         setEnums({
-          educations: enumData.educations || [],
-          starSigns: enumData.starSigns || [],
+          classYears: enumData.classYears || [],
+          genders: enumData.genders || [],
+          starSigns: sortedStarSigns,
         });
         setLoading(false);
       } catch (err) {
@@ -134,6 +128,15 @@ function DissonanceTestPublic() {
   const updateField = useCallback((field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }, []);
+
+  // Slider change: update value + mark as touched
+  const handleSliderChange = useCallback(
+    (field, value) => {
+      updateField(field, value);
+      setTouchedSliders((prev) => new Set(prev).add(field));
+    },
+    [updateField]
+  );
 
   // Generate fake average for cognitive dissonance experiment
   const getRandomAverage = useCallback((answer) => {
@@ -158,47 +161,39 @@ function DissonanceTestPublic() {
   const nextStep = useCallback(() => setStep((s) => s + 1), []);
   const prevStep = useCallback(() => setStep((s) => Math.max(0, s - 1)), []);
 
-  // Step 3 submission (create participant)
-  const handleCreateParticipant = useCallback(async () => {
+  // Step 2 submission: update participant with demographics + first taxi answers
+  const handleSubmitFirstAnswers = useCallback(async () => {
+    if (!participant) return;
     setSubmitting(true);
     setError(null);
 
     try {
-      const response = await fetch(`${BASE_URL}/dissonance_test_participants`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({
-          full_name: formData.fullName,
-          student_number: formData.studentNumber,
-          age: parseInt(formData.age, 10),
-          gender: formData.gender,
-          education: formData.education,
-          sentiment: formData.sentiment,
-          comfort_question_first_answer: formData.comfortFirst,
-          fare_question_first_answer: formData.fareFirst,
-          user_id: parseInt(roomId, 10), // Legacy field
-          test_room_id: parseInt(roomId, 10),
-          workload: formData.workload,
-          career_start: formData.careerStart,
-          flexibility: formData.flexibility,
-          star_sign: formData.starSign,
-          rising_sign: formData.risingSign,
-          device_fingerprint: deviceId,
-          student_user_id: userId || null,
-        }),
-      });
+      const response = await fetch(
+        `${BASE_URL}/dissonance_test_participants/${participant.id}/first-answers`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({
+            gender: formData.gender || null,
+            education: formData.classYear || null,
+            comfort_question_first_answer: formData.comfortFirst,
+            fare_question_first_answer: formData.fareFirst,
+            workload: formData.workload || null,
+            career_start: formData.careerStart || null,
+            flexibility: formData.flexibility || null,
+            star_sign: formData.starSign || null,
+            rising_sign: formData.risingSign || null,
+          }),
+        }
+      );
 
       if (!response.ok) {
-        const data = await response.json();
-        if (response.status === 409) {
-          throw new Error(t("tests.participantInfo.alreadyCompleted"));
-        }
-        throw new Error(data.detail || t("tests.submissionFailed"));
+        throw new Error(t("tests.submissionFailed"));
       }
 
       const data = await response.json();
-      setParticipant(data.participant);
+      setParticipant(data);
 
       // Calculate fake averages for display
       setAverages({
@@ -212,7 +207,7 @@ function DissonanceTestPublic() {
     } finally {
       setSubmitting(false);
     }
-  }, [formData, roomId, deviceId, userId, getRandomAverage, nextStep, t]);
+  }, [participant, formData, getRandomAverage, nextStep, t]);
 
   // Step 3 (processing) auto-advance
   useEffect(() => {
@@ -230,7 +225,7 @@ function DissonanceTestPublic() {
     }
   }, [step, showFakeError]);
 
-  // Step 4 submission (second answers)
+  // Step 4 submission (second answers) — triggers GPT analysis on backend
   const handleSubmitSecondAnswers = useCallback(async () => {
     if (!participant) return;
     setSubmitting(true);
@@ -253,12 +248,12 @@ function DissonanceTestPublic() {
         throw new Error(t("tests.submissionFailed"));
       }
 
-      // Re-fetch full participant to get computed results (personality traits, etc.)
+      // Re-fetch full participant to get GPT job recommendation
       try {
         const fullData = await getParticipant(participant.id);
         setParticipant(fullData);
       } catch {
-        // If fetch fails, keep the existing participant — results will show what's available
+        // If fetch fails, keep the existing participant
       }
 
       nextStep();
@@ -270,23 +265,19 @@ function DissonanceTestPublic() {
   }, [participant, formData, averages, nextStep, t]);
 
   // Validation helpers
-  const isStep0Valid = formData.sentiment !== null;
+  // Step 1: Required demographics + all sliders must be interacted with
   const isStep1Valid =
-    formData.fullName && formData.studentNumber && formData.age && formData.education;
-  const isStep2Valid = formData.comfortFirst > 0 && formData.fareFirst > 0;
-  const isStep4Valid = formData.comfortSecond > 0 && formData.fareSecond > 0;
+    formData.classYear &&
+    touchedSliders.has("workload") &&
+    touchedSliders.has("careerStart") &&
+    touchedSliders.has("flexibility");
+  // Step 2: Taxi sliders must be interacted with
+  const isStep2Valid = touchedSliders.has("comfortFirst") && touchedSliders.has("fareFirst");
+  // Step 4: Second round sliders must be interacted with
+  const isStep4Valid = touchedSliders.has("comfortSecond") && touchedSliders.has("fareSecond");
 
   // Progress percentage
   const progress = useMemo(() => ((step + 1) / STEPS.length) * 100, [step, STEPS.length]);
-
-  // Get sentiment icon based on value
-  const getSentimentIcon = (value) => {
-    if (value <= 2) return <SentimentVeryDissatisfied />;
-    if (value <= 4) return <SentimentDissatisfied />;
-    if (value <= 6) return <SentimentNeutral />;
-    if (value <= 8) return <SentimentSatisfied />;
-    return <SentimentVerySatisfied />;
-  };
 
   // Loading state
   if (loading) {
@@ -295,14 +286,7 @@ function DissonanceTestPublic() {
 
   // Error state (initial load)
   if (error && step === 0 && !room) {
-    return (
-      <PageError
-        title={t("tests.dissonance.title")}
-        message={error}
-        onBack={() => navigate(-1)}
-        maxWidth="sm"
-      />
-    );
+    return <PageError title={t("tests.dissonance.title")} message={error} maxWidth="sm" />;
   }
 
   const config = TEST_TYPE_CONFIG[TestType.DISSONANCE_TEST];
@@ -317,7 +301,7 @@ function DissonanceTestPublic() {
           sx={{ height: 6, borderRadius: 3 }}
         />
         <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
-          {t("tests.dissonance.steps.welcome")} {step + 1} / {STEPS.length}
+          {step + 1} / {STEPS.length}
         </Typography>
       </Box>
 
@@ -330,103 +314,46 @@ function DissonanceTestPublic() {
         </Alert>
       )}
 
-      {/* Step 0: Welcome & Initial Question */}
+      {/* Step 0: Registration */}
       {step === 0 && (
-        <Card sx={{ borderTop: 4, borderColor: config?.color || "primary.main" }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              {t("tests.dissonance.subtitle")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
-              {t("tests.dissonance.description")}
-            </Typography>
-
-            {room && (
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                {t("common.room")}: <strong>{room.name}</strong>
-              </Typography>
-            )}
-
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              {t("tests.dissonance.welcome.taxiProblemQuestion")}
-            </Typography>
-
-            <Box
-              sx={{ display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center", mb: 3 }}
-            >
-              {SENTIMENT_OPTIONS.map((opt) => (
-                <Button
-                  key={opt.value}
-                  variant={formData.sentiment === opt.value ? "contained" : "outlined"}
-                  onClick={() => updateField("sentiment", opt.value)}
-                  sx={{
-                    minWidth: 56,
-                    display: "flex",
-                    flexDirection: "column",
-                    py: 1.5,
-                  }}
-                >
-                  {getSentimentIcon(opt.value)}
-                  <Typography variant="caption">{opt.label}</Typography>
-                </Button>
-              ))}
-            </Box>
-
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={nextStep}
-              disabled={!isStep0Valid}
-              sx={{ mt: 2 }}
-            >
-              {t("common.next")}
-            </Button>
-          </CardContent>
-        </Card>
+        <TestRegistrationCard
+          testType={TestType.DISSONANCE_TEST}
+          title={t("tests.dissonance.subtitle")}
+          description={t("tests.dissonance.description")}
+          roomName={room?.name}
+          registrationUrl={`${BASE_URL}/dissonance_test_participants`}
+          roomId={roomId}
+          deviceId={deviceId}
+          userId={userId}
+          getExtraPayload={() => ({ user_id: parseInt(roomId, 10) })}
+          onSuccess={(data) => {
+            setParticipant(data.participant);
+            nextStep();
+          }}
+        />
       )}
 
       {/* Step 1: Personal Information */}
       {step === 1 && (
-        <Card>
+        <Card sx={{ borderTop: 4, borderColor: config?.color || "primary.main" }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" gutterBottom>
               {t("tests.dissonance.personalInfo.title")}
             </Typography>
 
-            <FormField
-              label={t("tests.dissonance.personalInfo.fullName")}
-              value={formData.fullName}
-              onChange={(v) => updateField("fullName", v)}
+            <SelectField
+              label={t("tests.dissonance.personalInfo.classYear")}
+              value={formData.classYear}
+              onChange={(v) => updateField("classYear", v)}
+              options={enums.classYears}
               required
-            />
-
-            <FormField
-              label={t("tests.dissonance.personalInfo.studentNumber")}
-              value={formData.studentNumber}
-              onChange={(v) => updateField("studentNumber", v)}
-              required
-            />
-
-            <FormField
-              label={t("tests.dissonance.personalInfo.age")}
-              type="number"
-              value={formData.age}
-              onChange={(v) => updateField("age", v)}
-              required
-            />
-
-            <FormField
-              label={t("tests.dissonance.personalInfo.gender")}
-              value={formData.gender}
-              onChange={(v) => updateField("gender", v)}
             />
 
             <SelectField
-              label={t("tests.dissonance.personalInfo.education")}
-              value={formData.education}
-              onChange={(v) => updateField("education", v)}
-              options={enums.educations}
-              required
+              label={t("tests.dissonance.personalInfo.gender")}
+              value={formData.gender}
+              onChange={(v) => updateField("gender", v)}
+              options={enums.genders}
             />
 
             <SelectField
@@ -446,8 +373,8 @@ function DissonanceTestPublic() {
             <SliderField
               label={t("tests.dissonance.personalInfo.workload")}
               value={formData.workload}
-              onChange={(v) => updateField("workload", v)}
-              min={1}
+              onChange={(v) => handleSliderChange("workload", v)}
+              min={0}
               max={10}
               marks={[
                 { value: 1, label: t("tests.dissonance.personalInfo.workloadMin") },
@@ -458,8 +385,8 @@ function DissonanceTestPublic() {
             <SliderField
               label={t("tests.dissonance.personalInfo.careerStart")}
               value={formData.careerStart}
-              onChange={(v) => updateField("careerStart", v)}
-              min={1}
+              onChange={(v) => handleSliderChange("careerStart", v)}
+              min={0}
               max={10}
               marks={[
                 { value: 1, label: t("tests.dissonance.personalInfo.careerStartMin") },
@@ -470,8 +397,8 @@ function DissonanceTestPublic() {
             <SliderField
               label={t("tests.dissonance.personalInfo.flexibility")}
               value={formData.flexibility}
-              onChange={(v) => updateField("flexibility", v)}
-              min={1}
+              onChange={(v) => handleSliderChange("flexibility", v)}
+              min={0}
               max={10}
               marks={[
                 { value: 1, label: t("tests.dissonance.personalInfo.flexibilityMin") },
@@ -499,11 +426,26 @@ function DissonanceTestPublic() {
               {t("tests.dissonance.taxiQuestions.title")}
             </Typography>
 
+            {/* Taxi image */}
+            <Box sx={{ textAlign: "center", mb: 3 }}>
+              <Box
+                component="img"
+                src="/assets/images/taxi.png"
+                alt="Istanbul Taxi"
+                sx={{
+                  maxWidth: "100%",
+                  height: "auto",
+                  maxHeight: 200,
+                  borderRadius: 2,
+                }}
+              />
+            </Box>
+
             <SliderField
               label={t("tests.dissonance.taxiQuestions.comfortQuestion")}
               value={formData.comfortFirst}
-              onChange={(v) => updateField("comfortFirst", v)}
-              min={1}
+              onChange={(v) => handleSliderChange("comfortFirst", v)}
+              min={0}
               max={10}
               marks
             />
@@ -511,8 +453,8 @@ function DissonanceTestPublic() {
             <SliderField
               label={t("tests.dissonance.taxiQuestions.fareQuestion")}
               value={formData.fareFirst}
-              onChange={(v) => updateField("fareFirst", v)}
-              min={1}
+              onChange={(v) => handleSliderChange("fareFirst", v)}
+              min={0}
               max={10}
               marks
             />
@@ -523,7 +465,7 @@ function DissonanceTestPublic() {
               </Button>
               <Button
                 variant="contained"
-                onClick={handleCreateParticipant}
+                onClick={handleSubmitFirstAnswers}
                 disabled={!isStep2Valid || submitting}
                 fullWidth
               >
@@ -603,8 +545,8 @@ function DissonanceTestPublic() {
                 <SliderField
                   label={t("tests.dissonance.taxiQuestions.comfortQuestion")}
                   value={formData.comfortSecond}
-                  onChange={(v) => updateField("comfortSecond", v)}
-                  min={1}
+                  onChange={(v) => handleSliderChange("comfortSecond", v)}
+                  min={0}
                   max={10}
                   marks={[
                     { value: parseFloat(averages.comfort), label: `Avg: ${averages.comfort}` },
@@ -620,8 +562,8 @@ function DissonanceTestPublic() {
                 <SliderField
                   label={t("tests.dissonance.taxiQuestions.fareQuestion")}
                   value={formData.fareSecond}
-                  onChange={(v) => updateField("fareSecond", v)}
-                  min={1}
+                  onChange={(v) => handleSliderChange("fareSecond", v)}
+                  min={0}
                   max={10}
                   marks={[{ value: parseFloat(averages.fare), label: `Avg: ${averages.fare}` }]}
                 />
@@ -641,36 +583,24 @@ function DissonanceTestPublic() {
         </Card>
       )}
 
-      {/* Step 5: Result */}
+      {/* Step 5: Result (GPT Analysis) */}
       {step === 5 && (
         <Card sx={{ mt: 4 }}>
           <TestCompletionMessage />
 
           <CardContent sx={{ p: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              {t("tests.dissonance.roomDetail.resultsTitle")}
-            </Typography>
-
-            {participant && (
-              <DissonanceResultContent
-                participant={{
-                  ...participant,
-                  comfort_question_second_answer: formData.comfortSecond,
-                  fare_question_second_answer: formData.fareSecond,
-                  comfort_question_displayed_average: parseFloat(averages.comfort),
-                  fare_question_displayed_average: parseFloat(averages.fare),
-                }}
+            {participant?.job_recommendation ? (
+              <MarkdownSection
+                title={t("tests.dissonance.jobRecommendation")}
+                content={participant.job_recommendation}
               />
+            ) : (
+              <Box sx={{ textAlign: "center", py: 3 }}>
+                <Typography variant="body1" color="text.secondary">
+                  {t("tests.dissonance.completeStep.thankYou")}
+                </Typography>
+              </Box>
             )}
-
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={() => navigate(`/personality-test/${roomId}`)}
-              sx={{ mt: 3 }}
-            >
-              {t("tests.dissonance.completeStep.nextStep")}
-            </Button>
           </CardContent>
         </Card>
       )}
