@@ -6,6 +6,7 @@
  */
 
 import api from "./api";
+import { API_BASE_URL } from "@config/env";
 
 /**
  * Test types available in the system
@@ -26,6 +27,10 @@ export const TEST_TYPE_CONFIG = {
     labelEn: "Prisoners Dilemma",
     color: "#1976d2",
     icon: "Groups",
+    endpoints: {
+      registration: "/players",
+      submit: (participantId) => `/players/${participantId}/personality`,
+    },
     rooms: {
       pageTitle: "Mahkum İkilemi - Oyun Odaları",
       listTitle: "Oyun Odaları",
@@ -41,6 +46,10 @@ export const TEST_TYPE_CONFIG = {
     labelEn: "Dissonance Test",
     color: "#9c27b0",
     icon: "Psychology",
+    endpoints: {
+      registration: "/dissonance_test_participants",
+      submit: (participantId) => `/dissonance_test_participants/${participantId}`,
+    },
     rooms: {
       pageTitle: "Bilişsel Uyumsuzluk Testi - Odalar",
       listTitle: "Test Odaları",
@@ -56,6 +65,10 @@ export const TEST_TYPE_CONFIG = {
     labelEn: "Program Suggestion",
     color: "#ed6c02",
     icon: "School",
+    endpoints: {
+      registration: "/program-suggestion/students/",
+      submit: (participantId) => `/program-suggestion/students/${participantId}/riasec`,
+    },
     rooms: {
       pageTitle: "Program Öneri Sistemi - Lise Odaları",
       listTitle: "Lise Odaları",
@@ -72,6 +85,10 @@ export const TEST_TYPE_CONFIG = {
     labelEn: "Personality Test",
     color: "#2e7d32",
     icon: "Person",
+    endpoints: {
+      registration: "/personality-test/participants",
+      submit: (participantId) => `/personality-test/participants/${participantId}/submit`,
+    },
     rooms: {
       pageTitle: "Kişilik Testi Odaları",
       listTitle: "Kişilik Testi Odaları",
@@ -83,6 +100,22 @@ export const TEST_TYPE_CONFIG = {
     },
   },
 };
+
+/**
+ * Get endpoint URLs for a given test type.
+ * @param {string} testType - One of TestType values
+ * @returns {{ registrationUrl: string, getSubmitUrl: (participantId: string|number) => string }}
+ */
+export function getTestEndpoints(testType) {
+  const config = TEST_TYPE_CONFIG[testType];
+  if (!config?.endpoints) {
+    throw new Error(`No endpoints configured for test type: ${testType}`);
+  }
+  return {
+    registrationUrl: `${API_BASE_URL}${config.endpoints.registration}`,
+    getSubmitUrl: (participantId) => `${API_BASE_URL}${config.endpoints.submit(participantId)}`,
+  };
+}
 
 /**
  * Create a new test room

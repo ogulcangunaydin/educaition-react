@@ -9,6 +9,7 @@ import auth from "./auth";
 import navigation from "./navigation";
 import validation from "./validation";
 import tests from "./tests";
+import questions from "./questions";
 import dashboard from "./dashboard";
 import users from "./users";
 
@@ -18,6 +19,7 @@ const en = {
   ...navigation,
   ...validation,
   ...tests,
+  ...questions,
   ...dashboard,
   ...users,
 };

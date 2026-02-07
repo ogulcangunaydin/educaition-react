@@ -2,35 +2,29 @@
  * useTestFlow Hook
  *
  * Shared hook for all public-facing test pages.
- * Manages the common test lifecycle: loading → registration → test → result.
+ * Manages the complete test lifecycle: loading → registration → test → result.
  *
  * Encapsulates:
+ * - Room loading & question resolution (from i18n)
  * - Stage management
  * - Device fingerprint resolution
  * - Auth context (userId)
- * - Room state
- * - Participant & result state
- * - Questions, answers, and current index
- * - Progress persistence (localStorage merge-based)
+ * - Progress persistence (localStorage) + auto-restore on reload
  * - Auto-advancing answer handler
  * - Test submission with configurable URL / body
  *
  * @param {Object} config
- * @param {string} config.testKey - Unique key for localStorage (e.g. "personality_test")
- * @param {(participantId: string|number) => string} [config.getSubmitUrl]
- *   Function that returns the submit URL given the participantId.
+ * @param {string} config.testKey    - Unique key for localStorage (e.g. "personality_test")
+ * @param {string} config.testType   - TestType enum value — used to resolve endpoints
+ * @param {string} config.questionsKey - i18n key for the questions array (e.g. "questions.personality")
  * @param {(answers: any[]) => Object} [config.buildSubmitBody]
- *   Function that builds the request body from answers. Defaults to `{ answers }`.
+ *   Builds the request body from answers. Defaults to `{ answers }`.
  *
  * @example
- * const {
- *   handleSubmit,
- *   handleAnswerChange,
- *   stage, setStage,
- *   ...
- * } = useTestFlow({
+ * const flow = useTestFlow({
  *   testKey: "personality_test",
- *   getSubmitUrl: (pid) => `${API_BASE_URL}/personality-test/participants/${pid}/submit`,
+ *   testType: TestType.PERSONALITY_TEST,
+ *   questionsKey: "questions.personality",
  * });
  */
 
@@ -39,11 +33,15 @@ import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@contexts/AuthContext";
 import { getDeviceFingerprint } from "@utils/deviceFingerprint";
+import { getTestRoomPublic, getTestEndpoints } from "@services/testRoomService";
 
-export default function useTestFlow({ testKey, getSubmitUrl, buildSubmitBody }) {
+export default function useTestFlow({ testKey, testType, questionsKey, buildSubmitBody }) {
   const { t } = useTranslation();
   const { roomId } = useParams();
   const { userId } = useAuth();
+
+  // ── Endpoints (derived from testType) ──────────────────
+  const { registrationUrl, getSubmitUrl } = getTestEndpoints(testType);
 
   // ── Stage ──────────────────────────────────────────────
   const [stage, setStage] = useState("loading"); // loading | registration | test | result | error
@@ -96,6 +94,69 @@ export default function useTestFlow({ testKey, getSubmitUrl, buildSubmitBody }) 
     localStorage.removeItem(storageKey);
   }, [storageKey]);
 
+  // ── Initialisation (load room + questions + restore progress) ──
+  useEffect(() => {
+    if (!deviceId) return;
+
+    const init = async () => {
+      try {
+        // 1. Load room
+        const roomData = await getTestRoomPublic(roomId);
+        setRoom(roomData);
+
+        // 2. Load questions from i18n
+        const questionsArray = t(questionsKey, { returnObjects: true });
+        if (!Array.isArray(questionsArray) || questionsArray.length === 0) {
+          throw new Error("Questions not found");
+        }
+        setQuestions(questionsArray);
+
+        // 3. Try to restore saved progress
+        const saved = loadProgress();
+        if (saved?.participantId) {
+          // Re-register to refresh the session cookie.
+          // Backend recognises device_fingerprint + room → returns existing participant.
+          try {
+            const regResponse = await fetch(registrationUrl, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                test_room_id: parseInt(roomId, 10),
+                full_name: saved.fullName || "",
+                student_number: saved.studentNumber || "",
+                device_fingerprint: deviceId,
+                student_user_id: userId || null,
+              }),
+            });
+
+            if (regResponse.ok) {
+              const regData = await regResponse.json();
+              setParticipantId(regData.participant.id);
+            } else {
+              setParticipantId(saved.participantId);
+            }
+          } catch {
+            setParticipantId(saved.participantId);
+          }
+
+          setAnswers(saved.answers || new Array(questionsArray.length).fill(null));
+          setCurrentQuestionIndex(saved.currentQuestionIndex || 0);
+          setStage("test");
+        } else {
+          // 4. Fresh start
+          setAnswers(new Array(questionsArray.length).fill(null));
+          setStage("registration");
+        }
+      } catch (err) {
+        setError(err.message || t("tests.submissionFailed"));
+        setStage("error");
+      }
+    };
+
+    init();
+  }, [roomId, deviceId]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ── Answer handling (auto-advance) ─────────────────────
   const handleAnswerChange = useCallback(
     (questionIndex, value) => {
@@ -122,8 +183,6 @@ export default function useTestFlow({ testKey, getSubmitUrl, buildSubmitBody }) 
       setError(t("tests.answerAllQuestions"));
       return;
     }
-
-    if (!getSubmitUrl) return;
 
     setSubmitting(true);
     setError(null);
@@ -155,35 +214,47 @@ export default function useTestFlow({ testKey, getSubmitUrl, buildSubmitBody }) 
     }
   }, [answers, participantId, getSubmitUrl, buildSubmitBody, clearProgress, t]);
 
+  // ── Registration success handler ───────────────────────
+  const handleRegistrationSuccess = useCallback(
+    (data) => {
+      setParticipantId(data.participant.id);
+      saveProgress({
+        participantId: data.participant.id,
+        fullName: data.fullName,
+        studentNumber: data.studentNumber,
+        answers,
+        currentQuestionIndex: 0,
+      });
+      setStage("test");
+    },
+    [answers, saveProgress]
+  );
+
   return {
     // IDs
     roomId,
     userId,
     deviceId,
 
+    // Endpoints
+    registrationUrl,
+
     // Stage
     stage,
     setStage,
     error,
-    setError,
     submitting,
-    setSubmitting,
 
     // Room
     room,
-    setRoom,
 
     // Participant
     participantId,
-    setParticipantId,
     result,
-    setResult,
 
     // Questions & answers
     questions,
-    setQuestions,
     answers,
-    setAnswers,
     currentQuestionIndex,
     setCurrentQuestionIndex,
     handleAnswerChange,
@@ -191,9 +262,10 @@ export default function useTestFlow({ testKey, getSubmitUrl, buildSubmitBody }) 
     // Submit
     handleSubmit,
 
+    // Registration
+    handleRegistrationSuccess,
+
     // Progress
     saveProgress,
-    loadProgress,
-    clearProgress,
   };
 }
