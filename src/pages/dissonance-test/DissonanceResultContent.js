@@ -13,7 +13,7 @@
  */
 
 import React from "react";
-import { Box, Typography, Chip, Divider } from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { MarkdownSection } from "@components/molecules";
 
@@ -33,7 +33,11 @@ function StatItem({ label, value }) {
   );
 }
 
-/** Chip showing difference between rounds with colour coding */
+/**
+ * Chip showing difference between rounds with colour coding.
+ * Uses inline background colours instead of MUI Chip so html2canvas
+ * captures the colours correctly during PDF export.
+ */
 function DiffChip({ label, diff }) {
   if (diff === null || diff === undefined) {
     return (
@@ -41,25 +45,49 @@ function DiffChip({ label, diff }) {
         <Typography variant="caption" color="text.secondary" display="block">
           {label}
         </Typography>
-        <Chip label="-" size="small" />
+        <Box
+          component="span"
+          sx={{
+            display: "inline-block",
+            px: 1.5,
+            py: 0.25,
+            borderRadius: "16px",
+            fontSize: "0.875rem",
+            fontWeight: "bold",
+            backgroundColor: "#e0e0e0",
+            color: "#616161",
+          }}
+        >
+          -
+        </Box>
       </Box>
     );
   }
 
-  const color = diff === 0 ? "default" : diff > 0 ? "success" : "error";
   const sign = diff > 0 ? "+" : "";
+  const bg = diff === 0 ? "#e0e0e0" : diff > 0 ? "#e8f5e9" : "#ffebee";
+  const fg = diff === 0 ? "#616161" : diff > 0 ? "#2e7d32" : "#c62828";
 
   return (
     <Box sx={{ minWidth: 120 }}>
       <Typography variant="caption" color="text.secondary" display="block">
         {label}
       </Typography>
-      <Chip
-        label={`${sign}${diff}`}
-        color={color}
-        size="small"
-        sx={{ fontWeight: "bold", fontSize: "0.875rem" }}
-      />
+      <Box
+        component="span"
+        sx={{
+          display: "inline-block",
+          px: 1.5,
+          py: 0.25,
+          borderRadius: "16px",
+          fontSize: "0.875rem",
+          fontWeight: "bold",
+          backgroundColor: bg,
+          color: fg,
+        }}
+      >
+        {`${sign}${diff}`}
+      </Box>
     </Box>
   );
 }

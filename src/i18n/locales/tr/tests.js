@@ -157,8 +157,8 @@ const tests = {
       roomDetail: {
         pageTitle: "Bilişsel Uyumsuzluk Test Odası",
         classYear: "Sınıf",
-        comfortFirst: "Konfor (1.)",
-        fareFirst: "Ücret (1.)",
+        comfortFirst: "Konfor",
+        fareFirst: "Ücret",
         comfortSecond: "Konfor (2.)",
         fareSecond: "Ücret (2.)",
         comfortAvg: "Konfor Ort.",

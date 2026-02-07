@@ -157,8 +157,8 @@ const tests = {
       roomDetail: {
         pageTitle: "Dissonance Test Room",
         classYear: "Class Year",
-        comfortFirst: "Comfort (1st)",
-        fareFirst: "Fare (1st)",
+        comfortFirst: "Comfort",
+        fareFirst: "Fare",
         comfortSecond: "Comfort (2nd)",
         fareSecond: "Fare (2nd)",
         comfortAvg: "Comfort Avg",

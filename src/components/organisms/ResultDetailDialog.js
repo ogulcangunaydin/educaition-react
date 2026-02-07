@@ -179,15 +179,74 @@ function ResultDetailDialog({
       if (totalHeight <= pageHeight) {
         pdf.addImage(imgData, "PNG", margin, margin, usableWidth, totalHeight);
       } else {
-        // Multi-page slicing
+        // Multi-page slicing — find whitespace rows to avoid cutting through text
         const sourceSliceHeight = (pageHeight / usableWidth) * imgWidth;
+
+        /**
+         * Scan the canvas near the target cut row to find a horizontal line
+         * that is entirely (or nearly) white, so we never slice through a
+         * text line or element.  Searches up to `searchRange` pixels above
+         * the ideal cut point, then falls back to the ideal position.
+         */
+        const findSafeCutY = (idealY) => {
+          const searchRange = Math.min(Math.floor(sourceSliceHeight * 0.15), 200);
+          // Grab a thin vertical strip of pixels around the cut zone
+          const sampleWidth = imgWidth;
+          const startY = Math.max(0, idealY - searchRange);
+          const regionHeight = Math.min(searchRange + 1, imgHeight - startY);
+          if (regionHeight <= 0) return idealY;
+
+          const scanCanvas = document.createElement("canvas");
+          scanCanvas.width = sampleWidth;
+          scanCanvas.height = regionHeight;
+          const scanCtx = scanCanvas.getContext("2d");
+          scanCtx.drawImage(
+            canvas,
+            0,
+            startY,
+            sampleWidth,
+            regionHeight,
+            0,
+            0,
+            sampleWidth,
+            regionHeight
+          );
+          const pixels = scanCtx.getImageData(0, 0, sampleWidth, regionHeight).data;
+
+          // Walk rows from idealY upward looking for an all-white row
+          for (let offset = 0; offset <= searchRange; offset++) {
+            const row = idealY - startY - offset;
+            if (row < 0) break;
+            let isBlank = true;
+            const rowBase = row * sampleWidth * 4;
+            // Sample every 4th pixel for speed (still reliable)
+            for (let x = 0; x < sampleWidth * 4; x += 16) {
+              const r = pixels[rowBase + x];
+              const g = pixels[rowBase + x + 1];
+              const b = pixels[rowBase + x + 2];
+              if (r < 245 || g < 245 || b < 245) {
+                isBlank = false;
+                break;
+              }
+            }
+            if (isBlank) return startY + row;
+          }
+          return idealY; // fallback
+        };
+
         let srcY = 0;
         let isFirstPage = true;
 
         while (srcY < imgHeight) {
           if (!isFirstPage) pdf.addPage();
 
-          const sliceH = Math.min(sourceSliceHeight, imgHeight - srcY);
+          let cutY = Math.min(srcY + sourceSliceHeight, imgHeight);
+          if (cutY < imgHeight) {
+            cutY = findSafeCutY(Math.floor(cutY));
+          }
+
+          const sliceH = cutY - srcY;
+          if (sliceH <= 0) break; // safety
           const drawH = (sliceH * usableWidth) / imgWidth;
 
           const pageCanvas = document.createElement("canvas");
@@ -205,7 +264,7 @@ function ResultDetailDialog({
             drawH
           );
 
-          srcY += sliceH;
+          srcY = cutY;
           isFirstPage = false;
         }
       }

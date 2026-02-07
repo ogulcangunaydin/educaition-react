@@ -19,7 +19,7 @@ import { QRCodeOverlay, RoomParticipantEmptyState } from "@components/molecules"
 import { RoomInfoHeader, DataTable, ResultDetailDialog } from "@components/organisms";
 import dissonanceTestService from "@services/dissonanceTestService";
 import { getTestRoom, generateRoomUrl, TestType } from "@services/testRoomService";
-import DissonanceResultContent from "./DissonanceResultContent";
+import DissonanceResultContent from "./DissonanceResultContent.js";
 
 function DissonanceTestRoomDetail() {
   const { roomId } = useParams();
