@@ -18,6 +18,8 @@ import {
   Tooltip,
   Menu,
   MenuItem,
+  ListItemIcon,
+  ListItemText,
   Chip,
   Box,
   Dialog,
@@ -204,6 +206,14 @@ function PrisonersDilemmaRoomDetail() {
                 variant="outlined"
                 startIcon={<HistoryIcon />}
                 onClick={(e) => setSessionAnchor(e.currentTarget)}
+                sx={{
+                  color: "white",
+                  borderColor: "rgba(255,255,255,0.6)",
+                  "&:hover": {
+                    borderColor: "white",
+                    bgcolor: "rgba(255,255,255,0.12)",
+                  },
+                }}
               >
                 {t("tests.prisonersDilemma.playgroundPage.sessions")}
               </Button>
@@ -217,6 +227,18 @@ function PrisonersDilemmaRoomDetail() {
         anchorEl={sessionAnchor}
         open={Boolean(sessionAnchor)}
         onClose={() => setSessionAnchor(null)}
+        slotProps={{
+          paper: {
+            elevation: 8,
+            sx: {
+              minWidth: 240,
+              borderRadius: 2,
+              mt: 1,
+            },
+          },
+        }}
+        transformOrigin={{ horizontal: "right", vertical: "top" }}
+        anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
         {sessions.map((s) => (
           <MenuItem
@@ -231,8 +253,15 @@ function PrisonersDilemmaRoomDetail() {
                 },
               });
             }}
+            sx={{ py: 1.2, px: 2 }}
           >
-            {s.name}
+            <ListItemIcon>
+              <PlayArrowIcon fontSize="small" color="primary" />
+            </ListItemIcon>
+            <ListItemText
+              primary={s.name}
+              secondary={s.status === "finished" ? t("common.completed") : s.status}
+            />
           </MenuItem>
         ))}
       </Menu>

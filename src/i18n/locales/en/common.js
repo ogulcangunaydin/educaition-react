@@ -19,6 +19,7 @@ const common = {
     previous: "Previous",
     submit: "Submit",
     close: "Close",
+    completed: "completed",
     yes: "Yes",
     no: "No",
     search: "Search",

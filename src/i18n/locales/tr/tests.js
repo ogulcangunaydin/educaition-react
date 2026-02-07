@@ -228,9 +228,15 @@ const tests = {
 
       // Leaderboard page (teacher)
       leaderboardPage: {
-        backToPlayground: "Oyun Alanına Dön",
+        backToPlayground: "Odaya Dön",
         gameInProgress: "Oyun devam ediyor. Lütfen bekleyin...",
+        scoreboardTitle: "Skor Tablosu",
+        scoreboardDescription:
+          "Tüm oyuncuların tüm turlarda kazandıkları toplam puanlara göre sıralanmış nihai skorları.",
         resultsMatrix: "Sonuç Matrisi",
+        matrixDescription:
+          "Her oyuncu çifti arasındaki karşılıklı skorlar. Satırlar, satır oyuncusunun her rakibe karşı kazandığı puanları gösterir.",
+        participantsDescription: "Her katılımcının detaylı profili ve kişilik özellikleri.",
       },
 
       // Tactic Preparation page

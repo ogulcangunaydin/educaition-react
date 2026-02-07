@@ -228,9 +228,15 @@ const tests = {
 
       // Leaderboard page (teacher)
       leaderboardPage: {
-        backToPlayground: "Back to Playground",
+        backToPlayground: "Back to Room",
         gameInProgress: "Game in progress. Please wait...",
+        scoreboardTitle: "Scoreboard",
+        scoreboardDescription:
+          "Final scores of all players ranked by total points earned across all rounds.",
         resultsMatrix: "Results Matrix",
+        matrixDescription:
+          "Head-to-head scores between each pair of players. Rows show points earned by the row player against each opponent.",
+        participantsDescription: "Detailed profile and personality traits of each participant.",
       },
 
       // Tactic Preparation page

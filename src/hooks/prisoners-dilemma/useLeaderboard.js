@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import api from "@services/api";
 
 const isJsonString = (str) => {
@@ -19,8 +19,13 @@ export default function useLeaderboard(sessionId) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const initialLoadDone = useRef(false);
+
   const fetchSession = useCallback(async () => {
-    setLoading(true);
+    // Only show full loading state on the very first fetch
+    if (!initialLoadDone.current) {
+      setLoading(true);
+    }
     setError(null);
 
     try {
@@ -55,6 +60,7 @@ export default function useLeaderboard(sessionId) {
       setError(err.message);
     } finally {
       setLoading(false);
+      initialLoadDone.current = true;
     }
   }, [sessionId]);
 

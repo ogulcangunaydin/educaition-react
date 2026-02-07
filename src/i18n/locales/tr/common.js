@@ -19,6 +19,7 @@ const common = {
     previous: "Önceki",
     submit: "Gönder",
     close: "Kapat",
+    completed: "tamamlandı",
     yes: "Evet",
     no: "Hayır",
     search: "Ara",
