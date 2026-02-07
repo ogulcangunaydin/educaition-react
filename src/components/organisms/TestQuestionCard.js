@@ -43,15 +43,16 @@ import { useTranslation } from "react-i18next";
 import Button from "../atoms/Button";
 
 /**
- * Default 5-point Likert scale with colors (positive first).
+ * Default 5-point Likert scale with colors (negative → positive).
+ * Standard psychometric ordering: strongly disagree first.
  * Each test page can override with its own options array.
  */
 export const LIKERT_5_OPTIONS = [
-  { value: 5, labelKey: "tests.personality.scale.stronglyAgree", color: "#4caf50" },
-  { value: 4, labelKey: "tests.personality.scale.agree", color: "#8bc34a" },
-  { value: 3, labelKey: "tests.personality.scale.neutral", color: "#ff9800" },
-  { value: 2, labelKey: "tests.personality.scale.disagree", color: "#ff5722" },
   { value: 1, labelKey: "tests.personality.scale.stronglyDisagree", color: "#f44336" },
+  { value: 2, labelKey: "tests.personality.scale.disagree", color: "#ff5722" },
+  { value: 3, labelKey: "tests.personality.scale.neutral", color: "#ff9800" },
+  { value: 4, labelKey: "tests.personality.scale.agree", color: "#8bc34a" },
+  { value: 5, labelKey: "tests.personality.scale.stronglyAgree", color: "#4caf50" },
 ];
 
 function TestQuestionCard({

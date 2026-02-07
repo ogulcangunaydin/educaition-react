@@ -36,7 +36,7 @@ import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 import { getTestRoomPublic, getTestEndpoints } from "@services/testRoomService";
 
 export default function useTestFlow({ testKey, testType, questionsKey, buildSubmitBody }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { roomId } = useParams();
   const { userId } = useAuth();
 
@@ -156,6 +156,15 @@ export default function useTestFlow({ testKey, testType, questionsKey, buildSubm
 
     init();
   }, [roomId, deviceId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Re-load questions when language changes ───────────
+  useEffect(() => {
+    if (stage === "loading") return;
+    const updated = t(questionsKey, { returnObjects: true });
+    if (Array.isArray(updated) && updated.length > 0) {
+      setQuestions(updated);
+    }
+  }, [i18n.language]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Answer handling (auto-advance) ─────────────────────
   const handleAnswerChange = useCallback(
