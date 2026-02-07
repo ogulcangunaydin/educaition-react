@@ -16,10 +16,6 @@ import {
   PersonalityTest,
 } from "@pages/prisoners-dilemma";
 
-import DissonanceTestParticipantList from "@pages/dissonanceTestParticipantList";
-import DissonanceTest from "@pages/dissonanceTest";
-import DissonanceTestResult from "@pages/dissonanceTestResult";
-
 import UniversityComparison from "@pages/UniversityComparison";
 import HighSchoolAnalysis from "@pages/HighSchoolAnalysis";
 import RivalAnalysis from "@pages/RivalAnalysis";
@@ -34,7 +30,7 @@ import { TestType } from "./services/testRoomService";
 
 import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
 import ProgramTestResult from "@pages/ProgramTestResult";
-import DissonanceTestPublic from "@pages/DissonanceTestPublic";
+import { DissonanceTestPublic, DissonanceTestRoomDetail } from "@pages/dissonance-test";
 import PrisonersDilemmaPublic from "@pages/PrisonersDilemmaPublic";
 
 const ADMIN_ONLY = [ROLES.ADMIN];
@@ -150,31 +146,6 @@ function AppRoutes() {
       />
 
       <Route
-        path="/dissonanceTestParticipantList"
-        element={
-          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <DissonanceTestParticipantList />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dissonanceTest/:currentUserId"
-        element={
-          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <DissonanceTest />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/dissonanceTestResult/:participantId"
-        element={
-          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <DissonanceTestResult />
-          </ProtectedRoute>
-        }
-      />
-
-      <Route
         path="/university-comparison"
         element={
           <ProtectedRoute allowedRoles={VIEWER_PLUS}>
@@ -247,6 +218,24 @@ function AppRoutes() {
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
             <PersonalityTestRoomDetail />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Dissonance Test Routes */}
+      <Route
+        path="/dissonance-test-rooms"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <TestRoomsPage testType={TestType.DISSONANCE_TEST} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/dissonance-test-room/:roomId"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <DissonanceTestRoomDetail />
           </ProtectedRoute>
         }
       />

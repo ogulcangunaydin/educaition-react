@@ -7,11 +7,44 @@
 import api from "./api";
 
 /**
- * Get all dissonance test participants
+ * Get all dissonance test participants (legacy, returns all for current user)
  * @returns {Promise<Array>} List of participants
  */
 export async function getParticipants() {
   const { ok, data, status } = await api.auth.get("/dissonance_test_participants");
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get participants in a dissonance test room
+ * @param {number} roomId - Room ID
+ * @returns {Promise<Object>} Paginated list with { items, total }
+ */
+export async function getRoomParticipants(roomId) {
+  const { ok, data, status } = await api.auth.get(`/dissonance_test_participants/rooms/${roomId}`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Delete a dissonance test participant (soft delete).
+ * After deletion the student's device can retake the test.
+ * @param {number} participantId - Participant ID
+ * @returns {Promise<Object>} Deleted participant data
+ */
+export async function deleteParticipant(participantId) {
+  const { ok, data, status } = await api.auth.delete(
+    `/dissonance_test_participants/participants/${participantId}`
+  );
 
   if (!ok) {
     throw new Error(`HTTP error! status: ${status}`);
@@ -103,10 +136,12 @@ export async function saveParticipantPersonality(participantId, answers) {
 
 const dissonanceTestService = {
   getParticipants,
+  getRoomParticipants,
   getParticipant,
   createParticipant,
   updateParticipantAnswers,
   saveParticipantPersonality,
+  deleteParticipant,
 };
 
 export default dissonanceTestService;

@@ -26,7 +26,7 @@ export const fetchEnums = async () => {
     return enumsCache;
   }
 
-  const response = await fetch(`${BASE_URL}/api/enums`);
+  const response = await fetch(`${BASE_URL}/enums`);
   if (!response.ok) {
     throw new Error(`Failed to fetch enums: ${response.statusText}`);
   }

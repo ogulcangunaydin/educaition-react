@@ -86,10 +86,90 @@ const tests = {
     dissonance: {
       title: "Bilişsel Uyumsuzluk Testi",
       subtitle: "Karar Verme Değerlendirmesi",
-      description: "Bu test karar verme kalıplarınızı ve bilişsel tutarlılığınızı değerlendirir.",
+      description:
+        "Kariyerin için eğlenceli bir keşif yolculuğuna çık! Yaşına, kişilik özelliklerine ve burcuna göre en uygun meslekleri beyin fırtınası yaparak eğlenceli bir plan oluşturacağız! Unutma, sonuçlar ilham vericidir ama kesin değildir!",
       instructions: "Lütfen aşağıdaki soruları dürüstçe cevaplayın.",
       jobRecommendation: "Kariyer Önerisi",
       viewRecommendation: "Kariyer Önerinizi Görüntüleyin",
+      // Step labels
+      steps: {
+        welcome: "Hoş Geldiniz",
+        personalInfo: "Kişisel Bilgiler",
+        taxiQuestions: "Taksi Soruları",
+        processing: "İşleniyor",
+        verification: "Doğrulama",
+        complete: "Tamamlandı",
+      },
+      // Step 0: Welcome
+      welcome: {
+        taxiProblemQuestion: "İstanbul'daki taksi sorununu ne kadar önemli buluyorsunuz?",
+      },
+      // Step 1: Personal Information
+      personalInfo: {
+        title: "Kişisel Bilgiler",
+        fullName: "Ad Soyad",
+        studentNumber: "Öğrenci Numarası",
+        age: "Yaşınız:",
+        gender: "Cinsiyetiniz:",
+        education: "Eğitim durumunuz:",
+        starSign: "Burcunuz:",
+        risingSign: "Yükselen burcunuz:",
+        workload: "Beni motive eden iş temposu:",
+        workloadMin: "Rahat",
+        workloadMax: "Yoğun",
+        careerStart: "Kariyerim nasıl başlamalı:",
+        careerStartMin: "Kolay",
+        careerStartMax: "Zorlu",
+        flexibility: "Mesleğim ne kadar esnek olmalı:",
+        flexibilityMin: "Katı",
+        flexibilityMax: "Esnek",
+      },
+      // Step 2: Taxi questions
+      taxiQuestions: {
+        title: "Taksi Hizmeti Soruları",
+        comfortQuestion:
+          "İstanbul'daki taksi hizmeti (taksi bulma kolaylığı, yolculuk konforu, şoför davranışı vb.) beklentilerinizi ne ölçüde karşılıyor?",
+        fareQuestion:
+          "Sizce İstanbul'daki taksi hizmetinin kalitesi ile ücret dengesi ne kadar uyumlu?",
+      },
+      // Step 3: Processing
+      processingStep: {
+        thankYou: "Katılımınız için teşekkürler!",
+        averageResults: "Ortalama Sonuçlar:",
+        taxiComfortAverage: "Taksi Hizmeti Konforu",
+        taxiFaresAverage: "Taksi Ücret Dengesi",
+        votes: "oy",
+        saving: "Cevaplarınız kaydediliyor, lütfen bekleyin...",
+      },
+      // Step 4: Verification (fake error + re-ask)
+      verificationStep: {
+        errorTitle: "HTTP Error 504: Gateway Timeout",
+        errorMessage: "Sunucu ilk cevabınızı kaydedemedi. Lütfen tekrar cevaplayınız.",
+        answerAgain: "Lütfen Tekrar Cevaplayın",
+        average: "Ortalama",
+      },
+      // Step 5: Complete
+      completeStep: {
+        success: "Cevaplarınız doğru şekilde kaydedildi.",
+        thankYou: "Bu bilişsel uyumsuzluk çalışmasına katıldığınız için teşekkür ederiz.",
+        nextStep: "Kişilik testini çözmek için tıklayın",
+      },
+      roomDetail: {
+        pageTitle: "Bilişsel Uyumsuzluk Test Odası",
+        sentiment: "Duygu",
+        comfortFirst: "Konfor (1.)",
+        fareFirst: "Ücret (1.)",
+        comfortSecond: "Konfor (2.)",
+        fareSecond: "Ücret (2.)",
+        comfortAvg: "Konfor Ort.",
+        fareAvg: "Ücret Ort.",
+        resultsTitle: "Uyumsuzluk Testi Sonuçları",
+        firstRound: "İlk Tur Cevapları",
+        secondRound: "İkinci Tur Cevapları",
+        displayedAverages: "Gösterilen Ortalamalar",
+        dissonanceAnalysis: "Uyumsuzluk Analizi",
+        compatibilityAnalysis: "Burç Uyumluluk Analizi",
+      },
     },
 
     // Prisoner's Dilemma

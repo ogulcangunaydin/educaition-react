@@ -50,7 +50,7 @@ const TEST_TYPE_TO_MODULE = {
 // Test type to route mapping
 const TEST_TYPE_TO_ROUTE = {
   [TestType.PRISONERS_DILEMMA]: "/rooms",
-  [TestType.DISSONANCE_TEST]: "/dissonanceTestParticipantList",
+  [TestType.DISSONANCE_TEST]: "/dissonance-test-rooms",
   [TestType.PROGRAM_SUGGESTION]: "/high-school-rooms",
   [TestType.PERSONALITY_TEST]: "/personality-test-rooms",
 };
@@ -276,7 +276,7 @@ function TestManagement() {
             </Button>
             <Button
               variant="outlined"
-              onClick={() => navigate("/dissonanceTestParticipantList")}
+              onClick={() => navigate("/dissonance-test-rooms")}
               startIcon={<PsychologyIcon />}
             >
               Bilişsel Uyumsuzluk

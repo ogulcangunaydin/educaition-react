@@ -86,10 +86,90 @@ const tests = {
     dissonance: {
       title: "Cognitive Dissonance Test",
       subtitle: "Decision Making Assessment",
-      description: "This test evaluates your decision-making patterns and cognitive consistency.",
+      description:
+        "Embark on a fun discovery journey for your career! Based on your age, personality traits, and zodiac sign, we'll brainstorm the most suitable professions and create an enjoyable plan! Remember, the results are inspiring but not definitive!",
       instructions: "Please answer the following questions honestly.",
       jobRecommendation: "Career Recommendation",
       viewRecommendation: "View Your Career Recommendation",
+      // Step labels
+      steps: {
+        welcome: "Welcome",
+        personalInfo: "Personal Info",
+        taxiQuestions: "Taxi Questions",
+        processing: "Processing",
+        verification: "Verification",
+        complete: "Complete",
+      },
+      // Step 0: Welcome
+      welcome: {
+        taxiProblemQuestion: "How important do you think the taxi problem in Istanbul is?",
+      },
+      // Step 1: Personal Information
+      personalInfo: {
+        title: "Personal Information",
+        fullName: "Full Name",
+        studentNumber: "Student Number",
+        age: "Your age:",
+        gender: "Your gender:",
+        education: "Your education level:",
+        starSign: "Your zodiac sign:",
+        risingSign: "Your rising sign:",
+        workload: "Work tempo that motivates me:",
+        workloadMin: "Relaxed",
+        workloadMax: "Intense",
+        careerStart: "How should my career start:",
+        careerStartMin: "Easy",
+        careerStartMax: "Challenging",
+        flexibility: "How flexible should my profession be:",
+        flexibilityMin: "Rigid",
+        flexibilityMax: "Flexible",
+      },
+      // Step 2: Taxi questions
+      taxiQuestions: {
+        title: "Taxi Service Questions",
+        comfortQuestion:
+          "To what extent does the taxi service in Istanbul (ease of finding a taxi, ride comfort, driver behavior, etc.) meet your expectations?",
+        fareQuestion:
+          "In your opinion, how well does the quality of taxi service in Istanbul match the fare balance?",
+      },
+      // Step 3: Processing
+      processingStep: {
+        thankYou: "Thank you for your participation!",
+        averageResults: "Average Results:",
+        taxiComfortAverage: "Taxi Service Comfort",
+        taxiFaresAverage: "Taxi Fare Balance",
+        votes: "votes",
+        saving: "Your answers are being saved, please wait...",
+      },
+      // Step 4: Verification (fake error + re-ask)
+      verificationStep: {
+        errorTitle: "HTTP Error 504: Gateway Timeout",
+        errorMessage: "The server could not save your first answer. Could you please answer again?",
+        answerAgain: "Please Answer Again",
+        average: "Average",
+      },
+      // Step 5: Complete
+      completeStep: {
+        success: "Your answers have been saved correctly.",
+        thankYou: "Thank you for participating in this cognitive dissonance study.",
+        nextStep: "Click to take the personality test",
+      },
+      roomDetail: {
+        pageTitle: "Dissonance Test Room",
+        sentiment: "Sentiment",
+        comfortFirst: "Comfort (1st)",
+        fareFirst: "Fare (1st)",
+        comfortSecond: "Comfort (2nd)",
+        fareSecond: "Fare (2nd)",
+        comfortAvg: "Comfort Avg",
+        fareAvg: "Fare Avg",
+        resultsTitle: "Dissonance Test Results",
+        firstRound: "First Round Answers",
+        secondRound: "Second Round Answers",
+        displayedAverages: "Displayed Averages",
+        dissonanceAnalysis: "Dissonance Analysis",
+        compatibilityAnalysis: "Zodiac Compatibility Analysis",
+      },
     },
 
     // Prisoner's Dilemma

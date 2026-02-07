@@ -48,7 +48,7 @@ const MODULE_CONFIG = [
   {
     id: "dissonance-test",
     translationKey: "dissonanceTest",
-    path: "/dissonanceTestParticipantList",
+    path: "/dissonance-test-rooms",
     icon: Psychology,
     color: "#9c27b0",
   },
