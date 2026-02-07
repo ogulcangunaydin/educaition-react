@@ -24,8 +24,9 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { Button } from "@components/atoms";
-import { TestRegistrationCard } from "@components/organisms";
+import { TestRegistrationCard, RadarChart } from "@components/organisms";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
+import { MarkdownSection, TestCompletionMessage } from "@components/molecules";
 import { useAuth } from "@contexts/AuthContext";
 import { getDeviceFingerprint } from "@utils/deviceFingerprint";
 import { validateStudentRegistration } from "@utils/validation";
@@ -417,59 +418,47 @@ function PersonalityTestPublic() {
 
   // Result stage
   if (stage === "result" && result) {
+    const traits = result.traits || {};
+
+    const personalityLabels = [
+      t("tests.personality.traits.extraversion"),
+      t("tests.personality.traits.agreeableness"),
+      t("tests.personality.traits.conscientiousness"),
+      t("tests.personality.traits.neuroticism"),
+      t("tests.personality.traits.openness"),
+    ];
+
+    const radarDatasets = [
+      {
+        label: t("tests.personality.roomDetail.traitsLabel"),
+        data: [
+          (traits.extroversion ?? traits.extraversion ?? 0) * 100,
+          (traits.agreeableness ?? 0) * 100,
+          (traits.conscientiousness ?? 0) * 100,
+          (traits.negative_emotionality ?? traits.neuroticism ?? 0) * 100,
+          (traits.open_mindedness ?? traits.openness ?? 0) * 100,
+        ],
+      },
+    ];
+
     return (
-      <PageLayout title="Your Results" maxWidth="md">
+      <PageLayout title={t("tests.personality.roomDetail.resultsTitle")} maxWidth="md">
         <Card sx={{ mt: 4 }}>
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" gutterBottom>
-              Your Personality Profile
+              {t("tests.personality.resultsReady")}
             </Typography>
 
-            <Box sx={{ mt: 3 }}>
-              {Object.entries(result.traits || {}).map(([trait, score]) => (
-                <Box key={trait} sx={{ mb: 3 }}>
-                  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 0.5 }}>
-                    <Typography variant="body1" sx={{ textTransform: "capitalize" }}>
-                      {trait.replace(/_/g, " ")}
-                    </Typography>
-                    <Typography variant="body1" color="primary.main">
-                      {Math.round(score * 100)}%
-                    </Typography>
-                  </Box>
-                  <LinearProgress
-                    variant="determinate"
-                    value={score * 100}
-                    sx={{ height: 10, borderRadius: 5 }}
-                  />
-                </Box>
-              ))}
-            </Box>
+            <RadarChart labels={personalityLabels} datasets={radarDatasets} sx={{ mb: 3 }} />
 
-            {result.job_recommendation && (
-              <Box sx={{ mt: 4, p: 2, bgcolor: "grey.100", borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Career Recommendation
-                </Typography>
-                <Typography variant="body1">{result.job_recommendation}</Typography>
-              </Box>
-            )}
-
-            {result.compatibility_analysis && (
-              <Box sx={{ mt: 3, p: 2, bgcolor: "grey.100", borderRadius: 2 }}>
-                <Typography variant="h6" gutterBottom>
-                  Compatibility Analysis
-                </Typography>
-                <Typography variant="body1">{result.compatibility_analysis}</Typography>
-              </Box>
-            )}
+            <MarkdownSection
+              title={t("tests.personality.roomDetail.jobRecommendations")}
+              content={result.job_recommendation}
+            />
           </CardContent>
         </Card>
 
-        <Box sx={{ mt: 3, textAlign: "center" }}>
-          <Typography variant="body2" color="text.secondary">
-            Thank you for completing the personality test!
-          </Typography>
-        </Box>
+        <TestCompletionMessage />
       </PageLayout>
     );
   }

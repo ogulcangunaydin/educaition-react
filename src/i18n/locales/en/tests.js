@@ -32,6 +32,8 @@ const tests = {
     downloadResults: "Download Results",
     exportResults: "Export Results",
 
+    thankYou: "Thank you for completing the test!",
+
     // Participant info
     participantInfo: {
       title: "Participant Information",

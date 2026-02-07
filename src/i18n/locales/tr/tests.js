@@ -32,6 +32,8 @@ const tests = {
     downloadResults: "Sonuçları İndir",
     exportResults: "Sonuçları Dışa Aktar",
 
+    thankYou: "Testi tamamladığınız için teşekkür ederiz!",
+
     // Participant info
     participantInfo: {
       title: "Katılımcı Bilgileri",
