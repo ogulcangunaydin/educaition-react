@@ -33,6 +33,8 @@ const tests = {
     exportResults: "Export Results",
 
     thankYou: "Thank you for completing the test!",
+    answerAllQuestions: "Please answer all questions",
+    submissionFailed: "Submission failed",
 
     // Participant info
     participantInfo: {
@@ -46,6 +48,8 @@ const tests = {
       nameRequired: "Full Name is required",
       studentIdRequired: "Student ID is required",
       studentIdMustBeNumber: "Student ID must contain only numbers",
+      alreadyCompleted: "You have already completed this test on this device.",
+      registrationFailed: "Registration failed",
     },
 
     // Personality Test

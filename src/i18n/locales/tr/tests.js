@@ -33,6 +33,8 @@ const tests = {
     exportResults: "Sonuçları Dışa Aktar",
 
     thankYou: "Testi tamamladığınız için teşekkür ederiz!",
+    answerAllQuestions: "Lütfen tüm soruları cevaplayın",
+    submissionFailed: "Gönderim başarısız oldu",
 
     // Participant info
     participantInfo: {
@@ -46,6 +48,8 @@ const tests = {
       nameRequired: "Ad Soyad zorunludur",
       studentIdRequired: "Öğrenci Numarası zorunludur",
       studentIdMustBeNumber: "Öğrenci Numarası sadece rakam içermelidir",
+      alreadyCompleted: "Bu testi bu cihazdan zaten tamamladınız.",
+      registrationFailed: "Kayıt başarısız oldu",
     },
 
     // Personality Test

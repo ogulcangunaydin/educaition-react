@@ -6,5 +6,6 @@ export { default as useEnums } from "./useEnums";
 export { default as useMultiStepForm } from "./useMultiStepForm";
 export { default as useUniversityAccess } from "./useUniversityAccess";
 export { useTestRooms } from "./useTestRooms";
+export { default as useTestFlow } from "./useTestFlow";
 
 export * from "./prisoners-dilemma";

@@ -18,3 +18,4 @@ export { default as ResultDetailDialog } from "./ResultDetailDialog";
 export { default as ParticipantDetailCard } from "./ParticipantDetailCard";
 export { default as PrisonersDilemmaInstructions } from "./PrisonersDilemmaInstructions";
 export { default as TestRegistrationCard } from "./TestRegistrationCard";
+export { default as TestQuestionCard, LIKERT_5_OPTIONS } from "./TestQuestionCard";
