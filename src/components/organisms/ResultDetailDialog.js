@@ -229,7 +229,7 @@ function ResultDetailDialog({
           pb: 1,
         }}
       >
-        <Typography variant="h6">
+        <Typography component="div" variant="h6">
           {title}
           {subtitle && (
             <Typography component="span" variant="body2" color="text.secondary" sx={{ ml: 1 }}>

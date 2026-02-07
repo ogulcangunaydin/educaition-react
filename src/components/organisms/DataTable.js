@@ -32,11 +32,13 @@ import {
   IconButton,
   Tooltip,
 } from "@mui/material";
-import { Download as DownloadIcon } from "@mui/icons-material";
+import { Download as DownloadIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import PropTypes from "prop-types";
 import { useTranslation } from "react-i18next";
 import EmptyState from "../molecules/EmptyState";
+import ConfirmDialog from "../molecules/ConfirmDialog";
 import Spinner from "../atoms/Spinner";
+import { useAuth } from "@contexts/AuthContext";
 
 /**
  * Built-in cell renderer based on column type
@@ -156,6 +158,8 @@ function DataTable({
   maxHeight,
   exportable = false,
   exportFileName = "export",
+  deletable = false,
+  onDeleteRow,
   getRowId = (row) => row.id,
   ...props
 }) {
@@ -166,6 +170,22 @@ function DataTable({
   const { t, i18n } = useTranslation();
 
   const locale = i18n.language === "tr" ? "tr-TR" : "en-US";
+
+  const { isAdmin } = useAuth();
+  const showDelete = deletable && isAdmin && typeof onDeleteRow === "function";
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await onDeleteRow(deleteTarget);
+    } finally {
+      setDeleting(false);
+      setDeleteTarget(null);
+    }
+  };
 
   // Handle sorting
   const handleSort = (columnId) => {
@@ -290,7 +310,9 @@ function DataTable({
                   )}
                 </TableCell>
               ))}
-              {actions.length > 0 && <TableCell align="right">{t("common.actions")}</TableCell>}
+              {(actions.length > 0 || showDelete) && (
+                <TableCell align="right">{t("common.actions")}</TableCell>
+              )}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -320,7 +342,7 @@ function DataTable({
                       {renderCellByType(row[column.id], row, column, locale)}
                     </TableCell>
                   ))}
-                  {actions.length > 0 && (
+                  {(actions.length > 0 || showDelete) && (
                     <TableCell align="right">
                       {actions.map((action, index) => (
                         <Tooltip key={index} title={action.label}>
@@ -337,6 +359,20 @@ function DataTable({
                           </IconButton>
                         </Tooltip>
                       ))}
+                      {showDelete && (
+                        <Tooltip title={t("common.delete")}>
+                          <IconButton
+                            size="small"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeleteTarget(row);
+                            }}
+                            color="error"
+                          >
+                            <DeleteIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      )}
                     </TableCell>
                   )}
                 </TableRow>
@@ -360,6 +396,20 @@ function DataTable({
               ? t("common.displayedRows", { from, to, count })
               : t("common.displayedRowsMore", { from, to })
           }
+        />
+      )}
+
+      {showDelete && (
+        <ConfirmDialog
+          open={Boolean(deleteTarget)}
+          onClose={() => setDeleteTarget(null)}
+          onConfirm={handleDeleteConfirm}
+          title={t("common.deleteConfirmTitle")}
+          message={t("common.deleteConfirmMessage")}
+          confirmLabel={t("common.delete")}
+          cancelLabel={t("common.cancel")}
+          confirmColor="error"
+          loading={deleting}
         />
       )}
     </Box>
@@ -405,6 +455,8 @@ DataTable.propTypes = {
   maxHeight: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
   exportable: PropTypes.bool,
   exportFileName: PropTypes.string,
+  deletable: PropTypes.bool,
+  onDeleteRow: PropTypes.func,
   getRowId: PropTypes.func,
 };
 

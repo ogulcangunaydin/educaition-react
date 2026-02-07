@@ -116,11 +116,11 @@ function PersonalityTestPublic() {
       {
         label: t("tests.personality.roomDetail.traitsLabel"),
         data: [
-          (traits.extroversion ?? traits.extraversion ?? 0) * 100,
-          (traits.agreeableness ?? 0) * 100,
-          (traits.conscientiousness ?? 0) * 100,
-          (traits.negative_emotionality ?? traits.neuroticism ?? 0) * 100,
-          (traits.open_mindedness ?? traits.openness ?? 0) * 100,
+          traits.extroversion ?? 0,
+          traits.agreeableness ?? 0,
+          traits.conscientiousness ?? 0,
+          traits.negative_emotionality ?? 0,
+          traits.open_mindedness ?? 0,
         ],
       },
     ];
@@ -128,6 +128,8 @@ function PersonalityTestPublic() {
     return (
       <PageLayout title={t("tests.personality.roomDetail.resultsTitle")} maxWidth="md">
         <Card sx={{ mt: 4 }}>
+          <TestCompletionMessage />
+
           <CardContent sx={{ p: 4 }}>
             <Typography variant="h5" gutterBottom>
               {t("tests.personality.resultsReady")}
@@ -141,8 +143,6 @@ function PersonalityTestPublic() {
             />
           </CardContent>
         </Card>
-
-        <TestCompletionMessage />
       </PageLayout>
     );
   }

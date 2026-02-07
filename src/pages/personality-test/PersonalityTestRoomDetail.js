@@ -185,6 +185,11 @@ function PersonalityTestRoomDetail() {
           exportable
           exportFileName={`personality_test_${room?.name || roomId}_${new Date().toISOString().split("T")[0]}`}
           emptyMessage={t("tests.noParticipantsYet")}
+          deletable
+          onDeleteRow={async (row) => {
+            await personalityTestService.deleteParticipant(row.id);
+            setParticipants((prev) => prev.filter((p) => p.id !== row.id));
+          }}
         />
       )}
 

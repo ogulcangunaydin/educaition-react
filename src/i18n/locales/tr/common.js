@@ -56,6 +56,8 @@ const common = {
     qrFallbackMessage: "QR kod okunamıyorsa aşağıdaki linki tarayıcınıza yazabilirsiniz",
     displayedRows: "{{from}}-{{to}} / {{count}}",
     displayedRowsMore: "{{from}}-{{to}} / {{to}}'den fazla",
+    deleteConfirmTitle: "Satır Sil",
+    deleteConfirmMessage: "Bu satırı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.",
   },
 };
 

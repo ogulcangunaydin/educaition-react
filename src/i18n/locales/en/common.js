@@ -57,6 +57,8 @@ const common = {
       "If the QR code cannot be scanned, you can type the link below in your browser",
     displayedRows: "{{from}}-{{to}} of {{count}}",
     displayedRowsMore: "{{from}}-{{to}} of more than {{to}}",
+    deleteConfirmTitle: "Delete Row",
+    deleteConfirmMessage: "Are you sure you want to delete this row? This action cannot be undone.",
   },
 };
 

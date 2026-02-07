@@ -36,9 +36,28 @@ export async function getRoomStatistics(roomId) {
   return data;
 }
 
+/**
+ * Delete a personality test participant (soft delete).
+ * After deletion the student's device can retake the test.
+ * @param {number} participantId - Participant ID
+ * @returns {Promise<Object>} Deleted participant data
+ */
+export async function deleteParticipant(participantId) {
+  const { ok, data, status } = await api.auth.delete(
+    `/personality-test/participants/${participantId}`
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
 const personalityTestService = {
   getParticipants,
   getRoomStatistics,
+  deleteParticipant,
 };
 
 export default personalityTestService;
