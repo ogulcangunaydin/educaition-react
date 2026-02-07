@@ -18,7 +18,7 @@ import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import jobTranslations from "./RiasecTest/job_translations.json";
-import { fetchScoreRankingDistribution } from "../services/liseService";
+import { fetchScoreRankingDistribution } from "@services/liseService";
 import { getStudentResult } from "@services/programSuggestionService";
 
 // Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)

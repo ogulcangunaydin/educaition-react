@@ -18,10 +18,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import Header from "../components/organisms/Header";
-import { useBasket } from "../contexts/BasketContext";
-import { useUniversity } from "../contexts/UniversityContext";
-import { fetchBatchStats } from "../services/programService";
+import Header from "@organisms/Header";
+import { useBasket } from "@contexts/BasketContext";
+import { useUniversity } from "@contexts/UniversityContext";
+import { fetchBatchStats } from "@services/programService";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();

@@ -17,9 +17,9 @@ import {
   TableSortLabel,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
-import Header from "../components/organisms/Header";
-import { useBasket } from "../contexts/BasketContext";
-import { fetchBatchStats } from "../services/programService";
+import Header from "@organisms/Header";
+import { useBasket } from "@contexts/BasketContext";
+import { fetchBatchStats } from "@services/programService";
 
 const RivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();

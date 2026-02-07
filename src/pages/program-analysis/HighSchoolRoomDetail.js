@@ -27,7 +27,7 @@ import BugReportIcon from "@mui/icons-material/BugReport";
 import QRCode from "qrcode.react";
 import highSchoolService from "@services/highSchoolService";
 import programSuggestionService from "@services/programSuggestionService";
-import Header from "../components/organisms/Header";
+import Header from "@organisms/Header";
 import jobTranslations from "./RiasecTest/job_translations.json";
 
 // Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)

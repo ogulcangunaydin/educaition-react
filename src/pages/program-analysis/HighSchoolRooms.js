@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import highSchoolService from "@services/highSchoolService";
-import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "../styles/CommonStyles";
-import Header from "../components/organisms/Header";
+import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "@/styles/CommonStyles";
+import Header from "@organisms/Header";
 import { useNavigate } from "react-router-dom";
-import { fetchLiseMapping } from "../services/liseService";
+import { fetchLiseMapping } from "@services/liseService";
 
 // Load high school list from API
 const loadHighSchools = async () => {

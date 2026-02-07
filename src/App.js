@@ -18,19 +18,21 @@ import {
 } from "@pages/prisoners-dilemma";
 
 import UniversityComparison from "@pages/university-comparison";
-import HighSchoolAnalysis from "@pages/HighSchoolAnalysis";
-import RivalAnalysis from "@pages/RivalAnalysis";
-import ProgramRivalAnalysis from "@pages/ProgramRivalAnalysis";
+import {
+  HighSchoolAnalysis,
+  RivalAnalysis,
+  ProgramRivalAnalysis,
+  HighSchoolRooms,
+  HighSchoolRoomDetail,
+  ProgramSuggestionTest,
+  ProgramTestResult,
+} from "@pages/program-analysis";
 
-import HighSchoolRooms from "@pages/HighSchoolRooms";
-import HighSchoolRoomDetail from "@pages/HighSchoolRoomDetail";
 import { PersonalityTestRoomDetail, PersonalityTestPublic } from "@pages/personality-test";
 import TestManagement from "@pages/TestManagement";
 import { TestRoomsPage } from "@components/templates";
 import { TestType } from "./services/testRoomService";
 
-import ProgramSuggestionTest from "@pages/ProgramSuggestionTest";
-import ProgramTestResult from "@pages/ProgramTestResult";
 import { DissonanceTestPublic, DissonanceTestRoomDetail } from "@pages/dissonance-test";
 
 const ADMIN_ONLY = [ROLES.ADMIN];

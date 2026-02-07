@@ -30,9 +30,9 @@ import {
   getParticipantSession,
   clearParticipantSession,
   SESSION_TYPES,
-} from "../services/participantSessionService";
-import { fetchUniversityMapping, fetchScoreRankingDistribution } from "../services/liseService";
-import { fetchEnums } from "../services/enumService";
+} from "@services/participantSessionService";
+import { fetchUniversityMapping, fetchScoreRankingDistribution } from "@services/liseService";
+import { fetchEnums } from "@services/enumService";
 
 import { TEST_TYPES } from "@config/permissions";
 import programSuggestionService from "@services/programSuggestionService";
