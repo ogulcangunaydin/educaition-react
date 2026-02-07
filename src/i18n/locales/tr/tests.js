@@ -37,10 +37,13 @@ const tests = {
       title: "Katılımcı Bilgileri",
       name: "Ad Soyad",
       email: "E-posta (isteğe bağlı)",
-      studentId: "Öğrenci Numarası (isteğe bağlı)",
+      studentId: "Öğrenci Numarası",
       studentNumber: "Öğrenci No",
       department: "Bölüm",
       continue: "Devam Et",
+      nameRequired: "Ad Soyad zorunludur",
+      studentIdRequired: "Öğrenci Numarası zorunludur",
+      studentIdMustBeNumber: "Öğrenci Numarası sadece rakam içermelidir",
     },
 
     // Personality Test

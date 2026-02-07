@@ -37,10 +37,13 @@ const tests = {
       title: "Participant Information",
       name: "Full Name",
       email: "Email (optional)",
-      studentId: "Student ID (optional)",
+      studentId: "Student ID",
       studentNumber: "Student No",
       department: "Department",
       continue: "Continue",
+      nameRequired: "Full Name is required",
+      studentIdRequired: "Student ID is required",
+      studentIdMustBeNumber: "Student ID must contain only numbers",
     },
 
     // Personality Test

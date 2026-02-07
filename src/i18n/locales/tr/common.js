@@ -52,6 +52,7 @@ const common = {
     copyURL: "URL Kopyala",
     showQRCode: "QR Kod Göster",
     createdAt: "Oluşturulma:",
+    room: "Oda",
     qrFallbackMessage: "QR kod okunamıyorsa aşağıdaki linki tarayıcınıza yazabilirsiniz",
     displayedRows: "{{from}}-{{to}} / {{count}}",
     displayedRowsMore: "{{from}}-{{to}} / {{to}}'den fazla",

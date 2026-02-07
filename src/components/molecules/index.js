@@ -26,3 +26,4 @@ export { default as MarkdownSection } from "./MarkdownSection";
 export { default as LanguageSwitcher } from "./LanguageSwitcher";
 export { default as ModuleCard } from "./ModuleCard";
 export { default as StatCard } from "./StatCard";
+export { default as StudentRegistrationFields } from "./StudentRegistrationFields";

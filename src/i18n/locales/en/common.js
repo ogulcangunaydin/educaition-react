@@ -52,6 +52,7 @@ const common = {
     copyURL: "Copy URL",
     showQRCode: "Show QR Code",
     createdAt: "Created:",
+    room: "Room",
     qrFallbackMessage:
       "If the QR code cannot be scanned, you can type the link below in your browser",
     displayedRows: "{{from}}-{{to}} of {{count}}",

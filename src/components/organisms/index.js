@@ -17,3 +17,4 @@ export { default as RadarChart } from "./RadarChart";
 export { default as ResultDetailDialog } from "./ResultDetailDialog";
 export { default as ParticipantDetailCard } from "./ParticipantDetailCard";
 export { default as PrisonersDilemmaInstructions } from "./PrisonersDilemmaInstructions";
+export { default as TestRegistrationCard } from "./TestRegistrationCard";

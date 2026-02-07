@@ -21,13 +21,15 @@ import {
   FormControlLabel,
   LinearProgress,
   Alert,
-  TextField,
 } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Button } from "@components/atoms";
-import { PageLayout } from "@components/templates";
+import { TestRegistrationCard } from "@components/organisms";
+import { PageLayout, PageLoading, PageError } from "@components/templates";
 import { useAuth } from "@contexts/AuthContext";
 import { getDeviceFingerprint } from "@utils/deviceFingerprint";
-import { getTestRoomPublic, TEST_TYPE_CONFIG, TestType } from "@services/testRoomService";
+import { validateStudentRegistration } from "@utils/validation";
+import { getTestRoomPublic, TestType } from "@services/testRoomService";
 import bigFiveTestENQuestions from "./BigFiveTestEN.txt";
 
 const ANSWER_LABELS = [
@@ -46,6 +48,7 @@ function PersonalityTestPublic() {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { userId } = useAuth();
+  const { t } = useTranslation();
 
   // Room and test state
   const [room, setRoom] = useState(null);
@@ -55,7 +58,7 @@ function PersonalityTestPublic() {
   const [stage, setStage] = useState("loading"); // loading, registration, test, result
   const [fullName, setFullName] = useState("");
   const [studentNumber, setStudentNumber] = useState("");
-  const [formError, setFormError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -173,13 +176,18 @@ function PersonalityTestPublic() {
 
   // Handle participant registration
   const handleRegister = useCallback(async () => {
-    if (!fullName.trim() || !studentNumber.trim()) {
-      setFormError("Ad Soyad ve Öğrenci Numarası gerekli");
+    const { valid, errors: validationErrors } = validateStudentRegistration(
+      fullName,
+      studentNumber,
+      t
+    );
+    if (!valid) {
+      setFieldErrors(validationErrors);
       return;
     }
 
     setSubmitting(true);
-    setFormError("");
+    setFieldErrors({});
 
     try {
       const response = await fetch(`${BASE_URL}/personality-test/participants`, {
@@ -215,11 +223,11 @@ function PersonalityTestPublic() {
       });
       setStage("test");
     } catch (err) {
-      setFormError(err.message);
+      setFieldErrors({ general: err.message });
     } finally {
       setSubmitting(false);
     }
-  }, [fullName, studentNumber, roomId, deviceId]);
+  }, [fullName, studentNumber, roomId, deviceId, t]);
 
   // Handle answer selection
   const handleAnswerChange = (questionIndex, value) => {
@@ -280,92 +288,38 @@ function PersonalityTestPublic() {
 
   // Loading state
   if (stage === "loading") {
-    return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          minHeight: "100vh",
-          gap: 2,
-        }}
-      >
-        <CircularProgress />
-        <Typography color="text.secondary">Loading personality test...</Typography>
-      </Box>
-    );
+    return <PageLoading title={t("tests.personality.title")} maxWidth="sm" />;
   }
 
   // Error state
   if (stage === "error") {
     return (
-      <PageLayout title="Error" maxWidth="sm">
-        <Alert severity="error" sx={{ mt: 4 }}>
-          {error}
-        </Alert>
-        <Button variant="outlined" onClick={() => navigate(-1)} sx={{ mt: 2 }}>
-          Go Back
-        </Button>
-      </PageLayout>
+      <PageError
+        title={t("tests.personality.title")}
+        message={error}
+        onBack={() => navigate(-1)}
+        maxWidth="sm"
+      />
     );
   }
 
   // Registration stage
   if (stage === "registration") {
-    const config = TEST_TYPE_CONFIG[TestType.PERSONALITY_TEST];
-
     return (
-      <PageLayout title="Personality Test" maxWidth="sm">
-        <Card sx={{ mt: 4, borderTop: 4, borderColor: config?.color || "primary.main" }}>
-          <CardContent sx={{ p: 4 }}>
-            <Typography variant="h5" gutterBottom>
-              Welcome to the Personality Test
-            </Typography>
-            <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-              This test contains 60 questions based on the Big Five personality model. It takes
-              approximately 10-15 minutes to complete.
-            </Typography>
-
-            {room && (
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                Room: <strong>{room.name}</strong>
-              </Typography>
-            )}
-
-            <TextField
-              label="Ad Soyad"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              error={!!formError && !fullName.trim()}
-              helperText={!fullName.trim() && formError ? formError : ""}
-              fullWidth
-              required
-              sx={{ mb: 2 }}
-            />
-
-            <TextField
-              label="Öğrenci Numarası"
-              value={studentNumber}
-              onChange={(e) => setStudentNumber(e.target.value)}
-              error={!!formError && !studentNumber.trim()}
-              helperText={!studentNumber.trim() && formError ? formError : ""}
-              fullWidth
-              required
-              sx={{ mb: 3 }}
-            />
-
-            <Button
-              variant="contained"
-              fullWidth
-              onClick={handleRegister}
-              disabled={submitting}
-              sx={{ py: 1.5 }}
-            >
-              {submitting ? <CircularProgress size={24} /> : "Start Test"}
-            </Button>
-          </CardContent>
-        </Card>
+      <PageLayout title={t("tests.personality.title")} maxWidth="sm">
+        <TestRegistrationCard
+          testType={TestType.PERSONALITY_TEST}
+          title={t("tests.personality.subtitle")}
+          description={t("tests.personality.description")}
+          roomName={room?.name}
+          fullName={fullName}
+          studentNumber={studentNumber}
+          onFullNameChange={setFullName}
+          onStudentNumberChange={setStudentNumber}
+          fieldErrors={fieldErrors}
+          submitting={submitting}
+          onSubmit={handleRegister}
+        />
       </PageLayout>
     );
   }
