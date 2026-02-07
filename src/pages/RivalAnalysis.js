@@ -19,8 +19,7 @@ import {
 import { Download } from "@mui/icons-material";
 import Header from "../components/organisms/Header";
 import { useBasket } from "../contexts/BasketContext";
-import roomService from "@services/roomService";
-import { fetchAllTercihStatsCached } from "../services/programService";
+import { fetchBatchStats } from "../services/programService";
 
 const RivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
@@ -30,18 +29,6 @@ const RivalAnalysis = () => {
   const [rivalData, setRivalData] = useState([]);
   const [orderBy, setOrderBy] = useState("marka_etkinlik_degeri");
   const [order, setOrder] = useState("desc");
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        await roomService.getRooms();
-      } catch (error) {
-        // Silently handle error - this is just a check
-      }
-    };
-
-    fetchRooms();
-  }, []);
 
   // Load rival analysis data
   useEffect(() => {
@@ -55,8 +42,14 @@ const RivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load tercih stats from API
-        const tercihStats = await fetchAllTercihStatsCached();
+        // Get yop codes from selected programs
+        const yopKodlari = selectedPrograms.map((p) => p.yop_kodu);
+
+        // Fetch only the stats we need for these specific programs
+        const { stats: tercihStats } = await fetchBatchStats(yopKodlari, {
+          year: Number(selectedYear),
+          includeStats: true,
+        });
 
         console.log("[RivalAnalysis] Tercih stats count:", tercihStats.length);
         console.log("[RivalAnalysis] Selected year:", selectedYear);
@@ -64,16 +57,14 @@ const RivalAnalysis = () => {
         console.log("[RivalAnalysis] First selected program:", selectedPrograms[0]);
 
         // Parse data into a map for quick lookup by yop_kodu
+        // (already filtered by year on server side)
         const csvDataMap = new Map();
         for (const stat of tercihStats) {
-          // Only include data for the selected year
-          if (stat.year === Number(selectedYear)) {
-            csvDataMap.set(stat.yop_kodu, {
-              ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
-              ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
-              marka_etkinlik: stat.marka_etkinlik_degeri,
-            });
-          }
+          csvDataMap.set(stat.yop_kodu, {
+            ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
+            ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
+            marka_etkinlik: stat.marka_etkinlik_degeri,
+          });
         }
 
         console.log("[RivalAnalysis] CSV data map size:", csvDataMap.size);

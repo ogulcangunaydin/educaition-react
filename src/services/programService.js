@@ -246,34 +246,34 @@ export const fetchAllTercihStats = async (skip = 0, limit = 50000) => {
 };
 
 /**
- * Fetch detailed tercih istatistikleri by YOP code
+ * Fetch detailed tercih stats by YOP code
  * @param {string} yopKodu - The program's YOP code
- * @returns {Promise<Object>} Istatistikleri object
+ * @returns {Promise<Object>} Detailed stats object
  */
-export const fetchTercihIstatistikleri = async (yopKodu) => {
-  const url = `${API_BASE_URL}/tercih-stats/istatistikleri/${encodeURIComponent(yopKodu)}`;
+export const fetchTercihDetailedStats = async (yopKodu) => {
+  const url = `${API_BASE_URL}/tercih-stats/detailed-stats/${encodeURIComponent(yopKodu)}`;
   const response = await fetch(url);
 
   if (!response.ok) {
     if (response.status === 404) return null;
-    throw new Error(`Failed to fetch tercih istatistikleri: ${response.statusText}`);
+    throw new Error(`Failed to fetch tercih detailed stats: ${response.statusText}`);
   }
 
   return response.json();
 };
 
 /**
- * Fetch all tercih istatistikleri
+ * Fetch all tercih detailed stats
  * @param {number} skip - Offset for pagination
  * @param {number} limit - Maximum results (default 1000)
  * @returns {Promise<Array>}
  */
-export const fetchAllTercihIstatistikleri = async (skip = 0, limit = 15000) => {
-  const url = `${API_BASE_URL}/tercih-stats/istatistikleri?skip=${skip}&limit=${limit}`;
+export const fetchAllTercihDetailedStats = async (skip = 0, limit = 15000) => {
+  const url = `${API_BASE_URL}/tercih-stats/detailed-stats?skip=${skip}&limit=${limit}`;
   const response = await fetch(url);
 
   if (!response.ok) {
-    throw new Error(`Failed to fetch all tercih istatistikleri: ${response.statusText}`);
+    throw new Error(`Failed to fetch all tercih detailed stats: ${response.statusText}`);
   }
 
   return response.json();
@@ -360,8 +360,8 @@ export const fetchTercihYears = async () => {
 // Caches for tercih data
 let tercihStatsCache = null;
 let tercihStatsCacheTimestamp = null;
-let tercihIstatistikleriCache = null;
-let tercihIstatistikleriCacheTimestamp = null;
+let tercihDetailedStatsCache = null;
+let tercihDetailedStatsCacheTimestamp = null;
 let pricesCache = null;
 let pricesCacheTimestamp = null;
 
@@ -390,27 +390,27 @@ export const fetchAllTercihStatsCached = async (forceRefresh = false) => {
 };
 
 /**
- * Fetch all tercih istatistikleri with caching
+ * Fetch all tercih detailed stats with caching
  * @param {boolean} forceRefresh - Force a fresh fetch
  * @returns {Promise<Array>}
  */
-export const fetchAllTercihIstatistikleriCached = async (forceRefresh = false) => {
+export const fetchAllTercihDetailedStatsCached = async (forceRefresh = false) => {
   const now = Date.now();
 
   if (
     !forceRefresh &&
-    tercihIstatistikleriCache &&
-    tercihIstatistikleriCacheTimestamp &&
-    now - tercihIstatistikleriCacheTimestamp < CACHE_TTL
+    tercihDetailedStatsCache &&
+    tercihDetailedStatsCacheTimestamp &&
+    now - tercihDetailedStatsCacheTimestamp < CACHE_TTL
   ) {
-    return tercihIstatistikleriCache;
+    return tercihDetailedStatsCache;
   }
 
-  const data = await fetchAllTercihIstatistikleri();
-  tercihIstatistikleriCache = data;
-  tercihIstatistikleriCacheTimestamp = now;
+  const data = await fetchAllTercihDetailedStats();
+  tercihDetailedStatsCache = data;
+  tercihDetailedStatsCacheTimestamp = now;
 
-  return tercihIstatistikleriCache;
+  return tercihDetailedStatsCache;
 };
 
 /**
@@ -443,8 +443,50 @@ export const fetchAllPricesCached = async (forceRefresh = false) => {
 export const clearTercihCaches = () => {
   tercihStatsCache = null;
   tercihStatsCacheTimestamp = null;
-  tercihIstatistikleriCache = null;
-  tercihIstatistikleriCacheTimestamp = null;
+  tercihDetailedStatsCache = null;
+  tercihDetailedStatsCacheTimestamp = null;
   pricesCache = null;
   pricesCacheTimestamp = null;
+};
+
+// ===================== BATCH ENDPOINT =====================
+
+/**
+ * Fetch stats, prices, and/or detailed stats for specific yop_kodlari in a single request.
+ * This replaces the pattern of fetching ALL records and filtering client-side.
+ *
+ * @param {string[]} yopKodlari - List of program YOP codes
+ * @param {Object} options
+ * @param {number} [options.year] - Filter stats by year
+ * @param {boolean} [options.includeStats=true] - Include tercih stats
+ * @param {boolean} [options.includePrices=false] - Include program prices
+ * @param {boolean} [options.includeDetailedStats=false] - Include tercih detailed stats
+ * @returns {Promise<{stats: Array, prices: Array, detailed_stats: Array}>}
+ */
+export const fetchBatchStats = async (yopKodlari, options = {}) => {
+  const {
+    year = null,
+    includeStats = true,
+    includePrices = false,
+    includeDetailedStats = false,
+  } = options;
+
+  const url = `${API_BASE_URL}/tercih-stats/batch`;
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      yop_kodlari: yopKodlari,
+      year,
+      include_stats: includeStats,
+      include_prices: includePrices,
+      include_detailed_stats: includeDetailedStats,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch batch stats: ${response.statusText}`);
+  }
+
+  return response.json();
 };

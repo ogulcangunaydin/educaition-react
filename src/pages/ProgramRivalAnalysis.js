@@ -21,12 +21,7 @@ import { Download } from "@mui/icons-material";
 import Header from "../components/organisms/Header";
 import { useBasket } from "../contexts/BasketContext";
 import { useUniversity } from "../contexts/UniversityContext";
-import roomService from "@services/roomService";
-import {
-  fetchAllTercihStatsCached,
-  fetchAllPricesCached,
-  fetchAllTercihIstatistikleriCached,
-} from "../services/programService";
+import { fetchBatchStats } from "../services/programService";
 
 const ProgramRivalAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
@@ -37,18 +32,6 @@ const ProgramRivalAnalysis = () => {
   const [orderBy, setOrderBy] = useState("tercih_edilme");
   const [order, setOrder] = useState("asc");
   const [hiddenColumns, setHiddenColumns] = useState(new Set());
-
-  useEffect(() => {
-    const fetchRooms = async () => {
-      try {
-        await roomService.getRooms();
-      } catch (error) {
-        // Silently handle error - this is just a check
-      }
-    };
-
-    fetchRooms();
-  }, []);
 
   // Load rival analysis data
   useEffect(() => {
@@ -62,12 +45,20 @@ const ProgramRivalAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        // Load all data from API in parallel
-        const [tercihStats, pricesData, tercihIstatistikleri] = await Promise.all([
-          fetchAllTercihStatsCached(),
-          fetchAllPricesCached(),
-          fetchAllTercihIstatistikleriCached(),
-        ]);
+        // Get yop codes from selected programs
+        const yopKodlari = selectedPrograms.map((p) => p.yop_kodu);
+
+        // Fetch only the data we need for these specific programs
+        const {
+          stats: tercihStats,
+          prices: pricesData,
+          detailed_stats: tercihDetailedStats,
+        } = await fetchBatchStats(yopKodlari, {
+          year: Number(selectedYear),
+          includeStats: true,
+          includePrices: true,
+          includeDetailedStats: true,
+        });
 
         // Build price map from API data
         const priceMap = new Map();
@@ -92,9 +83,9 @@ const ProgramRivalAnalysis = () => {
           }
         }
 
-        // Build tercih istatistikleri map from API data
+        // Build tercih detailed stats map from API data
         const tercihIstatMap = new Map();
-        for (const istat of tercihIstatistikleri) {
+        for (const istat of tercihDetailedStats) {
           const yearSuffix = `_${selectedYear}`;
           tercihIstatMap.set(istat.yop_kodu, {
             birKontenjanaTalip: istat[`bir_kontenjana_talip_olan_aday_sayisi${yearSuffix}`],
@@ -117,16 +108,14 @@ const ProgramRivalAnalysis = () => {
         console.log("[ProgramRivalAnalysis] First selected program:", selectedPrograms[0]);
 
         // Parse tercih stats into a map for quick lookup by yop_kodu
+        // (already filtered by year on server side)
         const csvDataMap = new Map();
         for (const stat of tercihStats) {
-          // Only include data for the selected year
-          if (stat.year === Number(selectedYear)) {
-            csvDataMap.set(stat.yop_kodu, {
-              ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
-              ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
-              marka_etkinlik: stat.marka_etkinlik_degeri,
-            });
-          }
+          csvDataMap.set(stat.yop_kodu, {
+            ortalama_tercih_edilme: stat.ortalama_tercih_edilme_sirasi,
+            ortalama_yerlesen_tercih: stat.ortalama_yerlesen_tercih_sirasi,
+            marka_etkinlik: stat.marka_etkinlik_degeri,
+          });
         }
 
         console.log("[ProgramRivalAnalysis] CSV data map size:", csvDataMap.size);
