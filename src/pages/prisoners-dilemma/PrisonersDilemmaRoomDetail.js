@@ -13,14 +13,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { IconButton, Tooltip, Menu, MenuItem, Chip, Box } from "@mui/material";
+import {
+  IconButton,
+  Tooltip,
+  Menu,
+  MenuItem,
+  Chip,
+  Box,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import {
   Visibility as ViewIcon,
   PlayArrow as PlayArrowIcon,
   History as HistoryIcon,
 } from "@mui/icons-material";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
-import { Button, TextField, Modal } from "@components/atoms";
+import { Button, TextField } from "@components/atoms";
 import {
   QRCodeOverlay,
   RoomParticipantEmptyState,
@@ -103,9 +114,18 @@ function PrisonersDilemmaRoomDetail() {
 
     try {
       const result = await startSessionWithName(legacyRoomId, sessionName);
+
+      // startSessionWithName returns { ok, data } or { ok: false, error }
+      if (result.ok === false) {
+        setErrorMessage(result.error || "Failed to start session");
+        setShowErrorDialog(true);
+        return;
+      }
+
+      const session = result.data || result;
       setShowSessionModal(false);
       setSessionName("");
-      navigate(`/leaderboard/${result.id}`, {
+      navigate(`/leaderboard/${session.id}`, {
         state: { roomId: legacyRoomId, testRoomId: roomId, roomName: room?.name },
       });
     } catch (err) {
@@ -113,7 +133,7 @@ function PrisonersDilemmaRoomDetail() {
       setErrorMessage(detail);
       setShowErrorDialog(true);
     }
-  }, [room, sessionName, navigate]);
+  }, [room, sessionName, navigate, roomId]);
 
   const handleDeleteNotReadyAndStart = useCallback(async () => {
     const notReady = participants.filter((p) => !p.player_tactic);
@@ -168,27 +188,29 @@ function PrisonersDilemmaRoomDetail() {
       maxWidth="lg"
       showBackButton
       onBack={() => navigate("/prisoners-dilemma-rooms")}
-      headerActions={
-        <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
-          <Button
-            variant="contained"
-            startIcon={<PlayArrowIcon />}
-            onClick={() => setShowSessionModal(true)}
-            disabled={participants.length === 0}
-          >
-            {t("tests.prisonersDilemma.playgroundPage.start")}
-          </Button>
-          {sessions.length > 0 && (
+      headerProps={{
+        children: (
+          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
             <Button
-              variant="outlined"
-              startIcon={<HistoryIcon />}
-              onClick={(e) => setSessionAnchor(e.currentTarget)}
+              variant="contained"
+              startIcon={<PlayArrowIcon />}
+              onClick={() => setShowSessionModal(true)}
+              disabled={participants.length === 0}
             >
-              {t("tests.prisonersDilemma.playgroundPage.sessions")}
+              {t("tests.prisonersDilemma.playgroundPage.start")}
             </Button>
-          )}
-        </Box>
-      }
+            {sessions.length > 0 && (
+              <Button
+                variant="outlined"
+                startIcon={<HistoryIcon />}
+                onClick={(e) => setSessionAnchor(e.currentTarget)}
+              >
+                {t("tests.prisonersDilemma.playgroundPage.sessions")}
+              </Button>
+            )}
+          </Box>
+        ),
+      }}
     >
       {/* Sessions Menu */}
       <Menu
@@ -346,34 +368,33 @@ function PrisonersDilemmaRoomDetail() {
         )}
       </ResultDetailDialog>
 
-      {/* Start Session Modal */}
-      <Modal
+      {/* Start Session Dialog */}
+      <Dialog
         open={showSessionModal}
         onClose={() => setShowSessionModal(false)}
-        title={t("tests.prisonersDilemma.playgroundPage.startNewSession")}
-        actions={
-          <>
-            <Button variant="outlined" onClick={() => setShowSessionModal(false)}>
-              {t("common.cancel")}
-            </Button>
-            <Button
-              variant="contained"
-              disabled={!sessionName.trim()}
-              onClick={handleCreateSession}
-            >
-              {t("common.create")}
-            </Button>
-          </>
-        }
+        fullWidth
+        maxWidth="sm"
       >
-        <TextField
-          label={t("tests.prisonersDilemma.playgroundPage.sessionName")}
-          value={sessionName}
-          onChange={(e) => setSessionName(e.target.value)}
-          fullWidth
-          required
-        />
-      </Modal>
+        <DialogTitle>{t("tests.prisonersDilemma.playgroundPage.startNewSession")}</DialogTitle>
+        <DialogContent>
+          <TextField
+            label={t("tests.prisonersDilemma.playgroundPage.sessionName")}
+            value={sessionName}
+            onChange={(e) => setSessionName(e.target.value)}
+            fullWidth
+            required
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => setShowSessionModal(false)}>
+            {t("common.cancel")}
+          </Button>
+          <Button variant="contained" disabled={!sessionName.trim()} onClick={handleCreateSession}>
+            {t("common.create")}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Error / Not-ready Dialog */}
       <ConfirmDialog

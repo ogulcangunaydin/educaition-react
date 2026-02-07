@@ -62,6 +62,14 @@ export default function useLeaderboard(sessionId) {
     fetchSession();
   }, [fetchSession]);
 
+  // Poll every 3 seconds while the game is still in progress
+  useEffect(() => {
+    if (loading || sessionStatus === "finished") return;
+
+    const interval = setInterval(fetchSession, 3000);
+    return () => clearInterval(interval);
+  }, [loading, sessionStatus, fetchSession]);
+
   const isFinished = sessionStatus === "finished";
   const progress = Number(sessionStatus) || 0;
   const playerNames = Object.keys(matrix);
