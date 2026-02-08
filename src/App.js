@@ -3,10 +3,9 @@ import { AuthProvider, useAuth } from "@contexts/AuthContext";
 import { ProtectedRoute, TestPageGuard } from "@components/atoms";
 import { ROLES, TEST_TYPES } from "@config/permissions";
 
-import { Login } from "@pages/auth";
-import Dashboard from "@pages/Dashboard";
-import UserManagement from "@pages/UserManagement";
-import Unauthorized from "@pages/Unauthorized";
+import { Login, Unauthorized } from "@pages/auth";
+import { Dashboard } from "@pages/dashboard";
+import { UserManagement } from "@pages/user-management";
 
 import {
   GameRoom,
@@ -28,7 +27,7 @@ import {
 import { ProgramSuggestionTest, ProgramTestResult } from "@pages/program-suggestion";
 
 import { PersonalityTestRoomDetail, PersonalityTestPublic } from "@pages/personality-test";
-import TestManagement from "@pages/TestManagement";
+import { TestManagement } from "@pages/test-management";
 import { TestRoomsPage } from "@components/templates";
 import { TestType } from "./services/testRoomService";
 
