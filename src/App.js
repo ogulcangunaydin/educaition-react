@@ -21,10 +21,12 @@ import {
   HighSchoolAnalysis,
   RivalAnalysis,
   ProgramRivalAnalysis,
-  HighSchoolRooms,
-  HighSchoolRoomDetail,
 } from "@pages/university-comparison";
-import { ProgramSuggestionTest, ProgramTestResult } from "@pages/program-suggestion";
+import {
+  ProgramSuggestionTest,
+  ProgramTestResult,
+  ProgramSuggestionRoomDetail,
+} from "@pages/program-suggestion";
 
 import { PersonalityTestRoomDetail, PersonalityTestPublic } from "@pages/personality-test";
 import { TestManagement } from "@pages/test-management";
@@ -180,14 +182,6 @@ function AppRoutes() {
 
       {/* Program Suggestion Routes */}
       <Route
-        path="/high-school-rooms"
-        element={
-          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <HighSchoolRooms />
-          </ProtectedRoute>
-        }
-      />
-      <Route
         path="/program-suggestion-rooms"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
@@ -196,10 +190,10 @@ function AppRoutes() {
         }
       />
       <Route
-        path="/high-school-room/:roomId"
+        path="/program-suggestion-room/:roomId"
         element={
           <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
-            <HighSchoolRoomDetail />
+            <ProgramSuggestionRoomDetail />
           </ProtectedRoute>
         }
       />

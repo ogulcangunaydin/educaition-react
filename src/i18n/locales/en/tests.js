@@ -412,7 +412,7 @@ const tests = {
         name: "Full Name",
         namePlaceholder: "Enter your full name",
         birthYear: "Birth Year",
-        birthYearPlaceholder: "Select your birth year",
+        birthYearPlaceholder: "Enter your birth year",
         gender: "Gender",
         male: "Male",
         female: "Female",

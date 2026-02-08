@@ -413,9 +413,9 @@ const tests = {
       },
       personalInfo: {
         name: "Ad Soyad",
-        namePlaceholder: "Adınızı ve soyadınızı girin",
+        namePlaceholder: "Adınızı ve soyadınızı giriniz",
         birthYear: "Doğum Yılı",
-        birthYearPlaceholder: "Doğum yılınızı seçin",
+        birthYearPlaceholder: "Doğum yılınızı giriniz",
         gender: "Cinsiyet",
         male: "Erkek",
         female: "Kadın",

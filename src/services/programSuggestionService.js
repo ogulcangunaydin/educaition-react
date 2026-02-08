@@ -165,6 +165,36 @@ export async function submitRiasec(studentId, riasecData) {
   return data;
 }
 
+/**
+ * Get participants (students) in a room
+ * @param {number} roomId - Room ID
+ * @returns {Promise<Array>} List of students
+ */
+export async function getParticipants(roomId) {
+  const { ok, data, status } = await api.auth.get(`/high-school-rooms/${roomId}/students`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Delete a student
+ * @param {number} studentId - Student ID
+ * @returns {Promise<Object>} Deleted student
+ */
+export async function deleteStudent(studentId) {
+  const { ok, data, status } = await api.auth.delete(`/program-suggestion/students/${studentId}`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
 const programSuggestionService = {
   getStudentDebug,
   getStudent,
@@ -175,6 +205,8 @@ const programSuggestionService = {
   updateStep3,
   updateStep4,
   submitRiasec,
+  getParticipants,
+  deleteStudent,
 };
 
 export default programSuggestionService;

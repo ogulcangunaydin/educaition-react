@@ -51,7 +51,7 @@ const TEST_TYPE_TO_MODULE = {
 const TEST_TYPE_TO_ROUTE = {
   [TestType.PRISONERS_DILEMMA]: "/rooms",
   [TestType.DISSONANCE_TEST]: "/dissonance-test-rooms",
-  [TestType.PROGRAM_SUGGESTION]: "/high-school-rooms",
+  [TestType.PROGRAM_SUGGESTION]: "/program-suggestion-rooms",
   [TestType.PERSONALITY_TEST]: "/personality-test-rooms",
 };
 
@@ -262,10 +262,10 @@ function TestManagement() {
             </Button>
             <Button
               variant="outlined"
-              onClick={() => navigate("/high-school-rooms")}
+              onClick={() => navigate("/program-suggestion-rooms")}
               startIcon={<SchoolIcon />}
             >
-              Lise Odaları
+              Program Öneri Odaları
             </Button>
             <Button
               variant="outlined"

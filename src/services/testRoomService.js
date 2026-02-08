@@ -70,13 +70,13 @@ export const TEST_TYPE_CONFIG = {
       submit: (participantId) => `/program-suggestion/students/${participantId}/riasec`,
     },
     rooms: {
-      pageTitle: "Program Öneri Sistemi - Lise Odaları",
-      listTitle: "Lise Odaları",
+      pageTitle: "Program Öneri Sistemi Odaları",
+      listTitle: "Program Öneri Odaları",
       description:
-        "Öğrencilerin program öneri testini yapabilmesi için bir lise odası oluşturun. QR kod ile öğrenciler teste katılabilir.",
+        "Öğrencilerin program öneri testini yapabilmesi için bir oda oluşturun. QR kod ile öğrenciler teste katılabilir.",
       emptyStateMessage:
-        "Henüz lise odası oluşturmadınız. Yeni bir oda oluşturarak öğrencilerinizin program önerisi almasını sağlayın.",
-      getDetailPath: (room) => `/high-school-room/${room.id}`,
+        "Henüz program öneri odası oluşturmadınız. Yeni bir oda oluşturarak öğrencilerinizin program önerisi almasını sağlayın.",
+      getDetailPath: (room) => `/program-suggestion-room/${room.id}`,
       getNavigateState: (room) => ({ highSchoolName: room.name }),
     },
   },
