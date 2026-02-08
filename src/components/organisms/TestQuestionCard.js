@@ -67,6 +67,7 @@ function TestQuestionCard({
   submitting = false,
   error,
   getQuestionText,
+  questionMinHeight = 80, // Fixed height for question container to prevent layout shifts
 }) {
   const { t } = useTranslation();
 
@@ -106,9 +107,25 @@ function TestQuestionCard({
       {/* Question */}
       <Card sx={{ mb: 3 }}>
         <CardContent sx={{ p: 4 }}>
-          <Typography variant="h5" gutterBottom sx={{ textAlign: "center" }}>
-            {questionText}
-          </Typography>
+          {/* Fixed height container for question text to prevent layout shifts */}
+          <Box
+            sx={{
+              minHeight: questionMinHeight,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Typography
+              variant="h5"
+              sx={{
+                textAlign: "center",
+                lineHeight: 1.4,
+              }}
+            >
+              {questionText}
+            </Typography>
+          </Box>
 
           <Box sx={{ display: "flex", flexDirection: "column", gap: 1.5, mt: 3 }}>
             {options.map((option) => {
@@ -209,6 +226,8 @@ TestQuestionCard.propTypes = {
   error: PropTypes.string,
   /** Custom function to extract question text: (question, index) => string */
   getQuestionText: PropTypes.func,
+  /** Minimum height for question container to prevent layout shifts */
+  questionMinHeight: PropTypes.number,
 };
 
 export default TestQuestionCard;

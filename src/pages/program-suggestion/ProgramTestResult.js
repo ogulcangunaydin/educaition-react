@@ -11,33 +11,15 @@ import {
   Chip,
   Grid,
   Alert,
-  LinearProgress,
 } from "@mui/material";
-import WorkIcon from "@mui/icons-material/Work";
-import SchoolIcon from "@mui/icons-material/School";
-import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import jobTranslations from "@data/riasec/job_translations.json";
 import { fetchScoreRankingDistribution } from "@services/liseService";
 import { getStudentResult } from "@services/programSuggestionService";
 
-// Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)
-const normalizeForComparison = (str) => {
-  return str
-    .toLocaleLowerCase("en-US")
-    .replace(/[,\-–—]/g, "") // Remove commas and all types of dashes
-    .replace(/\s+/g, " ") // Normalize whitespace
-    .trim();
-};
-
-// Helper function to translate job name from English to Turkish
-const translateJob = (englishName) => {
-  const normalizedInput = normalizeForComparison(englishName);
-  const translation = jobTranslations.find(
-    (job) => normalizeForComparison(job.en) === normalizedInput
-  );
-  return translation ? translation.tr : englishName;
-};
+// Import extracted components
+import RiasecProfileCard from "./components/RiasecProfileCard";
+import SuggestedJobsCard from "./components/SuggestedJobsCard";
+import SuggestedProgramsCard from "./components/SuggestedProgramsCard";
 
 // Area labels in Turkish
 const AREA_LABELS = {
@@ -45,34 +27,6 @@ const AREA_LABELS = {
   ea: "Eşit Ağırlık (EA)",
   söz: "Sözel (SÖZ)",
   dil: "Dil",
-};
-
-// RIASEC type descriptions
-const RIASEC_DESCRIPTIONS = {
-  R: {
-    name: "Realistic (Gerçekçi)",
-    description: "Pratik, fiziksel aktiviteler, el işleri, mekanik",
-  },
-  I: {
-    name: "Investigative (Araştırmacı)",
-    description: "Analitik düşünme, araştırma, bilim",
-  },
-  A: {
-    name: "Artistic (Sanatsal)",
-    description: "Yaratıcılık, sanat, ifade özgürlüğü",
-  },
-  S: {
-    name: "Social (Sosyal)",
-    description: "İnsanlarla çalışma, yardım etme, öğretme",
-  },
-  E: {
-    name: "Enterprising (Girişimci)",
-    description: "Liderlik, ikna, iş yönetimi",
-  },
-  C: {
-    name: "Conventional (Geleneksel)",
-    description: "Organizasyon, veri işleme, detay odaklı",
-  },
 };
 
 function ProgramTestResult() {
@@ -251,249 +205,16 @@ function ProgramTestResult() {
     );
   };
 
-  const renderRiasecProfile = () => {
-    if (!result?.riasec_scores) return null;
-
-    const maxScore = 7;
-    const sortedScores = Object.entries(result.riasec_scores).sort((a, b) => b[1] - a[1]);
-
-    return (
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            🎯 RIASEC Profili
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Kişilik profilinize göre en yüksek puanlarınız
-          </Typography>
-
-          {sortedScores.map(([letter, score]) => (
-            <Box key={letter} sx={{ mb: 2 }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  mb: 0.5,
-                }}
-              >
-                <Typography variant="body2">
-                  <strong>{letter}</strong> - {RIASEC_DESCRIPTIONS[letter]?.name}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  {score.toFixed(2)} / {maxScore}
-                </Typography>
-              </Box>
-              <LinearProgress
-                variant="determinate"
-                value={(score / maxScore) * 100}
-                sx={{
-                  height: 10,
-                  borderRadius: 5,
-                  backgroundColor: "#e0e0e0",
-                  "& .MuiLinearProgress-bar": {
-                    backgroundColor: score >= 4 ? "#4caf50" : score >= 2.5 ? "#ff9800" : "#f44336",
-                  },
-                }}
-              />
-              <Typography variant="caption" color="text.secondary">
-                {RIASEC_DESCRIPTIONS[letter]?.description}
-              </Typography>
-            </Box>
-          ))}
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const renderSuggestedJobs = () => {
-    if (!result?.suggested_jobs || result.suggested_jobs.length === 0) return null;
-
-    return (
-      <Card sx={{ mb: 3 }}>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            <WorkIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Önerilen Meslekler
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            RIASEC profilinize en uygun meslekler
-          </Typography>
-
-          <Grid container spacing={2}>
-            {result.suggested_jobs.map((job, index) => (
-              <Grid item xs={12} md={4} key={index}>
-                <Paper
-                  elevation={2}
-                  sx={{
-                    p: 2,
-                    height: "100%",
-                    backgroundColor: index === 0 ? "#e3f2fd" : "white",
-                  }}
-                >
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    #{index + 1} {translateJob(job.job)}
-                  </Typography>
-                  <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mt: 1 }}>
-                    <Chip
-                      label={`Uyumluluk: ${job.match_score ? (job.match_score * 100).toFixed(0) : ((1 - job.distance / 7) * 100).toFixed(0)}%`}
-                      color={index === 0 ? "success" : "default"}
-                      size="small"
-                    />
-                    {job.holland_code && (
-                      <Chip
-                        label={`Kod: ${job.holland_code}`}
-                        size="small"
-                        variant="outlined"
-                        color="primary"
-                      />
-                    )}
-                  </Box>
-                  {job.riasec_scores && (
-                    <Box sx={{ mt: 1.5 }}>
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        display="block"
-                        sx={{ mb: 0.5 }}
-                      >
-                        Meslek RIASEC Profili:
-                      </Typography>
-                      <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-                        {Object.entries(job.riasec_scores)
-                          .sort((a, b) => b[1] - a[1])
-                          .map(([letter, score]) => (
-                            <Chip
-                              key={letter}
-                              label={`${letter}: ${score.toFixed(1)}`}
-                              size="small"
-                              sx={{
-                                fontSize: "0.7rem",
-                                height: "20px",
-                                backgroundColor:
-                                  score >= 4 ? "#e8f5e9" : score >= 2.5 ? "#fff3e0" : "#ffebee",
-                              }}
-                            />
-                          ))}
-                      </Box>
-                    </Box>
-                  )}
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
-    );
-  };
-
-  const renderSuggestedPrograms = () => {
-    if (!result?.suggested_programs || result.suggested_programs.length === 0) {
-      return (
-        <Alert severity="info" sx={{ mb: 3 }}>
-          Program önerileri hesaplanıyor veya kriterlere uygun program bulunamadı.
-        </Alert>
-      );
-    }
-
-    return (
-      <Card>
-        <CardContent>
-          <Typography variant="h6" gutterBottom>
-            <SchoolIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            Önerilen Programlar
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Profilinize ve tercihlerinize uygun üniversite programları
-          </Typography>
-
-          {result.suggested_programs.map((program, index) => (
-            <Paper
-              key={index}
-              elevation={1}
-              sx={{
-                p: 2,
-                mb: 2,
-                borderLeft: `4px solid ${index < 3 ? "#4caf50" : index < 6 ? "#2196f3" : "#9c27b0"}`,
-              }}
-            >
-              <Box
-                sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "flex-start",
-                }}
-              >
-                <Box>
-                  <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                    {index + 1}. {program.program}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {program.university}
-                  </Typography>
-                  {program.faculty && (
-                    <Typography variant="caption" color="text.secondary" display="block">
-                      {program.faculty}
-                    </Typography>
-                  )}
-                </Box>
-
-                <Box sx={{ textAlign: "right" }}>
-                  {program.taban_score && (
-                    <Chip
-                      label={`Taban: ${program.taban_score}`}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  )}
-                </Box>
-              </Box>
-
-              <Divider sx={{ my: 1 }} />
-
-              <Box
-                sx={{
-                  display: "flex",
-                  gap: 1,
-                  flexWrap: "wrap",
-                  alignItems: "center",
-                }}
-              >
-                {program.city && (
-                  <Chip
-                    icon={<LocationOnIcon />}
-                    label={program.city}
-                    size="small"
-                    variant="outlined"
-                  />
-                )}
-                {program.scholarship && (
-                  <Chip
-                    label={program.scholarship}
-                    size="small"
-                    color={program.scholarship === "Burslu" ? "success" : "default"}
-                  />
-                )}
-                {program.job && (
-                  <Chip
-                    label={`Meslek: ${translateJob(program.job)}`}
-                    size="small"
-                    color="secondary"
-                    variant="outlined"
-                  />
-                )}
-              </Box>
-
-              {program.reason && (
-                <Typography variant="body2" sx={{ mt: 1, fontStyle: "italic" }}>
-                  💡 {program.reason}
-                </Typography>
-              )}
-            </Paper>
-          ))}
-        </CardContent>
-      </Card>
-    );
+  // Log program click for analytics
+  const handleProgramClick = (program, action) => {
+    console.log("[ProgramTestResult] Program action logged:", {
+      studentId,
+      action,
+      program: program.program,
+      university: program.university,
+      timestamp: new Date().toISOString(),
+    });
+    // TODO: Send to analytics backend
   };
 
   if (loading) {
@@ -562,9 +283,21 @@ function ProgramTestResult() {
         <Divider sx={{ mb: 3 }} />
 
         {renderScoreAndRanking()}
-        {renderRiasecProfile()}
-        {renderSuggestedJobs()}
-        {renderSuggestedPrograms()}
+
+        {/* RIASEC Profile with benchmarks */}
+        <RiasecProfileCard riasecScores={result?.riasec_scores} />
+
+        {/* Suggested Jobs - Top 6 with explanations */}
+        <SuggestedJobsCard
+          suggestedJobs={result?.suggested_jobs}
+          userRiasecScores={result?.riasec_scores}
+        />
+
+        {/* Suggested Programs with filters, pagination, basket */}
+        <SuggestedProgramsCard
+          suggestedPrograms={result?.suggested_programs}
+          onProgramClick={handleProgramClick}
+        />
 
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography variant="body2" color="text.secondary">

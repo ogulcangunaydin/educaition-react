@@ -10,7 +10,7 @@
       "text": "Ofislere ve evlere paket teslim etmek için kamyon kullanmak",
       "type": "R"
     },
-    { "id": 146, "text": "Sevkiyat öncesinde parçaların kalitesini test etmek", "type": "R" },
+    { "id": 146, "text": "Bir ürünün hatalarını bulmak ve kusursuz çalıştığını test etmek", "type": "R" },
     { "id": 158, "text": "Kilitleri tamir etmek ve monte etmek", "type": "R" },
     { "id": 169, "text": "Ürün üretmek için makineleri kurmak ve çalıştırmak", "type": "R" },
     { "id": 170, "text": "Orman yangınlarını söndürmek", "type": "R" }
@@ -28,7 +28,7 @@
       "type": "I"
     },
     { "id": 136, "text": "Bir biyoloji laboratuvarında çalışmak", "type": "I" },
-    { "id": 147, "text": "Şeker yerine kullanılabilecek bir alternatif icat etmek", "type": "I" },
+    { "id": 147, "text": "Şeker yerine kullanılabilecek bir alternatif tatlandırıcı icat etmek", "type": "I" },
     { "id": 171, "text": "Hastalıkları tespit etmek için laboratuvar testleri yapmak", "type": "I" }
   ],
   "artistic": [
@@ -39,7 +39,7 @@
     { "id": 90, "text": "Filmler için özel efektler oluşturmak", "type": "A" },
     { "id": 113, "text": "Tiyatro oyunları için dekor boyamak", "type": "A" },
     { "id": 137, "text": "Film veya televizyon dizileri için senaryo yazmak", "type": "A" },
-    { "id": 149, "text": "Caz yapmak veya tap dansı yapmak", "type": "A" },
+    { "id": 149, "text": "Doğaçlama müzik ya da doğaçlama dans yapmak", "type": "A" },
     { "id": 161, "text": "Bir müzik grubunda şarkı söylemek", "type": "A" },
     { "id": 173, "text": "Film montajı yapmak", "type": "A" }
   ],
@@ -81,6 +81,6 @@
     { "id": 120, "text": "El tipi bir cihazla stok sayımı yapmak", "type": "C" },
     { "id": 155, "text": "Kira ödemelerini kaydetmek", "type": "C" },
     { "id": 167, "text": "Stok kayıtlarını tutmak", "type": "C" },
-    { "id": 179, "text": "Bir kurum için postaları damgalamak, ayırmak ve dağıtmak", "type": "C" }
+    { "id": 179, "text": "Mesajları, paketleri veya belgeleri kategorize etmek ve doğru yerlere ulaştırmak", "type": "C" }
   ]
 }
