@@ -683,23 +683,13 @@ const UniversityComparison = () => {
 
             {/* ─── Right Panel: Results ─── */}
             <Grid item xs={12} md={8}>
-              {comparing && (
-                <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
-                  <CircularProgress size={40} />
-                  <Typography variant="body2" sx={{ ml: 2 }}>
-                    Karşılaştırma yapılıyor...
-                  </Typography>
-                </Box>
-              )}
-
               {error && (
                 <Alert severity="error" sx={{ mb: 2 }}>
                   {error}
                 </Alert>
               )}
 
-              {!comparing &&
-                selectedProgram &&
+              {selectedProgram &&
                 year &&
                 (selectedProgram[`yerlesen_${year}`] === 0 ||
                 !selectedProgram[`yerlesen_${year}`] ? (
@@ -724,7 +714,25 @@ const UniversityComparison = () => {
                   </Paper>
                 ) : (
                   chartData && (
-                    <>
+                    <Box sx={{ position: "relative" }}>
+                      {/* Subtle loading overlay – keeps previous data visible */}
+                      {comparing && (
+                        <Box
+                          sx={{
+                            position: "absolute",
+                            inset: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            bgcolor: "rgba(255,255,255,0.5)",
+                            zIndex: 10,
+                            borderRadius: 1,
+                          }}
+                        >
+                          <CircularProgress size={32} />
+                        </Box>
+                      )}
+
                       <ComparisonChart
                         chartData={chartData}
                         selectedProgram={selectedProgram}
@@ -747,11 +755,9 @@ const UniversityComparison = () => {
                         metric={metric}
                         priceData={priceData}
                       />
-                    </>
+                    </Box>
                   )
                 ))}
-
-              {!comparing && !selectedProgram && <div> </div>}
             </Grid>
           </Grid>
         </Container>
