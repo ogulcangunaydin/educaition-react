@@ -17,16 +17,15 @@ import {
   PrisonersDilemmaPublic,
 } from "@pages/prisoners-dilemma";
 
-import UniversityComparison from "@pages/university-comparison";
 import {
+  UniversityComparison,
   HighSchoolAnalysis,
   RivalAnalysis,
   ProgramRivalAnalysis,
   HighSchoolRooms,
   HighSchoolRoomDetail,
-  ProgramSuggestionTest,
-  ProgramTestResult,
-} from "@pages/program-analysis";
+} from "@pages/university-comparison";
+import { ProgramSuggestionTest, ProgramTestResult } from "@pages/program-suggestion";
 
 import { PersonalityTestRoomDetail, PersonalityTestPublic } from "@pages/personality-test";
 import TestManagement from "@pages/TestManagement";

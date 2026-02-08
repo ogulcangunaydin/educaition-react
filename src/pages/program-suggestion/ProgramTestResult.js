@@ -17,7 +17,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import jobTranslations from "./RiasecTest/job_translations.json";
+import jobTranslations from "@data/riasec/job_translations.json";
 import { fetchScoreRankingDistribution } from "@services/liseService";
 import { getStudentResult } from "@services/programSuggestionService";
 

@@ -24,7 +24,7 @@ import {
   LinearProgress,
   Alert,
 } from "@mui/material";
-import riasecQuestions from "./RiasecTest/riasecQuestions.json";
+import riasecQuestions from "@data/riasec/riasecQuestions.json";
 import {
   saveParticipantSession,
   getParticipantSession,

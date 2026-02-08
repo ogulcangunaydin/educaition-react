@@ -28,7 +28,7 @@ import QRCode from "qrcode.react";
 import highSchoolService from "@services/highSchoolService";
 import programSuggestionService from "@services/programSuggestionService";
 import Header from "@organisms/Header";
-import jobTranslations from "./RiasecTest/job_translations.json";
+import jobTranslations from "@data/riasec/job_translations.json";
 
 // Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)
 const normalizeForComparison = (str) => {
