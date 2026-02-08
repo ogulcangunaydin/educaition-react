@@ -55,12 +55,12 @@ export async function getStudentResult(studentId) {
 
 /**
  * Create a new student
- * @param {number} roomId - High school room ID
+ * @param {number} roomId - Test room ID
  * @returns {Promise<Object>} Created student with session token
  */
 export async function createStudent(roomId) {
   const { ok, data, status } = await api.post("/program-suggestion/students/", {
-    high_school_room_id: parseInt(roomId),
+    test_room_id: parseInt(roomId),
   });
 
   if (!ok) {
@@ -167,11 +167,13 @@ export async function submitRiasec(studentId, riasecData) {
 
 /**
  * Get participants (students) in a room
- * @param {number} roomId - Room ID
+ * @param {number} roomId - Test room ID
  * @returns {Promise<Array>} List of students
  */
 export async function getParticipants(roomId) {
-  const { ok, data, status } = await api.auth.get(`/high-school-rooms/${roomId}/students`);
+  const { ok, data, status } = await api.auth.get(
+    `/program-suggestion/rooms/${roomId}/participants`
+  );
 
   if (!ok) {
     throw new Error(`HTTP error! status: ${status}`);
