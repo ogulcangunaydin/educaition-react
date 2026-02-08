@@ -9,3 +9,4 @@ export { useTestRooms } from "./useTestRooms";
 export { default as useTestFlow } from "./useTestFlow";
 
 export * from "./prisoners-dilemma";
+export * from "./program-suggestion";

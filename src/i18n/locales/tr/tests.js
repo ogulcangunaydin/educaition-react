@@ -397,6 +397,117 @@ const tests = {
       },
     },
 
+    // Program Suggestion Test
+    programSuggestion: {
+      title: "Program Öneri Testi",
+      subtitle: "Üniversite Program Öneri Sistemi",
+      description:
+        "Kişisel bilgileriniz, eğitim durumunuz ve RIASEC kariyer testine göre size en uygun üniversite programlarını öneriyoruz.",
+      startRiasec: "RIASEC Testine Başla",
+      steps: {
+        personalInfo: "Kişisel Bilgiler",
+        educationInfo: "Eğitim Bilgileri",
+        scoreExpectation: "Puan Beklentisi",
+        preferences: "Tercihler",
+        riasecTest: "RIASEC Testi",
+      },
+      personalInfo: {
+        name: "Ad Soyad",
+        namePlaceholder: "Adınızı ve soyadınızı girin",
+        birthYear: "Doğum Yılı",
+        birthYearPlaceholder: "Doğum yılınızı seçin",
+        gender: "Cinsiyet",
+        male: "Erkek",
+        female: "Kadın",
+        notSpecified: "Belirtmek İstemiyorum",
+      },
+      educationInfo: {
+        classYear: "Sınıf",
+        willTakeExam: "Üniversite sınavına girecek misiniz?",
+        averageGrade: "Ortalama Başarı Notu (Opsiyonel)",
+        averageGradeHelp: "0-100 arası not ortalamanız",
+        area: "Alan Seçimi",
+      },
+      scoreExpectation: {
+        expectedRange: "Beklediğiniz Puan Aralığı ({{area}})",
+        estimatedRanking: "Tahmini Sıralama (Orta puan: {{score}})",
+        rankingNote:
+          "Bu sıralama, geçen yılın verilerine göre seçtiğiniz puan aralığının ortasına denk gelen tahmini sıralamadır.",
+        alternativeAreaQuestion: "Alternatif bir alanda tercih yapmak ister misiniz?",
+        alternativeRange: "Alternatif Alan Puan Aralığı ({{area}})",
+      },
+      preferences: {
+        language: "Tercih ettiğiniz eğitim dili",
+        universities: "Tercih ettiğiniz üniversiteler (Opsiyonel)",
+        universitiesPlaceholder: "Üniversite ara...",
+        cities: "Tercih ettiğiniz şehirler",
+      },
+      riasec: {
+        title: "RIASEC Kariyer Testi",
+        stronglyLike: "Çok Severim",
+        like: "Severim",
+        unsure: "Kararsızım",
+        dislike: "Sevmem",
+        stronglyDislike: "Hiç Sevmem",
+      },
+      errors: {
+        initFailed: "Test başlatılamadı. Lütfen sayfayı yenileyip tekrar deneyin.",
+        saveFailed: "Veriler kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.",
+        submitFailed: "Sonuçlar gönderilirken bir hata oluştu.",
+        resultLoadFailed: "Sonuçlar yüklenemedi. Lütfen daha sonra tekrar deneyin.",
+      },
+      result: {
+        pageTitle: "Test Sonuçlarınız",
+        pageSubtitle: "RIASEC kariyer testi ve tercihlerinize göre size özel öneriler",
+        disclaimer:
+          "Bu öneriler RIASEC kariyer testi ve tercihlerinize göre oluşturulmuştur. Son kararı verirken aileniz ve danışmanlarınızla görüşmenizi öneririz.",
+        scoreRanking: {
+          title: "Puan ve Sıralama Tahmini",
+          subtitle: "Belirlediğiniz puan aralığına göre tahmini sıralamanız",
+          mainArea: "Ana Alan",
+          alternativeArea: "Alternatif Alan",
+          scoreRange: "Puan Aralığı",
+          midScore: "Orta Puan",
+          estimatedRanking: "Tahmini Sıralama",
+          disclaimer: "Tahmini sıralama, geçen yılın verilerine göre hesaplanmıştır.",
+        },
+        riasecProfile: {
+          title: "RIASEC Profili",
+          subtitle: "Kişilik profilinize göre en yüksek puanlarınız",
+          types: {
+            R: {
+              name: "Realistic (Gerçekçi)",
+              description: "Pratik, fiziksel aktiviteler, el işleri, mekanik",
+            },
+            I: {
+              name: "Investigative (Araştırmacı)",
+              description: "Analitik düşünme, araştırma, bilim",
+            },
+            A: { name: "Artistic (Sanatsal)", description: "Yaratıcılık, sanat, ifade özgürlüğü" },
+            S: { name: "Social (Sosyal)", description: "İnsanlarla çalışma, yardım etme, öğretme" },
+            E: { name: "Enterprising (Girişimci)", description: "Liderlik, ikna, iş yönetimi" },
+            C: {
+              name: "Conventional (Geleneksel)",
+              description: "Organizasyon, veri işleme, detay odaklı",
+            },
+          },
+        },
+        suggestedJobs: {
+          title: "Önerilen Meslekler",
+          subtitle: "RIASEC profilinize en uygun meslekler",
+          compatibility: "Uyumluluk",
+          code: "Kod",
+          jobProfile: "Meslek RIASEC Profili",
+        },
+        suggestedPrograms: {
+          title: "Önerilen Programlar",
+          subtitle: "Profilinize ve tercihlerinize uygun üniversite programları",
+          noResults: "Program önerileri hesaplanıyor veya kriterlere uygun program bulunamadı.",
+          baseScore: "Taban",
+        },
+      },
+    },
+
     // Room status
     status: {
       active: "Aktif",

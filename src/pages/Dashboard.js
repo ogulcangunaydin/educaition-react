@@ -62,7 +62,7 @@ const MODULE_CONFIG = [
   {
     id: "program-suggestion",
     translationKey: "programSuggestion",
-    path: "/high-school-rooms",
+    path: "/program-suggestion-rooms",
     icon: School,
     color: "#ed6c02",
   },

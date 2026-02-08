@@ -394,6 +394,114 @@ const tests = {
       },
     },
 
+    // Program Suggestion Test
+    programSuggestion: {
+      title: "Program Suggestion Test",
+      subtitle: "University Program Suggestion System",
+      description:
+        "We recommend the most suitable university programs for you based on your personal information, education background, and RIASEC career test results.",
+      startRiasec: "Start RIASEC Test",
+      steps: {
+        personalInfo: "Personal Info",
+        educationInfo: "Education Info",
+        scoreExpectation: "Score Expectation",
+        preferences: "Preferences",
+        riasecTest: "RIASEC Test",
+      },
+      personalInfo: {
+        name: "Full Name",
+        namePlaceholder: "Enter your full name",
+        birthYear: "Birth Year",
+        birthYearPlaceholder: "Select your birth year",
+        gender: "Gender",
+        male: "Male",
+        female: "Female",
+        notSpecified: "Prefer not to say",
+      },
+      educationInfo: {
+        classYear: "Class Year",
+        willTakeExam: "Will you take the university entrance exam?",
+        averageGrade: "Average Grade (Optional)",
+        averageGradeHelp: "Your GPA between 0-100",
+        area: "Field of Study",
+      },
+      scoreExpectation: {
+        expectedRange: "Expected Score Range ({{area}})",
+        estimatedRanking: "Estimated Ranking (Mid score: {{score}})",
+        rankingNote:
+          "This ranking is estimated based on last year's data for the midpoint of your selected score range.",
+        alternativeAreaQuestion: "Would you like to choose an alternative field?",
+        alternativeRange: "Alternative Field Score Range ({{area}})",
+      },
+      preferences: {
+        language: "Preferred language of instruction",
+        universities: "Preferred universities (Optional)",
+        universitiesPlaceholder: "Search university...",
+        cities: "Preferred cities",
+      },
+      riasec: {
+        title: "RIASEC Career Test",
+        stronglyLike: "Strongly Like",
+        like: "Like",
+        unsure: "Unsure",
+        dislike: "Dislike",
+        stronglyDislike: "Strongly Dislike",
+      },
+      errors: {
+        initFailed: "Could not start the test. Please refresh the page and try again.",
+        saveFailed: "An error occurred while saving data. Please try again.",
+        submitFailed: "An error occurred while submitting results.",
+        resultLoadFailed: "Results could not be loaded. Please try again later.",
+      },
+      result: {
+        pageTitle: "Your Test Results",
+        pageSubtitle: "Personalized suggestions based on your RIASEC career test and preferences",
+        disclaimer:
+          "These suggestions are based on your RIASEC career test and preferences. We recommend consulting with your family and advisors before making a final decision.",
+        scoreRanking: {
+          title: "Score & Ranking Estimate",
+          subtitle: "Your estimated ranking based on the score range you specified",
+          mainArea: "Main Field",
+          alternativeArea: "Alternative Field",
+          scoreRange: "Score Range",
+          midScore: "Mid Score",
+          estimatedRanking: "Estimated Ranking",
+          disclaimer: "Estimated ranking is calculated based on last year's data.",
+        },
+        riasecProfile: {
+          title: "RIASEC Profile",
+          subtitle: "Your highest scores based on your personality profile",
+          types: {
+            R: {
+              name: "Realistic",
+              description: "Practical, physical activities, hands-on work, mechanical",
+            },
+            I: { name: "Investigative", description: "Analytical thinking, research, science" },
+            A: { name: "Artistic", description: "Creativity, art, freedom of expression" },
+            S: { name: "Social", description: "Working with people, helping, teaching" },
+            E: { name: "Enterprising", description: "Leadership, persuasion, business management" },
+            C: {
+              name: "Conventional",
+              description: "Organization, data processing, detail-oriented",
+            },
+          },
+        },
+        suggestedJobs: {
+          title: "Suggested Jobs",
+          subtitle: "Most suitable jobs based on your RIASEC profile",
+          compatibility: "Compatibility",
+          code: "Code",
+          jobProfile: "Job RIASEC Profile",
+        },
+        suggestedPrograms: {
+          title: "Suggested Programs",
+          subtitle: "University programs matching your profile and preferences",
+          noResults: "Program suggestions are being calculated or no matching programs found.",
+          baseScore: "Base",
+        },
+      },
+    },
+
     // Room status
     status: {
       active: "Active",
