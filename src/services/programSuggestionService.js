@@ -197,6 +197,20 @@ export async function deleteStudent(studentId) {
   return data;
 }
 
+/**
+ * Get platform-wide average RIASEC scores
+ * @returns {Promise<Object>} { averages: {R, I, A, S, E, C}, sample_size: number }
+ */
+export async function getRiasecAverages() {
+  const { ok, data, status } = await api.get("/program-suggestion/students/riasec-averages");
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
 const programSuggestionService = {
   getStudentDebug,
   getStudent,
@@ -209,6 +223,7 @@ const programSuggestionService = {
   submitRiasec,
   getParticipants,
   deleteStudent,
+  getRiasecAverages,
 };
 
 export default programSuggestionService;

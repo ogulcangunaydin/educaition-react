@@ -3,12 +3,12 @@
  *
  * Features:
  * - Bar chart visualization of RIASEC scores
- * - Average benchmark indicator (notch on each bar)
+ * - Average benchmark indicator from platform data (notch on each bar)
  * - Optional radar chart toggle
  * - Color-coded scores based on intensity
  */
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Card,
@@ -18,26 +18,52 @@ import {
   ToggleButton,
   ToggleButtonGroup,
   Tooltip,
+  CircularProgress,
 } from "@mui/material";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import RadarIcon from "@mui/icons-material/Radar";
+import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "react-i18next";
+import { getRiasecAverages } from "../../../services/programSuggestionService";
 
 const MAX_SCORE = 7;
 
-// Average benchmark scores (based on general population research)
-const AVERAGE_BENCHMARKS = {
-  R: 3.2,
+// Default fallback values if API fails
+const DEFAULT_BENCHMARKS = {
+  R: 3.5,
   I: 3.5,
-  A: 3.3,
-  S: 3.8,
-  E: 3.4,
-  C: 3.1,
+  A: 3.5,
+  S: 3.5,
+  E: 3.5,
+  C: 3.5,
 };
 
 function RiasecProfileCard({ riasecScores }) {
   const { t } = useTranslation();
   const [viewType, setViewType] = useState("bar"); // 'bar' or 'radar'
+  const [platformAverages, setPlatformAverages] = useState(null);
+  const [sampleSize, setSampleSize] = useState(0);
+  const [isLoadingAverages, setIsLoadingAverages] = useState(true);
+
+  // Fetch platform averages on mount
+  useEffect(() => {
+    const fetchAverages = async () => {
+      try {
+        const result = await getRiasecAverages();
+        setPlatformAverages(result.averages);
+        setSampleSize(result.sample_size);
+      } catch (error) {
+        console.error("Failed to fetch RIASEC averages:", error);
+        setPlatformAverages(DEFAULT_BENCHMARKS);
+      } finally {
+        setIsLoadingAverages(false);
+      }
+    };
+    fetchAverages();
+  }, []);
+
+  // Use platform averages or fallback
+  const benchmarks = platformAverages || DEFAULT_BENCHMARKS;
 
   const sortedScores = useMemo(() => {
     if (!riasecScores) return [];
@@ -65,9 +91,14 @@ function RiasecProfileCard({ riasecScores }) {
 
   const renderBarChart = () => (
     <Box>
+      {isLoadingAverages && (
+        <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
+          <CircularProgress size={24} />
+        </Box>
+      )}
       {sortedScores.map(([letter, score]) => {
         const typeInfo = descriptions?.[letter] || {};
-        const benchmark = AVERAGE_BENCHMARKS[letter] || 3.5;
+        const benchmark = benchmarks[letter] || 3.5;
         const benchmarkPercent = (benchmark / MAX_SCORE) * 100;
 
         return (
@@ -158,14 +189,34 @@ function RiasecProfileCard({ riasecScores }) {
           borderColor: "divider",
         }}
       >
-        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-          <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#1976d2" }} />
-          <Typography variant="caption" color="text.secondary">
-            {t("tests.programSuggestion.result.riasecProfile.averageIndicator", {
-              defaultValue: "Genel Ortalama",
-            })}
-          </Typography>
-        </Box>
+        <Tooltip
+          title={
+            sampleSize > 0
+              ? t("tests.programSuggestion.result.riasecProfile.platformAverageTooltip", {
+                  defaultValue: `Bu ortalama, platformumuzdaki ${sampleSize} tamamlanmış test sonucundan hesaplanmıştır.`,
+                  count: sampleSize,
+                })
+              : t("tests.programSuggestion.result.riasecProfile.noDataTooltip", {
+                  defaultValue: "Henüz yeterli veri bulunmamaktadır.",
+                })
+          }
+          arrow
+        >
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, cursor: "help" }}>
+            <Box sx={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: "#1976d2" }} />
+            <Typography variant="caption" color="text.secondary">
+              {t("tests.programSuggestion.result.riasecProfile.averageIndicator", {
+                defaultValue: "Platform Ortalaması",
+              })}
+            </Typography>
+            <InfoOutlinedIcon sx={{ fontSize: 14, color: "text.secondary" }} />
+            {sampleSize > 0 && (
+              <Typography variant="caption" color="text.secondary">
+                (n={sampleSize})
+              </Typography>
+            )}
+          </Box>
+        </Tooltip>
         <Typography variant="caption" color="text.secondary">
           {t("tests.programSuggestion.result.riasecProfile.yourAverage", {
             defaultValue: `Sizin ortalamanız: ${userAverage.toFixed(2)}`,
@@ -193,7 +244,7 @@ function RiasecProfileCard({ riasecScores }) {
     };
 
     const userPoints = letters.map((letter, i) => getPoint(i, riasecScores[letter] || 0));
-    const benchmarkPoints = letters.map((letter, i) => getPoint(i, AVERAGE_BENCHMARKS[letter]));
+    const benchmarkPoints = letters.map((letter, i) => getPoint(i, benchmarks[letter] || 3.5));
 
     const createPath = (points) =>
       points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
