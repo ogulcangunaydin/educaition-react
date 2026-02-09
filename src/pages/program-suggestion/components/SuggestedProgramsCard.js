@@ -108,24 +108,47 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
     return [Math.floor(Math.min(...scores)), Math.ceil(Math.max(...scores))];
   }, [suggestedPrograms]);
 
-  // Detect if university is Vakıf or Devlet
-  const isVakif = (university) => {
-    const vakifKeywords = ["vakıf", "vakif", "özel", "ozel", "foundation"];
-    const lower = university?.toLowerCase() || "";
-    return vakifKeywords.some((kw) => lower.includes(kw));
+  // Check if university is Vakıf using backend data (university_type field)
+  const isVakif = (program) => {
+    // Use the university_type field from backend if available
+    const uniType = program?.university_type?.toLowerCase() || "";
+    return uniType === "vakıf" || uniType === "vakif";
+  };
+
+  // Check if program is from Haliç University
+  const isHalicUniversity = (program) => {
+    const university = program?.university || "";
+    // Check for Turkish uppercase and lowercase variations
+    return (
+      university.includes("HALİÇ") ||
+      university.includes("Haliç") ||
+      university.includes("haliç") ||
+      university.includes("HALIC") ||
+      university.includes("Halic") ||
+      university.includes("halic")
+    );
   };
 
   // Filter and limit programs
   const filteredPrograms = useMemo(() => {
     if (!suggestedPrograms) return [];
 
-    let filtered = suggestedPrograms.slice(0, MAX_PROGRAMS);
+    // STEP 1: Separate Haliç programs from others
+    const halicPrograms = suggestedPrograms.filter((p) => isHalicUniversity(p));
+    const otherPrograms = suggestedPrograms.filter((p) => !isHalicUniversity(p));
 
-    // University type filter
+    // STEP 2: Combine: Haliç first, then others (preserving original order within each group)
+    const sortedPrograms = [...halicPrograms, ...otherPrograms];
+
+    // STEP 3: Limit to MAX_PROGRAMS
+    let filtered = sortedPrograms.slice(0, MAX_PROGRAMS);
+
+    // STEP 4: Apply filters
+    // University type filter - use backend's university_type field
     if (universityType === "devlet") {
-      filtered = filtered.filter((p) => !isVakif(p.university));
+      filtered = filtered.filter((p) => !isVakif(p));
     } else if (universityType === "vakif") {
-      filtered = filtered.filter((p) => isVakif(p.university));
+      filtered = filtered.filter((p) => isVakif(p));
     }
 
     // City filter
@@ -207,10 +230,19 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
   const isPriorityUniversity = (university) =>
     PRIORITY_UNIVERSITIES.some((pu) => university?.toLowerCase().includes(pu.toLowerCase()));
 
-  const getBorderColor = (index, program) => {
-    if (isPriorityUniversity(program.university)) return "#ffc107"; // Gold for priority
-    if (index < 3) return "#4caf50";
-    if (index < 6) return "#2196f3";
+  // Count Haliç programs in filtered list for proper indexing of other programs
+  const halicCount = useMemo(() => {
+    return filteredPrograms.filter((p) => isHalicUniversity(p)).length;
+  }, [filteredPrograms]);
+
+  const getBorderColor = (globalIndex, program) => {
+    // Haliç programs always get gold
+    if (isHalicUniversity(program)) return "#ffc107";
+
+    // For other programs, calculate their index within the non-Haliç group
+    const nonHalicIndex = globalIndex - halicCount;
+    if (nonHalicIndex < 3) return "#4caf50";
+    if (nonHalicIndex < 6) return "#2196f3";
     return "#9c27b0";
   };
 
@@ -733,7 +765,7 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
                       variant="outlined"
                     />
                   )}
-                  {isVakif(program.university) && (
+                  {isVakif(program) && (
                     <Chip
                       label={t("tests.programSuggestion.result.suggestedPrograms.vakif", {
                         defaultValue: "Vakıf",
