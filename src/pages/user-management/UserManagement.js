@@ -53,7 +53,7 @@ const INITIAL_FORM = {
   username: "",
   email: "",
   password: "",
-  role: "student",
+  role: "viewer",
   university: "halic",
 };
 
@@ -90,8 +90,11 @@ export default function UserManagement() {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Filter users by search query
+  // Filter users by search query (exclude students)
   const filteredUsers = users.filter((user) => {
+    // Exclude students - they are created automatically
+    if (user.role === "student") return false;
+
     const query = searchQuery.toLowerCase();
     return (
       user.username?.toLowerCase().includes(query) ||
@@ -137,18 +140,26 @@ export default function UserManagement() {
   const validateForm = () => {
     const errors = {};
 
-    if (!formData.username.trim()) {
+    // Username validation
+    const username = formData.username.trim();
+    if (!username) {
       errors.username = t("validation.required");
+    } else if (username.length < 3) {
+      errors.username = t("users.validation.usernameMinLength");
+    } else if (!/^[a-zA-Z][a-zA-Z0-9_.]*$/.test(username)) {
+      errors.username = t("users.validation.usernameFormat");
     }
 
-    if (!formData.email.trim()) {
-      errors.email = t("validation.required");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    // Email validation (optional, but validate format if provided)
+    if (formData.email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       errors.email = t("validation.invalidEmail");
     }
 
+    // Password validation
     if (!selectedUser && !formData.password) {
       errors.password = t("validation.required");
+    } else if (formData.password && formData.password.length < 6) {
+      errors.password = t("users.validation.passwordMinLength");
     }
 
     setFormErrors(errors);
@@ -225,18 +236,9 @@ export default function UserManagement() {
   }
 
   return (
-    <PageLayout
-      title={t("users.title")}
-      subtitle={t("users.subtitle")}
-      maxWidth="lg"
-      actions={
-        <Button variant="contained" startIcon={<Add />} onClick={handleCreate}>
-          {t("users.createUser")}
-        </Button>
-      }
-    >
-      {/* Search */}
-      <Box sx={{ mb: 3 }}>
+    <PageLayout title={t("users.title")} maxWidth="lg">
+      {/* Page Header with Search and Add Button */}
+      <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 3 }}>
         <TextField
           placeholder={t("common.search")}
           value={searchQuery}
@@ -251,6 +253,9 @@ export default function UserManagement() {
             ),
           }}
         />
+        <Button variant="contained" startIcon={<Add />} onClick={handleCreate}>
+          {t("users.createUser")}
+        </Button>
       </Box>
 
       {/* Users Table */}
@@ -358,7 +363,6 @@ export default function UserManagement() {
               error={!!formErrors.email}
               helperText={formErrors.email}
               fullWidth
-              required
             />
 
             <TextField
@@ -392,7 +396,6 @@ export default function UserManagement() {
                 <MenuItem value="admin">{t("users.roles.admin")}</MenuItem>
                 <MenuItem value="teacher">{t("users.roles.teacher")}</MenuItem>
                 <MenuItem value="viewer">{t("users.roles.viewer")}</MenuItem>
-                <MenuItem value="student">{t("users.roles.student")}</MenuItem>
               </Select>
             </FormControl>
 

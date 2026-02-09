@@ -23,6 +23,7 @@ const auth = {
       welcomeTitle: "Educaition'a Hoş Geldiniz",
       welcomeSubtitle: "Test yönetim paneline erişmek için giriş yapın",
       copyright: "© {{year}} Educaition - Test Yönetim Sistemi",
+      halicRedirect: "Üniversiteden misiniz?",
     },
 
     // Halic login

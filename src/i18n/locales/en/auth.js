@@ -23,6 +23,7 @@ const auth = {
       welcomeTitle: "Welcome to Educaition",
       welcomeSubtitle: "Sign in to access the test management panel",
       copyright: "© {{year}} Educaition - Test Management System",
+      halicRedirect: "Are you from a university?",
     },
 
     // Halic login

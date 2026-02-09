@@ -52,6 +52,14 @@ const users = {
     active: "Active",
     inactive: "Inactive",
 
+    // Validation
+    validation: {
+      usernameMinLength: "Username must be at least 3 characters",
+      usernameFormat:
+        "Username must start with a letter and contain only letters, numbers, underscores, and dots",
+      passwordMinLength: "Password must be at least 6 characters",
+    },
+
     // Messages
     messages: {
       createSuccess: "User created successfully",

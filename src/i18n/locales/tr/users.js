@@ -52,6 +52,14 @@ const users = {
     active: "Aktif",
     inactive: "Pasif",
 
+    // Validation
+    validation: {
+      usernameMinLength: "Kullanıcı adı en az 3 karakter olmalıdır",
+      usernameFormat:
+        "Kullanıcı adı bir harfle başlamalı ve sadece harf, rakam, alt çizgi ve nokta içermelidir",
+      passwordMinLength: "Şifre en az 6 karakter olmalıdır",
+    },
+
     // Messages
     messages: {
       createSuccess: "Kullanıcı başarıyla oluşturuldu",

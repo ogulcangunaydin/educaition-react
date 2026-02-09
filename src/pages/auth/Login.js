@@ -149,6 +149,18 @@ function Login({ variant = "educaition" }) {
         <Button type="submit" variant="contained" fullWidth size="large" loading={loading}>
           {t("auth.signIn")}
         </Button>
+
+        {variant === "educaition" && (
+          <Button
+            variant="outlined"
+            fullWidth
+            size="medium"
+            onClick={() => navigate("/login-halic")}
+            sx={{ mt: 2 }}
+          >
+            {t("auth.educaition.halicRedirect")}
+          </Button>
+        )}
       </Box>
 
       <Typography
