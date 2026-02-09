@@ -145,7 +145,7 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores }) {
             {t("tests.programSuggestion.result.suggestedJobs.subtitle")}
           </Typography>
 
-          <Grid container spacing={2}>
+          <Grid container spacing={2} columnSpacing={3} rowSpacing={10}>
             {displayJobs.map((job, index) => {
               const isExpanded = expandedJobs[index];
               const matchPercent = job.match_score
