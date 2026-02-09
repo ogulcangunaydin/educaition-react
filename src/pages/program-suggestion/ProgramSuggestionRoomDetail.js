@@ -11,41 +11,12 @@ import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { IconButton, Tooltip, Chip, Box, Typography } from "@mui/material";
-import { Visibility as ViewIcon, BugReport as BugReportIcon } from "@mui/icons-material";
+import { Visibility as ViewIcon } from "@mui/icons-material";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
-import { QRCodeOverlay, RoomParticipantEmptyState, MarkdownSection } from "@components/molecules";
-import { RoomInfoHeader, DataTable, RadarChart, ResultDetailDialog } from "@components/organisms";
+import { QRCodeOverlay, RoomParticipantEmptyState } from "@components/molecules";
+import { RoomInfoHeader, DataTable } from "@components/organisms";
 import programSuggestionService from "@services/programSuggestionService";
 import { getTestRoom, generateRoomUrl, TestType } from "@services/testRoomService";
-import jobTranslations from "@data/riasec/job_translations.json";
-
-// Normalize string for comparison (handle dash/comma confusion, whitespace, etc.)
-const normalizeForComparison = (str) => {
-  return str
-    .toLocaleLowerCase("en-US")
-    .replace(/[,\-–—]/g, "")
-    .replace(/\s+/g, " ")
-    .trim();
-};
-
-// Helper function to translate job name from English to Turkish
-const translateJob = (englishName) => {
-  const normalizedInput = normalizeForComparison(englishName);
-  const translation = jobTranslations.find(
-    (job) => normalizeForComparison(job.en) === normalizedInput
-  );
-  return translation ? translation.tr : englishName;
-};
-
-// RIASEC trait names
-const RIASEC_NAMES = {
-  R: "Realistic (Gerçekçi)",
-  I: "Investigative (Araştırmacı)",
-  A: "Artistic (Sanatsal)",
-  S: "Social (Sosyal)",
-  E: "Enterprising (Girişimci)",
-  C: "Conventional (Geleneksel)",
-};
 
 // Status configuration for chips
 const getStatusConfig = (status) => {
@@ -71,11 +42,6 @@ function ProgramSuggestionRoomDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showQR, setShowQR] = useState(false);
-
-  // Result detail dialog
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [debugData, setDebugData] = useState(null);
-  const [debugLoading, setDebugLoading] = useState(false);
 
   const fetchRoomData = useCallback(async () => {
     setLoading(true);
@@ -108,19 +74,6 @@ function ProgramSuggestionRoomDetail() {
     navigate(`/program-test-result/${studentId}`);
   };
 
-  const handleViewDebug = async (participant) => {
-    setSelectedParticipant(participant);
-    setDebugLoading(true);
-    try {
-      const data = await programSuggestionService.getStudentDebug(participant.id);
-      setDebugData(data);
-    } catch (error) {
-      console.error("Failed to fetch debug data:", error);
-    } finally {
-      setDebugLoading(false);
-    }
-  };
-
   const handleDeleteParticipant = async (participant) => {
     await programSuggestionService.deleteStudent(participant.id);
     setParticipants((prev) => prev.filter((p) => p.id !== participant.id));
@@ -131,26 +84,6 @@ function ProgramSuggestionRoomDetail() {
 
   const roomUrl = generateRoomUrl(roomId, TestType.PROGRAM_SUGGESTION);
   const completedCount = participants.filter((p) => p.status === "completed").length;
-
-  // RIASEC radar chart labels
-  const riasecLabels = Object.values(RIASEC_NAMES);
-
-  const getRadarDatasets = (participant) => {
-    const scores = participant.riasec_scores || {};
-    return [
-      {
-        label: t("tests.programSuggestion.riasecProfile", "RIASEC Profili"),
-        data: [
-          scores.R || 0,
-          scores.I || 0,
-          scores.A || 0,
-          scores.S || 0,
-          scores.E || 0,
-          scores.C || 0,
-        ],
-      },
-    ];
-  };
 
   return (
     <PageLayout
@@ -215,26 +148,15 @@ function ProgramSuggestionRoomDetail() {
               sortable: false,
               render: (_value, row) =>
                 row.status === "completed" ? (
-                  <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
-                    <Tooltip title={t("tests.viewResults", "Sonuçları Gör")}>
-                      <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => handleViewResult(row.id)}
-                      >
-                        <ViewIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Debug">
-                      <IconButton
-                        color="secondary"
-                        size="small"
-                        onClick={() => handleViewDebug(row)}
-                      >
-                        <BugReportIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
+                  <Tooltip title={t("tests.viewResults", "Sonuçları Gör")}>
+                    <IconButton
+                      color="primary"
+                      size="small"
+                      onClick={() => handleViewResult(row.id)}
+                    >
+                      <ViewIcon />
+                    </IconButton>
+                  </Tooltip>
                 ) : (
                   "-"
                 ),
@@ -251,70 +173,6 @@ function ProgramSuggestionRoomDetail() {
           onDeleteRow={handleDeleteParticipant}
         />
       )}
-
-      {/* Result Detail Dialog (for Debug) */}
-      <ResultDetailDialog
-        open={!!selectedParticipant}
-        onClose={() => {
-          setSelectedParticipant(null);
-          setDebugData(null);
-        }}
-        title={t("tests.programSuggestion.debugTitle", "Debug Bilgileri")}
-        participant={selectedParticipant}
-        loading={debugLoading}
-      >
-        {selectedParticipant && !debugLoading && debugData && (
-          <>
-            {/* RIASEC Profile */}
-            {debugData.riasec_scores && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  RIASEC Profili
-                </Typography>
-                <RadarChart labels={riasecLabels} datasets={getRadarDatasets(debugData)} />
-              </Box>
-            )}
-
-            {/* Top Jobs */}
-            {debugData.top_jobs && debugData.top_jobs.length > 0 && (
-              <Box sx={{ mb: 3 }}>
-                <Typography variant="h6" gutterBottom>
-                  Önerilen Meslekler
-                </Typography>
-                {debugData.top_jobs.map((job, index) => (
-                  <Chip
-                    key={index}
-                    label={translateJob(job)}
-                    sx={{ mr: 1, mb: 1 }}
-                    color="primary"
-                    variant="outlined"
-                  />
-                ))}
-              </Box>
-            )}
-
-            {/* Raw Debug Data */}
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="h6" gutterBottom>
-                Ham Veri
-              </Typography>
-              <Box
-                component="pre"
-                sx={{
-                  backgroundColor: "#f5f5f5",
-                  p: 2,
-                  borderRadius: 1,
-                  overflow: "auto",
-                  maxHeight: 300,
-                  fontSize: "0.75rem",
-                }}
-              >
-                {JSON.stringify(debugData, null, 2)}
-              </Box>
-            </Box>
-          </>
-        )}
-      </ResultDetailDialog>
 
       {/* QR Code Overlay */}
       {showQR && (
