@@ -17,24 +17,48 @@ const STEPS = [
     label: "RIASEC puanları hesaplanıyor",
     description: "Cevaplarınız analiz ediliyor ve kişilik profiliniz çıkarılıyor",
     icon: "🧠",
-    duration: 2000,
-  },
-  {
-    label: "Kariyer eşleştirmesi yapılıyor",
-    description: "RIASEC profilinize en uygun meslekler belirleniyor",
-    icon: "🎯",
     duration: 3000,
   },
   {
-    label: "Yapay zeka ile meslek analizi",
-    description: "GPT ile mesleklerinize uygun üniversite programları araştırılıyor",
+    label: "Kariyer profili oluşturuluyor",
+    description: "6 RIASEC boyutundaki puanlarınız hesaplanıyor",
+    icon: "📊",
+    duration: 4000,
+  },
+  {
+    label: "Meslek havuzu taranıyor",
+    description: "RIASEC profilinize en uygun meslekler belirleniyor",
+    icon: "🎯",
+    duration: 5000,
+  },
+  {
+    label: "Yapay zeka meslek seçimi yapıyor",
+    description: "Puanınıza ve alanınıza göre en uygun meslekler seçiliyor",
     icon: "🤖",
+    duration: 12000,
+  },
+  {
+    label: "Üniversite programları araştırılıyor",
+    description: "Her meslek için uygun programlar yapay zeka ile belirleniyor",
+    icon: "🎓",
     duration: 15000,
   },
   {
-    label: "Üniversite programları eşleştiriliyor",
-    description: "Puanınıza ve tercihlerinize göre en uygun programlar sıralanıyor",
+    label: "Program eşleştirmesi yapılıyor",
+    description: "Binlerce program arasından puanınıza uygun olanlar filtreleniyor",
     icon: "🏫",
+    duration: 15000,
+  },
+  {
+    label: "Burs ve kontenjan analizi",
+    description: "Burs imkanları ve kontenjan durumları kontrol ediliyor",
+    icon: "💰",
+    duration: 12000,
+  },
+  {
+    label: "Sıralama tahmini hesaplanıyor",
+    description: "Geçen yılın verileriyle tahmini sıralamanız belirleniyor",
+    icon: "📈",
     duration: 10000,
   },
   {
@@ -85,7 +109,7 @@ function AnalysisProgressOverlay({ isComplete }) {
   // Overall progress percentage
   const progress = isComplete
     ? 100
-    : Math.min(95, (currentStep / STEPS.length) * 80 + (elapsed / 120) * 15);
+    : Math.min(95, (currentStep / STEPS.length) * 85 + (elapsed / 150) * 10);
 
   return (
     <Fade in timeout={400}>
@@ -210,7 +234,7 @@ function AnalysisProgressOverlay({ isComplete }) {
 
           {/* Bottom note */}
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 3 }}>
-            Bu işlem yapay zeka analizi içerdiğinden 30 saniye ile 2 dakika arasında sürebilir.
+            Bu işlem yapay zeka analizi içerdiğinden 1-2 dakika sürebilir, lütfen bekleyiniz.
           </Typography>
         </Paper>
       </Box>
