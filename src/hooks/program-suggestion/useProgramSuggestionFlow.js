@@ -440,7 +440,6 @@ export default function useProgramSuggestionFlow() {
       t("tests.programSuggestion.steps.personalInfo"),
       t("tests.programSuggestion.steps.educationInfo"),
       t("tests.programSuggestion.steps.scoreExpectation"),
-      t("tests.programSuggestion.steps.preferences"),
       t("tests.programSuggestion.steps.riasecTest"),
     ],
     [t]

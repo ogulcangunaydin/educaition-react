@@ -34,7 +34,7 @@ function EducationInfoStep({ formData, updateFormData, enums }) {
       </Box>
 
       {/* Will Take Exam */}
-      <Box>
+      {/* <Box>
         <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>
           {t("tests.programSuggestion.educationInfo.willTakeExam")}
         </Typography>
@@ -45,10 +45,10 @@ function EducationInfoStep({ formData, updateFormData, enums }) {
           <FormControlLabel value="yes" control={<Radio />} label={t("common.yes")} />
           <FormControlLabel value="no" control={<Radio />} label={t("common.no")} />
         </RadioGroup>
-      </Box>
+      </Box> */}
 
       {/* Average Grade */}
-      <TextField
+      {/* <TextField
         label={t("tests.programSuggestion.educationInfo.averageGrade")}
         type="number"
         value={formData.averageGrade}
@@ -60,7 +60,7 @@ function EducationInfoStep({ formData, updateFormData, enums }) {
         }}
         inputProps={{ min: 0, max: 100, step: 0.1 }}
         helperText={t("tests.programSuggestion.educationInfo.averageGradeHelp")}
-      />
+      /> */}
 
       {/* Area Selection */}
       <Box>

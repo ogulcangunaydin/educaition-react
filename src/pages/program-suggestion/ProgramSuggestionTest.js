@@ -111,16 +111,16 @@ function ProgramSuggestionTest() {
             formatRanking={formatRanking}
           />
         );
+      // case 3:
+      //   return (
+      //     <PreferencesStep
+      //       formData={formData}
+      //       updateFormData={updateFormData}
+      //       enums={enums}
+      //       universities={universities}
+      //     />
+      //   );
       case 3:
-        return (
-          <PreferencesStep
-            formData={formData}
-            updateFormData={updateFormData}
-            enums={enums}
-            universities={universities}
-          />
-        );
-      case 4:
         return (
           <TestQuestionCard
             questions={riasecQuestionsList}
@@ -165,13 +165,13 @@ function ProgramSuggestionTest() {
           <>
             {renderStep()}
 
-            {activeStep < 4 && (
+            {activeStep < 3 && (
               <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
                 <Button variant="outlined" disabled={activeStep === 0} onClick={handleBack}>
                   {t("common.previous")}
                 </Button>
                 <Button variant="contained" onClick={handleNext} disabled={!isStepValid()}>
-                  {activeStep === 3 ? t("tests.programSuggestion.startRiasec") : t("common.next")}
+                  {activeStep === 2 ? t("tests.programSuggestion.startRiasec") : t("common.next")}
                 </Button>
               </Box>
             )}
