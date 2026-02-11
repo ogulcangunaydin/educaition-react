@@ -308,32 +308,47 @@ function SuggestedProgramsCard({
         }}
         onClick={() => openDetailPanel(program)}
       >
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
-                {program.university}
-              </Typography>
-              {isHalic && (
-                <Tooltip title="Haliç Üniversitesi - Öne Çıkan">
-                  <StarIcon sx={{ color: "#ffc107", fontSize: 16 }} />
-                </Tooltip>
-              )}
-            </Box>
-            {program.faculty && (
-              <Typography variant="caption" color="text.secondary" noWrap>
-                {program.faculty}
-              </Typography>
-            )}
-          </Box>
+        {/* University name row */}
+        <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, mb: 0.5 }}>
+          <Typography variant="body2" sx={{ fontWeight: "bold", flex: 1, minWidth: 0 }} noWrap>
+            {program.university}
+          </Typography>
+          {isHalic && (
+            <Tooltip title="Haliç Üniversitesi - Öne Çıkan">
+              <StarIcon sx={{ color: "#ffc107", fontSize: 16, flexShrink: 0 }} />
+            </Tooltip>
+          )}
+        </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
+        {program.faculty && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            noWrap
+            sx={{ display: "block", mb: 0.5 }}
+          >
+            {program.faculty}
+          </Typography>
+        )}
+
+        {/* Chips and actions row */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+            gap: 0.5,
+          }}
+        >
+          <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", flex: 1, minWidth: 0 }}>
             {program.taban_score && (
               <Chip
-                label={`Taban: ${parseFloat(program.taban_score).toFixed(2)}`}
+                label={`Taban: ${parseFloat(program.taban_score).toFixed(1)}`}
                 size="small"
                 color="primary"
                 variant="outlined"
+                sx={{ height: 24, "& .MuiChip-label": { fontSize: "0.7rem", px: 0.8 } }}
               />
             )}
             {program.scholarship && (
@@ -341,8 +356,34 @@ function SuggestedProgramsCard({
                 label={program.scholarship}
                 size="small"
                 color={program.scholarship === "Burslu" ? "success" : "default"}
+                sx={{ height: 24, "& .MuiChip-label": { fontSize: "0.7rem", px: 0.8 } }}
               />
             )}
+            {program.city && (
+              <Chip
+                icon={<LocationOnIcon />}
+                label={program.city}
+                size="small"
+                variant="outlined"
+                sx={{
+                  height: 22,
+                  "& .MuiChip-label": { fontSize: "0.7rem" },
+                  "& .MuiChip-icon": { fontSize: 14 },
+                }}
+              />
+            )}
+            {isVakif(program) && (
+              <Chip
+                label="Vakıf"
+                size="small"
+                variant="outlined"
+                color="warning"
+                sx={{ height: 22, "& .MuiChip-label": { fontSize: "0.7rem" } }}
+              />
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
             <Tooltip title="Google'da Ara">
               <IconButton
                 size="small"
@@ -350,6 +391,7 @@ function SuggestedProgramsCard({
                   e.stopPropagation();
                   handleGoogleSearch(program);
                 }}
+                sx={{ p: 0.5 }}
               >
                 <SearchIcon fontSize="small" />
               </IconButton>
@@ -362,6 +404,7 @@ function SuggestedProgramsCard({
                   e.stopPropagation();
                   toggleBasket(program);
                 }}
+                sx={{ p: 0.5 }}
               >
                 {isInBasket(program) ? (
                   <RemoveShoppingCartIcon fontSize="small" />
@@ -371,27 +414,6 @@ function SuggestedProgramsCard({
               </IconButton>
             </Tooltip>
           </Box>
-        </Box>
-
-        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
-          {program.city && (
-            <Chip
-              icon={<LocationOnIcon />}
-              label={program.city}
-              size="small"
-              variant="outlined"
-              sx={{ height: 22, "& .MuiChip-label": { fontSize: "0.7rem" } }}
-            />
-          )}
-          {isVakif(program) && (
-            <Chip
-              label="Vakıf"
-              size="small"
-              variant="outlined"
-              color="warning"
-              sx={{ height: 22, "& .MuiChip-label": { fontSize: "0.7rem" } }}
-            />
-          )}
         </Box>
       </Paper>
     );
@@ -445,8 +467,14 @@ function SuggestedProgramsCard({
           />
         </Grid>
       </Grid>
-      <Box sx={{ mt: 1, display: "flex", justifyContent: "space-between" }}>
-        <Typography variant="body2" color="text.secondary">
+      <Box
+        sx={{ mt: 1, display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 1 }}
+      >
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+        >
           {totalShown} program gösteriliyor ({jobGroups.length} meslek, {totalProgramNames} program
           adı)
         </Typography>
@@ -466,7 +494,7 @@ function SuggestedProgramsCard({
 
   const renderBasketDrawer = () => (
     <Drawer anchor="right" open={basketDrawerOpen} onClose={() => setBasketDrawerOpen(false)}>
-      <Box sx={{ width: 350, p: 2 }}>
+      <Box sx={{ width: { xs: "100vw", sm: 380 }, maxWidth: "100vw", p: 2 }}>
         <Box
           sx={{
             display: "flex",
@@ -620,7 +648,7 @@ function SuggestedProgramsCard({
 
   const renderDetailDrawer = () => (
     <Drawer anchor="right" open={detailDrawerOpen} onClose={() => setDetailDrawerOpen(false)}>
-      <Box sx={{ width: 400, p: 3 }}>
+      <Box sx={{ width: { xs: "100vw", sm: 400 }, maxWidth: "100vw", p: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
             display: "flex",
@@ -777,12 +805,16 @@ function SuggestedProgramsCard({
               mb: 2,
             }}
           >
-            <Box>
-              <Typography variant="h6" sx={{ mb: 0 }}>
-                <SchoolIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="h6" sx={{ mb: 0, fontSize: { xs: "1rem", sm: "1.25rem" } }}>
+                <SchoolIcon sx={{ mr: 1, verticalAlign: "middle", fontSize: { xs: 20, sm: 24 } }} />
                 Önerilen Programlar
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontSize: { xs: "0.75rem", sm: "0.875rem" } }}
+              >
                 Meslek eşleşmelerinize göre üniversite program önerileri
               </Typography>
             </Box>
@@ -804,7 +836,7 @@ function SuggestedProgramsCard({
 
           {/* Area tabs */}
           {hasAlternative && (
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
               {[
                 {
                   label: AREA_LABELS[area] || area,
@@ -824,11 +856,11 @@ function SuggestedProgramsCard({
                 return (
                   <Chip
                     key={idx}
-                    label={`${idx === 0 ? "Ana Alan" : "Alternatif Alan"}: ${label} (${count})`}
+                    label={`${idx === 0 ? "Ana" : "Alt."}: ${label} (${count})`}
                     onClick={() => setAreaTab(idx)}
                     sx={{
                       fontWeight: "bold",
-                      fontSize: "0.85rem",
+                      fontSize: { xs: "0.75rem", sm: "0.85rem" },
                       py: 2.5,
                       backgroundColor: isActive ? colors.bg : "transparent",
                       border: `2px solid ${isActive ? colors.border : "#ccc"}`,
@@ -876,17 +908,22 @@ function SuggestedProgramsCard({
                 sx={{
                   backgroundColor: areaColors.header,
                   color: "#fff",
-                  "& .MuiAccordionSummary-content": { alignItems: "center", gap: 1 },
+                  px: { xs: 1.5, sm: 2 },
+                  "& .MuiAccordionSummary-content": { alignItems: "center", gap: 0.5 },
                 }}
               >
-                <WorkIcon fontSize="small" />
-                <Typography variant="subtitle1" sx={{ fontWeight: "bold", flex: 1 }}>
+                <WorkIcon fontSize="small" sx={{ display: { xs: "none", sm: "block" } }} />
+                <Typography
+                  variant="subtitle1"
+                  sx={{ fontWeight: "bold", flex: 1, fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                  noWrap
+                >
                   {translateJob(jobName)}
                 </Typography>
                 <Chip
-                  label={`${programNameGroups.length} program adı`}
+                  label={`${programNameGroups.length} program`}
                   size="small"
-                  sx={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+                  sx={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff", height: 22 }}
                 />
               </AccordionSummary>
 
@@ -907,18 +944,33 @@ function SuggestedProgramsCard({
                       sx={{
                         backgroundColor: hasHalic ? "#fffde7" : "#fafafa",
                         borderLeft: hasHalic ? "4px solid #ffc107" : "4px solid #42a5f5",
+                        px: { xs: 1, sm: 2 },
                       }}
                     >
                       <Box
                         sx={{
                           display: "flex",
                           alignItems: "center",
-                          gap: 1,
+                          gap: 0.5,
                           width: "100%",
+                          flexWrap: "wrap",
                         }}
                       >
-                        <MenuBookIcon fontSize="small" color="action" />
-                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", flex: 1 }}>
+                        <MenuBookIcon
+                          fontSize="small"
+                          color="action"
+                          sx={{ display: { xs: "none", sm: "block" } }}
+                        />
+                        <Typography
+                          variant="subtitle2"
+                          sx={{
+                            fontWeight: "bold",
+                            flex: 1,
+                            minWidth: 0,
+                            fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                          }}
+                          noWrap
+                        >
                           {programName}
                         </Typography>
                         {hasHalic && (
@@ -930,6 +982,7 @@ function SuggestedProgramsCard({
                               backgroundColor: "#ffc107",
                               color: "#000",
                               fontWeight: "bold",
+                              height: 22,
                             }}
                           />
                         )}

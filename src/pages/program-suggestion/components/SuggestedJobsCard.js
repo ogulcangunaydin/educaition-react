@@ -82,16 +82,16 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeA
     <>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Typography variant="h6" gutterBottom>
-            <WorkIcon sx={{ mr: 1, verticalAlign: "middle" }} />
+          <Typography variant="h6" gutterBottom sx={{ fontSize: { xs: "1rem", sm: "1.25rem" } }}>
+            <WorkIcon sx={{ mr: 1, verticalAlign: "middle", fontSize: { xs: 20, sm: 24 } }} />
             {t("tests.programSuggestion.result.suggestedJobs.title")}
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontSize: { xs: "0.75rem", sm: "0.875rem" } }}>
             {t("tests.programSuggestion.result.suggestedJobs.subtitle")}
           </Typography>
 
           {hasAlt && (
-            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+            <Box sx={{ display: "flex", gap: 1, mb: 2, flexWrap: "wrap" }}>
               {[
                 { label: AREA_LABELS[area] || area, idx: 0, areaKey: area },
                 {
@@ -105,13 +105,14 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeA
                 return (
                   <Chip
                     key={idx}
-                    label={`${idx === 0 ? "Ana Alan" : "Alternatif Alan"}: ${label} (${idx === 0 ? mainJobs.length : altJobs.length})`}
+                    label={`${idx === 0 ? "Ana" : "Alt."}: ${label} (${idx === 0 ? mainJobs.length : altJobs.length})`}
                     onClick={() => {
                       setAreaTab(idx);
                       setExpandedJobs({});
                     }}
                     sx={{
                       fontWeight: "bold",
+                      fontSize: { xs: "0.75rem", sm: "0.85rem" },
                       backgroundColor: isActive ? colors.bg : "transparent",
                       border: `2px solid ${isActive ? colors.border : "#ccc"}`,
                       color: isActive ? colors.text : "text.secondary",
@@ -137,7 +138,7 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeA
             />
           )}
 
-          <Grid container spacing={2} columnSpacing={3} rowSpacing={10}>
+          <Grid container spacing={2} columnSpacing={3} rowSpacing={2}>
             {displayJobs.map((job, index) => {
               const isExpanded = expandedJobs[index];
               const matchPercent = job.match_score
@@ -149,7 +150,7 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeA
                   <Paper
                     elevation={index < 3 ? 3 : 1}
                     sx={{
-                      p: 2,
+                      p: { xs: 1.5, sm: 2 },
                       height: "100%",
                       backgroundColor: index === 0 ? "#e3f2fd" : index < 3 ? "#f5f5f5" : "white",
                       border: index === 0 ? "2px solid #1976d2" : "none",
@@ -167,7 +168,7 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeA
                         alignItems: "flex-start",
                       }}
                     >
-                      <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: "bold", fontSize: { xs: "0.85rem", sm: "1rem" } }}>
                         #{index + 1} {translateJob(job.job)}
                       </Typography>
                       {index === 0 && (

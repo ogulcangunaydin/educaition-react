@@ -141,17 +141,31 @@ function ProgramTestResult() {
                   size="small"
                   sx={{ mb: 1 }}
                 />
-                <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold", mt: 1, fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                >
                   📊 Puan Aralığı: {result.expected_score_min} - {result.expected_score_max}
                 </Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }}
+                >
                   Orta Puan: {midScore}
                 </Typography>
                 <Divider sx={{ my: 1 }} />
-                <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                <Typography
+                  variant="body1"
+                  sx={{ fontWeight: "bold", fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                >
                   🎯 Tahmini Sıralama
                 </Typography>
-                <Typography variant="h5" color="success.main" sx={{ fontWeight: "bold" }}>
+                <Typography
+                  variant="h5"
+                  color="success.main"
+                  sx={{ fontWeight: "bold", fontSize: { xs: "1.3rem", sm: "1.5rem" } }}
+                >
                   {formatRanking(estimatedRanking)}
                 </Typography>
               </Paper>
@@ -179,17 +193,31 @@ function ProgramTestResult() {
                     size="small"
                     sx={{ mb: 1 }}
                   />
-                  <Typography variant="body1" sx={{ fontWeight: "bold", mt: 1 }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "bold", mt: 1, fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                  >
                     📊 Puan Aralığı: {result.alternative_score_min} - {result.alternative_score_max}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ fontSize: { xs: "0.8rem", sm: "0.875rem" } }}
+                  >
                     Orta Puan: {altMidScore}
                   </Typography>
                   <Divider sx={{ my: 1 }} />
-                  <Typography variant="body1" sx={{ fontWeight: "bold" }}>
+                  <Typography
+                    variant="body1"
+                    sx={{ fontWeight: "bold", fontSize: { xs: "0.85rem", sm: "1rem" } }}
+                  >
                     🎯 Tahmini Sıralama
                   </Typography>
-                  <Typography variant="h5" color="warning.main" sx={{ fontWeight: "bold" }}>
+                  <Typography
+                    variant="h5"
+                    color="warning.main"
+                    sx={{ fontWeight: "bold", fontSize: { xs: "1.3rem", sm: "1.5rem" } }}
+                  >
                     {formatRanking(altEstimatedRanking)}
                   </Typography>
                 </Paper>
@@ -257,15 +285,28 @@ function ProgramTestResult() {
       sx={{
         minHeight: "100vh",
         backgroundColor: "#f5f5f5",
-        py: 4,
+        py: { xs: 1.5, sm: 4 },
+        px: { xs: 0.5, sm: 0 },
       }}
     >
-      <Paper sx={{ maxWidth: 900, margin: "0 auto", p: 4 }}>
-        <Typography variant="h4" gutterBottom sx={{ textAlign: "center" }}>
+      <Paper sx={{ maxWidth: 900, margin: "0 auto", p: { xs: 1.5, sm: 4 } }}>
+        <Typography
+          variant="h4"
+          gutterBottom
+          sx={{ textAlign: "center", fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+        >
           🎓 Test Sonuçlarınız
         </Typography>
 
-        <Typography variant="body1" color="text.secondary" sx={{ textAlign: "center", mb: 4 }}>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{
+            textAlign: "center",
+            mb: { xs: 2, sm: 4 },
+            fontSize: { xs: "0.85rem", sm: "1rem" },
+          }}
+        >
           RIASEC kariyer testi ve tercihlerinize göre size özel öneriler
         </Typography>
 
