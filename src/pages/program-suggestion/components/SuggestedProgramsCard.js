@@ -315,7 +315,7 @@ function SuggestedProgramsCard({
                 {program.university}
               </Typography>
               {isHalic && (
-                <Tooltip title="Haliç Üniversitesi — Öne Çıkan">
+                <Tooltip title="Haliç Üniversitesi - Öne Çıkan">
                   <StarIcon sx={{ color: "#ffc107", fontSize: 16 }} />
                 </Tooltip>
               )}
@@ -639,7 +639,7 @@ function SuggestedProgramsCard({
           <Box>
             {isHalicUniversity(selectedProgram) && (
               <Alert severity="info" icon={<StarIcon />} sx={{ mb: 2 }}>
-                Haliç Üniversitesi — Öne Çıkan
+                Haliç Üniversitesi - Öne Çıkan
               </Alert>
             )}
 
