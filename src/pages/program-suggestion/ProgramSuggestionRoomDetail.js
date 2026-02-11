@@ -10,8 +10,31 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { IconButton, Tooltip, Chip, Box, Typography } from "@mui/material";
-import { Visibility as ViewIcon } from "@mui/icons-material";
+import {
+  IconButton,
+  Tooltip,
+  Chip,
+  Box,
+  Typography,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
+  Badge,
+} from "@mui/material";
+import {
+  Visibility as ViewIcon,
+  TouchApp as InteractionIcon,
+  Search as SearchIcon,
+  ShoppingBasket as BasketIcon,
+  RemoveShoppingCart as RemoveBasketIcon,
+  Info as InfoIcon,
+} from "@mui/icons-material";
 import { PageLayout, PageLoading, PageError } from "@components/templates";
 import { QRCodeOverlay, RoomParticipantEmptyState } from "@components/molecules";
 import { RoomInfoHeader, DataTable } from "@components/organisms";
@@ -42,6 +65,13 @@ function ProgramSuggestionRoomDetail() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showQR, setShowQR] = useState(false);
+  const [interactions, setInteractions] = useState([]);
+  const [interactionDialog, setInteractionDialog] = useState({
+    open: false,
+    studentName: "",
+    studentId: null,
+  });
+  const [studentInteractions, setStudentInteractions] = useState([]);
 
   const fetchRoomData = useCallback(async () => {
     setLoading(true);
@@ -58,6 +88,13 @@ function ProgramSuggestionRoomDetail() {
       } catch (err) {
         console.error("Error fetching participants:", err);
       }
+
+      try {
+        const interactionsData = await programSuggestionService.getRoomInteractions(roomId);
+        setInteractions(interactionsData || []);
+      } catch (err) {
+        console.error("Error fetching interactions:", err);
+      }
     } catch (err) {
       console.error("Error fetching room data:", err);
       setError(err.message);
@@ -71,12 +108,52 @@ function ProgramSuggestionRoomDetail() {
   }, [fetchRoomData]);
 
   const handleViewResult = (studentId) => {
-    navigate(`/program-test-result/${studentId}`);
+    window.open(`/admin/program-test-result/${studentId}`, "_blank");
   };
 
   const handleDeleteParticipant = async (participant) => {
     await programSuggestionService.deleteStudent(participant.id);
     setParticipants((prev) => prev.filter((p) => p.id !== participant.id));
+  };
+
+  // Get interaction count for a student
+  const getInteractionCount = (studentId) => {
+    return interactions.filter((i) => i.student_id === studentId).length;
+  };
+
+  // Open interaction detail dialog for a student
+  const handleViewInteractions = async (studentId, studentName) => {
+    try {
+      const data = await programSuggestionService.getStudentInteractions(studentId);
+      setStudentInteractions(data || []);
+    } catch (err) {
+      console.error("Error fetching student interactions:", err);
+      setStudentInteractions(interactions.filter((i) => i.student_id === studentId));
+    }
+    setInteractionDialog({ open: true, studentName: studentName || `#${studentId}`, studentId });
+  };
+
+  const ACTION_CONFIG = {
+    google_search: {
+      label: "Google Arama",
+      icon: <SearchIcon fontSize="small" />,
+      color: "#1976d2",
+    },
+    add_to_basket: {
+      label: "Sepete Ekledi",
+      icon: <BasketIcon fontSize="small" />,
+      color: "#2e7d32",
+    },
+    remove_from_basket: {
+      label: "Sepetten Çıkardı",
+      icon: <RemoveBasketIcon fontSize="small" />,
+      color: "#d32f2f",
+    },
+    view_details: {
+      label: "Detay Görüntüledi",
+      icon: <InfoIcon fontSize="small" />,
+      color: "#ed6c02",
+    },
   };
 
   if (loading) return <PageLoading onBack={() => navigate(-1)} />;
@@ -161,6 +238,32 @@ function ProgramSuggestionRoomDetail() {
                   "-"
                 ),
             },
+            {
+              id: "interactions",
+              label: "Etkileşim",
+              align: "center",
+              sortable: false,
+              render: (_value, row) => {
+                const count = getInteractionCount(row.id);
+                return count > 0 ? (
+                  <Tooltip title="Etkileşimleri Gör">
+                    <IconButton
+                      size="small"
+                      color="secondary"
+                      onClick={() => handleViewInteractions(row.id, row.name)}
+                    >
+                      <Badge badgeContent={count} color="secondary">
+                        <InteractionIcon />
+                      </Badge>
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Typography variant="caption" color="text.secondary">
+                    —
+                  </Typography>
+                );
+              },
+            },
           ]}
           data={participants}
           pagination={participants.length > 10}
@@ -182,6 +285,75 @@ function ProgramSuggestionRoomDetail() {
           title={`${room?.name} - ${t("tests.programSuggestion.title", "Program Öneri Testi")}`}
         />
       )}
+
+      {/* Interaction Logs Dialog */}
+      <Dialog
+        open={interactionDialog.open}
+        onClose={() => setInteractionDialog({ open: false, studentName: "", studentId: null })}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>{interactionDialog.studentName} - Etkileşim Geçmişi</DialogTitle>
+        <DialogContent dividers>
+          {studentInteractions.length === 0 ? (
+            <Typography color="text.secondary" sx={{ py: 2, textAlign: "center" }}>
+              Henüz etkileşim kaydı yok
+            </Typography>
+          ) : (
+            <List dense>
+              {studentInteractions.map((log) => {
+                const config = ACTION_CONFIG[log.action] || {
+                  label: log.action,
+                  icon: <InfoIcon fontSize="small" />,
+                  color: "#666",
+                };
+                return (
+                  <ListItem key={log.id} sx={{ borderBottom: "1px solid #f0f0f0" }}>
+                    <ListItemIcon sx={{ minWidth: 36, color: config.color }}>
+                      {config.icon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Box
+                          sx={{ display: "flex", alignItems: "center", gap: 1, flexWrap: "wrap" }}
+                        >
+                          <Chip
+                            label={config.label}
+                            size="small"
+                            sx={{ bgcolor: config.color, color: "#fff", fontSize: "0.7rem" }}
+                          />
+                          <Typography variant="body2" fontWeight="bold">
+                            {log.program_name}
+                          </Typography>
+                        </Box>
+                      }
+                      secondary={
+                        <Box sx={{ mt: 0.5 }}>
+                          <Typography variant="caption" display="block">
+                            {log.university}
+                            {log.scholarship && ` • ${log.scholarship}`}
+                            {log.city && ` • ${log.city}`}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {log.created_at}
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </ListItem>
+                );
+              })}
+            </List>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setInteractionDialog({ open: false, studentName: "", studentId: null })}
+          >
+            Kapat
+          </Button>
+        </DialogActions>
+      </Dialog>
     </PageLayout>
   );
 }

@@ -39,12 +39,29 @@ export async function getStudent(studentId) {
 }
 
 /**
- * Get student result
+ * Get student result (student with cookie)
  * @param {number} studentId - Student ID
  * @returns {Promise<Object>} Student result
  */
 export async function getStudentResult(studentId) {
   const { ok, data, status } = await api.get(`/program-suggestion/students/${studentId}/result`);
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get student result (teacher/admin with JWT)
+ * @param {number} studentId - Student ID
+ * @returns {Promise<Object>} Student result
+ */
+export async function getStudentResultAuth(studentId) {
+  const { ok, data, status } = await api.auth.get(
+    `/program-suggestion/students/${studentId}/admin-result`
+  );
 
   if (!ok) {
     throw new Error(`HTTP error! status: ${status}`);
@@ -211,10 +228,64 @@ export async function getRiasecAverages() {
   return data;
 }
 
+/**
+ * Log a student's interaction with a suggested program (fire-and-forget)
+ * @param {number} studentId - Student ID
+ * @param {Object} interactionData - { action, program_name, university, scholarship?, city? }
+ * @returns {Promise<Object>} Created log entry
+ */
+export async function logInteraction(studentId, interactionData) {
+  const { ok, data, status } = await api.post(
+    `/program-suggestion/students/${studentId}/log-interaction`,
+    interactionData
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get interaction logs for a student (teacher/admin only)
+ * @param {number} studentId - Student ID
+ * @returns {Promise<Array>} List of interaction logs
+ */
+export async function getStudentInteractions(studentId) {
+  const { ok, data, status } = await api.auth.get(
+    `/program-suggestion/students/${studentId}/interactions`
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
+/**
+ * Get all interaction logs for a room (teacher/admin only)
+ * @param {number} roomId - Test room ID
+ * @returns {Promise<Array>} List of interaction logs
+ */
+export async function getRoomInteractions(roomId) {
+  const { ok, data, status } = await api.auth.get(
+    `/program-suggestion/rooms/${roomId}/interactions`
+  );
+
+  if (!ok) {
+    throw new Error(`HTTP error! status: ${status}`);
+  }
+
+  return data;
+}
+
 const programSuggestionService = {
   getStudentDebug,
   getStudent,
   getStudentResult,
+  getStudentResultAuth,
   createStudent,
   updateStep1,
   updateStep2,
@@ -224,6 +295,9 @@ const programSuggestionService = {
   getParticipants,
   deleteStudent,
   getRiasecAverages,
+  logInteraction,
+  getStudentInteractions,
+  getRoomInteractions,
 };
 
 export default programSuggestionService;

@@ -1,3 +1,10 @@
+/**
+ * AdminProgramTestResult Page
+ *
+ * Teacher/admin version of ProgramTestResult.
+ * Uses JWT auth instead of student cookie. Read-only (no interaction logging).
+ */
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
@@ -14,14 +21,12 @@ import {
 } from "@mui/material";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { fetchScoreRankingDistribution } from "@services/liseService";
-import { getStudentResult, logInteraction } from "@services/programSuggestionService";
+import { getStudentResultAuth } from "@services/programSuggestionService";
 
-// Import extracted components
 import RiasecProfileCard from "./components/RiasecProfileCard";
 import SuggestedJobsCard from "./components/SuggestedJobsCard";
 import SuggestedProgramsCard from "./components/SuggestedProgramsCard";
 
-// Area labels in Turkish
 const AREA_LABELS = {
   say: "Sayısal (SAY)",
   ea: "Eşit Ağırlık (EA)",
@@ -29,55 +34,41 @@ const AREA_LABELS = {
   dil: "Dil",
 };
 
-function ProgramTestResult() {
+function AdminProgramTestResult() {
   const { studentId } = useParams();
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [scoreDistribution, setScoreDistribution] = useState(null);
 
-  // Load score distribution data from API
   useEffect(() => {
-    const loadScoreDistribution = async () => {
-      try {
-        const data = await fetchScoreRankingDistribution();
-        setScoreDistribution(data);
-      } catch (error) {
-        console.error("Error loading score distribution:", error);
-      }
-    };
-    loadScoreDistribution();
+    fetchScoreRankingDistribution()
+      .then(setScoreDistribution)
+      .catch((err) => console.error("Error loading score distribution:", err));
   }, []);
 
   useEffect(() => {
     const fetchResult = async () => {
       try {
-        const data = await getStudentResult(studentId);
+        const data = await getStudentResultAuth(studentId);
         setResult(data);
-      } catch (error) {
-        console.error("Error fetching result:", error);
+      } catch (err) {
+        console.error("Error fetching result:", err);
         setError("Sonuçlar yüklenemedi. Lütfen daha sonra tekrar deneyin.");
       } finally {
         setLoading(false);
       }
     };
-
     fetchResult();
   }, [studentId]);
 
-  // Estimate ranking based on score for a given area
   const estimateRanking = (score, area) => {
     if (!scoreDistribution || !area || !score) return null;
-
     const areaData = scoreDistribution[area.toLowerCase()];
     if (!areaData || !areaData.distribution) return null;
-
     const distribution = areaData.distribution;
-
-    // Find the closest score bucket
     let closestIdx = 0;
     let minDiff = Infinity;
-
     for (let i = 0; i < distribution.length; i++) {
       const diff = Math.abs(distribution[i].score - score);
       if (diff < minDiff) {
@@ -85,23 +76,18 @@ function ProgramTestResult() {
         closestIdx = i;
       }
     }
-
     return distribution[closestIdx].avgRanking;
   };
 
-  // Format ranking with thousands separator
   const formatRanking = (ranking) => {
     if (!ranking) return "—";
     return ranking.toLocaleString("tr-TR");
   };
 
   const renderScoreAndRanking = () => {
-    console.log("Result in renderScoreAndRanking:", result);
     if (!result?.area || !result?.expected_score_min) return null;
-
     const midScore = Math.round((result.expected_score_min + result.expected_score_max) / 2);
     const estimatedRanking = estimateRanking(midScore, result.area);
-
     const hasAlternative =
       result.alternative_area && result.alternative_score_min && result.alternative_score_max;
     let altMidScore, altEstimatedRanking;
@@ -120,18 +106,9 @@ function ProgramTestResult() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Belirlediğiniz puan aralığına göre tahmini sıralamanız
           </Typography>
-
           <Grid container spacing={2}>
-            {/* Main Area */}
             <Grid item xs={12} md={hasAlternative ? 6 : 12}>
-              <Paper
-                elevation={2}
-                sx={{
-                  p: 2,
-                  backgroundColor: "#e8f5e9",
-                  height: "100%",
-                }}
-              >
+              <Paper elevation={2} sx={{ p: 2, backgroundColor: "#e8f5e9", height: "100%" }}>
                 <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                   Ana Alan
                 </Typography>
@@ -156,18 +133,9 @@ function ProgramTestResult() {
                 </Typography>
               </Paper>
             </Grid>
-
-            {/* Alternative Area */}
             {hasAlternative && (
               <Grid item xs={12} md={6}>
-                <Paper
-                  elevation={2}
-                  sx={{
-                    p: 2,
-                    backgroundColor: "#fff3e0",
-                    height: "100%",
-                  }}
-                >
+                <Paper elevation={2} sx={{ p: 2, backgroundColor: "#fff3e0", height: "100%" }}>
                   <Typography variant="subtitle2" color="text.secondary" gutterBottom>
                     Alternatif Alan
                   </Typography>
@@ -196,26 +164,12 @@ function ProgramTestResult() {
               </Grid>
             )}
           </Grid>
-
           <Typography variant="caption" color="text.secondary" sx={{ display: "block", mt: 2 }}>
             * Tahmini sıralama, geçen yılın verilerine göre hesaplanmıştır.
           </Typography>
         </CardContent>
       </Card>
     );
-  };
-
-  // Log program click for analytics (fire-and-forget)
-  const handleProgramClick = (program, action) => {
-    logInteraction(studentId, {
-      action,
-      program_name: program.program || program.program_name || "",
-      university: program.university || "",
-      scholarship: program.scholarship || null,
-      city: program.city || null,
-    }).catch((err) => {
-      console.error("[ProgramTestResult] Failed to log interaction:", err);
-    });
   };
 
   if (loading) {
@@ -231,7 +185,7 @@ function ProgramTestResult() {
         }}
       >
         <CircularProgress />
-        <Typography>Sonuçlarınız yükleniyor...</Typography>
+        <Typography>Sonuçlar yükleniyor...</Typography>
       </Box>
     );
   }
@@ -253,20 +207,15 @@ function ProgramTestResult() {
   }
 
   return (
-    <Box
-      sx={{
-        minHeight: "100vh",
-        backgroundColor: "#f5f5f5",
-        py: 4,
-      }}
-    >
+    <Box sx={{ minHeight: "100vh", backgroundColor: "#f5f5f5", py: 4 }}>
       <Paper sx={{ maxWidth: 900, margin: "0 auto", p: 4 }}>
+        <Chip label="Öğretmen Görünümü" color="warning" size="small" sx={{ mb: 2 }} />
         <Typography variant="h4" gutterBottom sx={{ textAlign: "center" }}>
-          🎓 Test Sonuçlarınız
+          🎓 {result?.name ? `${result.name} - Test Sonuçları` : "Test Sonuçları"}
         </Typography>
 
         <Typography variant="body1" color="text.secondary" sx={{ textAlign: "center", mb: 4 }}>
-          RIASEC kariyer testi ve tercihlerinize göre size özel öneriler
+          RIASEC kariyer testi ve tercihlerine göre öğrenci önerileri
         </Typography>
 
         {result?.area && (
@@ -285,10 +234,8 @@ function ProgramTestResult() {
 
         {renderScoreAndRanking()}
 
-        {/* RIASEC Profile with benchmarks */}
         <RiasecProfileCard riasecScores={result?.riasec_scores} />
 
-        {/* Suggested Jobs - Top 6 with explanations */}
         <SuggestedJobsCard
           suggestedJobs={result?.suggested_jobs}
           userRiasecScores={result?.riasec_scores}
@@ -296,19 +243,17 @@ function ProgramTestResult() {
           alternativeArea={result?.alternative_area}
         />
 
-        {/* Suggested Programs with filters, pagination, basket */}
         <SuggestedProgramsCard
           suggestedPrograms={result?.suggested_programs}
           suggestedJobs={result?.suggested_jobs}
           area={result?.area}
           alternativeArea={result?.alternative_area}
-          onProgramClick={handleProgramClick}
+          onProgramClick={() => {}}
         />
 
         <Box sx={{ mt: 4, textAlign: "center" }}>
           <Typography variant="body2" color="text.secondary">
-            Bu öneriler RIASEC kariyer testi ve tercihlerinize göre oluşturulmuştur. Son kararı
-            verirken aileniz ve danışmanlarınızla görüşmenizi öneririz.
+            Bu öneriler RIASEC kariyer testi ve tercihlerine göre oluşturulmuştur.
           </Typography>
         </Box>
       </Paper>
@@ -316,4 +261,4 @@ function ProgramTestResult() {
   );
 }
 
-export default ProgramTestResult;
+export default AdminProgramTestResult;

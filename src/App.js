@@ -25,6 +25,7 @@ import {
 import {
   ProgramSuggestionTest,
   ProgramTestResult,
+  AdminProgramTestResult,
   ProgramSuggestionRoomDetail,
 } from "@pages/program-suggestion";
 
@@ -252,6 +253,14 @@ function AppRoutes() {
         }
       />
       <Route path="/program-test-result/:studentId" element={<ProgramTestResult />} />
+      <Route
+        path="/admin/program-test-result/:studentId"
+        element={
+          <ProtectedRoute allowedRoles={ADMIN_TEACHER}>
+            <AdminProgramTestResult />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Public Test Routes (accessible via QR code) */}
       <Route
