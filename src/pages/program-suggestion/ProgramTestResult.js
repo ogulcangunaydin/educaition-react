@@ -291,11 +291,16 @@ function ProgramTestResult() {
         <SuggestedJobsCard
           suggestedJobs={result?.suggested_jobs}
           userRiasecScores={result?.riasec_scores}
+          area={result?.area}
+          alternativeArea={result?.alternative_area}
         />
 
         {/* Suggested Programs with filters, pagination, basket */}
         <SuggestedProgramsCard
           suggestedPrograms={result?.suggested_programs}
+          suggestedJobs={result?.suggested_jobs}
+          area={result?.area}
+          alternativeArea={result?.alternative_area}
           onProgramClick={handleProgramClick}
         />
 

@@ -1,14 +1,14 @@
 /**
- * SuggestedProgramsCard — Displays university program recommendations
+ * SuggestedProgramsCard — v3 — Three-level accordion
  *
- * Features:
- * - Filters: Vakıf/Devlet, Şehir, score range
- * - Pagination (Top 200, lazy load)
- * - Google search button for each program
- * - Basket functionality ("Sepete Ekle")
- * - Side panel for department details
- * - Haliç Üniversitesi priority badge
- * - Click logging for analytics
+ * Structure:
+ *   Level 1: Job name (accordion)
+ *     Level 2: Program name (accordion)
+ *       Level 3: University programs (cards, Haliç first)
+ *
+ * Data source: flat suggestedPrograms array grouped client-side.
+ * Area separation: suggestedJobs / alternativeJobs determine which
+ *   programs belong to main vs alternative area.
  */
 
 import React, { useState, useMemo, useCallback } from "react";
@@ -25,16 +25,17 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  TextField,
   Button,
   IconButton,
   Drawer,
   Tooltip,
   Badge,
-  Pagination,
   Slider,
   Grid,
   Stack,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
 import SchoolIcon from "@mui/icons-material/School";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
@@ -42,10 +43,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import RemoveShoppingCartIcon from "@mui/icons-material/RemoveShoppingCart";
 import ShoppingBasketIcon from "@mui/icons-material/ShoppingBasket";
-import InfoIcon from "@mui/icons-material/Info";
 import StarIcon from "@mui/icons-material/Star";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import WorkIcon from "@mui/icons-material/Work";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import { useTranslation } from "react-i18next";
 import jobTranslations from "@data/riasec/job_translations.json";
 
@@ -57,6 +60,7 @@ const normalizeForComparison = (str) =>
     .trim();
 
 const translateJob = (englishName) => {
+  if (!englishName) return "";
   const normalizedInput = normalizeForComparison(englishName);
   const translation = jobTranslations.find(
     (job) => normalizeForComparison(job.en) === normalizedInput
@@ -64,146 +68,205 @@ const translateJob = (englishName) => {
   return translation ? translation.tr : englishName;
 };
 
-// Priority universities for special badge display
-const PRIORITY_UNIVERSITIES = ["Haliç Üniversitesi", "Halic Universitesi"];
+// Check if university is Haliç
+const isHalicUniversity = (program) => {
+  const university = (program?.university || "").toLowerCase();
+  return university.includes("haliç") || university.includes("halic");
+};
 
-// Items per page
-const ITEMS_PER_PAGE = 20;
-const MAX_PROGRAMS = 200;
+// Check if university is Vakıf
+const isVakif = (program) => {
+  const uniType = (program?.university_type || "").toLowerCase();
+  return uniType === "vakıf" || uniType === "vakif";
+};
 
-function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
+/**
+ * Build a three-level grouping from a flat program list:
+ *   [ { jobName, programNameGroups: [ { programName, programs[], hasHalic } ] } ]
+ *
+ * Programs within each program-name group are sorted so Haliç comes first.
+ */
+const buildThreeLevelGroups = (programs) => {
+  // Level 1 — group by job
+  const jobMap = new Map();
+  for (const p of programs) {
+    const jobName = p.job || "Genel";
+    if (!jobMap.has(jobName)) jobMap.set(jobName, []);
+    jobMap.get(jobName).push(p);
+  }
+
+  const result = [];
+  for (const [jobName, jobPrograms] of jobMap) {
+    // Level 2 — group by program name
+    const progMap = new Map();
+    for (const p of jobPrograms) {
+      const progName = p.program || "Diğer";
+      if (!progMap.has(progName)) progMap.set(progName, []);
+      progMap.get(progName).push(p);
+    }
+
+    const programNameGroups = [];
+    for (const [progName, progs] of progMap) {
+      // Sort Haliç first, then by taban_score descending
+      const sorted = [...progs].sort((a, b) => {
+        const aH = isHalicUniversity(a) ? 0 : 1;
+        const bH = isHalicUniversity(b) ? 0 : 1;
+        if (aH !== bH) return aH - bH;
+        return (parseFloat(b.taban_score) || 0) - (parseFloat(a.taban_score) || 0);
+      });
+      programNameGroups.push({
+        programName: progName,
+        programs: sorted,
+        hasHalic: sorted.some(isHalicUniversity),
+      });
+    }
+
+    // Sort program-name groups: those with Haliç first
+    programNameGroups.sort((a, b) => (b.hasHalic ? 1 : 0) - (a.hasHalic ? 1 : 0));
+
+    result.push({ jobName, programNameGroups });
+  }
+
+  return result;
+};
+
+const AREA_LABELS = {
+  say: "Sayısal",
+  ea: "Eşit Ağırlık",
+  söz: "Sözel",
+  dil: "Yabancı Dil",
+};
+
+const AREA_COLORS = {
+  say: { bg: "#e3f2fd", header: "#1976d2", border: "#1976d2", text: "#1565c0" },
+  ea: { bg: "#f3e5f5", header: "#7b1fa2", border: "#9c27b0", text: "#7b1fa2" },
+  söz: { bg: "#e8f5e9", header: "#2e7d32", border: "#4caf50", text: "#2e7d32" },
+  dil: { bg: "#fff3e0", header: "#e65100", border: "#ff9800", text: "#e65100" },
+};
+
+function SuggestedProgramsCard({
+  suggestedPrograms,
+  suggestedJobs,
+  area,
+  alternativeArea,
+  onProgramClick,
+}) {
   const { t } = useTranslation();
 
+  // Area tab
+  const [areaTab, setAreaTab] = useState(0);
+
   // Filter states
-  const [universityType, setUniversityType] = useState("all"); // all, devlet, vakif
+  const [universityType, setUniversityType] = useState("all");
   const [selectedCity, setSelectedCity] = useState("");
   const [scoreRange, setScoreRange] = useState([0, 500]);
   const [showFilters, setShowFilters] = useState(false);
-
-  // Pagination
-  const [page, setPage] = useState(1);
 
   // Basket state
   const [basket, setBasket] = useState([]);
   const [basketDrawerOpen, setBasketDrawerOpen] = useState(false);
 
-  // Side panel for program details
+  // Detail drawer
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [detailDrawerOpen, setDetailDrawerOpen] = useState(false);
 
-  // Extract unique cities from programs
-  const uniqueCities = useMemo(() => {
-    if (!suggestedPrograms) return [];
-    const cities = new Set(suggestedPrograms.map((p) => p.city).filter(Boolean));
-    return Array.from(cities).sort();
-  }, [suggestedPrograms]);
+  // ---- Area separation using job.area field ----
+  const jobAreaMap = useMemo(() => {
+    // Build a map: job name (lowercase) -> area code
+    const map = new Map();
+    for (const j of suggestedJobs || []) {
+      const jobKey = (j.job || "").toLowerCase().trim();
+      if (jobKey && j.area) map.set(jobKey, j.area);
+    }
+    return map;
+  }, [suggestedJobs]);
 
-  // Get score range from programs
+  const hasAlternative =
+    alternativeArea && [...jobAreaMap.values()].some((a) => a === alternativeArea);
+
+  // Split programs by area
+  const { mainPrograms, altPrograms } = useMemo(() => {
+    const all = suggestedPrograms || [];
+    if (!alternativeArea || jobAreaMap.size === 0) {
+      return { mainPrograms: all, altPrograms: [] };
+    }
+    const main = [];
+    const alt = [];
+    for (const p of all) {
+      const jobKey = (p.job || "").toLowerCase().trim();
+      const jobArea = jobAreaMap.get(jobKey);
+      if (jobArea === alternativeArea) {
+        alt.push(p);
+      } else {
+        main.push(p);
+      }
+    }
+    return { mainPrograms: main, altPrograms: alt };
+  }, [suggestedPrograms, jobAreaMap, alternativeArea]);
+
+  const activePrograms = areaTab === 1 && hasAlternative ? altPrograms : mainPrograms;
+  const activeArea = areaTab === 1 && hasAlternative ? alternativeArea : area;
+  const areaColors = AREA_COLORS[activeArea] || AREA_COLORS.say;
+
+  // ---- Filters ----
+  const passesFilter = useCallback(
+    (program) => {
+      if (universityType === "devlet" && isVakif(program)) return false;
+      if (universityType === "vakif" && !isVakif(program)) return false;
+      if (selectedCity && program.city !== selectedCity) return false;
+      if (scoreRange[0] > 0 || scoreRange[1] < 500) {
+        const score = parseFloat(program.taban_score);
+        if (!isNaN(score) && (score < scoreRange[0] || score > scoreRange[1])) return false;
+      }
+      return true;
+    },
+    [universityType, selectedCity, scoreRange]
+  );
+
+  const filteredPrograms = useMemo(
+    () => activePrograms.filter(passesFilter),
+    [activePrograms, passesFilter]
+  );
+
+  // Build three-level grouping from filtered programs
+  const jobGroups = useMemo(() => buildThreeLevelGroups(filteredPrograms), [filteredPrograms]);
+
+  // Unique cities (from active area, unfiltered)
+  const uniqueCities = useMemo(() => {
+    const cities = new Set(activePrograms.map((p) => p.city).filter(Boolean));
+    return Array.from(cities).sort();
+  }, [activePrograms]);
+
+  // Score min/max (from active area, unfiltered)
   const scoreMinMax = useMemo(() => {
-    if (!suggestedPrograms || suggestedPrograms.length === 0) return [0, 500];
-    const scores = suggestedPrograms
+    const scores = activePrograms
       .map((p) => p.taban_score)
       .filter((s) => s && !isNaN(parseFloat(s)));
     if (scores.length === 0) return [0, 500];
     return [Math.floor(Math.min(...scores)), Math.ceil(Math.max(...scores))];
-  }, [suggestedPrograms]);
+  }, [activePrograms]);
 
-  // Check if university is Vakıf using backend data (university_type field)
-  const isVakif = (program) => {
-    // Use the university_type field from backend if available
-    const uniType = program?.university_type?.toLowerCase() || "";
-    return uniType === "vakıf" || uniType === "vakif";
-  };
+  // Total counts
+  const totalShown = filteredPrograms.length;
+  const totalProgramNames = useMemo(
+    () => jobGroups.reduce((sum, jg) => sum + jg.programNameGroups.length, 0),
+    [jobGroups]
+  );
 
-  // Check if program is from Haliç University
-  const isHalicUniversity = (program) => {
-    const university = program?.university || "";
-    // Check for Turkish uppercase and lowercase variations
-    return (
-      university.includes("HALİÇ") ||
-      university.includes("Haliç") ||
-      university.includes("haliç") ||
-      university.includes("HALIC") ||
-      university.includes("Halic") ||
-      university.includes("halic")
-    );
-  };
-
-  // Filter and limit programs
-  const filteredPrograms = useMemo(() => {
-    if (!suggestedPrograms) return [];
-
-    // STEP 1: Separate Haliç programs from others
-    const halicPrograms = suggestedPrograms.filter((p) => isHalicUniversity(p));
-    const otherPrograms = suggestedPrograms.filter((p) => !isHalicUniversity(p));
-
-    // STEP 2: Combine: Haliç first, then others (preserving original order within each group)
-    const sortedPrograms = [...halicPrograms, ...otherPrograms];
-
-    // STEP 3: Limit to MAX_PROGRAMS
-    let filtered = sortedPrograms.slice(0, MAX_PROGRAMS);
-
-    // STEP 4: Apply filters
-    // University type filter - use backend's university_type field
-    if (universityType === "devlet") {
-      filtered = filtered.filter((p) => !isVakif(p));
-    } else if (universityType === "vakif") {
-      filtered = filtered.filter((p) => isVakif(p));
-    }
-
-    // City filter
-    if (selectedCity) {
-      filtered = filtered.filter((p) => p.city === selectedCity);
-    }
-
-    // Score range filter
-    if (scoreRange[0] > 0 || scoreRange[1] < 500) {
-      filtered = filtered.filter((p) => {
-        const score = parseFloat(p.taban_score);
-        if (isNaN(score)) return true; // Keep programs without scores
-        return score >= scoreRange[0] && score <= scoreRange[1];
-      });
-    }
-
-    return filtered;
-  }, [suggestedPrograms, universityType, selectedCity, scoreRange]);
-
-  // Paginate
-  const paginatedPrograms = useMemo(() => {
-    const start = (page - 1) * ITEMS_PER_PAGE;
-    return filteredPrograms.slice(start, start + ITEMS_PER_PAGE);
-  }, [filteredPrograms, page]);
-
-  const totalPages = Math.ceil(filteredPrograms.length / ITEMS_PER_PAGE);
-
-  // Log click for analytics
+  // ---- Actions ----
   const logProgramClick = useCallback(
     (program, action) => {
-      console.log("[Analytics] Program action:", {
-        action,
-        program: program.program,
-        university: program.university,
-        city: program.city,
-        taban_score: program.taban_score,
-        timestamp: new Date().toISOString(),
-      });
-
-      // Call external callback if provided
-      if (onProgramClick) {
-        onProgramClick(program, action);
-      }
+      if (onProgramClick) onProgramClick(program, action);
     },
     [onProgramClick]
   );
 
-  // Google search handler
   const handleGoogleSearch = (program) => {
     logProgramClick(program, "google_search");
     const query = encodeURIComponent(`${program.program} ${program.university}`);
     window.open(`https://www.google.com/search?q=${query}`, "_blank");
   };
 
-  // Basket handlers
   const isInBasket = (program) =>
     basket.some((p) => p.program === program.program && p.university === program.university);
 
@@ -219,104 +282,147 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
     }
   };
 
-  // Open detail panel
   const openDetailPanel = (program) => {
     setSelectedProgram(program);
     setDetailDrawerOpen(true);
     logProgramClick(program, "view_details");
   };
 
-  // Check if priority university
-  const isPriorityUniversity = (university) =>
-    PRIORITY_UNIVERSITIES.some((pu) => university?.toLowerCase().includes(pu.toLowerCase()));
+  // ---- Render helpers ----
 
-  // Count Haliç programs in filtered list for proper indexing of other programs
-  const halicCount = useMemo(() => {
-    return filteredPrograms.filter((p) => isHalicUniversity(p)).length;
-  }, [filteredPrograms]);
-
-  const getBorderColor = (globalIndex, program) => {
-    // Haliç programs always get gold
-    if (isHalicUniversity(program)) return "#ffc107";
-
-    // For other programs, calculate their index within the non-Haliç group
-    const nonHalicIndex = globalIndex - halicCount;
-    if (nonHalicIndex < 3) return "#4caf50";
-    if (nonHalicIndex < 6) return "#2196f3";
-    return "#9c27b0";
-  };
-
-  if (!suggestedPrograms || suggestedPrograms.length === 0) {
+  /** Level 3: single program card */
+  const renderProgramRow = (program) => {
+    const isHalic = isHalicUniversity(program);
     return (
-      <Alert severity="info" sx={{ mb: 3 }}>
-        {t("tests.programSuggestion.result.suggestedPrograms.noResults", {
-          defaultValue: "Program önerileri hesaplanıyor veya kriterlere uygun program bulunamadı.",
-        })}
-      </Alert>
+      <Paper
+        key={`${program.yop_kodu || ""}-${program.university}`}
+        elevation={isHalic ? 3 : 1}
+        sx={{
+          p: 1.5,
+          mb: 1,
+          borderLeft: `4px solid ${isHalic ? "#ffc107" : "#2196f3"}`,
+          cursor: "pointer",
+          transition: "all 0.2s",
+          backgroundColor: isHalic ? "#fffde7" : "inherit",
+          "&:hover": { transform: "translateX(4px)", boxShadow: 3 },
+        }}
+        onClick={() => openDetailPanel(program)}
+      >
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <Box sx={{ flex: 1, minWidth: 0 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
+                {program.university}
+              </Typography>
+              {isHalic && (
+                <Tooltip title="Haliç Üniversitesi — Öne Çıkan">
+                  <StarIcon sx={{ color: "#ffc107", fontSize: 16 }} />
+                </Tooltip>
+              )}
+            </Box>
+            {program.faculty && (
+              <Typography variant="caption" color="text.secondary" noWrap>
+                {program.faculty}
+              </Typography>
+            )}
+          </Box>
+
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5, flexShrink: 0 }}>
+            {program.taban_score && (
+              <Chip
+                label={`Taban: ${parseFloat(program.taban_score).toFixed(2)}`}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            )}
+            {program.scholarship && (
+              <Chip
+                label={program.scholarship}
+                size="small"
+                color={program.scholarship === "Burslu" ? "success" : "default"}
+              />
+            )}
+            <Tooltip title="Google'da Ara">
+              <IconButton
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleGoogleSearch(program);
+                }}
+              >
+                <SearchIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={isInBasket(program) ? "Sepetten Çıkar" : "Sepete Ekle"}>
+              <IconButton
+                size="small"
+                color={isInBasket(program) ? "error" : "default"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleBasket(program);
+                }}
+              >
+                {isInBasket(program) ? (
+                  <RemoveShoppingCartIcon fontSize="small" />
+                ) : (
+                  <AddShoppingCartIcon fontSize="small" />
+                )}
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+
+        <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap", mt: 0.5 }}>
+          {program.city && (
+            <Chip
+              icon={<LocationOnIcon />}
+              label={program.city}
+              size="small"
+              variant="outlined"
+              sx={{ height: 22, "& .MuiChip-label": { fontSize: "0.7rem" } }}
+            />
+          )}
+          {isVakif(program) && (
+            <Chip
+              label="Vakıf"
+              size="small"
+              variant="outlined"
+              color="warning"
+              sx={{ height: 22, "& .MuiChip-label": { fontSize: "0.7rem" } }}
+            />
+          )}
+        </Box>
+      </Paper>
     );
-  }
+  };
 
   const renderFilters = () => (
     <Box sx={{ mb: 2, p: 2, backgroundColor: "#f5f5f5", borderRadius: 1 }}>
       <Grid container spacing={2} alignItems="center">
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth size="small">
-            <InputLabel>
-              {t("tests.programSuggestion.result.suggestedPrograms.universityType", {
-                defaultValue: "Üniversite Türü",
-              })}
-            </InputLabel>
+            <InputLabel>Üniversite Türü</InputLabel>
             <Select
               value={universityType}
-              label={t("tests.programSuggestion.result.suggestedPrograms.universityType", {
-                defaultValue: "Üniversite Türü",
-              })}
-              onChange={(e) => {
-                setUniversityType(e.target.value);
-                setPage(1);
-              }}
+              label="Üniversite Türü"
+              onChange={(e) => setUniversityType(e.target.value)}
             >
-              <MenuItem value="all">
-                {t("tests.programSuggestion.result.suggestedPrograms.allTypes", {
-                  defaultValue: "Tümü",
-                })}
-              </MenuItem>
-              <MenuItem value="devlet">
-                {t("tests.programSuggestion.result.suggestedPrograms.devlet", {
-                  defaultValue: "Devlet",
-                })}
-              </MenuItem>
-              <MenuItem value="vakif">
-                {t("tests.programSuggestion.result.suggestedPrograms.vakif", {
-                  defaultValue: "Vakıf",
-                })}
-              </MenuItem>
+              <MenuItem value="all">Tümü</MenuItem>
+              <MenuItem value="devlet">Devlet</MenuItem>
+              <MenuItem value="vakif">Vakıf</MenuItem>
             </Select>
           </FormControl>
         </Grid>
-
         <Grid item xs={12} sm={4}>
           <FormControl fullWidth size="small">
-            <InputLabel>
-              {t("tests.programSuggestion.result.suggestedPrograms.city", {
-                defaultValue: "Şehir",
-              })}
-            </InputLabel>
+            <InputLabel>Şehir</InputLabel>
             <Select
               value={selectedCity}
-              label={t("tests.programSuggestion.result.suggestedPrograms.city", {
-                defaultValue: "Şehir",
-              })}
-              onChange={(e) => {
-                setSelectedCity(e.target.value);
-                setPage(1);
-              }}
+              label="Şehir"
+              onChange={(e) => setSelectedCity(e.target.value)}
             >
-              <MenuItem value="">
-                {t("tests.programSuggestion.result.suggestedPrograms.allCities", {
-                  defaultValue: "Tüm Şehirler",
-                })}
-              </MenuItem>
+              <MenuItem value="">Tüm Şehirler</MenuItem>
               {uniqueCities.map((city) => (
                 <MenuItem key={city} value={city}>
                   {city}
@@ -325,18 +431,13 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
             </Select>
           </FormControl>
         </Grid>
-
         <Grid item xs={12} sm={4}>
           <Typography variant="caption" gutterBottom display="block">
-            {t("tests.programSuggestion.result.suggestedPrograms.scoreRange", {
-              defaultValue: "Puan Aralığı",
-            })}
-            : {scoreRange[0]} - {scoreRange[1]}
+            Puan Aralığı: {scoreRange[0]} - {scoreRange[1]}
           </Typography>
           <Slider
             value={scoreRange}
             onChange={(_, newValue) => setScoreRange(newValue)}
-            onChangeCommitted={() => setPage(1)}
             min={scoreMinMax[0]}
             max={scoreMinMax[1]}
             valueLabelDisplay="auto"
@@ -344,14 +445,10 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
           />
         </Grid>
       </Grid>
-
       <Box sx={{ mt: 1, display: "flex", justifyContent: "space-between" }}>
         <Typography variant="body2" color="text.secondary">
-          {t("tests.programSuggestion.result.suggestedPrograms.showingCount", {
-            count: filteredPrograms.length,
-            total: Math.min(suggestedPrograms.length, MAX_PROGRAMS),
-            defaultValue: `${filteredPrograms.length} / ${Math.min(suggestedPrograms.length, MAX_PROGRAMS)} program gösteriliyor`,
-          })}
+          {totalShown} program gösteriliyor ({jobGroups.length} meslek, {totalProgramNames} program
+          adı)
         </Typography>
         <Button
           size="small"
@@ -359,12 +456,9 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
             setUniversityType("all");
             setSelectedCity("");
             setScoreRange([scoreMinMax[0], scoreMinMax[1]]);
-            setPage(1);
           }}
         >
-          {t("tests.programSuggestion.result.suggestedPrograms.clearFilters", {
-            defaultValue: "Filtreleri Temizle",
-          })}
+          Filtreleri Temizle
         </Button>
       </Box>
     </Box>
@@ -373,13 +467,17 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
   const renderBasketDrawer = () => (
     <Drawer anchor="right" open={basketDrawerOpen} onClose={() => setBasketDrawerOpen(false)}>
       <Box sx={{ width: 350, p: 2 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
           <Typography variant="h6">
             <ShoppingBasketIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-            {t("tests.programSuggestion.result.suggestedPrograms.basket", {
-              defaultValue: "Sepetim",
-            })}
-            ({basket.length})
+            Sepetim ({basket.length})
           </Typography>
           <IconButton onClick={() => setBasketDrawerOpen(false)}>
             <CloseIcon />
@@ -387,11 +485,7 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
         </Box>
 
         {basket.length === 0 ? (
-          <Typography color="text.secondary">
-            {t("tests.programSuggestion.result.suggestedPrograms.emptyBasket", {
-              defaultValue: "Sepetiniz boş",
-            })}
-          </Typography>
+          <Typography color="text.secondary">Sepetiniz boş</Typography>
         ) : (
           <Stack spacing={1}>
             {basket.map((program, idx) => (
@@ -418,12 +512,15 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
   const renderDetailDrawer = () => (
     <Drawer anchor="right" open={detailDrawerOpen} onClose={() => setDetailDrawerOpen(false)}>
       <Box sx={{ width: 400, p: 3 }}>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-          <Typography variant="h6">
-            {t("tests.programSuggestion.result.suggestedPrograms.programDetails", {
-              defaultValue: "Program Detayları",
-            })}
-          </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="h6">Program Detayları</Typography>
           <IconButton onClick={() => setDetailDrawerOpen(false)}>
             <CloseIcon />
           </IconButton>
@@ -431,11 +528,9 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
 
         {selectedProgram && (
           <Box>
-            {isPriorityUniversity(selectedProgram.university) && (
+            {isHalicUniversity(selectedProgram) && (
               <Alert severity="info" icon={<StarIcon />} sx={{ mb: 2 }}>
-                {t("tests.programSuggestion.result.suggestedPrograms.priorityUniversity", {
-                  defaultValue: "Öne Çıkan Üniversite",
-                })}
+                Haliç Üniversitesi — Öne Çıkan
               </Alert>
             )}
 
@@ -452,64 +547,59 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
               {selectedProgram.faculty && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.faculty", {
-                      defaultValue: "Fakülte",
-                    })}
+                    Fakülte
                   </Typography>
                   <Typography variant="body2">{selectedProgram.faculty}</Typography>
                 </Box>
               )}
-
               {selectedProgram.city && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.city", {
-                      defaultValue: "Şehir",
-                    })}
+                    Şehir
                   </Typography>
                   <Typography variant="body2">{selectedProgram.city}</Typography>
                 </Box>
               )}
-
               {selectedProgram.taban_score && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.baseScore", {
-                      defaultValue: "Taban Puan",
-                    })}
+                    Taban Puan
                   </Typography>
-                  <Typography variant="body2">{selectedProgram.taban_score}</Typography>
+                  <Typography variant="body2">
+                    {parseFloat(selectedProgram.taban_score).toFixed(2)}
+                  </Typography>
                 </Box>
               )}
-
+              {selectedProgram.tavan_score && (
+                <Box>
+                  <Typography variant="caption" color="text.secondary">
+                    Tavan Puan
+                  </Typography>
+                  <Typography variant="body2">
+                    {parseFloat(selectedProgram.tavan_score).toFixed(2)}
+                  </Typography>
+                </Box>
+              )}
               {selectedProgram.scholarship && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.scholarship", {
-                      defaultValue: "Burs Durumu",
-                    })}
+                    Burs Durumu
                   </Typography>
                   <Typography variant="body2">{selectedProgram.scholarship}</Typography>
                 </Box>
               )}
-
               {selectedProgram.job && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.relatedJob", {
-                      defaultValue: "İlgili Meslek",
-                    })}
+                    İlgili Meslek
                   </Typography>
                   <Typography variant="body2">{translateJob(selectedProgram.job)}</Typography>
                 </Box>
               )}
-
               {selectedProgram.reason && (
                 <Box>
                   <Typography variant="caption" color="text.secondary">
-                    {t("tests.programSuggestion.result.suggestedPrograms.reason", {
-                      defaultValue: "Öneri Sebebi",
-                    })}
+                    Öneri Sebebi
                   </Typography>
                   <Typography variant="body2" sx={{ fontStyle: "italic" }}>
                     💡 {selectedProgram.reason}
@@ -527,9 +617,7 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
                 onClick={() => handleGoogleSearch(selectedProgram)}
                 fullWidth
               >
-                {t("tests.programSuggestion.result.suggestedPrograms.googleSearch", {
-                  defaultValue: "Google'da Ara",
-                })}
+                Google'da Ara
               </Button>
               <Button
                 variant={isInBasket(selectedProgram) ? "outlined" : "contained"}
@@ -540,13 +628,7 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
                 onClick={() => toggleBasket(selectedProgram)}
                 fullWidth
               >
-                {isInBasket(selectedProgram)
-                  ? t("tests.programSuggestion.result.suggestedPrograms.removeFromBasket", {
-                      defaultValue: "Sepetten Çıkar",
-                    })
-                  : t("tests.programSuggestion.result.suggestedPrograms.addToBasket", {
-                      defaultValue: "Sepete Ekle",
-                    })}
+                {isInBasket(selectedProgram) ? "Sepetten Çıkar" : "Sepete Ekle"}
               </Button>
             </Stack>
           </Box>
@@ -555,42 +637,53 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
     </Drawer>
   );
 
+  // ---- Empty state ----
+  if (!suggestedPrograms || suggestedPrograms.length === 0) {
+    return (
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Program önerileri hesaplanıyor veya kriterlere uygun program bulunamadı.
+      </Alert>
+    );
+  }
+
+  if (jobGroups.length === 0) {
+    return (
+      <Alert severity="info" sx={{ mb: 3 }}>
+        Filtrelere uygun program bulunamadı. Filtreleri genişletmeyi deneyin.
+      </Alert>
+    );
+  }
+
+  // ---- Main render: three-level accordion ----
   return (
     <>
       <Card>
         <CardContent>
+          {/* Header */}
           <Box
-            sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 2,
+            }}
           >
             <Box>
-              <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
+              <Typography variant="h6" sx={{ mb: 0 }}>
                 <SchoolIcon sx={{ mr: 1, verticalAlign: "middle" }} />
-                {t("tests.programSuggestion.result.suggestedPrograms.title", {
-                  defaultValue: "Önerilen Programlar",
-                })}
+                Önerilen Programlar
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                {t("tests.programSuggestion.result.suggestedPrograms.subtitle", {
-                  defaultValue: "Profilinize ve tercihlerinize uygun üniversite programları",
-                })}
+                Meslek eşleşmelerinize göre üniversite program önerileri
               </Typography>
             </Box>
-
             <Box sx={{ display: "flex", gap: 1 }}>
-              <Tooltip
-                title={t("tests.programSuggestion.result.suggestedPrograms.filters", {
-                  defaultValue: "Filtreler",
-                })}
-              >
+              <Tooltip title="Filtreler">
                 <IconButton onClick={() => setShowFilters(!showFilters)}>
                   <FilterListIcon color={showFilters ? "primary" : "inherit"} />
                 </IconButton>
               </Tooltip>
-              <Tooltip
-                title={t("tests.programSuggestion.result.suggestedPrograms.basket", {
-                  defaultValue: "Sepetim",
-                })}
-              >
+              <Tooltip title="Sepetim">
                 <IconButton onClick={() => setBasketDrawerOpen(true)}>
                   <Badge badgeContent={basket.length} color="primary">
                     <ShoppingBasketIcon />
@@ -600,215 +693,172 @@ function SuggestedProgramsCard({ suggestedPrograms, onProgramClick }) {
             </Box>
           </Box>
 
-          {showFilters && renderFilters()}
-
-          {paginatedPrograms.map((program, index) => {
-            const globalIndex = (page - 1) * ITEMS_PER_PAGE + index;
-
-            return (
-              <Paper
-                key={globalIndex}
-                elevation={isPriorityUniversity(program.university) ? 3 : 1}
-                sx={{
-                  p: 2,
-                  mb: 2,
-                  borderLeft: `4px solid ${getBorderColor(globalIndex, program)}`,
-                  cursor: "pointer",
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    transform: "translateX(4px)",
-                    boxShadow: 3,
-                  },
-                }}
-                onClick={() => openDetailPanel(program)}
-              >
-                <Box
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  <Box sx={{ flex: 1 }}>
-                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                      <Typography variant="subtitle1" sx={{ fontWeight: "bold" }}>
-                        {globalIndex + 1}. {program.program}
-                      </Typography>
-                      {isPriorityUniversity(program.university) && (
-                        <Tooltip
-                          title={t(
-                            "tests.programSuggestion.result.suggestedPrograms.priorityUniversity",
-                            {
-                              defaultValue: "Öne Çıkan Üniversite",
-                            }
-                          )}
-                        >
-                          <StarIcon sx={{ color: "#ffc107", fontSize: 18 }} />
-                        </Tooltip>
-                      )}
-                    </Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {program.university}
-                    </Typography>
-                    {program.faculty && (
-                      <Typography variant="caption" color="text.secondary" display="block">
-                        {program.faculty}
-                      </Typography>
-                    )}
-                  </Box>
-
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {program.taban_score && (
-                      <Chip
-                        label={`${t("tests.programSuggestion.result.suggestedPrograms.baseScore", {
-                          defaultValue: "Taban",
-                        })}: ${program.taban_score}`}
-                        size="small"
-                        color="primary"
-                        variant="outlined"
-                      />
-                    )}
-
-                    <Tooltip
-                      title={t("tests.programSuggestion.result.suggestedPrograms.googleSearch", {
-                        defaultValue: "Google'da Ara",
-                      })}
-                    >
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleGoogleSearch(program);
-                        }}
-                      >
-                        <SearchIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-
-                    <Tooltip
-                      title={
-                        isInBasket(program)
-                          ? t("tests.programSuggestion.result.suggestedPrograms.removeFromBasket", {
-                              defaultValue: "Sepetten Çıkar",
-                            })
-                          : t("tests.programSuggestion.result.suggestedPrograms.addToBasket", {
-                              defaultValue: "Sepete Ekle",
-                            })
-                      }
-                    >
-                      <IconButton
-                        size="small"
-                        color={isInBasket(program) ? "error" : "default"}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          toggleBasket(program);
-                        }}
-                      >
-                        {isInBasket(program) ? (
-                          <RemoveShoppingCartIcon fontSize="small" />
-                        ) : (
-                          <AddShoppingCartIcon fontSize="small" />
-                        )}
-                      </IconButton>
-                    </Tooltip>
-
-                    <Tooltip
-                      title={t("tests.programSuggestion.result.suggestedPrograms.details", {
-                        defaultValue: "Detaylar",
-                      })}
-                    >
-                      <IconButton
-                        size="small"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          openDetailPanel(program);
-                        }}
-                      >
-                        <InfoIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-                </Box>
-
-                <Divider sx={{ my: 1 }} />
-
-                <Box
-                  sx={{
-                    display: "flex",
-                    gap: 1,
-                    flexWrap: "wrap",
-                    alignItems: "center",
-                  }}
-                >
-                  {program.city && (
-                    <Chip
-                      icon={<LocationOnIcon />}
-                      label={program.city}
-                      size="small"
-                      variant="outlined"
-                    />
-                  )}
-                  {program.scholarship && (
-                    <Chip
-                      label={program.scholarship}
-                      size="small"
-                      color={program.scholarship === "Burslu" ? "success" : "default"}
-                    />
-                  )}
-                  {program.job && (
-                    <Chip
-                      label={`${t("tests.programSuggestion.result.suggestedJobs.title", {
-                        defaultValue: "Meslek",
-                      })}: ${translateJob(program.job)}`}
-                      size="small"
-                      color="secondary"
-                      variant="outlined"
-                    />
-                  )}
-                  {isVakif(program) && (
-                    <Chip
-                      label={t("tests.programSuggestion.result.suggestedPrograms.vakif", {
-                        defaultValue: "Vakıf",
-                      })}
-                      size="small"
-                      variant="outlined"
-                      color="warning"
-                    />
-                  )}
-                </Box>
-
-                {program.reason && (
-                  <Typography variant="body2" sx={{ mt: 1, fontStyle: "italic" }}>
-                    💡 {program.reason}
-                  </Typography>
-                )}
-              </Paper>
-            );
-          })}
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 3 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={(_, value) => setPage(value)}
-                color="primary"
-                showFirstButton
-                showLastButton
-              />
+          {/* Area tabs */}
+          {hasAlternative && (
+            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+              {[
+                {
+                  label: AREA_LABELS[area] || area,
+                  idx: 0,
+                  areaKey: area,
+                  count: mainPrograms.length,
+                },
+                {
+                  label: AREA_LABELS[alternativeArea] || alternativeArea,
+                  idx: 1,
+                  areaKey: alternativeArea,
+                  count: altPrograms.length,
+                },
+              ].map(({ label, idx, areaKey, count }) => {
+                const colors = AREA_COLORS[areaKey] || AREA_COLORS.say;
+                const isActive = areaTab === idx;
+                return (
+                  <Chip
+                    key={idx}
+                    label={`${idx === 0 ? "Ana Alan" : "Alternatif Alan"}: ${label} (${count})`}
+                    onClick={() => setAreaTab(idx)}
+                    sx={{
+                      fontWeight: "bold",
+                      fontSize: "0.85rem",
+                      py: 2.5,
+                      backgroundColor: isActive ? colors.bg : "transparent",
+                      border: `2px solid ${isActive ? colors.border : "#ccc"}`,
+                      color: isActive ? colors.text : "text.secondary",
+                      cursor: "pointer",
+                    }}
+                  />
+                );
+              })}
             </Box>
           )}
+
+          {/* Area indicator */}
+          {activeArea && (
+            <Chip
+              label={`${AREA_LABELS[activeArea] || activeArea} Alanı`}
+              size="small"
+              sx={{
+                mb: 2,
+                fontWeight: "bold",
+                backgroundColor: areaColors.bg,
+                color: areaColors.text,
+                border: `1px solid ${areaColors.border}`,
+              }}
+            />
+          )}
+
+          {showFilters && renderFilters()}
+
+          {/* === Level 1: Job accordion === */}
+          {jobGroups.map(({ jobName, programNameGroups }, jobIdx) => (
+            <Accordion
+              key={jobName}
+              defaultExpanded={false}
+              sx={{
+                mb: 2,
+                "&:before": { display: "none" },
+                boxShadow: 2,
+                borderRadius: "8px !important",
+                overflow: "hidden",
+              }}
+            >
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon sx={{ color: "#fff" }} />}
+                sx={{
+                  backgroundColor: areaColors.header,
+                  color: "#fff",
+                  "& .MuiAccordionSummary-content": { alignItems: "center", gap: 1 },
+                }}
+              >
+                <WorkIcon fontSize="small" />
+                <Typography variant="subtitle1" sx={{ fontWeight: "bold", flex: 1 }}>
+                  {translateJob(jobName)}
+                </Typography>
+                <Chip
+                  label={`${programNameGroups.length} program adı`}
+                  size="small"
+                  sx={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff" }}
+                />
+              </AccordionSummary>
+
+              <AccordionDetails sx={{ p: 1, backgroundColor: "#f5f5f5" }}>
+                {/* === Level 2: Program name accordion === */}
+                {programNameGroups.map(({ programName, programs, hasHalic }, pnIdx) => (
+                  <Accordion
+                    key={`${jobName}-${programName}`}
+                    defaultExpanded={pnIdx === 0}
+                    sx={{
+                      mb: 1,
+                      "&:before": { display: "none" },
+                      boxShadow: 1,
+                    }}
+                  >
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      sx={{
+                        backgroundColor: hasHalic ? "#fffde7" : "#fafafa",
+                        borderLeft: hasHalic ? "4px solid #ffc107" : "4px solid #42a5f5",
+                      }}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          width: "100%",
+                        }}
+                      >
+                        <MenuBookIcon fontSize="small" color="action" />
+                        <Typography variant="subtitle2" sx={{ fontWeight: "bold", flex: 1 }}>
+                          {programName}
+                        </Typography>
+                        {hasHalic && (
+                          <Chip
+                            label="Haliç"
+                            size="small"
+                            icon={<StarIcon />}
+                            sx={{
+                              backgroundColor: "#ffc107",
+                              color: "#000",
+                              fontWeight: "bold",
+                            }}
+                          />
+                        )}
+                        <Chip
+                          label={`${programs.length} üniversite`}
+                          size="small"
+                          variant="outlined"
+                        />
+                      </Box>
+                    </AccordionSummary>
+
+                    <AccordionDetails sx={{ p: 1 }}>
+                      {/* Show the reason from the first program (they share the same job/reason) */}
+                      {programs[0]?.reason && (
+                        <Typography
+                          variant="body2"
+                          sx={{ fontStyle: "italic", mb: 1, color: "text.secondary" }}
+                        >
+                          💡 {programs[0].reason}
+                        </Typography>
+                      )}
+
+                      {/* === Level 3: Program cards (Haliç first) === */}
+                      {programs.map((program) => renderProgramRow(program))}
+                    </AccordionDetails>
+                  </Accordion>
+                ))}
+              </AccordionDetails>
+            </Accordion>
+          ))}
 
           <Typography
             variant="caption"
             color="text.secondary"
             sx={{ display: "block", textAlign: "center", mt: 2 }}
           >
-            {t("tests.programSuggestion.result.suggestedPrograms.maxPrograms", {
-              max: MAX_PROGRAMS,
-              defaultValue: `En fazla ${MAX_PROGRAMS} program gösterilmektedir.`,
-            })}
+            Toplam {totalShown} program, {jobGroups.length} meslek, {totalProgramNames} farklı
+            program alanından gösteriliyor.
           </Typography>
         </CardContent>
       </Card>

@@ -77,16 +77,39 @@ const RIASEC_DESCRIPTIONS = {
   },
 };
 
-function SuggestedJobsCard({ suggestedJobs, userRiasecScores }) {
+const AREA_LABELS = {
+  say: "Sayısal",
+  ea: "Eşit Ağırlık",
+  söz: "Sözel",
+  dil: "Yabancı Dil",
+};
+
+const AREA_COLORS = {
+  say: { bg: "#e3f2fd", border: "#1976d2", text: "#1565c0" },
+  ea: { bg: "#f3e5f5", border: "#9c27b0", text: "#7b1fa2" },
+  söz: { bg: "#e8f5e9", border: "#4caf50", text: "#2e7d32" },
+  dil: { bg: "#fff3e0", border: "#ff9800", text: "#e65100" },
+};
+
+function SuggestedJobsCard({ suggestedJobs, userRiasecScores, area, alternativeArea }) {
   const { t } = useTranslation();
   const [expandedJobs, setExpandedJobs] = useState({});
   const [selectedJob, setSelectedJob] = useState(null);
   const [whyModalOpen, setWhyModalOpen] = useState(false);
+  const [areaTab, setAreaTab] = useState(0);
 
-  if (!suggestedJobs || suggestedJobs.length === 0) return null;
+  const allJobs = suggestedJobs || [];
 
-  // Show top 6 jobs
-  const displayJobs = suggestedJobs.slice(0, 6);
+  // Split jobs by area field (each job now has an "area" key)
+  const mainJobs = allJobs.filter((j) => j.area === area);
+  const altJobs = alternativeArea ? allJobs.filter((j) => j.area === alternativeArea) : [];
+  const hasAlt = altJobs.length > 0;
+
+  if (allJobs.length === 0) return null;
+
+  const activeJobs = areaTab === 1 && hasAlt ? altJobs : mainJobs;
+  const activeArea = areaTab === 1 && hasAlt ? alternativeArea : area;
+  const displayJobs = activeJobs.slice(0, 6);
 
   const toggleExpand = (index) => {
     setExpandedJobs((prev) => ({
@@ -144,6 +167,53 @@ function SuggestedJobsCard({ suggestedJobs, userRiasecScores }) {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             {t("tests.programSuggestion.result.suggestedJobs.subtitle")}
           </Typography>
+
+          {hasAlt && (
+            <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+              {[
+                { label: AREA_LABELS[area] || area, idx: 0, areaKey: area },
+                {
+                  label: AREA_LABELS[alternativeArea] || alternativeArea,
+                  idx: 1,
+                  areaKey: alternativeArea,
+                },
+              ].map(({ label, idx, areaKey }) => {
+                const colors = AREA_COLORS[areaKey] || AREA_COLORS.say;
+                const isActive = areaTab === idx;
+                return (
+                  <Chip
+                    key={idx}
+                    label={`${idx === 0 ? "Ana Alan" : "Alternatif Alan"}: ${label} (${idx === 0 ? mainJobs.length : altJobs.length})`}
+                    onClick={() => {
+                      setAreaTab(idx);
+                      setExpandedJobs({});
+                    }}
+                    sx={{
+                      fontWeight: "bold",
+                      backgroundColor: isActive ? colors.bg : "transparent",
+                      border: `2px solid ${isActive ? colors.border : "#ccc"}`,
+                      color: isActive ? colors.text : "text.secondary",
+                      cursor: "pointer",
+                    }}
+                  />
+                );
+              })}
+            </Box>
+          )}
+
+          {activeArea && (
+            <Chip
+              label={AREA_LABELS[activeArea] || activeArea}
+              size="small"
+              sx={{
+                mb: 2,
+                fontWeight: "bold",
+                backgroundColor: (AREA_COLORS[activeArea] || AREA_COLORS.say).bg,
+                color: (AREA_COLORS[activeArea] || AREA_COLORS.say).text,
+                border: `1px solid ${(AREA_COLORS[activeArea] || AREA_COLORS.say).border}`,
+              }}
+            />
+          )}
 
           <Grid container spacing={2} columnSpacing={3} rowSpacing={10}>
             {displayJobs.map((job, index) => {
