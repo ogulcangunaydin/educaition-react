@@ -70,7 +70,7 @@ const translateJob = (englishName) => {
 
 // Check if university is Haliç
 const isHalicUniversity = (program) => {
-  const university = (program?.university || "").toLowerCase();
+  const university = (program?.university || "").toLocaleLowerCase("tr");
   return university.includes("haliç") || university.includes("halic");
 };
 
@@ -786,7 +786,7 @@ function SuggestedProgramsCard({
                 {programNameGroups.map(({ programName, programs, hasHalic }, pnIdx) => (
                   <Accordion
                     key={`${jobName}-${programName}`}
-                    defaultExpanded={pnIdx === 0}
+                    defaultExpanded={false}
                     sx={{
                       mb: 1,
                       "&:before": { display: "none" },
