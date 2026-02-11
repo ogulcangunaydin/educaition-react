@@ -469,11 +469,11 @@ const tests = {
           scoreRange: "Puan Aralığı",
           midScore: "Orta Puan",
           estimatedRanking: "Tahmini Sıralama",
-          disclaimer: "Tahmini sıralama, geçen yılın verilerine göre hesaplanmıştır.",
+          disclaimer: "Tahmini sıralama, 2025 yılının verilerine göre hesaplanmıştır.",
         },
         riasecProfile: {
           title: "RIASEC Profili",
-          subtitle: "Kişilik profilinize göre en yüksek puanlarınız",
+          subtitle: "Kişilik profilinize göre puanlarınız",
           types: {
             R: {
               name: "Realistic (Gerçekçi)",

@@ -8,20 +8,18 @@
  * - Color-coded scores based on intensity
  */
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useMemo, useEffect, useState } from "react";
 import {
   Box,
   Card,
   CardContent,
   Typography,
   LinearProgress,
-  ToggleButton,
-  ToggleButtonGroup,
   Tooltip,
   CircularProgress,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
-import BarChartIcon from "@mui/icons-material/BarChart";
-import RadarIcon from "@mui/icons-material/Radar";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import { useTranslation } from "react-i18next";
 import { getRiasecAverages } from "../../../services/programSuggestionService";
@@ -40,7 +38,8 @@ const DEFAULT_BENCHMARKS = {
 
 function RiasecProfileCard({ riasecScores }) {
   const { t } = useTranslation();
-  const [viewType, setViewType] = useState("bar"); // 'bar' or 'radar'
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [platformAverages, setPlatformAverages] = useState(null);
   const [sampleSize, setSampleSize] = useState(0);
   const [isLoadingAverages, setIsLoadingAverages] = useState(true);
@@ -227,12 +226,12 @@ function RiasecProfileCard({ riasecScores }) {
   );
 
   const renderRadarChart = () => {
-    // Simple CSS-based radar chart representation
     const letters = ["R", "I", "A", "S", "E", "C"];
     const angleStep = (2 * Math.PI) / 6;
-    const centerX = 150;
-    const centerY = 150;
-    const maxRadius = 120;
+    const size = isMobile ? 280 : 300;
+    const centerX = size / 2;
+    const centerY = size / 2;
+    const maxRadius = size * 0.38;
 
     const getPoint = (index, value) => {
       const angle = angleStep * index - Math.PI / 2;
@@ -250,8 +249,8 @@ function RiasecProfileCard({ riasecScores }) {
       points.map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`).join(" ") + " Z";
 
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", py: 2 }}>
-        <svg width="300" height="300" viewBox="0 0 300 300">
+      <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           {/* Grid circles */}
           {[1, 2, 3, 4, 5, 6, 7].map((level) => (
             <circle
@@ -298,22 +297,36 @@ function RiasecProfileCard({ riasecScores }) {
             strokeWidth="2"
           />
 
-          {/* Labels */}
+          {/* Labels with scores */}
           {letters.map((letter, i) => {
-            const labelPoint = getPoint(i, MAX_SCORE + 0.8);
+            const labelPoint = getPoint(i, MAX_SCORE + 1.2);
+            const score = riasecScores[letter] || 0;
+            const typeInfo = descriptions?.[letter] || {};
             return (
-              <text
-                key={letter}
-                x={labelPoint.x}
-                y={labelPoint.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="14"
-                fontWeight="bold"
-                fill="#333"
-              >
-                {letter}
-              </text>
+              <g key={letter}>
+                <text
+                  x={labelPoint.x}
+                  y={labelPoint.y - 7}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize="13"
+                  fontWeight="bold"
+                  fill="#333"
+                >
+                  {letter}
+                </text>
+                <text
+                  x={labelPoint.x}
+                  y={labelPoint.y + 8}
+                  textAnchor="middle"
+                  dominantBaseline="middle"
+                  fontSize="11"
+                  fill={getScoreColor(score)}
+                  fontWeight="600"
+                >
+                  {score.toFixed(1)}
+                </text>
+              </g>
             );
           })}
 
@@ -322,6 +335,37 @@ function RiasecProfileCard({ riasecScores }) {
             <circle key={i} cx={point.x} cy={point.y} r="5" fill="#4caf50" />
           ))}
         </svg>
+
+        {/* Radar legend */}
+        <Box sx={{ display: "flex", gap: 2, mt: 1, flexWrap: "wrap", justifyContent: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ width: 20, height: 3, backgroundColor: "#4caf50", borderRadius: 1 }} />
+            <Typography variant="caption" color="text.secondary">
+              {t("tests.programSuggestion.result.riasecProfile.yourScores", {
+                defaultValue: "Senin Puanların",
+              })}
+            </Typography>
+          </Box>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box
+              sx={{
+                width: 20,
+                height: 3,
+                backgroundColor: "#1976d2",
+                borderRadius: 1,
+                borderStyle: "dashed",
+                borderWidth: 1,
+                borderColor: "#1976d2",
+                background: "transparent",
+              }}
+            />
+            <Typography variant="caption" color="text.secondary">
+              {t("tests.programSuggestion.result.riasecProfile.averageIndicator", {
+                defaultValue: "Platform Ortalaması",
+              })}
+            </Typography>
+          </Box>
+        </Box>
       </Box>
     );
   };
@@ -329,44 +373,38 @@ function RiasecProfileCard({ riasecScores }) {
   return (
     <Card sx={{ mb: 3 }}>
       <CardContent>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-          <Box>
-            <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
-              🎯 {t("tests.programSuggestion.result.riasecProfile.title")}
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              {t("tests.programSuggestion.result.riasecProfile.subtitle")}
-            </Typography>
-          </Box>
-
-          <ToggleButtonGroup
-            value={viewType}
-            exclusive
-            onChange={(_, value) => value && setViewType(value)}
-            size="small"
-          >
-            <ToggleButton value="bar">
-              <Tooltip
-                title={t("tests.programSuggestion.result.riasecProfile.barChart", {
-                  defaultValue: "Çubuk Grafik",
-                })}
-              >
-                <BarChartIcon fontSize="small" />
-              </Tooltip>
-            </ToggleButton>
-            <ToggleButton value="radar">
-              <Tooltip
-                title={t("tests.programSuggestion.result.riasecProfile.radarChart", {
-                  defaultValue: "Radar Grafik",
-                })}
-              >
-                <RadarIcon fontSize="small" />
-              </Tooltip>
-            </ToggleButton>
-          </ToggleButtonGroup>
+        <Box sx={{ mb: 2 }}>
+          <Typography variant="h6" gutterBottom sx={{ mb: 0 }}>
+            🎯 {t("tests.programSuggestion.result.riasecProfile.title")}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {t("tests.programSuggestion.result.riasecProfile.subtitle")}
+          </Typography>
         </Box>
 
-        {viewType === "bar" ? renderBarChart() : renderRadarChart()}
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: isMobile ? "column" : "row",
+            gap: 3,
+            alignItems: isMobile ? "center" : "flex-start",
+          }}
+        >
+          {/* Radar Chart - Left side */}
+          <Box
+            sx={{
+              flexShrink: 0,
+              display: "flex",
+              justifyContent: "center",
+              width: isMobile ? "100%" : "auto",
+            }}
+          >
+            {renderRadarChart()}
+          </Box>
+
+          {/* Bar Chart - Right side */}
+          <Box sx={{ flex: 1, minWidth: 0, width: "100%" }}>{renderBarChart()}</Box>
+        </Box>
       </CardContent>
     </Card>
   );
