@@ -16,25 +16,7 @@ import highSchoolService from "@services/highSchoolService";
 import { CenteredContainer, StyledButton, RoomCreationModalStyle } from "@/styles/CommonStyles";
 import Header from "@organisms/Header";
 import { useNavigate } from "react-router-dom";
-import { fetchLiseMapping } from "@services/liseService";
-
-// Load high school list from API
-const loadHighSchools = async () => {
-  try {
-    const mapping = await fetchLiseMapping("2025");
-    const highSchools = Object.entries(mapping)
-      .map(([liseId, info]) => ({
-        name: info.lise_adi || "",
-        city: info.sehir || "",
-        code: liseId,
-      }))
-      .filter((hs) => hs.name);
-    return highSchools;
-  } catch (error) {
-    console.error("Error loading high schools:", error);
-    return [];
-  }
-};
+import { searchLise } from "@services/liseService";
 
 function HighSchoolRooms() {
   const [rooms, setRooms] = useState([]);
@@ -42,7 +24,8 @@ function HighSchoolRooms() {
   const [selectedHighSchool, setSelectedHighSchool] = useState(null);
   const [highSchools, setHighSchools] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [highSchoolsLoading, setHighSchoolsLoading] = useState(true);
+  const [highSchoolsLoading, setHighSchoolsLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,15 +40,31 @@ function HighSchoolRooms() {
       }
     };
 
-    const loadHighSchoolList = async () => {
-      const list = await loadHighSchools();
-      setHighSchools(list);
-      setHighSchoolsLoading(false);
-    };
-
     fetchRooms();
-    loadHighSchoolList();
   }, []);
+
+  // Debounced server-side search for high schools
+  useEffect(() => {
+    if (!searchInput || searchInput.length < 2) {
+      setHighSchools([]);
+      return;
+    }
+
+    const debounceTimer = setTimeout(async () => {
+      setHighSchoolsLoading(true);
+      try {
+        const results = await searchLise(searchInput, "2025", 50);
+        setHighSchools(results);
+      } catch (error) {
+        console.error("Error searching high schools:", error);
+        setHighSchools([]);
+      } finally {
+        setHighSchoolsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [searchInput]);
 
   const handleOpenModal = () => setOpenModal(true);
   const handleCloseModal = () => {
@@ -190,6 +189,8 @@ function HighSchoolRooms() {
                 loading={highSchoolsLoading}
                 value={selectedHighSchool}
                 onChange={(event, newValue) => setSelectedHighSchool(newValue)}
+                onInputChange={(event, newInputValue) => setSearchInput(newInputValue)}
+                filterOptions={(x) => x} // Disable client-side filtering (server handles it)
                 renderOption={(props, option) => (
                   <li {...props} key={option.code}>
                     <Box>
@@ -204,6 +205,7 @@ function HighSchoolRooms() {
                   <TextField
                     {...params}
                     label="Lise Ara ve Seç"
+                    placeholder="En az 2 karakter yazın..."
                     variant="outlined"
                     fullWidth
                     required
@@ -220,18 +222,10 @@ function HighSchoolRooms() {
                     }}
                   />
                 )}
-                filterOptions={(options, { inputValue }) => {
-                  const searchTerm = inputValue.toLocaleLowerCase("tr-TR");
-                  return options
-                    .filter(
-                      (option) =>
-                        option.name.toLocaleLowerCase("tr-TR").includes(searchTerm) ||
-                        option.city.toLocaleLowerCase("tr-TR").includes(searchTerm)
-                    )
-                    .slice(0, 50); // Limit to 50 results for performance
-                }}
-                noOptionsText="Lise bulunamadı"
-                loadingText="Yükleniyor..."
+                noOptionsText={
+                  searchInput.length < 2 ? "En az 2 karakter yazın" : "Lise bulunamadı"
+                }
+                loadingText="Aranıyor..."
               />
               <StyledButton
                 type="submit"

@@ -28,6 +28,32 @@ export const fetchLiseMapping = async (yearGroup = null) => {
 };
 
 /**
+ * Search lise records by name or city (server-side, for autocomplete)
+ * @param {string} query - Search term
+ * @param {string} yearGroup - Optional year group filter
+ * @param {number} limit - Max results (default 50)
+ * @returns {Promise<Array<{code: string, name: string, city: string}>>}
+ */
+export const searchLise = async (query, yearGroup = null, limit = 50) => {
+  const params = new URLSearchParams();
+  params.append("q", query);
+  if (yearGroup) {
+    params.append("year_group", yearGroup);
+  }
+  params.append("limit", limit);
+
+  const url = `${API_BASE_URL}/lise/mapping/search?${params}`;
+  const response = await fetch(url);
+
+  if (!response.ok) {
+    throw new Error(`Failed to search lise: ${response.statusText}`);
+  }
+
+  const data = await response.json();
+  return data.results;
+};
+
+/**
  * Fetch university name to slug mapping
  * @returns {Promise<Object>} Mapping: display_name -> slug
  */

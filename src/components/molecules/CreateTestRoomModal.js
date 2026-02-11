@@ -20,7 +20,7 @@ import {
 import Button from "../atoms/Button";
 import TextField from "../atoms/TextField";
 import { TestType, TEST_TYPE_CONFIG } from "@services/testRoomService";
-import { fetchLiseMapping } from "@services/liseService";
+import { searchLise } from "@services/liseService";
 
 function CreateTestRoomModal({
   open,
@@ -38,36 +38,38 @@ function CreateTestRoomModal({
   const [highSchools, setHighSchools] = useState([]);
   const [selectedHighSchool, setSelectedHighSchool] = useState(null);
   const [highSchoolsLoading, setHighSchoolsLoading] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
 
-  // Load high schools when modal opens for program_suggestion type
+  // Debounced server-side search for high schools
   useEffect(() => {
-    const loadHighSchools = async () => {
-      if (
-        open &&
-        (fixedTestType === TestType.PROGRAM_SUGGESTION ||
-          selectedTestType === TestType.PROGRAM_SUGGESTION)
-      ) {
-        setHighSchoolsLoading(true);
-        try {
-          const mapping = await fetchLiseMapping("2025");
-          const schools = Object.entries(mapping)
-            .map(([liseId, info]) => ({
-              name: info.lise_adi || "",
-              city: info.sehir || "",
-              code: liseId,
-            }))
-            .filter((hs) => hs.name);
-          setHighSchools(schools);
-        } catch (err) {
-          console.error("Error loading high schools:", err);
-        } finally {
-          setHighSchoolsLoading(false);
-        }
-      }
-    };
+    if (
+      !open ||
+      (fixedTestType !== TestType.PROGRAM_SUGGESTION &&
+        selectedTestType !== TestType.PROGRAM_SUGGESTION)
+    ) {
+      return;
+    }
 
-    loadHighSchools();
-  }, [open, fixedTestType, selectedTestType]);
+    if (!searchInput || searchInput.length < 2) {
+      setHighSchools([]);
+      return;
+    }
+
+    const debounceTimer = setTimeout(async () => {
+      setHighSchoolsLoading(true);
+      try {
+        const results = await searchLise(searchInput, "2025", 50);
+        setHighSchools(results);
+      } catch (err) {
+        console.error("Error searching high schools:", err);
+        setHighSchools([]);
+      } finally {
+        setHighSchoolsLoading(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer);
+  }, [open, fixedTestType, selectedTestType, searchInput]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -171,13 +173,15 @@ function CreateTestRoomModal({
               getOptionLabel={(option) => `${option.name} (${option.city})`}
               value={selectedHighSchool}
               onChange={(_, newValue) => setSelectedHighSchool(newValue)}
+              onInputChange={(_, newInputValue) => setSearchInput(newInputValue)}
+              filterOptions={(x) => x}
               loading={highSchoolsLoading}
               renderInput={(params) => (
                 <TextField
                   {...params}
                   label="Lise Seçin"
                   required
-                  placeholder="Lise adını yazarak arayın..."
+                  placeholder="En az 2 karakter yazın..."
                   InputProps={{
                     ...params.InputProps,
                     endAdornment: (
@@ -189,8 +193,8 @@ function CreateTestRoomModal({
                   }}
                 />
               )}
-              noOptionsText="Lise bulunamadı"
-              loadingText="Yükleniyor..."
+              noOptionsText={searchInput.length < 2 ? "En az 2 karakter yazın" : "Lise bulunamadı"}
+              loadingText="Aranıyor..."
             />
           )}
 

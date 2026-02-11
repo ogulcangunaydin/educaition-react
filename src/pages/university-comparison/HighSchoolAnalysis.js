@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Container,
   Box,
@@ -13,6 +13,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Chip,
 } from "@mui/material";
 import { Download } from "@mui/icons-material";
@@ -43,16 +44,49 @@ const getSchoolTypeLabel = (schoolType) => {
   return labels.length > 0 ? labels.join(" + ") : "Diğer";
 };
 
+const PAGE_SIZE = 100;
+
 const HighSchoolAnalysis = () => {
   const { selectedPrograms, selectedYear } = useBasket();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [highSchoolData, setHighSchoolData] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(PAGE_SIZE);
+  const [downloading, setDownloading] = useState(false);
 
-  // Load high school data for selected programs from API
-  useEffect(() => {
-    const loadHighSchoolData = async () => {
+  // Program map for enriching data
+  const programMap = useCallback(() => {
+    const map = new Map();
+    selectedPrograms.forEach((p) => {
+      map.set(p.yop_kodu, p);
+    });
+    return map;
+  }, [selectedPrograms]);
+
+  // Enrich API items with program info
+  const enrichItems = useCallback(
+    (items) => {
+      const map = programMap();
+      return items.map((item) => {
+        const program = map.get(item.yop_kodu);
+        return {
+          ...item,
+          university: program?.university || "",
+          program: program?.program || program?.department || "",
+          city: program?.city || "",
+          school_type_label: getSchoolTypeLabel(item.school_type),
+        };
+      });
+    },
+    [programMap]
+  );
+
+  // Load a page of high school data
+  const loadPage = useCallback(
+    async (pageNum, pageSize) => {
       if (selectedPrograms.length === 0) {
         setLoading(false);
         return;
@@ -62,86 +96,93 @@ const HighSchoolAnalysis = () => {
         setLoading(true);
         setError(null);
 
-        console.log("[HighSchoolAnalysis] Selected year:", selectedYear);
-        console.log("[HighSchoolAnalysis] Selected programs:", selectedPrograms.length);
-
-        // Get YOP codes from selected programs
         const yopKodlari = selectedPrograms.map((p) => p.yop_kodu);
-
-        // Create program map for enriching data
-        const programMap = new Map();
-        selectedPrograms.forEach((p) => {
-          programMap.set(p.yop_kodu, p);
-        });
-
-        // Fetch placements from API
         const year = selectedYear ? parseInt(selectedYear) : null;
-        const response = await fetchPlacementsByPrograms(yopKodlari, year, { limit: 100000 });
+        const skip = pageNum * pageSize;
 
-        console.log("[HighSchoolAnalysis] API response:", response.total, "total records");
-
-        // Enrich with program info and add school type labels
-        const enrichedData = response.items.map((item) => {
-          const program = programMap.get(item.yop_kodu);
-          return {
-            ...item,
-            university: program?.university || "",
-            program: program?.program || program?.department || "",
-            city: program?.city || "",
-            school_type_label: getSchoolTypeLabel(item.school_type),
-          };
+        const response = await fetchPlacementsByPrograms(yopKodlari, year, {
+          skip,
+          limit: pageSize,
         });
 
-        console.log("[HighSchoolAnalysis] Enriched data rows:", enrichedData.length);
-
-        setHighSchoolData(enrichedData);
-        setLoading(false);
+        setHighSchoolData(enrichItems(response.items));
+        setTotal(response.total);
       } catch (err) {
         console.error("Error loading high school data:", err);
         setError("Lise verileri yüklenirken hata oluştu");
+      } finally {
         setLoading(false);
       }
-    };
+    },
+    [selectedPrograms, selectedYear, enrichItems]
+  );
 
-    loadHighSchoolData();
-  }, [selectedPrograms, selectedYear]);
+  // Initial load and page changes
+  useEffect(() => {
+    loadPage(page, rowsPerPage);
+  }, [page, rowsPerPage, loadPage]);
 
-  // Download as CSV
-  const handleDownload = () => {
-    const headers = [
-      "Üniversite",
-      "Program",
-      "Şehir",
-      "Yıl",
-      "Lise Adı",
-      "Lise Şehir",
-      "Yerleşen Sayısı",
-      "Lise Türü",
-    ];
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
-    const rows = highSchoolData.map((row) => [
-      row.university,
-      row.program,
-      row.city,
-      row.year,
-      row.lise_adi,
-      row.lise_sehir,
-      row.yerlesen_sayisi,
-      row.school_type_label,
-    ]);
+  const handleChangeRowsPerPage = (event) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
+  // Download ALL data as CSV (fetches all pages)
+  const handleDownload = async () => {
+    try {
+      setDownloading(true);
+      const yopKodlari = selectedPrograms.map((p) => p.yop_kodu);
+      const year = selectedYear ? parseInt(selectedYear) : null;
 
-    const blob = new Blob(["\uFEFF" + csvContent], {
-      type: "text/csv;charset=utf-8;",
-    });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = `lise_analizi_${new Date().toISOString().split("T")[0]}.csv`;
-    link.click();
+      // Fetch all data for export
+      const response = await fetchPlacementsByPrograms(yopKodlari, year, {
+        skip: 0,
+        limit: 100000,
+      });
+      const allData = enrichItems(response.items);
+      const headers = [
+        "Üniversite",
+        "Program",
+        "Şehir",
+        "Yıl",
+        "Lise Adı",
+        "Lise Şehir",
+        "Yerleşen Sayısı",
+        "Lise Türü",
+      ];
+
+      const rows = allData.map((row) => [
+        row.university,
+        row.program,
+        row.city,
+        row.year,
+        row.lise_adi,
+        row.lise_sehir,
+        row.yerlesen_sayisi,
+        row.school_type_label,
+      ]);
+
+      const csvContent = [
+        headers.join(","),
+        ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
+      ].join("\n");
+
+      const blob = new Blob(["\uFEFF" + csvContent], {
+        type: "text/csv;charset=utf-8;",
+      });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = `lise_analizi_${new Date().toISOString().split("T")[0]}.csv`;
+      link.click();
+    } catch (err) {
+      console.error("Error downloading CSV:", err);
+    } finally {
+      setDownloading(false);
+    }
   };
 
   if (selectedPrograms.length === 0) {
@@ -171,13 +212,16 @@ const HighSchoolAnalysis = () => {
         >
           <Box>
             <Chip label={`${selectedPrograms.length} program`} color="primary" sx={{ mr: 2 }} />
+            {total > 0 && (
+              <Chip label={`${total} toplam kayıt`} variant="outlined" sx={{ mr: 2 }} />
+            )}
             <Button
               variant="contained"
               startIcon={<Download />}
               onClick={handleDownload}
-              disabled={loading || highSchoolData.length === 0}
+              disabled={loading || downloading || total === 0}
             >
-              CSV İndir
+              {downloading ? "İndiriliyor..." : "CSV İndir"}
             </Button>
           </Box>
         </Box>
@@ -209,7 +253,7 @@ const HighSchoolAnalysis = () => {
         ) : (
           <Paper sx={{ p: 3 }}>
             <Typography variant="h6" gutterBottom>
-              Yerleşen Öğrencilerin Liseleri - {selectedYear} ({highSchoolData.length} kayıt)
+              Yerleşen Öğrencilerin Liseleri - {selectedYear} ({total} kayıt)
             </Typography>
 
             <TableContainer sx={{ maxHeight: 600, mt: 2 }}>
@@ -244,6 +288,20 @@ const HighSchoolAnalysis = () => {
                 </TableBody>
               </Table>
             </TableContainer>
+
+            <TablePagination
+              component="div"
+              count={total}
+              page={page}
+              onPageChange={handleChangePage}
+              rowsPerPage={rowsPerPage}
+              onRowsPerPageChange={handleChangeRowsPerPage}
+              rowsPerPageOptions={[50, 100, 250, 500]}
+              labelRowsPerPage="Sayfa başına:"
+              labelDisplayedRows={({ from, to, count }) =>
+                `${from}-${to} / ${count !== -1 ? count : `${to}+`}`
+              }
+            />
           </Paper>
         )}
       </Container>
