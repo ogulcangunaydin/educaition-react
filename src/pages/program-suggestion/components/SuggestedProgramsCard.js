@@ -489,19 +489,128 @@ function SuggestedProgramsCard({
         ) : (
           <Stack spacing={1}>
             {basket.map((program, idx) => (
-              <Paper key={idx} sx={{ p: 1.5 }}>
-                <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-                  {program.program}
-                </Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {program.university}
-                </Typography>
-                <Box sx={{ display: "flex", justifyContent: "flex-end", mt: 1 }}>
-                  <IconButton size="small" onClick={() => toggleBasket(program)}>
-                    <RemoveShoppingCartIcon fontSize="small" />
-                  </IconButton>
-                </Box>
-              </Paper>
+              <Accordion
+                key={idx}
+                disableGutters
+                elevation={1}
+                sx={{
+                  "&:before": { display: "none" },
+                  borderLeft: `4px solid ${isHalicUniversity(program) ? "#ffc107" : "#2196f3"}`,
+                  backgroundColor: isHalicUniversity(program) ? "#fffde7" : "inherit",
+                }}
+              >
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  sx={{ px: 1.5, py: 0, minHeight: 48 }}
+                >
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                      <Typography variant="body2" sx={{ fontWeight: "bold" }} noWrap>
+                        {program.program}
+                      </Typography>
+                      {isHalicUniversity(program) && (
+                        <StarIcon sx={{ color: "#ffc107", fontSize: 14 }} />
+                      )}
+                    </Box>
+                    <Typography variant="caption" color="text.secondary" noWrap>
+                      {program.university}
+                    </Typography>
+                  </Box>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 1.5, pt: 0, pb: 1.5 }}>
+                  <Divider sx={{ mb: 1 }} />
+                  <Stack spacing={1}>
+                    {program.faculty && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Fakülte
+                        </Typography>
+                        <Typography variant="body2">{program.faculty}</Typography>
+                      </Box>
+                    )}
+                    {program.city && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Şehir
+                        </Typography>
+                        <Typography variant="body2">{program.city}</Typography>
+                      </Box>
+                    )}
+                    {program.taban_score && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Taban Puan
+                        </Typography>
+                        <Typography variant="body2">
+                          {parseFloat(program.taban_score).toFixed(2)}
+                        </Typography>
+                      </Box>
+                    )}
+                    {program.tavan_score && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Tavan Puan
+                        </Typography>
+                        <Typography variant="body2">
+                          {parseFloat(program.tavan_score).toFixed(2)}
+                        </Typography>
+                      </Box>
+                    )}
+                    {program.scholarship && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Burs Durumu
+                        </Typography>
+                        <Chip
+                          label={program.scholarship}
+                          size="small"
+                          color={program.scholarship === "Burslu" ? "success" : "default"}
+                        />
+                      </Box>
+                    )}
+                    {program.job && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          İlgili Meslek
+                        </Typography>
+                        <Typography variant="body2">{translateJob(program.job)}</Typography>
+                      </Box>
+                    )}
+                    {program.reason && (
+                      <Box>
+                        <Typography variant="caption" color="text.secondary">
+                          Öneri Sebebi
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontStyle: "italic" }}>
+                          💡 {program.reason}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Stack>
+                  <Divider sx={{ my: 1 }} />
+                  <Stack direction="row" spacing={1}>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<SearchIcon />}
+                      onClick={() => handleGoogleSearch(program)}
+                      sx={{ flex: 1 }}
+                    >
+                      Google
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      color="error"
+                      startIcon={<RemoveShoppingCartIcon />}
+                      onClick={() => toggleBasket(program)}
+                      sx={{ flex: 1 }}
+                    >
+                      Çıkar
+                    </Button>
+                  </Stack>
+                </AccordionDetails>
+              </Accordion>
             ))}
           </Stack>
         )}
