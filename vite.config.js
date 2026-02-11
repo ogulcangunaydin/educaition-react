@@ -21,6 +21,10 @@ export default defineConfig({
       "@mui/material/Box",
       "@mui/material/Button",
       "@mui/material/Typography",
+      "@mui/material/Fade",
+      "@mui/material/LinearProgress",
+      "@mui/material/Grow",
+      "@mui/material/Collapse",
     ],
     esbuildOptions: {
       loader: {

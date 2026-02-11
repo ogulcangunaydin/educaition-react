@@ -119,6 +119,8 @@ export default function useProgramSuggestionFlow() {
   const [riasecQuestionsList] = useState(() => getAllQuestions());
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [riasecSubmitting, setRiasecSubmitting] = useState(false);
+  const [analysisInProgress, setAnalysisInProgress] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
 
   // ── Enums via shared hook ──────────────────────────────
   const { enums: enumData, isReady: enumsReady } = useEnums([
@@ -413,6 +415,8 @@ export default function useProgramSuggestionFlow() {
   // ── RIASEC submit (called by TestQuestionCard's onSubmit) ──
   const handleRiasecSubmit = useCallback(async () => {
     setRiasecSubmitting(true);
+    setAnalysisInProgress(true);
+    setAnalysisComplete(false);
     setError(null);
     try {
       // Convert array answers to {questionId: score} dict for backend
@@ -423,12 +427,16 @@ export default function useProgramSuggestionFlow() {
         }
       });
       await programSuggestionService.submitRiasec(studentId, { riasec_answers: answersDict });
+      // Show completion state briefly before navigating
+      setAnalysisComplete(true);
+      await new Promise((resolve) => setTimeout(resolve, 1500));
       isNavigatingRef.current = true;
       clearParticipantSession(SESSION_TYPE);
       navigate(`/program-test-result/${studentId}`);
     } catch (err) {
       console.error("Error submitting RIASEC:", err);
       setError(t("tests.programSuggestion.errors.submitFailed"));
+      setAnalysisInProgress(false);
     } finally {
       setRiasecSubmitting(false);
     }
@@ -477,6 +485,8 @@ export default function useProgramSuggestionFlow() {
     handleRiasecAnswer,
     handleRiasecSubmit,
     riasecSubmitting,
+    analysisInProgress,
+    analysisComplete,
 
     // Navigation
     steps,

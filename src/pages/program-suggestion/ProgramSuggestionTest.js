@@ -25,7 +25,7 @@ import useProgramSuggestionFlow from "@hooks/program-suggestion/useProgramSugges
 import PersonalInfoStep from "./components/PersonalInfoStep";
 import EducationInfoStep from "./components/EducationInfoStep";
 import ScoreExpectationStep from "./components/ScoreExpectationStep";
-import PreferencesStep from "./components/PreferencesStep";
+import AnalysisProgressOverlay from "./components/AnalysisProgressOverlay";
 
 /**
  * RIASEC answer options (strongly_like → strongly_dislike)
@@ -83,6 +83,8 @@ function ProgramSuggestionTest() {
     handleRiasecAnswer,
     handleRiasecSubmit,
     riasecSubmitting,
+    analysisInProgress,
+    analysisComplete,
     steps,
     isStepValid,
     handleNext,
@@ -144,6 +146,7 @@ function ProgramSuggestionTest() {
 
   return (
     <Box sx={{ minHeight: "100vh", backgroundColor: "background.default", py: 4 }}>
+      {analysisInProgress && <AnalysisProgressOverlay isComplete={analysisComplete} />}
       <Paper sx={{ maxWidth: 700, margin: "0 auto", p: { xs: 2, sm: 4 } }}>
         <Typography variant="h4" gutterBottom sx={{ textAlign: "center", mb: 4 }}>
           {t("tests.programSuggestion.title")}
